@@ -1,9 +1,8 @@
 <?php
 
-// auto-loading doesn't work at the point where providers are needed,
-// therefore we must require them manually.
-require_once __DIR__ . '/Provider/class.ilSrMenuProvider.php';
-require_once __DIR__ . '/Provider/class.ilSrToolProvider.php';
+// this class is the entry point of this plugin, therefore
+// it makes sense to include psr-4 autoloading here.
+require_once __DIR__ . '/../vendor/autoload.php';
 
 /**
  * Class ilSrLifeCycleManagerPlugin holds the (singleton) plugin instance.

@@ -6,8 +6,9 @@
  * @author Thibeau Fuhrer <thf@studer-raimann.ch>
  *
  * @ilCtrl_isCalledBy ilSrLifeCycleManagerDispatcher : ilUIPluginRouterGUI
- * @ilCtrl_isCalledBy ilSrLifeCycleManagerDispatcher : ilSrLifeCycleManagerToolsProvider
  * @ilCtrl_isCalledBy ilSrLifeCycleManagerDispatcher : ilSrLifeCycleManagerConfigGUI
+ * @ilCtrl_isCalledBy ilSrLifeCycleManagerDispatcher : ilSrMenuProvider
+ * @ilCtrl_isCalledBy ilSrLifeCycleManagerDispatcher : ilSrToolProvider
  *
  * @ilCtrl_Calls ilSrLifeCycleManagerDispatcher : ilSrConfigGUI
  * @ilCtrl_Calls ilSrLifeCycleManagerDispatcher : ilSrNotificationGUI
