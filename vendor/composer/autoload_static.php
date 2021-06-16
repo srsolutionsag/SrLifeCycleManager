@@ -20,11 +20,37 @@ class ComposerStaticInit78b368899f4397655d4e05c324fa6b84
         ),
     );
 
+    public static $classMap = array (
+        'ilSrAbstractMainGUI' => __DIR__ . '/../..' . '/classes/class.ilSrAbstractMainGUI.php',
+        'ilSrAccess' => __DIR__ . '/../..' . '/classes/Access/class.ilSrAccess.php',
+        'ilSrConfig' => __DIR__ . '/../..' . '/classes/Config/class.ilSrConfig.php',
+        'ilSrConfigGUI' => __DIR__ . '/../..' . '/classes/Config/class.ilSrConfigGUI.php',
+        'ilSrLifeCycleManagerConfigGUI' => __DIR__ . '/../..' . '/classes/class.ilSrLifeCycleManagerConfigGUI.php',
+        'ilSrLifeCycleManagerDispatcher' => __DIR__ . '/../..' . '/classes/class.ilSrLifeCycleManagerDispatcher.php',
+        'ilSrLifeCycleManagerPlugin' => __DIR__ . '/../..' . '/classes/class.ilSrLifeCycleManagerPlugin.php',
+        'ilSrLifeCycleManagerRepository' => __DIR__ . '/../..' . '/classes/class.ilSrLifeCycleManagerRepository.php',
+        'ilSrMenuProvider' => __DIR__ . '/../..' . '/classes/Provider/class.ilSrMenuProvider.php',
+        'ilSrNotification' => __DIR__ . '/../..' . '/classes/Notification/class.ilSrNotification.php',
+        'ilSrNotificationGUI' => __DIR__ . '/../..' . '/classes/Notification/class.ilSrNotificationGUI.php',
+        'ilSrNotificationRepository' => __DIR__ . '/../..' . '/classes/Notification/class.ilSrNotificationRepository.php',
+        'ilSrRoutine' => __DIR__ . '/../..' . '/classes/Routine/class.ilSrRoutine.php',
+        'ilSrRoutineGUI' => __DIR__ . '/../..' . '/classes/Routine/class.ilSrRoutineGUI.php',
+        'ilSrRoutineNotification' => __DIR__ . '/../..' . '/classes/Routine/class.ilSrRoutineNotification.php',
+        'ilSrRoutineRepository' => __DIR__ . '/../..' . '/classes/Routine/class.ilSrRoutineRepository.php',
+        'ilSrRoutineRule' => __DIR__ . '/../..' . '/classes/Routine/class.ilSrRoutineRule.php',
+        'ilSrRoutineWhitelistEntry' => __DIR__ . '/../..' . '/classes/Routine/class.ilSrRoutineWhitelistEntry.php',
+        'ilSrRule' => __DIR__ . '/../..' . '/classes/Rule/class.ilSrRule.php',
+        'ilSrRuleGUI' => __DIR__ . '/../..' . '/classes/Rule/class.ilSrRuleGUI.php',
+        'ilSrRuleRepository' => __DIR__ . '/../..' . '/classes/Rule/class.ilSrRuleRepository.php',
+        'ilSrToolProvider' => __DIR__ . '/../..' . '/classes/Provider/class.ilSrToolProvider.php',
+    );
+
     public static function getInitializer(ClassLoader $loader)
     {
         return \Closure::bind(function () use ($loader) {
             $loader->prefixLengthsPsr4 = ComposerStaticInit78b368899f4397655d4e05c324fa6b84::$prefixLengthsPsr4;
             $loader->prefixDirsPsr4 = ComposerStaticInit78b368899f4397655d4e05c324fa6b84::$prefixDirsPsr4;
+            $loader->classMap = ComposerStaticInit78b368899f4397655d4e05c324fa6b84::$classMap;
 
         }, null, ClassLoader::class);
     }

@@ -1,11 +1,24 @@
 <?php
 
+// auto-loading doesn't work at the point where providers are needed,
+// therefore we must require them manually.
+require_once __DIR__ . '/Provider/class.ilSrMenuProvider.php';
+require_once __DIR__ . '/Provider/class.ilSrToolProvider.php';
+
 /**
- * Class ilSrLifeCycleManagerPlugin holds a singleton plugin instance.
+ * Class ilSrLifeCycleManagerPlugin holds the (singleton) plugin instance.
  *
  * @author Thibeau Fuhrer <thf@studer-raimann.ch>
+ *
+ * The plugin instance is primarily used to handle I18N, because it provides a method
+ * which translates language variables into the corresponding text contained in
+ * '/../lang' directory.
+ *
+ * Besides that it provides cronjob instances, that are responsible for validating
+ * rule-sets registered in the administration of this plugin, and applying them -
+ * deleting (old) course objects that match an active routine's rules.
  */
-class ilSrLifeCycleManagerPlugin extends ilCronHookPlugin
+final class ilSrLifeCycleManagerPlugin extends ilCronHookPlugin
 {
     /**
      * @var string
@@ -35,10 +48,10 @@ class ilSrLifeCycleManagerPlugin extends ilCronHookPlugin
     {
         global $DIC;
         parent::__construct();
-        // register the plugin tools provider
-        $this->provider_collection->setToolProvider(
-            new ilSrLifeCycleManagerToolsProvider($DIC, $this)
-        );
+
+        // register global-screen providers (for tools and main-menu entries)
+        $this->provider_collection->setToolProvider(new ilSrToolProvider($DIC, $this));
+        $this->provider_collection->setMainBarProvider(new ilSrMenuProvider($DIC, $this));
     }
 
     /**
@@ -60,7 +73,7 @@ class ilSrLifeCycleManagerPlugin extends ilCronHookPlugin
     }
 
     /**
-     *
+     * returns all cronjob instances of this plugin.
      */
     public function getCronJobInstances()
     {
@@ -68,7 +81,9 @@ class ilSrLifeCycleManagerPlugin extends ilCronHookPlugin
     }
 
     /**
+     * returns a single cronjob instance.
      *
+     * @param $a_job_id
      */
     public function getCronJobInstance($a_job_id)
     {

@@ -6,4 +6,26 @@ $vendorDir = dirname(dirname(__FILE__));
 $baseDir = dirname($vendorDir);
 
 return array(
+    'ilSrAbstractMainGUI' => $baseDir . '/classes/class.ilSrAbstractMainGUI.php',
+    'ilSrAccess' => $baseDir . '/classes/Access/class.ilSrAccess.php',
+    'ilSrConfig' => $baseDir . '/classes/Config/class.ilSrConfig.php',
+    'ilSrConfigGUI' => $baseDir . '/classes/Config/class.ilSrConfigGUI.php',
+    'ilSrLifeCycleManagerConfigGUI' => $baseDir . '/classes/class.ilSrLifeCycleManagerConfigGUI.php',
+    'ilSrLifeCycleManagerDispatcher' => $baseDir . '/classes/class.ilSrLifeCycleManagerDispatcher.php',
+    'ilSrLifeCycleManagerPlugin' => $baseDir . '/classes/class.ilSrLifeCycleManagerPlugin.php',
+    'ilSrLifeCycleManagerRepository' => $baseDir . '/classes/class.ilSrLifeCycleManagerRepository.php',
+    'ilSrMenuProvider' => $baseDir . '/classes/Provider/class.ilSrMenuProvider.php',
+    'ilSrNotification' => $baseDir . '/classes/Notification/class.ilSrNotification.php',
+    'ilSrNotificationGUI' => $baseDir . '/classes/Notification/class.ilSrNotificationGUI.php',
+    'ilSrNotificationRepository' => $baseDir . '/classes/Notification/class.ilSrNotificationRepository.php',
+    'ilSrRoutine' => $baseDir . '/classes/Routine/class.ilSrRoutine.php',
+    'ilSrRoutineGUI' => $baseDir . '/classes/Routine/class.ilSrRoutineGUI.php',
+    'ilSrRoutineNotification' => $baseDir . '/classes/Routine/class.ilSrRoutineNotification.php',
+    'ilSrRoutineRepository' => $baseDir . '/classes/Routine/class.ilSrRoutineRepository.php',
+    'ilSrRoutineRule' => $baseDir . '/classes/Routine/class.ilSrRoutineRule.php',
+    'ilSrRoutineWhitelistEntry' => $baseDir . '/classes/Routine/class.ilSrRoutineWhitelistEntry.php',
+    'ilSrRule' => $baseDir . '/classes/Rule/class.ilSrRule.php',
+    'ilSrRuleGUI' => $baseDir . '/classes/Rule/class.ilSrRuleGUI.php',
+    'ilSrRuleRepository' => $baseDir . '/classes/Rule/class.ilSrRuleRepository.php',
+    'ilSrToolProvider' => $baseDir . '/classes/Provider/class.ilSrToolProvider.php',
 );

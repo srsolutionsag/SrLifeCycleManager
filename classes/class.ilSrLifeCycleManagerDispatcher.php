@@ -9,29 +9,52 @@
  * @ilCtrl_isCalledBy ilSrLifeCycleManagerDispatcher : ilSrLifeCycleManagerToolsProvider
  * @ilCtrl_isCalledBy ilSrLifeCycleManagerDispatcher : ilSrLifeCycleManagerConfigGUI
  *
- * @ilCtrl_Calls ilSrLifeCycleManagerDispatcher : (add further GUI classes here)
+ * @ilCtrl_Calls ilSrLifeCycleManagerDispatcher : ilSrConfigGUI
+ * @ilCtrl_Calls ilSrLifeCycleManagerDispatcher : ilSrNotificationGUI
+ * @ilCtrl_Calls ilSrLifeCycleManagerDispatcher : ilSrRoutineGUI
+ * @ilCtrl_Calls ilSrLifeCycleManagerDispatcher : ilSrRuleGUI
  */
-class ilSrLifeCycleManagerDispatcher
+final class ilSrLifeCycleManagerDispatcher
 {
     /**
-     * dispatches ilCtrl's 'next_class' and forwards the command.
+     * @var ilCtrl
      */
-    public function executeCommand() : void
+    private $ctrl;
+
+    /**
+     * ilSrLifeCycleManagerDispatcher constructor
+     */
+    public function __construct()
     {
         global $DIC;
 
-        switch ($DIC->ctrl()->getNextClass()) {
-
-            default:
-                $this->performCommand($DIC->ctrl()->getCmd());
-        }
+        $this->ctrl = $DIC->ctrl();
     }
 
     /**
-     * @param string $cmd
+     * dispatches ilCtrl's 'next_class' and forwards the command.
+     *
+     * @throws ilCtrlException if ilCtrl's next-class wasn't found
+     * @throws LogicException if ilCtrl's next-class is $this
      */
-    public function performCommand(string $cmd) : void
+    public function executeCommand() : void
     {
-        throw new LogicException("");
+        switch ($this->ctrl->getNextClass()) {
+            case strtolower(ilSrConfigGUI::class):
+                $this->ctrl->forwardCommand(new ilSrConfigGUI());
+                break;
+            case strtolower(ilSrNotificationGUI::class):
+                $this->ctrl->forwardCommand(new ilSrNotificationGUI());
+                break;
+            case strtolower(ilSrRoutineGUI::class):
+                $this->ctrl->forwardCommand(new ilSrRoutineGUI());
+                break;
+            case strtolower(ilSrRuleGUI::class):
+                $this->ctrl->forwardCommand(new ilSrRuleGUI());
+                break;
+
+            default:
+                throw new LogicException(self::class . " MUST never be executing class.");
+        }
     }
 }

@@ -5,7 +5,7 @@
  *
  * @author Thibeau Fuhrer <thf@studer-raimann.ch>
  */
-class ilSrLifeCycleManagerConfigGUI extends ilPluginConfigGUI
+final class ilSrLifeCycleManagerConfigGUI extends ilPluginConfigGUI
 {
     /**
      * @var string
@@ -23,7 +23,7 @@ class ilSrLifeCycleManagerConfigGUI extends ilPluginConfigGUI
             $DIC->ctrl()->forwardCommand(new ilSrLifeCycleManagerDispatcher());
         } else {
             $DIC->ctrl()->redirectByClass(
-                [ilSrLifeCycleManagerDispatcher::class, "<PLACE CONFIG GUI CLASS HERE>"],
+                [ilSrLifeCycleManagerDispatcher::class, ilSrConfigGUI::class],
                 self::CMD_CONFIG_INDEX
             );
         }

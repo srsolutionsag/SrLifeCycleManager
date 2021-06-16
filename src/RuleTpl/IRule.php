@@ -1,11 +1,16 @@
 <?php
 
-namespace srag\Plugins\SrLifeCycleManager\Rule;
+namespace srag\Plugins\SrCourseManager\Rule;
 
 /**
- * Interface IRule defines how rule objects must look like.
+ * Interface IRule
  *
  * @author Thibeau Fuhrer <thf@studer-raimann.ch>
+ *
+ * This interface definces what a rule must look like.
+ *
+ * The implementation should be either as DTO or AR, depending
+ * on how the database access is handled.
  */
 interface IRule
 {
@@ -83,10 +88,10 @@ interface IRule
     public function getLhsValue();
 
     /**
-     * @param $lhs_value
+     * @param $value
      * @return IRule
      */
-    public function setLhsValue($lhs_value) : IRule;
+    public function setLhsValue($value) : IRule;
 
     /**
      * @return string
@@ -116,8 +121,8 @@ interface IRule
     public function getRhsValue();
 
     /**
-     * @param $rhs_value
+     * @param $value
      * @return IRule
      */
-    public function setRhsValue($rhs_value) : IRule;
+    public function setRhsValue($value) : IRule;
 }
