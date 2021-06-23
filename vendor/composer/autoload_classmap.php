@@ -6,9 +6,11 @@ $vendorDir = dirname(dirname(__FILE__));
 $baseDir = dirname($vendorDir);
 
 return array(
+    'ilSrAbstractMainForm' => $baseDir . '/classes/class.ilSrAbstractMainForm.php',
     'ilSrAbstractMainGUI' => $baseDir . '/classes/class.ilSrAbstractMainGUI.php',
     'ilSrAccess' => $baseDir . '/classes/Access/class.ilSrAccess.php',
     'ilSrConfig' => $baseDir . '/classes/Config/class.ilSrConfig.php',
+    'ilSrConfigForm' => $baseDir . '/classes/Config/Form/class.ilSrConfigForm.php',
     'ilSrConfigGUI' => $baseDir . '/classes/Config/class.ilSrConfigGUI.php',
     'ilSrLifeCycleManagerConfigGUI' => $baseDir . '/classes/class.ilSrLifeCycleManagerConfigGUI.php',
     'ilSrLifeCycleManagerDispatcher' => $baseDir . '/classes/class.ilSrLifeCycleManagerDispatcher.php',

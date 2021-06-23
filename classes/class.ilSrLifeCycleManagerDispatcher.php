@@ -1,14 +1,12 @@
 <?php
 
 /**
- * Class ilSrLifeCycleManagerDispatcher is the plugin entry point.
+ * Class ilSrLifeCycleManagerDispatcher is responsible for ALL plugins requests.
  *
  * @author Thibeau Fuhrer <thf@studer-raimann.ch>
  *
  * @ilCtrl_isCalledBy ilSrLifeCycleManagerDispatcher : ilUIPluginRouterGUI
  * @ilCtrl_isCalledBy ilSrLifeCycleManagerDispatcher : ilSrLifeCycleManagerConfigGUI
- * @ilCtrl_isCalledBy ilSrLifeCycleManagerDispatcher : ilSrMenuProvider
- * @ilCtrl_isCalledBy ilSrLifeCycleManagerDispatcher : ilSrToolProvider
  *
  * @ilCtrl_Calls ilSrLifeCycleManagerDispatcher : ilSrConfigGUI
  * @ilCtrl_Calls ilSrLifeCycleManagerDispatcher : ilSrNotificationGUI
@@ -18,44 +16,58 @@
 final class ilSrLifeCycleManagerDispatcher
 {
     /**
-     * @var ilCtrl
-     */
-    private $ctrl;
-
-    /**
-     * ilSrLifeCycleManagerDispatcher constructor
-     */
-    public function __construct()
-    {
-        global $DIC;
-
-        $this->ctrl = $DIC->ctrl();
-    }
-
-    /**
-     * dispatches ilCtrl's 'next_class' and forwards the command.
+     * Dispatches all plugin requests to the executing command class.
      *
-     * @throws ilCtrlException if ilCtrl's next-class wasn't found
-     * @throws LogicException if ilCtrl's next-class is $this
+     * Whenever a new command class is added the PHPDoc comments above
+     * must be complemented by an according '@ilCtrl_Calls' statement.
+     *
+     * @throws ilCtrlException if the command class could not be loaded
+     * @throws LogicException if the command class could not be found
      */
     public function executeCommand() : void
     {
-        switch ($this->ctrl->getNextClass()) {
+        global $DIC;
+
+        switch ($DIC->ctrl()->getNextClass()) {
             case strtolower(ilSrConfigGUI::class):
-                $this->ctrl->forwardCommand(new ilSrConfigGUI());
+                $DIC->ctrl()->forwardCommand(new ilSrConfigGUI());
                 break;
             case strtolower(ilSrNotificationGUI::class):
-                $this->ctrl->forwardCommand(new ilSrNotificationGUI());
+                $DIC->ctrl()->forwardCommand(new ilSrNotificationGUI());
                 break;
             case strtolower(ilSrRoutineGUI::class):
-                $this->ctrl->forwardCommand(new ilSrRoutineGUI());
+                $DIC->ctrl()->forwardCommand(new ilSrRoutineGUI());
                 break;
             case strtolower(ilSrRuleGUI::class):
-                $this->ctrl->forwardCommand(new ilSrRuleGUI());
+                $DIC->ctrl()->forwardCommand(new ilSrRuleGUI());
                 break;
 
             default:
                 throw new LogicException(self::class . " MUST never be executing class.");
         }
+
+        // in case requests are coming from ilUIPluginRouterGUI we need to
+        // print the template manually (doesn't matter if it's repeatedly).
+        $DIC->ui()->mainTemplate()->printToStdout();
+    }
+
+    /**
+     * Returns a fully qualified link target for the given class and command.
+     *
+     * This method can be used whenever a link to a command class of this plugin
+     * is made from outside of ilCtrl's current scope (e.g. MenuProvider)
+     *
+     * @param string $class
+     * @param string $cmd
+     * @return string
+     */
+    public static function buildFullyQualifiedLinkTarget(string $class, string $cmd) : string
+    {
+        global $DIC;
+
+        return $DIC->ctrl()->getLinkTargetByClass(
+            [ilUIPluginRouterGUI::class, self::class, $class],
+            $cmd
+        );
     }
 }

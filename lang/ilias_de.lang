@@ -1,2 +1,11 @@
+
 msg_permission_denied#:#Sie haben nicht ausreichende Berechtigung.
 msg_object_not_found#:#Das angefragte Object wurde nicht gefunden.
+
+tab_config_index#:#Einstellungen
+tab_routine_index#:#Routinen
+
+cnf_global_roles#:#Globale Rollen die Routinen anlegen können
+cnf_move_to_bin#:#Objekte zuerst in den Papierkorb schieben?
+cnf_create_routines_repository#:#Neue Routinen vom Magazin aus erstellen?
+cnf_show_routines_repository#:#Aktive Routinen im Magazin anzeigen?

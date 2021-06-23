@@ -21,9 +21,11 @@ class ComposerStaticInit78b368899f4397655d4e05c324fa6b84
     );
 
     public static $classMap = array (
+        'ilSrAbstractMainForm' => __DIR__ . '/../..' . '/classes/class.ilSrAbstractMainForm.php',
         'ilSrAbstractMainGUI' => __DIR__ . '/../..' . '/classes/class.ilSrAbstractMainGUI.php',
         'ilSrAccess' => __DIR__ . '/../..' . '/classes/Access/class.ilSrAccess.php',
         'ilSrConfig' => __DIR__ . '/../..' . '/classes/Config/class.ilSrConfig.php',
+        'ilSrConfigForm' => __DIR__ . '/../..' . '/classes/Config/Form/class.ilSrConfigForm.php',
         'ilSrConfigGUI' => __DIR__ . '/../..' . '/classes/Config/class.ilSrConfigGUI.php',
         'ilSrLifeCycleManagerConfigGUI' => __DIR__ . '/../..' . '/classes/class.ilSrLifeCycleManagerConfigGUI.php',
         'ilSrLifeCycleManagerDispatcher' => __DIR__ . '/../..' . '/classes/class.ilSrLifeCycleManagerDispatcher.php',

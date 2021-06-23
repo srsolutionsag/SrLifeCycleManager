@@ -1,2 +1,12 @@
+
 msg_permission_denied#:#Permission denied.
 msg_object_not_found#:#Requested object not found.
+msg_back_to#:#Back
+
+tab_config_index#:#Configuration
+tab_routine_index#:#Routines
+
+cnf_global_roles#:#Global roles that can add Routines
+cnf_move_to_bin#:#Move objects to bin/trash first?
+cnf_create_routines_repository#:#Create new Routines from Repository?
+cnf_show_routines_repository#:#Show active Routines in Repository?

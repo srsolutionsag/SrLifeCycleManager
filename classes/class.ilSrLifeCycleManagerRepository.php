@@ -5,7 +5,8 @@ use srag\Plugins\SrLifeCycleManager\Notification\INotificationRepository;
 use srag\Plugins\SrLifeCycleManager\Rule\IRuleRepository;
 
 /**
- * Class ilSrLifeCycleManagerRepository
+ * Class ilSrLifeCycleManagerRepository is a factory for all
+ * further plugin repositories.
  *
  * @author Thibeau Fuhrer <thf@studer-raimann.ch>
  */
@@ -15,6 +16,11 @@ final class ilSrLifeCycleManagerRepository
      * @var self
      */
     private static $instance;
+
+    /**
+     * @var \ILIAS\DI\RBACServices
+     */
+    private $rbac;
 
     /**
      * @var IRoutineRepository
@@ -42,12 +48,18 @@ final class ilSrLifeCycleManagerRepository
      */
     private function __construct()
     {
+        global $DIC;
+
+        $this->rbac = $DIC->rbac();
+
         $this->routine_repository       = new ilSrRoutineRepository();
         $this->notification_repository  = new ilSrNotificationRepository();
         $this->rule_repository          = new ilSrRuleRepository();
     }
 
     /**
+     * returns a singleton instance of this repository factory.
+     *
      * @return self
      */
     public static function getInstance() : self
@@ -78,5 +90,27 @@ final class ilSrLifeCycleManagerRepository
     public function rule() : IRuleRepository
     {
         return $this->rule_repository;
+    }
+
+    /**
+     * Returns all available global-roles as 'id' => 'title' paris.
+     *
+     * @return array
+     */
+    public function getGlobalRoleOptions() : array
+    {
+        $role_options = [];
+        $global_roles = $this->rbac->review()->getRolesByFilter(ilRbacReview::FILTER_ALL_GLOBAL);
+
+        if (empty($global_roles)) return $role_options;
+
+        foreach ($global_roles as $role_data) {
+            $role_id    = (int) $role_data['obj_id'];
+            $role_title = ilObjRole::_getTranslation($role_data['title']);
+
+            $role_options[$role_id] = $role_title;
+        }
+
+        return $role_options;
     }
 }

@@ -53,10 +53,10 @@ final class ilSrConfig extends ActiveRecord
     /**
      * configuration identifiers
      */
-    public const CNF_GLOBAL_ROLES   = 'cnf_global_roles';
-    public const CNF_MOVE_TO_BIN    = 'cnf_move_to_bin';
-    public const CNF_RULES_SHOW     = 'cnf_rules_show';
-    public const CNF_RULES_CREATE   = 'cnf_rules_create';
+    public const CNF_GLOBAL_ROLES    = 'cnf_global_roles';
+    public const CNF_MOVE_TO_BIN     = 'cnf_move_to_bin';
+    public const CNF_CREATE_ROUTINES = 'cnf_create_routines_repository';
+    public const CNF_SHOW_ROUTINES   = 'cnf_show_routines_repository';
 
     /**
      * @var string
@@ -99,7 +99,6 @@ final class ilSrConfig extends ActiveRecord
     /**
      * @param string $identifier
      * @return ilSrConfig
-     * @throws arException
      */
     public function setIdentifier(string $identifier) : ilSrConfig
     {

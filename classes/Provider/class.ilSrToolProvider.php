@@ -27,6 +27,22 @@ class ilSrToolProvider extends AbstractDynamicToolPluginProvider
      */
     public function getToolsForContextStack(CalledContexts $called_contexts) : array
     {
-        return [];
+        return [
+            $this->factory
+                ->tool($this->if->identifier($this->getPluginID() . '_tool'))
+                ->withTitle($this->plugin->txt('tool_main_entry'))
+                ->withContent(
+                    $this->dic->ui()->factory()->legacy(
+                        '<a href="' . ilSrLifeCycleManagerDispatcher::buildQualifiedLinkTarget(ilSrRoutineGUI::class, ilSrRoutineGUI::CMD_ROUTINE_INDEX) .'">link to stuff</a>'
+                    )
+                )
+                ->withAvailableCallable(function() : bool {
+                    return (bool) $this->plugin->isActive();
+                })
+                ->withVisibilityCallable(function() : bool {
+                    return ilSrAccess::canUserDoStuff();
+                })
+            ,
+        ];
     }
 }

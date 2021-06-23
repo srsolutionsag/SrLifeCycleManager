@@ -21,7 +21,8 @@ final class ilSrRoutineGUI extends ilSrAbstractMainGUI
         switch ($cmd) {
             case self::CMD_ROUTINE_INDEX:
                 if (ilSrAccess::canUserDoStuff($this->user->getId())) {
-                    // execute command if user access is granted
+                    // add configuration tabs and execute given command.
+                    $this->addConfigurationTabs(self::TAB_ROUTINE_INDEX);
                     $this->{$cmd}();
                 } else {
                     $this->sendErrorMessage(self::MSG_PERMISSION_DENIED);
@@ -36,6 +37,6 @@ final class ilSrRoutineGUI extends ilSrAbstractMainGUI
 
     public function index() : void
     {
-        echo "hello world";
+        $this->ui->mainTemplate()->setContent("Hello world");
     }
 }

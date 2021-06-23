@@ -45,6 +45,14 @@ class ilSrNotification extends ActiveRecord implements INotification
     /**
      * @inheritDoc
      */
+    public static function returnDbTableName() : string
+    {
+        return self::TABLE_NAME;
+    }
+
+    /**
+     * @inheritDoc
+     */
     public function getId() : ?int
     {
         return $this->id;

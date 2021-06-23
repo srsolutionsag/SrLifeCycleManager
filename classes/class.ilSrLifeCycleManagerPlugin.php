@@ -1,7 +1,5 @@
 <?php
 
-// this class is the entry point of this plugin, therefore
-// it makes sense to include psr-4 autoloading here.
 require_once __DIR__ . '/../vendor/autoload.php';
 
 /**
