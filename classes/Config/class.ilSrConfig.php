@@ -51,11 +51,30 @@ final class ilSrConfig extends ActiveRecord
     private const IDENTIFIER_REGEX = '/^[A-Za-z0-9_-]*$/';
 
     /**
-     * configuration identifiers
+     * @var string config determines whether or not a user
+     *             can manage routines (and rules).
      */
     public const CNF_GLOBAL_ROLES    = 'cnf_global_roles';
+
+    /**
+     * @var string config determines whether or not objects that
+     *             match a routines rule-set are moved to the bin
+     *             first, or are removed entirely.
+     */
     public const CNF_MOVE_TO_BIN     = 'cnf_move_to_bin';
+
+    /**
+     * @var string config determines whether or not routines can
+     *             be added by the tool provider displayed in the
+     *             repository context.
+     */
     public const CNF_CREATE_ROUTINES = 'cnf_create_routines_repository';
+
+    /**
+     * @var string config determines whether or not active routines
+     *             are shown in the tool provider displayed in the
+     *             repository context's current object.
+     */
     public const CNF_SHOW_ROUTINES   = 'cnf_show_routines_repository';
 
     /**
@@ -81,7 +100,7 @@ final class ilSrConfig extends ActiveRecord
     protected $value;
 
     /**
-     * @return string
+     * @inheritDoc
      */
     public static function returnDbTableName() : string
     {
@@ -102,6 +121,8 @@ final class ilSrConfig extends ActiveRecord
      */
     public function setIdentifier(string $identifier) : ilSrConfig
     {
+        // thrown exception can be ignored, as this is ONLY for
+        // development purposes.
         $this->validateIdentifier($identifier);
         $this->identifier = $identifier;
         return $this;

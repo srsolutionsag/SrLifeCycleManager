@@ -21,6 +21,11 @@ final class ilSrConfigGUI extends ilSrAbstractMainGUI
     public const CMD_CONFIG_EDIT  = 'edit';
 
     /**
+     * @var string page title lang var.
+     */
+    private const PAGE_TITLE = 'page_title_config';
+
+    /**
      * ilSrConfigGUI lang vars
      */
     private const MSG_CONFIGURATION_SUCCESS = 'msg_configuration_success';
@@ -36,7 +41,7 @@ final class ilSrConfigGUI extends ilSrAbstractMainGUI
             case self::CMD_INDEX:
             case self::CMD_CONFIG_SAVE:
             case self::CMD_CONFIG_EDIT:
-                if (ilSrAccess::canUserDoStuff()) {
+                if (ilSrAccess::isUserAdministrator($this->user->getId())) {
                     // add configuration tabs to the page and execute given command.
                     $this->addConfigurationTabs(self::TAB_CONFIG_INDEX);
                     $this->{$cmd}();
@@ -49,6 +54,22 @@ final class ilSrConfigGUI extends ilSrAbstractMainGUI
                 // displays an error message whenever a command is unknown.
                 $this->displayErrorMessage(self::MSG_OBJECT_NOT_FOUND);
         }
+    }
+
+    /**
+     * @inheritDoc
+     */
+    protected function getPageTitle() : string
+    {
+        return $this->plugin->txt(self::PAGE_TITLE);
+    }
+
+    /**
+     * @inheritDoc
+     */
+    protected function getPageDescription() : string
+    {
+        return '';
     }
 
     /**
@@ -81,16 +102,20 @@ final class ilSrConfigGUI extends ilSrAbstractMainGUI
         $form = $this->getForm();
         if ($form->handleFormSubmission()) {
             $this->sendSuccessMessage(self::MSG_CONFIGURATION_SUCCESS);
-        } else {
-            $this->sendErrorMessage(self::MSG_CONFIGURATION_ERROR);
+            $this->cancel();
         }
 
-        $this->cancel();
+        $this->sendErrorMessage(self::MSG_CONFIGURATION_ERROR);
+        $this->ctrl->redirectByClass(
+            self::class,
+            self::CMD_CONFIG_EDIT
+        );
     }
 
     /**
      * Helper function that initialises the configuration form and
      * returns it.
+     *
      * @return ilSrConfigForm
      */
     private function getForm() : ilSrConfigForm

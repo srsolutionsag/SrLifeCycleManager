@@ -6,6 +6,8 @@ namespace srag\Plugins\SrLifeCycleManager\Routine;
  * Interface IRoutine defines how a routine must look like.
  *
  * @author Thibeau Fuhrer <thf@studer-raimann.ch>
+ *
+ * @TODO: remove elongation_possible attribute
  */
 interface IRoutine
 {
@@ -20,6 +22,15 @@ interface IRoutine
         self::ORIGIN_TYPE_ADMINISTRATION,
         self::ORIGIN_TYPE_REPOSITORY,
         self::ORIGIN_TYPE_EXTERNAL,
+    ];
+
+    /**
+     * @var string[] origin types mapped to their translation.
+     */
+    public const ORIGIN_TYPE_NAMES = [
+        self::ORIGIN_TYPE_ADMINISTRATION => 'routine_origin_type_admin',
+        self::ORIGIN_TYPE_REPOSITORY     => 'routine_origin_type_repo',
+        self::ORIGIN_TYPE_EXTERNAL       => 'routine_origin_type_ext',
     ];
 
     /**

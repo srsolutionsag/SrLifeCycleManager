@@ -362,7 +362,7 @@ final class ilSrRoutine extends ActiveRecord implements IRoutine
         $datetime = $this->{$field_name};
         if (null !== $datetime) {
             /** @var $datetime DateTime */
-            $datetime->format(self::MYSQL_DATE_FORMAT);
+            return $datetime->format(self::MYSQL_DATE_FORMAT);
         }
 
         return null;

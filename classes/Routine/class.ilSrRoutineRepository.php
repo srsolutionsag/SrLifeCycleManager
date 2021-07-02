@@ -15,6 +15,24 @@ use srag\Plugins\SrLifeCycleManager\Rule\IRule;
 final class ilSrRoutineRepository implements IRoutineRepository
 {
     /**
+     * @inheritDoc
+     */
+    public function getEmptyDTO(int $origin_type, int $owner_id) : Routine
+    {
+        return new Routine(
+            null,
+            0,
+            false,
+            $origin_type,
+            $owner_id,
+            new DateTime(),
+            false,
+            false,
+            null
+        );
+    }
+
+    /**
      * @param int $routine_id
      * @return IRule[]
      */
@@ -84,10 +102,11 @@ final class ilSrRoutineRepository implements IRoutineRepository
      */
     public function store(IRoutine $routine) : Routine
     {
-        $ar_routine = (null !== $routine->getId()) ?
-            (ilSrRoutine::find($routine->getId()) ?? new ilSrRoutine()) :
-            new ilSrRoutine()
-        ;
+        if (null !== $routine->getId()) {
+            $ar_routine = ilSrRoutine::find($routine->getId()) ?? new ilSrRoutine();
+        } else {
+            $ar_routine = new ilSrRoutine();
+        }
 
         $ar_routine
             ->setId($routine->getId())

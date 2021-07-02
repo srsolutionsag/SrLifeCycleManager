@@ -163,9 +163,9 @@ final class Routine implements IRoutine
     /**
      * @inheritDoc
      */
-    public function setActive(bool $is_is_active) : IRoutine
+    public function setActive(bool $is_active) : IRoutine
     {
-        $this->active = $is_is_active;
+        $this->active = $is_active;
         return $this;
     }
 

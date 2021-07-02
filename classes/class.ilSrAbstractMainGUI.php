@@ -16,7 +16,7 @@
  * a bit more consistent, and redirects to a(nother) GUI is always made
  * the same way.
  *
- * @see ilSrAbstractMainGUI::redirect(), ilSrAbstractMainGUI::cancel()
+ * @see ilSrAbstractMainGUI::cancel()
  */
 abstract class ilSrAbstractMainGUI
 {
@@ -64,6 +64,11 @@ abstract class ilSrAbstractMainGUI
     protected $tabs;
 
     /**
+     * @var ilToolbarGUI
+     */
+    protected $toolbar;
+
+    /**
      * @var ilSrLifeCycleManagerPlugin
      */
     protected $plugin;
@@ -85,10 +90,46 @@ abstract class ilSrAbstractMainGUI
         $this->ctrl     = $DIC->ctrl();
         $this->user     = $DIC->user();
         $this->tabs     = $DIC->tabs();
+        $this->toolbar  = $DIC->toolbar();
 
         $this->plugin = ilSrLifeCycleManagerPlugin::getInstance();
         $this->repository = ilSrLifeCycleManagerRepository::getInstance();
+
+        // if requests are made from another base-class than the
+        // ilAdministrationGUI, the page MUST be set up manually.
+        // That's because this plugin is a CronHook plugin doesn't
+        // normally use GUIs.
+        if (ilAdministrationGUI::class !== $this->ctrl->getCallHistory()[0]) {
+            $this->ui->mainTemplate()->setTitle($this->getPageTitle());
+            $this->ui->mainTemplate()->setDescription($this->getPageDescription());
+        }
     }
+
+    /**
+     * This method MUST return the derived GUI's page title.
+     *
+     * The page title is visible as the H1 title in the header-
+     * section of the current page.
+     *
+     * The returned string MUST already be translated, as it's
+     * directly added to the page.
+     *
+     * @return string
+     */
+    abstract protected function getPageTitle() : string;
+
+    /**
+     * This method MUST return the derived GUI's page description.
+     *
+     * The page description is visible beneath the H1 page title
+     * on the current page.
+     *
+     * The returned string MUST already be translated, as it's
+     * directly added to the page.
+     *
+     * @return string
+     */
+    abstract protected function getPageDescription() : string;
 
     /**
      * This method dispatches ilCtrl's current command.
@@ -98,8 +139,7 @@ abstract class ilSrAbstractMainGUI
      * current command.
      *
      * It may occur that a further command-class is needed, but in this
-     * case a redirect via @see ilSrAbstractMainGUI::redirect()
-     * should be made.
+     * case a redirect should be made.
      */
     abstract public function executeCommand() : void;
 
@@ -146,19 +186,6 @@ abstract class ilSrAbstractMainGUI
         if (null !== $active_tab_id) {
             $this->tabs->activateTab($active_tab_id);
         }
-    }
-
-    /**
-     * Redirects to another command class with the given name.
-     *
-     * @param string $class_name
-     */
-    protected function redirect(string $class_name) : void
-    {
-        $this->ctrl->redirectByClass(
-            $class_name,
-            self::CMD_INDEX
-        );
     }
 
     /**

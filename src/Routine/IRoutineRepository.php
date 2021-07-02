@@ -20,6 +20,13 @@ interface IRoutineRepository
     public function get(int $routine_id) : ?Routine;
 
     /**
+     * @param int $origin_type
+     * @param int $owner_id
+     * @return Routine
+     */
+    public function getEmptyDTO(int $origin_type, int $owner_id) : Routine;
+
+    /**
      * @param IRoutine $routine
      * @return Routine
      */

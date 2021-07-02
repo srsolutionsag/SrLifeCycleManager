@@ -25,13 +25,29 @@ class ilSrAccess
     }
 
     /**
-     * test method, returns always true and MUST be deleted on plugin release.
+     * checks if a user for given id is eligible to manage routines by checking
+     * assigned roles for administrator or configured global roles.
      *
-     * @param int|null $user_id
+     * @see ilSrConfig::CNF_GLOBAL_ROLES
+     *
+     * @param int $user_id
      * @return bool
      */
-    public static function canUserDoStuff(int $user_id = null) : bool
+    public static function canUserManageRoutines(int $user_id) : bool
     {
-        return true;
+        global $DIC;
+
+        /**
+         * @var $config ilSrConfig
+         */
+        $config = ilSrConfig::find(ilSrConfig::CNF_GLOBAL_ROLES);
+        if (null !== $config) {
+            return (
+                $DIC->rbac()->review()->isAssignedToAtLeastOneGivenRole($user_id, $config->getValue()) ||
+                self::isUserAdministrator($user_id))
+            ;
+        }
+
+        return self::isUserAdministrator($user_id);
     }
 }

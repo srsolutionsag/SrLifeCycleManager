@@ -18,42 +18,29 @@ class ilSrConfigForm extends ilSrAbstractMainForm
     private $settings;
 
     /**
-     * ilSrConfigForm constructor
-     *
-     * @param string $form_action
+     * ilSrConfigForm constructor.
      */
-    public function __construct(string $form_action)
+    public function __construct()
     {
         global $DIC;
 
         // dependencies must be declared before the parent constructor
-        // is called, as they're already used in it (getFormInputs()).
+        // is called, as they're already used by it.
         $this->config   = ilSrConfig::get();
         $this->settings = $DIC->settings();
 
-        parent::__construct($form_action);
+        parent::__construct();
     }
 
     /**
      * @inheritDoc
      */
-    public function handleFormSubmission() : bool
+    protected function getFormAction() : string
     {
-        // abort if no form data has been submitted.
-        if (empty(($form_data = $this->getFormData()))) return false;
-        foreach ($form_data as $identifier => $value) {
-            // try to find an existing database entry for current
-            // $identifier or create a new instance.
-            $config = ilSrConfig::find($identifier) ?? new ilSrConfig();
-            $config
-                // this may be redundant, but more performant than if-else
-                ->setIdentifier($identifier)
-                ->setValue($value)
-                ->store()
-            ;
-        }
-
-        return true;
+        return $this->ctrl->getFormActionByClass(
+            ilSrConfigGUI::class,
+            ilSrConfigGUI::CMD_CONFIG_SAVE
+        );
     }
 
     /**
@@ -96,5 +83,31 @@ class ilSrConfigForm extends ilSrAbstractMainForm
         );
 
         return $inputs;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    protected function validateFormData(array $form_data) : bool
+    {
+        return empty($form_data);
+    }
+
+    /**
+     * @inheritDoc
+     */
+    protected function handleFormData(array $form_data) : void
+    {
+        foreach ($form_data as $identifier => $value) {
+            // try to find an existing database entry for current
+            // $identifier or create a new instance.
+            $config = ilSrConfig::find($identifier) ?? new ilSrConfig();
+            $config
+                // this may be redundant, but more performant than if-else
+                ->setIdentifier($identifier)
+                ->setValue($value)
+                ->store()
+            ;
+        }
     }
 }

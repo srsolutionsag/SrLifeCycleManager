@@ -3,6 +3,7 @@
 use ILIAS\GlobalScreen\Scope\Tool\Provider\AbstractDynamicToolPluginProvider;
 use ILIAS\GlobalScreen\ScreenContext\Stack\ContextCollection;
 use ILIAS\GlobalScreen\ScreenContext\Stack\CalledContexts;
+use srag\Plugins\SrLifeCycleManager\Routine\Routine;
 
 /**
  * Class ilSrToolProvider provides ILIAS with the plugin's tools.
@@ -33,14 +34,15 @@ class ilSrToolProvider extends AbstractDynamicToolPluginProvider
                 ->withTitle($this->plugin->txt('tool_main_entry'))
                 ->withContent(
                     $this->dic->ui()->factory()->legacy(
-                        '<a href="' . ilSrLifeCycleManagerDispatcher::buildQualifiedLinkTarget(ilSrRoutineGUI::class, ilSrRoutineGUI::CMD_ROUTINE_INDEX) .'">link to stuff</a>'
+                        // replace this content, test purposes
+                        '<a href="' . ilSrLifeCycleManagerDispatcher::buildFullyQualifiedLinkTarget(ilSrRoutineGUI::class, ilSrRoutineGUI::CMD_INDEX) .'">link to stuff</a>'
                     )
                 )
                 ->withAvailableCallable(function() : bool {
                     return (bool) $this->plugin->isActive();
                 })
                 ->withVisibilityCallable(function() : bool {
-                    return ilSrAccess::canUserDoStuff();
+                    return ilSrAccess::canUserManageRoutines($this->dic->user()->getId());
                 })
             ,
         ];

@@ -1,7 +1,11 @@
 
 msg_permission_denied#:#Permission denied.
 msg_object_not_found#:#Requested object not found.
+msg_invalid_ref_id#:#Invalid ref-id provided.
 msg_back_to#:#Back
+
+page_title_config#:#SrLifeCycleManager configuration
+page_title_routine#:#SrLifeCycleManager routines
 
 tab_config_index#:#Configuration
 tab_routine_index#:#Routines
@@ -10,3 +14,28 @@ cnf_global_roles#:#Global roles that can add Routines
 cnf_move_to_bin#:#Move objects to bin/trash first?
 cnf_create_routines_repository#:#Create new Routines from Repository?
 cnf_show_routines_repository#:#Show active Routines in Repository?
+
+col_routine_ref_id#:#Ref-id (scope)
+col_routine_active#:#Active
+col_routine_origin_type#:#Origin
+col_routine_owner_id#:#Owner
+col_routine_creation_date#:#Created
+col_routine_opt_out_possible#:#Opt-out
+col_routine_elongation_days#:#Elongaition (days)
+col_actions#:#Actions
+
+input_name_routine_ref_id#:#Ref-id (scope)
+input_name_routine_active#:#Active?
+input_name_routine_opt_out#:#Opt-out possible?
+input_name_routine_elongation#:#Elongation possible?
+routine_input_elongation_possible#:#Elongation (in days)
+
+status_active#:#Active
+status_inactive#:#Inactive
+status_possible#:#Possible
+status_impossible#:#Impossible
+
+action_routine_add#:#Add routine
+action_routine_edit#:#Edit
+action_routine_delete#:#Delete
+action_routine_rules#:#Rules

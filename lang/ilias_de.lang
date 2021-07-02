@@ -1,6 +1,11 @@
 
 msg_permission_denied#:#Sie haben nicht ausreichende Berechtigung.
 msg_object_not_found#:#Das angefragte Object wurde nicht gefunden.
+msg_invalid_ref_id#:#Diese Ref-id ist ungültig.
+msg_back_to#:#Zurück
+
+page_title_config#:#SrLifeCycleManager Einstellungen
+page_title_routine#:#SrLifeCycleManager Routinen
 
 tab_config_index#:#Einstellungen
 tab_routine_index#:#Routinen
@@ -9,3 +14,28 @@ cnf_global_roles#:#Globale Rollen die Routinen anlegen können
 cnf_move_to_bin#:#Objekte zuerst in den Papierkorb schieben?
 cnf_create_routines_repository#:#Neue Routinen vom Magazin aus erstellen?
 cnf_show_routines_repository#:#Aktive Routinen im Magazin anzeigen?
+
+col_routine_ref_id#:#Ref-id (Scope)
+col_routine_active#:#Aktiv
+col_routine_origin_type#:#Herkunft
+col_routine_owner_id#:#Besitzer
+col_routine_creation_date#:#Erstellt
+col_routine_opt_out_possible#:#Opt-out
+col_routine_elongation_days#:#Verlängerung (Tage)
+col_actions#:#Aktionen
+
+input_name_routine_ref_id#:#Ref-id (scope)
+input_name_routine_active#:#Aktiv?
+input_name_routine_opt_out#:#Opt-out möglich?
+input_name_routine_elongation#:#Verlängerung möglich?
+routine_input_elongation_possible#:#Verlängerung (in Tage)
+
+status_active#:#Aktiv
+status_inactive#:#Inaktiv
+status_possible#:#Möglich
+status_impossible#:#Nicht möglich
+
+action_routine_add#:#Routine hinzufügen
+action_routine_edit#:#Bearbeiten
+action_routine_delete#:#Löschen
+action_routine_rules#:#Regeln
