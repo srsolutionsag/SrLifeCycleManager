@@ -19,6 +19,11 @@ final class Routine implements IRoutine
     private $id;
 
     /**
+     * @var string
+     */
+    private $name;
+
+    /**
      * @var int
      */
     private $ref_id;
@@ -85,12 +90,10 @@ final class Routine implements IRoutine
      * @param bool       $is_opt_out_possible
      * @param bool       $is_elongation_possible
      * @param int|null   $elongation_days
-     * @param array|null $rules
-     * @param array|null $notifications
-     * @param array|null $whitelist
      */
     public function __construct(
         ?int $id,
+        string $name,
         int $ref_id,
         bool $is_active,
         int $origin_type,
@@ -98,12 +101,10 @@ final class Routine implements IRoutine
         \DateTime $creation_date,
         bool $is_opt_out_possible,
         bool $is_elongation_possible,
-        int $elongation_days = null,
-        array $rules = null,
-        array $notifications = null,
-        array $whitelist = null
+        int $elongation_days = null
     ) {
         $this->id                   = $id;
+        $this->name                 = $name;
         $this->ref_id               = $ref_id;
         $this->active               = $is_active;
         $this->origin_type          = $origin_type;
@@ -113,9 +114,9 @@ final class Routine implements IRoutine
         $this->elongation_possible  = $is_elongation_possible;
         $this->elongation_days      = $elongation_days;
 
-        $this->rules = $rules ?? [];
-        $this->notifications = $notifications ?? [];
-        $this->whitelist = $whitelist ?? [];
+        $this->rules = [];
+        $this->notifications = [];
+        $this->whitelist = [];
     }
 
     /**
@@ -132,6 +133,23 @@ final class Routine implements IRoutine
     public function setId(int $id) : IRoutine
     {
         $this->id = $id;
+        return $this;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function getName() : string
+    {
+        return $this->name;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function setName(string $name) : IRoutine
+    {
+        $this->name = $name;
         return $this;
     }
 
@@ -197,7 +215,7 @@ final class Routine implements IRoutine
     /**
      * @inheritDoc
      */
-    public function setElongationDays(int $days) : IRoutine
+    public function setElongationDays(?int $days) : IRoutine
     {
         $this->elongation_days = $days;
         return $this;
@@ -281,9 +299,9 @@ final class Routine implements IRoutine
 
     /**
      * @param IRule[] $rules
-     * @return IRoutine
+     * @return Routine
      */
-    public function addRules(array $rules) : IRoutine
+    public function addRules(array $rules) : Routine
     {
         if (!empty($rules)) {
             foreach ($rules as $rule) {
@@ -304,9 +322,9 @@ final class Routine implements IRoutine
 
     /**
      * @param INotification[] $notifications
-     * @return IRoutine
+     * @return Routine
      */
-    public function addNotifications(array $notifications) : IRoutine
+    public function addNotifications(array $notifications) : Routine
     {
         if (!empty($notifications)) {
             foreach ($notifications as $notification) {
@@ -327,9 +345,9 @@ final class Routine implements IRoutine
 
     /**
      * @param IRoutineWhitelistEntry[] $entries
-     * @return IRoutine
+     * @return Routine
      */
-    public function addWhitelistEntries(array $entries) : IRoutine
+    public function addWhitelistEntries(array $entries) : Routine
     {
         if (!empty($entries)) {
             foreach ($entries as $entry) {

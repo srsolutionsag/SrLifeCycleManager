@@ -63,23 +63,26 @@ class ilSrConfigForm extends ilSrAbstractMainForm
             $inputs[ilSrConfig::CNF_MOVE_TO_BIN] = $this->inputs->checkbox(
                 $this->plugin->txt(ilSrConfig::CNF_MOVE_TO_BIN)
             )
-            ->withValue((isset($this->config[ilSrConfig::CNF_MOVE_TO_BIN])) ?
-                (bool) $this->config[ilSrConfig::CNF_MOVE_TO_BIN]->getValue() : false
+            ->withValue(
+                isset($this->config[ilSrConfig::CNF_MOVE_TO_BIN]) &&
+                $this->config[ilSrConfig::CNF_MOVE_TO_BIN]->getValue()
             );
         }
 
         $inputs[ilSrConfig::CNF_SHOW_ROUTINES] = $this->inputs->checkbox(
             $this->plugin->txt(ilSrConfig::CNF_SHOW_ROUTINES)
         )
-        ->withValue((isset($this->config[ilSrConfig::CNF_SHOW_ROUTINES])) ?
-            (bool) $this->config[ilSrConfig::CNF_SHOW_ROUTINES]->getValue() : false
+        ->withValue(
+            isset($this->config[ilSrConfig::CNF_SHOW_ROUTINES]) &&
+            $this->config[ilSrConfig::CNF_SHOW_ROUTINES]->getValue()
         );
 
         $inputs[ilSrConfig::CNF_CREATE_ROUTINES] = $this->inputs->checkbox(
             $this->plugin->txt(ilSrConfig::CNF_CREATE_ROUTINES)
         )
-        ->withValue((isset($this->config[ilSrConfig::CNF_CREATE_ROUTINES])) ?
-            (bool) $this->config[ilSrConfig::CNF_CREATE_ROUTINES]->getValue() : false
+        ->withValue(
+            isset($this->config[ilSrConfig::CNF_CREATE_ROUTINES]) &&
+            $this->config[ilSrConfig::CNF_CREATE_ROUTINES]->getValue()
         );
 
         return $inputs;
@@ -90,7 +93,9 @@ class ilSrConfigForm extends ilSrAbstractMainForm
      */
     protected function validateFormData(array $form_data) : bool
     {
-        return empty($form_data);
+        // the submitted form_data is always valid, as it's
+        // possible all inputs were unchecked or removed.
+        return true;
     }
 
     /**

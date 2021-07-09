@@ -146,8 +146,9 @@ abstract class ilSrAbstractMainForm
 
         // call the derived classes validation method to check
         // whether or not the data should be processed.
-        if (null !== $this->form->getData() && $this->validateFormData($this->form->getData())) {
-            $this->handleFormData($this->form->getData());
+        $form_data = $this->form->getData();
+        if (null !== $form_data && $this->validateFormData($form_data)) {
+            $this->handleFormData($form_data);
             return true;
         }
 

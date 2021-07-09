@@ -25,6 +25,11 @@ final class ilSrLifeCycleManagerPlugin extends ilCronHookPlugin
     /**
      * @var string
      */
+    public const PLUGIN_DIR = './Customizing/global/plugins/Services/Cron/CronHook/SrLifeCycleManager/';
+
+    /**
+     * @var string
+     */
     public const PLUGIN_NAME = 'SrLifeCycleManager';
 
     /**
@@ -49,6 +54,22 @@ final class ilSrLifeCycleManagerPlugin extends ilCronHookPlugin
         // register global-screen providers (for tools and main-menu entries)
         $this->provider_collection->setToolProvider(new ilSrToolProvider($DIC, $this));
         $this->provider_collection->setMainBarProvider(new ilSrMenuProvider($DIC, $this));
+    }
+
+    /**
+     * @return string
+     */
+    public function getPluginDir() : string
+    {
+        return self::PLUGIN_DIR;
+    }
+
+    /**
+     * @return string
+     */
+    public function getPluginId() : string
+    {
+        return self::PLUGIN_ID;
     }
 
     /**

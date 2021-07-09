@@ -47,6 +47,7 @@ class ComposerStaticInit78b368899f4397655d4e05c324fa6b84
         'ilSrRule' => __DIR__ . '/../..' . '/classes/Rule/class.ilSrRule.php',
         'ilSrRuleGUI' => __DIR__ . '/../..' . '/classes/Rule/class.ilSrRuleGUI.php',
         'ilSrRuleRepository' => __DIR__ . '/../..' . '/classes/Rule/class.ilSrRuleRepository.php',
+        'ilSrRuleTable' => __DIR__ . '/../..' . '/classes/Rule/Table/class.ilSrRuleTable.php',
         'ilSrToolProvider' => __DIR__ . '/../..' . '/classes/Provider/class.ilSrToolProvider.php',
     );
 

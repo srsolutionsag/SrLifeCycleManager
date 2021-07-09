@@ -2,8 +2,16 @@
 msg_permission_denied#:#Sie haben nicht ausreichende Berechtigung.
 msg_object_not_found#:#Das angefragte Object wurde nicht gefunden.
 msg_invalid_ref_id#:#Diese Ref-id ist ungültig.
+msg_routine_success#:#Routine(n) wurde erfolgreich aktualisiert.
+msg_configuration_success#:#Konfiguration wurde erfolgreich aktualisiert.
+msg_configuration_error#:#Konfiguration konne nicht aktualisiert werden.
+msg_origin_unknown#:#Es wurde kein, oder ein unbekannter Herkunftstyp geliefert.
+msg_routine_not_found#:#Es wurde keine Routine geliefert, oder sie existiert nicht mehr.
+msg_rule_success#:#Regel(n) erfolgreich aktualisiert.
+msg_rule_error#:#Regel(n) konnten nicht aktualisiert werden.
 msg_back_to#:#Zurück
 
+page_title_rules#:#SrLifeCycleManager Regeln
 page_title_config#:#SrLifeCycleManager Einstellungen
 page_title_routine#:#SrLifeCycleManager Routinen
 
@@ -15,20 +23,31 @@ cnf_move_to_bin#:#Objekte zuerst in den Papierkorb schieben?
 cnf_create_routines_repository#:#Neue Routinen vom Magazin aus erstellen?
 cnf_show_routines_repository#:#Aktive Routinen im Magazin anzeigen?
 
+col_actions#:#Aktionen
 col_routine_ref_id#:#Ref-id (Scope)
+col_routine_name#:#Name
 col_routine_active#:#Aktiv
 col_routine_origin_type#:#Herkunft
 col_routine_owner_id#:#Besitzer
 col_routine_creation_date#:#Erstellt
 col_routine_opt_out_possible#:#Opt-out
 col_routine_elongation_days#:#Verlängerung (Tage)
-col_actions#:#Aktionen
+col_rule_rhs_type#:#RHS Typ
+col_rule_rhs_value#:#RHS Wert
+col_rule_operator#:#Operator
+col_rule_rhs_type#:#LHS Typ
+col_rule_rhs_value#:#LHS Wert
 
 input_name_routine_ref_id#:#Ref-id (scope)
+input_name_routine_name#:#Name
 input_name_routine_active#:#Aktiv?
 input_name_routine_opt_out#:#Opt-out möglich?
 input_name_routine_elongation#:#Verlängerung möglich?
-routine_input_elongation_possible#:#Verlängerung (in Tage)
+input_name_routine_elongation_possible#:#Verlängerung (in Tage)
+
+routine_origin_type_admin#:#Administration
+routine_origin_type_repo#:#Magazin
+routine_origin_type_ext#:#Extern
 
 status_active#:#Aktiv
 status_inactive#:#Inaktiv
@@ -39,3 +58,6 @@ action_routine_add#:#Routine hinzufügen
 action_routine_edit#:#Bearbeiten
 action_routine_delete#:#Löschen
 action_routine_rules#:#Regeln
+action_routine_notifications#:#Benachrichtigungen
+action_rule_add#:#Regel hinzufügen
+action_rule_delete#:#Enfernen

@@ -10,8 +10,32 @@ final class ilSrNotificationGUI extends ilSrAbstractMainGUI
     /**
      * @inheritDoc
      */
-    public function executeCommand() : void
+    protected function setupGlobalTemplate(ilGlobalTemplateInterface $template) : void
     {
-        // TODO: Implement executeCommand() method.
+        // TODO: Implement setupGlobalTemplate() method.
+    }
+
+    /**
+     * @inheritDoc
+     */
+    protected function getCommandList() : array
+    {
+        // TODO: Implement getCommandList() method.
+    }
+
+    /**
+     * @inheritDoc
+     */
+    protected function canUserExecuteCommand(int $user_id, string $command) : bool
+    {
+        // TODO: Implement canUserExecuteCommand() method.
+    }
+
+    /**
+     * @inheritDoc
+     */
+    protected function index() : void
+    {
+        // TODO: Implement index() method.
     }
 }

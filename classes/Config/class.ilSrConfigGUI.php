@@ -18,58 +18,51 @@ final class ilSrConfigGUI extends ilSrAbstractMainGUI
      * ilSrConfigGUI command names (methods)
      */
     public const CMD_CONFIG_SAVE  = 'save';
-    public const CMD_CONFIG_EDIT  = 'edit';
-
-    /**
-     * @var string page title lang var.
-     */
-    private const PAGE_TITLE = 'page_title_config';
 
     /**
      * ilSrConfigGUI lang vars
      */
     private const MSG_CONFIGURATION_SUCCESS = 'msg_configuration_success';
     private const MSG_CONFIGURATION_ERROR   = 'msg_configuration_error';
+    private const PAGE_TITLE                = 'page_title_config';
 
     /**
      * @inheritDoc
      */
-    public function executeCommand() : void
+    protected function setupGlobalTemplate(ilGlobalTemplateInterface $template) : void
     {
-        $cmd = $this->ctrl->getCmd(self::CMD_INDEX);
-        switch ($cmd) {
-            case self::CMD_INDEX:
-            case self::CMD_CONFIG_SAVE:
-            case self::CMD_CONFIG_EDIT:
-                if (ilSrAccess::isUserAdministrator($this->user->getId())) {
-                    // add configuration tabs to the page and execute given command.
-                    $this->addConfigurationTabs(self::TAB_CONFIG_INDEX);
-                    $this->{$cmd}();
-                } else {
-                    $this->displayErrorMessage(self::MSG_PERMISSION_DENIED);
-                }
-                break;
-
-            default:
-                // displays an error message whenever a command is unknown.
-                $this->displayErrorMessage(self::MSG_OBJECT_NOT_FOUND);
-        }
+        $template->setTitle($this->plugin->txt(self::PAGE_TITLE));
     }
 
     /**
      * @inheritDoc
      */
-    protected function getPageTitle() : string
+    protected function getCommandList() : array
     {
-        return $this->plugin->txt(self::PAGE_TITLE);
+        return [
+            self::CMD_INDEX,
+            self::CMD_CONFIG_SAVE,
+        ];
     }
 
     /**
      * @inheritDoc
      */
-    protected function getPageDescription() : string
+    protected function canUserExecuteCommand(int $user_id, string $command) : bool
     {
-        return '';
+        // all actions implemented by this GUI require at least
+        // administrator privileges, hence $command is ignored.
+        return ilSrAccess::isUserAdministrator($user_id);
+    }
+
+    /**
+     * @inheritDoc
+     */
+    protected function beforeCommand(string $command) : void
+    {
+        // adds the configuration tabs to the current page
+        // before each command is executed.
+        $this->addConfigurationTabs(self::TAB_CONFIG_INDEX);
     }
 
     /**
@@ -85,30 +78,20 @@ final class ilSrConfigGUI extends ilSrAbstractMainGUI
     }
 
     /**
-     * Displays the general configuration form on the current page
-     * filled with the current request.
-     */
-    private function edit() : void
-    {
-        $form = $this->getForm();
-    }
-
-    /**
      * Stores the changed or added configuration to the database
      * and redirects to the index.
      */
-    private function save() : void
+    protected function save() : void
     {
         $form = $this->getForm();
-        if ($form->handleFormSubmission()) {
+        if ($form->handleRequest($this->http->request())) {
             $this->sendSuccessMessage(self::MSG_CONFIGURATION_SUCCESS);
-            $this->cancel();
+            $this->repeat();
         }
 
         $this->sendErrorMessage(self::MSG_CONFIGURATION_ERROR);
-        $this->ctrl->redirectByClass(
-            self::class,
-            self::CMD_CONFIG_EDIT
+        $this->ui->mainTemplate()->setContent(
+            $form->render()
         );
     }
 
@@ -120,9 +103,6 @@ final class ilSrConfigGUI extends ilSrAbstractMainGUI
      */
     private function getForm() : ilSrConfigForm
     {
-        return new ilSrConfigForm($this->ctrl->getFormActionByClass(
-            self::class,
-            self::CMD_CONFIG_SAVE
-        ));
+        return new ilSrConfigForm();
     }
 }

@@ -1,5 +1,6 @@
 <?php
 
+use srag\Plugins\SrLifeCycleManager\Rule\IRuleRepository;
 use srag\Plugins\SrLifeCycleManager\Routine\IRoutineWhitelistEntry;
 use srag\Plugins\SrLifeCycleManager\Routine\IRoutineRepository;
 use srag\Plugins\SrLifeCycleManager\Notification\INotification;
@@ -15,12 +16,48 @@ use srag\Plugins\SrLifeCycleManager\Rule\IRule;
 final class ilSrRoutineRepository implements IRoutineRepository
 {
     /**
+     * @var ilTree
+     */
+    private $tree;
+
+    /**
+     * @var IRuleRepository
+     */
+    private $rule_repository;
+
+    /**
+     * ilSrRoutineRepository constructor.
+     */
+    public function __construct(IRuleRepository $rule_repository)
+    {
+        global $DIC;
+
+        $this->tree = $DIC->repositoryTree();
+        $this->rule_repository = $rule_repository;
+    }
+
+    /**
      * @inheritDoc
      */
-    public function getEmptyDTO(int $origin_type, int $owner_id) : Routine
+    public function get(int $routine_id) : ?Routine
+    {
+        /**
+         * @var $ar_routine ilSrRoutine|null
+         */
+        $ar_routine = ilSrRoutine::find($routine_id);
+        return (null !== $ar_routine) ?
+            $this->transformToDTO($ar_routine) : null
+        ;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function getEmpty(int $origin_type, int $owner_id) : Routine
     {
         return new Routine(
             null,
+            '',
             0,
             false,
             $origin_type,
@@ -33,68 +70,153 @@ final class ilSrRoutineRepository implements IRoutineRepository
     }
 
     /**
-     * @param int $routine_id
-     * @return IRule[]
+     * @inheritDoc
      */
-    public function getRulesByRoutineId(int $routine_id) : array
+    public function getAllAsDTO() : ?array
     {
-        $ar_rules = ilSrRoutineRule::leftjoin(
-            ilSrRule::TABLE_NAME,
-            ilSrRoutineRule::F_RULE_ID,
-            ilSrRule::F_ID
-        )->where([
-            ilSrRoutineRule::F_ROUTINE_ID => $routine_id
-        ], '='
-        )->get();
+        /**
+         * @var $ar_routines ilSrRoutine[]
+         */
+        $ar_routines = ilSrRoutine::get();
+        if (empty($ar_routines)) return null;
 
+        $dto_array = [];
+        foreach ($ar_routines as $ar_routine) {
+            $dto_array[] = $this->transformToDTO($ar_routine);
+        }
 
-    }
-
-    /**
-     * @param int $routine_id
-     * @return INotification[]
-     */
-    public function getNotificationsByRoutineId(int $routine_id) : array
-    {
-
-    }
-
-    /**
-     * @param int $routine_id
-     * @return IRoutineWhitelistEntry[]
-     */
-    public function getWhitelistByRoutineId(int $routine_id) : array
-    {
-
+        return $dto_array;
     }
 
     /**
      * @inheritDoc
      */
-    public function get(int $routine_id) : ?Routine
+    public function getAllAsArray() : array
     {
         /**
-         * @var $ar_routine ilSrRoutine|null
+         * @var $ar_routines ilSrRoutine[]
          */
-        $ar_routine = ilSrRoutine::find($routine_id);
-        if (null !== $ar_routine) {
-            return new Routine(
-                $ar_routine->getId(),
-                $ar_routine->getRefId(),
-                $ar_routine->isActive(),
-                $ar_routine->getOriginType(),
-                $ar_routine->getOwnerId(),
-                $ar_routine->getCreationDate(),
-                $ar_routine->isOptOutPossible(),
-                $ar_routine->isElongationPossible(),
-                $ar_routine->getElongationDays(),
-                $this->getRulesByRoutineId($routine_id),
-                $this->getNotificationsByRoutineId($routine_id),
-                $this->getWhitelistByRoutineId($routine_id)
-            );
+        $ar_routines = ilSrRoutine::get();
+        if (empty($ar_routines)) return [];
+
+        $array = [];
+        foreach ($ar_routines as $ar_routine) {
+            $array[] = $this->transformToArray($ar_routine);
         }
 
-        return null;
+        return $array;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function getAllByScope(int $ref_id, bool $as_array = false) : array
+    {
+        $parents = $this->getParentIdsRecursively($ref_id);
+        // add current id to array as well.
+        $parents[] = $ref_id;
+
+        $routines = [];
+        foreach ($parents as $parent_id) {
+            // selects all routines which have the current
+            // parent id stored.
+            $ar_routines = ilSrRoutine::where([
+                ilSrRoutine::F_REF_ID => $parent_id,
+            ], '')->get();
+
+            if (!empty($ar_routines)) {
+                $parent_routines = [];
+                foreach ($ar_routines as $ar_routine) {
+                    if ($as_array) {
+                        $parent_routines[] = $this->transformToArray($ar_routine);
+                    } else {
+                        $parent_routines[] = $this->transformToDTO($ar_routine);
+                    }
+                }
+
+                // array_merge has to be used, as this function considers
+                // duplicate array-entries. The heavy resource load can
+                // be ignored as it wont deliver 1000+ results.
+                $routines = array_merge($routines, $parent_routines);
+            }
+        }
+
+        return (!empty($routines)) ? $routines : [];
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function getRules(IRoutine $routine, bool $as_array = false) : array
+    {
+        // if no id is set the routine wasn't stored yet,
+        // therefore no action required.
+        if (null === $routine->getId()) return [];
+
+        // fetches all rules that have a relation to the
+        // provided routine id.
+        $ar_rules = ilSrRule::leftjoin(
+            ilSrRoutineRule::TABLE_NAME,
+            ilSrRule::F_ID,
+            ilSrRoutineRule::F_RULE_ID
+        )->where([
+            ilSrRoutineRule::F_ROUTINE_ID => $routine->getId(),
+        ])->get();
+
+        if (empty($ar_rules)) return [];
+
+        $rules = [];
+        foreach ($ar_rules as $ar_rule) {
+            if ($as_array) {
+                $rules[] = $this->rule_repository->transformToArray($ar_rule);
+            } else {
+                $rules[] = $this->rule_repository->transformToDTO($ar_rule);
+            }
+        }
+
+        return $rules;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function getNotifications(IRoutine $routine, bool $as_array = false) : array
+    {
+        // TODO: Implement getNotifications() method.
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function getWhitelist(IRoutine $routine, bool $as_array = false) : ?array
+    {
+        // TODO: Implement getWhitelist() method.
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function addRule(IRoutine $routine, IRule $rule) : Routine
+    {
+        // TODO: Implement addRule() method.
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function addNotification(IRoutine $routine, INotification $notification) : Routine
+    {
+        // TODO: Implement addNotification() method.
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function addWhitelistEntry(
+        IRoutine $routine,
+        \srag\Plugins\SrLifeCycleManager\Routine\IRoutineWhitelistEntry $entry
+    ) : Routine {
+        // TODO: Implement addWhitelistEntry() method.
     }
 
     /**
@@ -110,6 +232,7 @@ final class ilSrRoutineRepository implements IRoutineRepository
 
         $ar_routine
             ->setId($routine->getId())
+            ->setName($routine->getName())
             ->setRefId($routine->getRefId())
             ->setActive($routine->isActive())
             ->setOriginType($routine->getOriginType())
@@ -128,87 +251,27 @@ final class ilSrRoutineRepository implements IRoutineRepository
     /**
      * @inheritDoc
      */
-    public function getAllAsDTO() : ?array
+    public function removeRule(IRoutine $routine, IRule $rule) : Routine
     {
-        /**
-         * @var $ar_routines ilSrRoutine[]
-         */
-        $ar_routines = ilSrRoutine::get();
-        if (!empty($ar_routines)) {
-            $dto_array = [];
-            foreach ($ar_routines as $ar_routine) {
-                $dto_array[] = $this->transformToDTO($ar_routine);
-            }
-
-            return $dto_array;
-        }
-
-        return null;
+        // TODO: Implement removeRule() method.
     }
 
     /**
      * @inheritDoc
      */
-    public function getAllAsArray() : array
+    public function removeNotification(IRoutine $routine, INotification $notification) : Routine
     {
-        /**
-         * @var $ar_routines ilSrRoutine[]
-         */
-        $ar_routines = ilSrRoutine::get();
-        if (!empty($ar_routines)) {
-            $array = [];
-            foreach ($ar_routines as $ar_routine) {
-                $array[] = $this->transformToArray($ar_routine);
-            }
-
-            return $array;
-        }
-
-        return [];
+        // TODO: Implement removeNotification() method.
     }
 
     /**
      * @inheritDoc
      */
-    public function storeRuleRelation(IRoutine $routine, IRule $rule) : Routine
-    {
-        $relation = ilSrRoutineRule::where([
-            ilSrRoutineRule::F_ROUTINE_ID => $routine->getId(),
-            ilSrRoutineRule::F_RULE_ID    => $rule->getId(),
-        ], '=')->first();
-
-        // ActiveRecord::first() returns null if results are empty
-        if (null === $relation) {
-            $relation = new ilSrRoutineRule();
-            $relation
-                ->setRoutineId($routine->getId())
-                ->setRuleId($rule->getId())
-            ;
-
-            $relation->store();
-        }
-
-
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function storeNotificationRelation(
+    public function removeWhitelistEntry(
         IRoutine $routine,
-        INotification $notification
+        \srag\Plugins\SrLifeCycleManager\Routine\IRoutineWhitelistEntry $entry
     ) : Routine {
-        // TODO: Implement storeNotificationRelation() method.
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function storeWhitelistEntry(
-        IRoutine $routine,
-        IRoutineWhitelistEntry $entry
-    ) : Routine {
-        // TODO: Implement storeWhitelistEntry() method.
+        // TODO: Implement removeWhitelistEntry() method.
     }
 
     /**
@@ -216,49 +279,99 @@ final class ilSrRoutineRepository implements IRoutineRepository
      */
     public function delete(IRoutine $routine) : bool
     {
-        // TODO: Implement delete() method.
+        // if no id is set the routine wasn't stored yet,
+        // therefore no action required.
+        if (null === $routine->getId()) return true;
+
+        // abort if the given routine was not found in
+        // the database.
+        $ar_routine = ilSrRoutine::find($routine->getId());
+        if (null === $ar_routine) return false;
+
+        // iterate through every relation type.
+        // this needs to be done, as ilDB does not yet
+        // support constraints.
+        foreach ($this->getRelations($routine) as $relations_of_type) {
+            // if there are relations of the current type,
+            // delete them all.
+            if (!empty($relations_of_type)) {
+                foreach ($relations_of_type as $relation) {
+                    $relation->delete();
+                }
+            }
+        }
+
+        // finally delete the routine itself and return.
+        $ar_routine->delete();
+        return true;
     }
 
     /**
-     * @inheritDoc
+     * Returns all relations between a given routine and all
+     * intermediate tables (m:m).
+     *
+     * Note that this method returns an array structured as:
+     *
+     *      array(
+     *          IRule => [...],
+     *          INotification => [...],
+     *          ...
+     *      );
+     *
+     * @param IRoutine $routine
+     * @return array
      */
-    public function deleteRuleRelation(
-        IRoutine $routine,
-        IRule $rule
-    ) : bool {
-        // TODO: Implement deleteRuleRelation() method.
+    private function getRelations(IRoutine $routine) : array
+    {
+        $relations = [];
+
+        $relations[IRule::class] = ilSrRoutineRule::where([
+            ilSrRoutineRule::F_ROUTINE_ID => $routine->getId(),
+        ])->get();
+
+        $relations[INotification::class] = ilSrRoutineNotification::where([
+            ilSrRoutineNotification::F_ROUTINE_ID => $routine->getId(),
+        ])->get();
+
+        $relations[IRoutineWhitelistEntry::class] = ilSrRoutineWhitelistEntry::where([
+            ilSrRoutineWhitelistEntry::F_ROUTINE_ID => $routine->getId(),
+        ])->get();
+
+        return $relations;
     }
 
     /**
-     * @inheritDoc
+     * Returns all parent ids for given ref-id recursively.
+     *
+     * @param int $ref_id
+     * @return array|null
      */
-    public function deleteNotificationRelation(
-        IRoutine $routine,
-        INotification $notification
-    ) : bool {
-        // TODO: Implement deleteNotificationRelation() method.
-    }
+    private function getParentIdsRecursively(int $ref_id) : ?array
+    {
+        static $parents;
 
-    /**
-     * @inheritDoc
-     */
-    public function deleteWhitelistEntry(
-        IRoutine $routine,
-        IRoutineWhitelistEntry $entry
-    ) : bool {
-        // TODO: Implement deleteWhitelistEntry() method.
+        $parent_id = $this->tree->getParentId($ref_id);
+        // type-cast is not redundant, as getParentId() returns
+        // a string (not as stated by the phpdoc).
+        if (null !== $parent_id && 0 < (int) $parent_id) {
+            $parents[] = (int) $parent_id;
+            $this->getParentIdsRecursively($parent_id);
+        }
+
+        return (!empty($parents)) ? $parents : null;
     }
 
     /**
      * transforms an ActiveRecord instance into a DTO.
      *
-     * @param IRoutine $ar_routine
+     * @param ilSrRoutine $ar_routine
      * @return Routine
      */
-    private function transformToDTO(IRoutine $ar_routine) : Routine
+    private function transformToDTO(ilSrRoutine $ar_routine) : Routine
     {
         return new Routine(
             $ar_routine->getId(),
+            $ar_routine->getName(),
             $ar_routine->getRefId(),
             $ar_routine->isActive(),
             $ar_routine->getOriginType(),
@@ -271,15 +384,17 @@ final class ilSrRoutineRepository implements IRoutineRepository
     }
 
     /**
-     * transforms an ActiveRecord instance into an array (primarily used for TableGUI's).
+     * transforms an ActiveRecord instance into array-data.
+     * (primarily used for TableGUI's)
      *
-     * @param IRoutine $ar_routine
+     * @param ilSrRoutine $ar_routine
      * @return array
      */
-    private function transformToArray(IRoutine $ar_routine) : array
+    private function transformToArray(ilSrRoutine $ar_routine) : array
     {
         return [
             ilSrRoutine::F_ID                   => $ar_routine->getId(),
+            ilSrRoutine::F_NAME                 => $ar_routine->getName(),
             ilSrRoutine::F_REF_ID               => $ar_routine->getRefId(),
             ilSrRoutine::F_ACTIVE               => $ar_routine->isActive(),
             ilSrRoutine::F_ORIGIN_TYPE          => $ar_routine->getOriginType(),

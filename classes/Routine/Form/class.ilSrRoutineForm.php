@@ -1,7 +1,6 @@
 <?php
 
 use srag\Plugins\SrLifeCycleManager\Routine\IRoutine;
-use srag\Plugins\SrLifeCycleManager\Routine\Routine;
 
 /**
  * Class ilSrRoutineForm
@@ -14,20 +13,16 @@ final class ilSrRoutineForm extends ilSrAbstractMainForm
      * ilSrRoutineForm form input names.
      */
     private const INPUT_REF_ID              = 'input_name_routine_ref_id';
+    private const INPUT_NAME                = 'input_name_routine_name';
     private const INPUT_ACTIVE              = 'input_name_routine_active';
     private const INPUT_OPT_OUT             = 'input_name_routine_opt_out';
     private const INPUT_ELONGATION          = 'input_name_routine_elongation';
-    private const INPUT_ELONGATION_POSSIBLE = 'routine_input_elongation_possible';
+    private const INPUT_ELONGATION_POSSIBLE = 'input_name_routine_elongation_possible';
 
     /**
      * ilSrRoutineForm lang-vars.
      */
-    private const MSG_INVALID_REF_ID    = 'msg_invalid_ref_id';
-
-    /**
-     * @var IRoutine
-     */
-    private $routine;
+    private const MSG_INVALID_REF_ID = 'msg_invalid_ref_id';
 
     /**
      * @var int
@@ -40,19 +35,31 @@ final class ilSrRoutineForm extends ilSrAbstractMainForm
     private $owner_id;
 
     /**
+     * @var IRoutine
+     */
+    private $routine;
+
+    /**
+     * @var int|null
+     */
+    private $scope;
+
+    /**
      * ilSrRoutineForm constructor.
      *
      * @param int           $origin_type
      * @param int           $owner_id
      * @param IRoutine|null $routine
+     * @param int|null      $scope
      */
-    public function __construct(int $origin_type, int $owner_id, IRoutine $routine = null)
+    public function __construct(int $origin_type, int $owner_id, IRoutine $routine = null, int $scope = null)
     {
         // dependencies MUST be added before the parent
         // constructor is called, as they are already by it.
         $this->origin_type = $origin_type;
         $this->owner_id    = $owner_id;
         $this->routine     = $routine;
+        $this->scope       = $scope;
 
         parent::__construct();
     }
@@ -62,6 +69,17 @@ final class ilSrRoutineForm extends ilSrAbstractMainForm
      */
     protected function getFormAction() : string
     {
+        // if the form has been initialized with a routine,
+        // the id must be set as a GET parameter before
+        // generating the form-action.
+        if (null !== $this->routine) {
+            $this->ctrl->setParameterByClass(
+                ilSrRoutineGUI::class,
+                ilSrRoutineGUI::QUERY_PARAM_ROUTINE_ID,
+                $this->routine->getId()
+            );
+        }
+
         return $this->ctrl->getFormActionByClass(
             ilSrRoutineGUI::class,
             ilSrRoutineGUI::CMD_ROUTINE_SAVE
@@ -78,7 +96,12 @@ final class ilSrRoutineForm extends ilSrAbstractMainForm
         $inputs[self::INPUT_REF_ID] = $this->inputs
             ->text($this->plugin->txt(self::INPUT_REF_ID))
             ->withRequired(true)
-            ->withValue((null !== $this->routine) ? $this->routine->getRefId() : '')
+            // note that provided scope is only used if no routine was provided,
+            // as we don't want to override the already stored value.
+            ->withValue((null !== $this->routine) ? (string) $this->routine->getRefId() : (string) $this->scope)
+            // if a scope was provided the value of this input should not
+            // be changeable by the user.
+            ->withDisabled(null !== $this->scope)
             ->withAdditionalTransformation($this->refinery->numeric()->isNumeric())
             ->withAdditionalTransformation($this->refinery->custom()->transformation(
                 $this->getTypeCastClosure(self::TYPE_CAST_INT)
@@ -87,6 +110,13 @@ final class ilSrRoutineForm extends ilSrAbstractMainForm
                 $this->getRefIdValidationClosure(),
                 $this->plugin->txt(self::MSG_INVALID_REF_ID)
             ))
+        ;
+
+        $inputs[self::INPUT_NAME] = $this->inputs
+            ->text($this->plugin->txt(self::INPUT_NAME))
+            ->withRequired(true)
+            ->withValue((null !== $this->routine) ? $this->routine->getName() : '')
+            ->withAdditionalTransformation($this->refinery->string()->hasMinLength(1))
         ;
 
         $inputs[self::INPUT_ACTIVE] = $this->inputs
@@ -104,7 +134,7 @@ final class ilSrRoutineForm extends ilSrAbstractMainForm
                 [
                     self::INPUT_ELONGATION => $this->inputs
                         ->text($this->plugin->txt(self::INPUT_ELONGATION))
-                        ->withValue((null !== $this->routine) ? $this->routine->getRefId() : '')
+                        ->withValue((null !== $this->routine) ? (string) $this->routine->getElongationDays() : '')
                         ->withAdditionalTransformation($this->refinery->numeric()->isNumeric())
                         ->withAdditionalTransformation($this->refinery->custom()->transformation(
                             $this->getTypeCastClosure(self::TYPE_CAST_INT)
@@ -130,10 +160,9 @@ final class ilSrRoutineForm extends ilSrAbstractMainForm
      */
     protected function validateFormData(array $form_data) : bool
     {
-        // the form data is valid when a valid scope has been
-        // provided. Since this form-input has a validation
-        // closure appended the null-check is sufficient.
-        return (isset($form_data[self::INPUT_REF_ID]) && null !== $form_data[self::INPUT_REF_ID]);
+        // ensures that at least the routine's ref-id
+        // and name must are submitted.
+        return null !== $form_data[self::INPUT_REF_ID] && null !== $form_data[self::INPUT_NAME];
     }
 
     /**
@@ -142,7 +171,7 @@ final class ilSrRoutineForm extends ilSrAbstractMainForm
     protected function handleFormData(array $form_data) : void
     {
         if (null === $this->routine) {
-            $this->routine = $this->repository->routine()->getEmptyDTO(
+            $this->routine = $this->repository->routine()->getEmpty(
                 $this->origin_type,
                 $this->owner_id
             );
@@ -150,6 +179,7 @@ final class ilSrRoutineForm extends ilSrAbstractMainForm
 
         $this->routine
             ->setRefId($form_data[self::INPUT_REF_ID])
+            ->setName($form_data[self::INPUT_NAME])
             ->setActive($form_data[self::INPUT_ACTIVE])
             ->setOptOutPossible($form_data[self::INPUT_OPT_OUT])
             // submitted optional-group is either null or an array
@@ -157,8 +187,13 @@ final class ilSrRoutineForm extends ilSrAbstractMainForm
             ->setElongationPossible(!empty($form_data[self::INPUT_ELONGATION_POSSIBLE]))
         ;
 
+        // if elongation is possible, update the elongation
+        // in days attribute. If it's been disabled set the
+        // value to null instead.
         if ($this->routine->isElongationPossible()) {
             $this->routine->setElongationDays($form_data[self::INPUT_ELONGATION_POSSIBLE][self::INPUT_ELONGATION]);
+        } else {
+            $this->routine->setElongationDays(null);
         }
 
         $this->repository->routine()->store($this->routine);

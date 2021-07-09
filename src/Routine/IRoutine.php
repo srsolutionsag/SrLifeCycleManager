@@ -45,6 +45,17 @@ interface IRoutine
     public function setId(int $id) : IRoutine;
 
     /**
+     * @return string
+     */
+    public function getName() : string;
+
+    /**
+     * @param string $name
+     * @return IRoutine
+     */
+    public function setName(string $name) : IRoutine;
+
+    /**
      * @return int
      */
     public function getRefId() : int;
@@ -83,10 +94,10 @@ interface IRoutine
     public function getElongationDays() : ?int;
 
     /**
-     * @param int $days
+     * @param int|null $days
      * @return IRoutine
      */
-    public function setElongationDays(int $days) : IRoutine;
+    public function setElongationDays(?int $days) : IRoutine;
 
     /**
      * @return bool

@@ -9,7 +9,7 @@
  * are needed within the whole codebase. Dependencies should therefore be either
  * passed as parameters or from the global DI container $DIC.
  */
-class ilSrAccess
+final class ilSrAccess
 {
     /**
      * checks if a user for given id is assigned to the administrator role.
@@ -21,7 +21,7 @@ class ilSrAccess
     {
         global $DIC;
 
-        return $DIC->rbac()->review()->isAssigned($user_id, SYSTEM_ROLE_ID);
+        return $DIC->rbac()->review()->isAssigned($user_id, (int) SYSTEM_ROLE_ID);
     }
 
     /**
@@ -33,7 +33,7 @@ class ilSrAccess
      * @param int $user_id
      * @return bool
      */
-    public static function canUserManageRoutines(int $user_id) : bool
+    public static function isUserAssignedToConfiguredRole(int $user_id) : bool
     {
         global $DIC;
 
@@ -42,12 +42,9 @@ class ilSrAccess
          */
         $config = ilSrConfig::find(ilSrConfig::CNF_GLOBAL_ROLES);
         if (null !== $config) {
-            return (
-                $DIC->rbac()->review()->isAssignedToAtLeastOneGivenRole($user_id, $config->getValue()) ||
-                self::isUserAdministrator($user_id))
-            ;
+            return $DIC->rbac()->review()->isAssignedToAtLeastOneGivenRole($user_id, $config->getValue());
         }
 
-        return self::isUserAdministrator($user_id);
+        return false;
     }
 }

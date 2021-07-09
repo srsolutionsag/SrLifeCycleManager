@@ -38,8 +38,7 @@ final class ilSrLifeCycleManagerDispatcher
                 $DIC->ctrl()->forwardCommand(new ilSrNotificationGUI());
                 break;
             case strtolower(ilSrRoutineGUI::class):
-                $origin_type = $this->determineOriginTypeByHistory($DIC->ctrl()->getCallHistory());
-                $DIC->ctrl()->forwardCommand(new ilSrRoutineGUI($origin_type));
+                $DIC->ctrl()->forwardCommand(new ilSrRoutineGUI());
                 break;
             case strtolower(ilSrRuleGUI::class):
                 $DIC->ctrl()->forwardCommand(new ilSrRuleGUI());
@@ -72,35 +71,5 @@ final class ilSrLifeCycleManagerDispatcher
             [ilUIPluginRouterGUI::class, self::class, $class],
             $cmd
         );
-    }
-
-    /**
-     * Returns the origin-type of the current call-history.
-     *
-     * This method SHOULD only be used whenever @see ilSrRoutineGUI
-     * is initialized, as it's dependent on the origin-type.
-     *
-     * As further '@ilCtrl_IsCalledBy' statements are added,
-     * this method's switch needs to be adjusted as well.
-     *
-     * @param array $call_history
-     * @return int
-     */
-    private function determineOriginTypeByHistory(array $call_history) : int
-    {
-        // fetch class-name of the first entry in ilCtrl's
-        // call-history (which is the base-class).
-        $base_class = array_shift($call_history)['class'];
-        switch ($base_class) {
-            case ilUIPluginRouterGUI::class:
-                return Routine::ORIGIN_TYPE_REPOSITORY;
-
-            case ilPluginConfigGUI::class:
-            case ilAdministrationGUI::class:
-                return Routine::ORIGIN_TYPE_ADMINISTRATION;
-
-            default:
-                return Routine::ORIGIN_TYPE_EXTERNAL;
-        }
     }
 }

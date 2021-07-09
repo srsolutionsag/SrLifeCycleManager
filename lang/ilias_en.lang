@@ -2,8 +2,16 @@
 msg_permission_denied#:#Permission denied.
 msg_object_not_found#:#Requested object not found.
 msg_invalid_ref_id#:#Invalid ref-id provided.
+msg_routine_success#:#Routine(s) successfully updated.
+msg_configuration_success#:#Configiration successfully updated.
+msg_configuration_error#:#Configuration could not be updated.
+msg_origin_unknown#:#An unknown origin type was provided (or none at all).
+msg_routine_not_found#:#There was no routine-id provided or it doesn't exist.
+msg_rule_success#:#Rule(s) successfully updated.
+msg_rule_error#:#Could not update rule(s).
 msg_back_to#:#Back
 
+page_title_rules#:#SrLifeCycleManager Rules
 page_title_config#:#SrLifeCycleManager configuration
 page_title_routine#:#SrLifeCycleManager routines
 
@@ -15,20 +23,31 @@ cnf_move_to_bin#:#Move objects to bin/trash first?
 cnf_create_routines_repository#:#Create new Routines from Repository?
 cnf_show_routines_repository#:#Show active Routines in Repository?
 
+col_actions#:#Actions
 col_routine_ref_id#:#Ref-id (scope)
+col_routine_name#:#Name
 col_routine_active#:#Active
 col_routine_origin_type#:#Origin
 col_routine_owner_id#:#Owner
 col_routine_creation_date#:#Created
 col_routine_opt_out_possible#:#Opt-out
 col_routine_elongation_days#:#Elongaition (days)
-col_actions#:#Actions
+col_rule_rhs_type#:#RHS type
+col_rule_rhs_value#:#RHS value
+col_rule_operator#:#Operator
+col_rule_rhs_type#:#LHS type
+col_rule_rhs_value#:#LHS value
 
 input_name_routine_ref_id#:#Ref-id (scope)
+input_name_routine_name#:#Name
 input_name_routine_active#:#Active?
 input_name_routine_opt_out#:#Opt-out possible?
 input_name_routine_elongation#:#Elongation possible?
-routine_input_elongation_possible#:#Elongation (in days)
+input_name_routine_elongation_possible#:#Elongation (in days)
+
+routine_origin_type_admin#:#Administration
+routine_origin_type_repo#:#Repository
+routine_origin_type_ext#:#External
 
 status_active#:#Active
 status_inactive#:#Inactive
@@ -39,3 +58,6 @@ action_routine_add#:#Add routine
 action_routine_edit#:#Edit
 action_routine_delete#:#Delete
 action_routine_rules#:#Rules
+action_routine_notifications#:#Notifications
+action_rule_add#:#Add rule
+action_rule_delete#:#Remove

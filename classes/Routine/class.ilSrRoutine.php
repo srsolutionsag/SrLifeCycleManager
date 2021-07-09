@@ -18,6 +18,7 @@ final class ilSrRoutine extends ActiveRecord implements IRoutine
      * ilSrRule attribute names
      */
     public const F_ID                   = 'id';
+    public const F_NAME                 = 'name';
     public const F_REF_ID               = 'ref_id';
     public const F_ACTIVE               = 'active';
     public const F_ORIGIN_TYPE          = 'origin_type';
@@ -44,6 +45,16 @@ final class ilSrRoutine extends ActiveRecord implements IRoutine
      * @con_length      8
      */
     protected $id;
+
+    /**
+     * @var string
+     *
+     * @con_has_field   true
+     * @con_is_notnull  true
+     * @con_fieldtype   text
+     * @con_length      4000
+     */
+    protected $name;
 
     /**
      * @var int
@@ -149,7 +160,9 @@ final class ilSrRoutine extends ActiveRecord implements IRoutine
             case self::F_ACTIVE:
             case self::F_OPT_OUT_POSSIBLE:
             case self::F_ELONGATION_POSSIBLE:
-                return (bool) $this->{$field_name};
+                // boolean values are stored as tinyint, therefore
+                // (bool) $db_value is used to transform it back.
+                return (bool) $field_value;
 
             default:
                 // the original value is used if null gets returned
@@ -195,6 +208,23 @@ final class ilSrRoutine extends ActiveRecord implements IRoutine
     public function setId(?int $id) : IRoutine
     {
         $this->id = $id;
+        return $this;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function getName() : string
+    {
+        return $this->name;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function setName(string $name) : IRoutine
+    {
+        $this->name = $name;
         return $this;
     }
 
@@ -320,7 +350,7 @@ final class ilSrRoutine extends ActiveRecord implements IRoutine
     /**
      * @inheritDoc
      */
-    public function getElongationDays() : int
+    public function getElongationDays() : ?int
     {
         return $this->elongation_days;
     }
@@ -328,7 +358,7 @@ final class ilSrRoutine extends ActiveRecord implements IRoutine
     /**
      * @inheritDoc
      */
-    public function setElongationDays(int $days) : IRoutine
+    public function setElongationDays(?int $days) : IRoutine
     {
         $this->elongation_days = $days;
         return $this;

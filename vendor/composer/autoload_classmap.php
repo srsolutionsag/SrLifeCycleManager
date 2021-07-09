@@ -32,5 +32,6 @@ return array(
     'ilSrRule' => $baseDir . '/classes/Rule/class.ilSrRule.php',
     'ilSrRuleGUI' => $baseDir . '/classes/Rule/class.ilSrRuleGUI.php',
     'ilSrRuleRepository' => $baseDir . '/classes/Rule/class.ilSrRuleRepository.php',
+    'ilSrRuleTable' => $baseDir . '/classes/Rule/Table/class.ilSrRuleTable.php',
     'ilSrToolProvider' => $baseDir . '/classes/Provider/class.ilSrToolProvider.php',
 );

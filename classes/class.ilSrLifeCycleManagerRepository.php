@@ -52,9 +52,9 @@ final class ilSrLifeCycleManagerRepository
 
         $this->rbac = $DIC->rbac();
 
-        $this->routine_repository       = new ilSrRoutineRepository();
-        $this->notification_repository  = new ilSrNotificationRepository();
         $this->rule_repository          = new ilSrRuleRepository();
+        $this->routine_repository       = new ilSrRoutineRepository($this->rule());
+        $this->notification_repository  = new ilSrNotificationRepository();
     }
 
     /**
@@ -93,7 +93,11 @@ final class ilSrLifeCycleManagerRepository
     }
 
     /**
-     * Returns all available global-roles as 'id' => 'title' paris.
+     * Returns all available global-roles as 'id' => 'title' pairs.
+     *
+     * This method is used for UI input options, therefore this array
+     * DOES NOT contain the administrator global role, as it should
+     * always be able to to everything.
      *
      * @return array
      */
@@ -105,10 +109,15 @@ final class ilSrLifeCycleManagerRepository
         if (empty($global_roles)) return $role_options;
 
         foreach ($global_roles as $role_data) {
-            $role_id    = (int) $role_data['obj_id'];
-            $role_title = ilObjRole::_getTranslation($role_data['title']);
+            $role_id = (int) $role_data['obj_id'];
+            // the administrator role can be ignored, as this
+            // role should always be able to do everything.
+            if ((int) SYSTEM_ROLE_ID !== $role_id) {
+                $role_title = ilObjRole::_getTranslation($role_data['title']);
 
-            $role_options[$role_id] = $role_title;
+                // map the role-title to it's role id associatively.
+                $role_options[$role_id] = $role_title;
+            }
         }
 
         return $role_options;

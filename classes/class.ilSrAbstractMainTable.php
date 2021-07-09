@@ -44,11 +44,15 @@ abstract class ilSrAbstractMainTable extends ilTable2GUI
         parent::__construct($parent_gui, $parent_cmd);
 
         $this->setId(static::class);
-        $this->setPrefix(ilSrLifeCycleManagerPlugin::PLUGIN_ID);
+        $this->setPrefix($this->plugin->getPluginId());
         $this->setTableColumns($this->getTableColumns());
         $this->setRowTemplate(
             $this->getRowTemplate(),
-            './Customizing/global/plugins/Services/Cron/CronHook/SrLifeCycleManager/'
+            // this method accepts a template-dir argument which
+            // indicates where templates are located. But somehow
+            // if not the plugin-root directory is passed the
+            // templates in '/templates/default/' are not found.
+            $this->plugin->getPluginDir()
         );
         $this->setData($this->getTableData());
     }

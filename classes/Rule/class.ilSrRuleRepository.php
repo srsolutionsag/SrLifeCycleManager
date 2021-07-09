@@ -1,6 +1,7 @@
 <?php
 
 use srag\Plugins\SrLifeCycleManager\Rule\IRuleRepository;
+use srag\Plugins\SrLifeCycleManager\Routine\IRoutine;
 use srag\Plugins\SrLifeCycleManager\Rule\IRule;
 use srag\Plugins\SrLifeCycleManager\Rule\Rule;
 
@@ -9,15 +10,17 @@ use srag\Plugins\SrLifeCycleManager\Rule\Rule;
  */
 final class ilSrRuleRepository implements IRuleRepository
 {
-
     /**
      * @inheritDoc
      */
     public function get(int $id) : ?Rule
     {
+        /**
+         * @var $ar_rule ilSrRule
+         */
         $ar_rule = ilSrRule::find($id);
         return (null !== $ar_rule) ?
-            $this->transformToEntity($ar_rule) : null
+            $this->transformToDTO($ar_rule) : null
         ;
     }
 
@@ -42,7 +45,7 @@ final class ilSrRuleRepository implements IRuleRepository
             ->store();
         ;
 
-        return $this->transformToEntity($ar_rule);
+        return $this->transformToDTO($ar_rule);
     }
 
     /**
@@ -50,12 +53,15 @@ final class ilSrRuleRepository implements IRuleRepository
      */
     public function getAllAsDTO() : ?array
     {
+        /**
+         * @var $ar_rules ilSrRule[]
+         */
         $ar_rules = ilSrRule::get();
         if (empty($ar_rules)) return null;
 
         $rules = [];
         foreach ($ar_rules as $ar_rule) {
-            $rules[] = $this->transformToEntity($ar_rule);
+            $rules[] = $this->transformToDTO($ar_rule);
         }
 
         return $rules;
@@ -66,12 +72,15 @@ final class ilSrRuleRepository implements IRuleRepository
      */
     public function getAllAsArray() : array
     {
+        /**
+         * @var $ar_rules ilSrRule[]
+         */
         $ar_rules = ilSrRule::get();
         if (empty($ar_rules)) return [];
 
         $rules = [];
         foreach ($ar_rules as $ar_rule) {
-            $rules[] = $this->transformToArrayData($ar_rule);
+            $rules[] = $this->transformToArray($ar_rule);
         }
 
         return $rules;
@@ -105,21 +114,14 @@ final class ilSrRuleRepository implements IRuleRepository
         }
 
         $results = $DIC->database()->fetchAll(
-            $DIC->database()->queryF($query, $query_types, $query_values, \ilDBConstants::FETCHMODE_ASSOC)
+            $DIC->database()->queryF($query, $query_types, $query_values)
         );
 
         if (empty($results)) return null;
 
         $rules = [];
         foreach ($results as $rule_data) {
-            $rules[] = new Rule(
-                $rule_data[ilSrRule::F_ID],
-                $rule_data[ilSrRule::F_LHS_TYPE],
-                $rule_data[ilSrRule::F_LHS_VALUE],
-                $rule_data[ilSrRule::F_OPERATOR],
-                $rule_data[ilSrRule::F_RHS_TYPE],
-                $rule_data[ilSrRule::F_RHS_VALUE]
-            );
+            $rules[] = $this->transformToDTO($rule_data);
         }
 
         return $rules;
@@ -130,49 +132,58 @@ final class ilSrRuleRepository implements IRuleRepository
      */
     public function delete(IRule $rule) : bool
     {
-        // nothing to do, rule hasn't been saved to the database yet
+        // nothing to do, rule hasn't been saved to the
+        // database yet
         if (null === $rule->getId()) return true;
 
+        // abort if the given rule was not found in the
+        // database.
         $ar_rule = ilSrRule::find($rule->getId());
-        if (null !== $ar_rule) {
-            $ar_rule->delete();
-            return true;
+        if (null === $ar_rule) return false;
+
+        $ar_routines = ilSrRoutineRule::where([
+            ilSrRoutineRule::F_RULE_ID => $rule->getId(),
+        ])->get();
+
+        // delete all routine relations of this rule.
+        if (!empty($ar_routines)) {
+            foreach ($ar_routines as $relation) {
+                $relation->delete();
+            }
         }
 
+        // finally delete the rule itself and return.
+        $ar_rule->delete();
         return false;
     }
 
     /**
-     * transforms an active-record rule into a DTO.
-     * @param ilSrRule $ar_rule
-     * @return Rule
+     * @inheritDoc
      */
-    private function transformToEntity(ilSrRule $ar_rule) : Rule
+    public function transformToDTO(IRule $rule) : Rule
     {
         return new Rule(
-            $ar_rule->getId(),
-            $ar_rule->getLhsType(),
-            $ar_rule->getLhsValue(),
-            $ar_rule->getOperator(),
-            $ar_rule->getRhsType(),
-            $ar_rule->getRhsValue()
+            $rule->getId(),
+            $rule->getLhsType(),
+            $rule->getLhsValue(),
+            $rule->getOperator(),
+            $rule->getRhsType(),
+            $rule->getRhsValue()
         );
     }
 
     /**
-     * transforms an active-record rule into an array.
-     * @param ilSrRule $ar_rule
-     * @return array
+     * @inheritDoc
      */
-    private function transformToArrayData(ilSrRule $ar_rule) : array
+    public function transformToArray(IRule $rule) : array
     {
         return  [
-            ilSrRule::F_ID => $ar_rule->getId(),
-            ilSrRule::F_LHS_TYPE => $ar_rule->getLhsType(),
-            ilSrRule::F_LHS_VALUE => $ar_rule->getLhsValue(),
-            ilSrRule::F_OPERATOR => $ar_rule->getOperator(),
-            ilSrRule::F_RHS_TYPE => $ar_rule->getRhsType(),
-            ilSrRule::F_RHS_VALUE => $ar_rule->getRhsValue(),
+            ilSrRule::F_ID => $rule->getId(),
+            ilSrRule::F_LHS_TYPE => $rule->getLhsType(),
+            ilSrRule::F_LHS_VALUE => $rule->getLhsValue(),
+            ilSrRule::F_OPERATOR => $rule->getOperator(),
+            ilSrRule::F_RHS_TYPE => $rule->getRhsType(),
+            ilSrRule::F_RHS_VALUE => $rule->getRhsValue(),
         ];
     }
 }

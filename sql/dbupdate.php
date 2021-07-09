@@ -90,6 +90,11 @@ $fields = array(
 		'type' => 'integer',
 		'length' => '8',
 	),
+    'name' => array(
+        'notnull' => '1',
+        'type' => 'text',
+        'length' => '4000',
+    ),
 	'ref_id' => array(
 		'notnull' => '1',
 		'type' => 'integer',
