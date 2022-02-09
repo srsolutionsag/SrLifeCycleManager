@@ -5,7 +5,7 @@ namespace srag\Plugins\SrLifeCycleManager\Routine;
 /**
  * Interface IRoutineWhitelistEntry
  *
- * @author Thibeau Fuhrer <thf@studer-raimann.ch>
+ * @author Thibeau Fuhrer <thibeau@sr.solutions>
  */
 interface IRoutineWhitelistEntry
 {

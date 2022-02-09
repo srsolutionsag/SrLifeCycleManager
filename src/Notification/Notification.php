@@ -5,7 +5,7 @@ namespace srag\Plugins\SrLifeCycleManager\Notification;
 /**
  * Class Notification (DTO)
  *
- * @author Thibeau Fuhrer <thf@studer-raimann.ch>
+ * @author Thibeau Fuhrer <thibeau@sr.solutions>
  */
 final class Notification implements INotification
 {

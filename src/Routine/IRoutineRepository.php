@@ -11,7 +11,7 @@ use srag\Plugins\SrLifeCycleManager\Routine\IRoutineWhitelistEntry;
 /**
  * Interface IRoutineRepository
  *
- * @author Thibeau Fuhrer <thf@studer-raimann.ch>
+ * @author Thibeau Fuhrer <thibeau@sr.solutions>
  *
  * As the routine object is the owning side of each (m:m) relation
  * this repository contains all operations regarding these relations.

@@ -7,7 +7,7 @@ use srag\Plugins\SrLifeCycleManager\Notification\Notification;
 /**
  * Class ilSrNotificationRepository
  *
- * @author Thibeau Fuhrer <thf@studer-raimann.ch>
+ * @author Thibeau Fuhrer <thibeau@sr.solutions>
  */
 final class ilSrNotificationRepository implements INotificationRepository
 {

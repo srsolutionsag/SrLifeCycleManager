@@ -9,7 +9,7 @@ use srag\Plugins\SrLifeCycleManager\Routine\IRoutineWhitelistEntry;
 /**
  * Class Routine (DTO)
  *
- * @author Thibeau Fuhrer <thf@studer-raimann.ch>
+ * @author Thibeau Fuhrer <thibeau@sr.solutions>
  */
 final class Routine implements IRoutine
 {
@@ -54,11 +54,6 @@ final class Routine implements IRoutine
     private $opt_out_possible;
 
     /**
-     * @var bool
-     */
-    private $elongation_possible;
-
-    /**
      * @var int|null
      */
     private $elongation_days;
@@ -81,15 +76,15 @@ final class Routine implements IRoutine
     /**
      * Routine constructor
      *
-     * @param int|null   $id
-     * @param int        $ref_id
-     * @param bool       $is_active
-     * @param int        $origin_type
-     * @param int        $owner_id
-     * @param \DateTime  $creation_date
-     * @param bool       $is_opt_out_possible
-     * @param bool       $is_elongation_possible
-     * @param int|null   $elongation_days
+     * @param int|null  $id
+     * @param string    $name
+     * @param int       $ref_id
+     * @param bool      $is_active
+     * @param int       $origin_type
+     * @param int       $owner_id
+     * @param \DateTime $creation_date
+     * @param bool      $is_opt_out_possible
+     * @param int|null  $elongation_days
      */
     public function __construct(
         ?int $id,
@@ -100,7 +95,6 @@ final class Routine implements IRoutine
         int $owner_id,
         \DateTime $creation_date,
         bool $is_opt_out_possible,
-        bool $is_elongation_possible,
         int $elongation_days = null
     ) {
         $this->id                   = $id;
@@ -111,7 +105,6 @@ final class Routine implements IRoutine
         $this->owner_id             = $owner_id;
         $this->creation_date        = $creation_date;
         $this->opt_out_possible     = $is_opt_out_possible;
-        $this->elongation_possible  = $is_elongation_possible;
         $this->elongation_days      = $elongation_days;
 
         $this->rules = [];
@@ -184,23 +177,6 @@ final class Routine implements IRoutine
     public function setActive(bool $is_active) : IRoutine
     {
         $this->active = $is_active;
-        return $this;
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function isElongationPossible() : bool
-    {
-        return $this->elongation_possible;
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function setElongationPossible(bool $is_possible) : IRoutine
-    {
-        $this->elongation_possible = $is_possible;
         return $this;
     }
 

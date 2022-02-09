@@ -5,7 +5,7 @@ use ILIAS\GlobalScreen\Scope\MainMenu\Provider\AbstractStaticMainMenuPluginProvi
 /**
  * Class ilSrMenuProvider provides ILIAS with the plugins menu entries.
  *
- * @author Thibeau Fuhrer <thf@studer-raimann.ch>
+ * @author Thibeau Fuhrer <thibeau@sr.solutions>
  *
  * This provider currently provides one top-item where all sub-items of this
  * plugins should be added to. This way we keep an orderly fashion to things.

@@ -1,9 +1,12 @@
 <?php
 
+use ILIAS\Refinery\Factory;
+use ILIAS\DI\UIServices;
+
 /**
  * Class ilSrConfigForm is responsible for the configuration form.
  *
- * @author Thibeau Fuhrer <thf@studer-raimann.ch>
+ * @author Thibeau Fuhrer <thibeau@sr.solutions>
  */
 class ilSrConfigForm extends ilSrAbstractMainForm
 {
@@ -18,18 +21,29 @@ class ilSrConfigForm extends ilSrAbstractMainForm
     private $settings;
 
     /**
-     * ilSrConfigForm constructor.
+     * ilSrConfigForm constructor
+     *
+     * @param UIServices                     $ui
+     * @param ilCtrl                         $ctrl
+     * @param Factory                        $refinery
+     * @param ilSrLifeCycleManagerPlugin     $plugin
+     * @param ilSrLifeCycleManagerRepository $repository
+     * @param ilSetting                      $settings
      */
-    public function __construct()
-    {
-        global $DIC;
-
+    public function __construct(
+        UIServices $ui,
+        ilCtrl $ctrl,
+        Factory $refinery,
+        ilSrLifeCycleManagerPlugin $plugin,
+        ilSrLifeCycleManagerRepository $repository,
+        ilSetting $settings
+    ) {
         // dependencies must be declared before the parent constructor
         // is called, as they're already used by it.
         $this->config   = ilSrConfig::get();
-        $this->settings = $DIC->settings();
+        $this->settings = $settings;
 
-        parent::__construct();
+        parent::__construct($ui, $ctrl, $refinery, $plugin, $repository);
     }
 
     /**

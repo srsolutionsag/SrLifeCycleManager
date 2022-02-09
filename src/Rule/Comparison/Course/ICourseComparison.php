@@ -7,18 +7,20 @@ use srag\Plugins\SrLifeCycleManager\Rule\Resolver\Course\ICourseAware;
 use srag\Plugins\SrLifeCycleManager\Rule\Resolver\User\IUserAware;
 use srag\Plugins\SrLifeCycleManager\Rule\Resolver\Taxonomy\ITaxonomyAware;
 use srag\Plugins\SrLifeCycleManager\Rule\IRule;
+use srag\Plugins\SrLifeCycleManager\Rule\Resolver\ResolverFactory;
 
 /**
  * Interface ICourseComparison
  * @package srag\Plugins\SrLifeCycleManager\Rule\Evaluation\Course
- * @author Thibeau Fuhrer <thf@studer-raimann.ch>
+ * @author Thibeau Fuhrer <thibeau@sr.solutions>
  */
 interface ICourseComparison extends IComparison, ICourseAware, ITaxonomyAware, IUserAware
 {
     /**
-     * @param IRule        $rule
-     * @param \ilObjCourse $course
-     * @param \ilObjUser   $user
+     * @param ResolverFactory $resolvers
+     * @param IRule           $rule
+     * @param \ilObjCourse    $course
+     * @param \ilObjUser      $user
      */
-    public function __construct(IRule $rule, \ilObjCourse $course, \ilObjUser $user);
+    public function __construct(ResolverFactory $resolvers, IRule $rule, \ilObjCourse $course, \ilObjUser $user);
 }

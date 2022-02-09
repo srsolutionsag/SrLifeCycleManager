@@ -1,12 +1,12 @@
 {
-    "name": "srag/sr-life-cycle-manager",
+    "name": "srag/life-cycle-manager",
     "description": "",
     "type": "project",
     "license": "GPL-3.0",
     "authors": [
         {
             "name": "Thibeau Fuhrer",
-            "email": "thf@studer-raimann.ch"
+            "email": "thibeau@sr.solutions"
         }
     ],
     "autoload": {

@@ -3,7 +3,7 @@
 /**
  * Class ilSrNotificationGUI
  *
- * @author Thibeau Fuhrer <thf@studer-raimann.ch>
+ * @author Thibeau Fuhrer <thibeau@sr.solutions>
  */
 final class ilSrNotificationGUI extends ilSrAbstractMainGUI
 {

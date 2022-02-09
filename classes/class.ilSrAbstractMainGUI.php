@@ -2,12 +2,15 @@
 
 use srag\Plugins\SrLifeCycleManager\Routine\Routine;
 use srag\Plugins\SrLifeCycleManager\Routine\IRoutine;
+use ILIAS\Refinery\Factory as Refinery;
+use ILIAS\DI\UIServices;
+use ILIAS\DI\HTTPServices;
 
 /**
  * Class ilSrAbstractMainGUI provides derived GUI classes with common
  * functionalities and dependencies.
  *
- * @author Thibeau Fuhrer <thf@studer-raimann.ch>
+ * @author Thibeau Fuhrer <thibeau@sr.solutions>
  *
  * This class CAN be extended by further GUI classes of this plugin that
  * share (at least) dependencies initialised in the constructor.
@@ -52,12 +55,12 @@ abstract class ilSrAbstractMainGUI
     protected const TAB_ROUTINE_INDEX = 'tab_routine_index';
 
     /**
-     * @var \ILIAS\DI\UIServices
+     * @var UIServices
      */
     protected $ui;
 
     /**
-     * @var \ILIAS\DI\HTTPServices
+     * @var HTTPServices
      */
     protected $http;
 
@@ -65,6 +68,11 @@ abstract class ilSrAbstractMainGUI
      * @var ilCtrl
      */
     protected $ctrl;
+
+    /**
+     * @var Refinery
+     */
+    protected $refinery;
 
     /**
      * @var ilObjUser
@@ -104,9 +112,13 @@ abstract class ilSrAbstractMainGUI
         $this->user     = $DIC->user();
         $this->tabs     = $DIC->tabs();
         $this->toolbar  = $DIC->toolbar();
+        $this->refinery = $DIC->refinery();
 
         $this->plugin = ilSrLifeCycleManagerPlugin::getInstance();
-        $this->repository = ilSrLifeCycleManagerRepository::getInstance();
+        $this->repository = new ilSrLifeCycleManagerRepository(
+            $DIC->database(),
+            $DIC->rbac()
+        );
     }
 
     /**
@@ -306,11 +318,12 @@ abstract class ilSrAbstractMainGUI
      * This method is implemented here, as it's used in several derived
      * classes and is somewhat core to the plugin.
      *
+     * @param bool $keep_alive
      * @return Routine|null
      */
-    protected function getRoutineFromRequest() : ?Routine
+    protected function getRoutineFromRequest(bool $keep_alive = false) : ?Routine
     {
-        $routine_id = $this->getQueryParamFromRequest(self::QUERY_PARAM_ROUTINE_ID);
+        $routine_id = $this->getQueryParamFromRequest(self::QUERY_PARAM_ROUTINE_ID, $keep_alive);
         if (null !== $routine_id) {
             return $this->repository->routine()->get((int) $routine_id);
         }

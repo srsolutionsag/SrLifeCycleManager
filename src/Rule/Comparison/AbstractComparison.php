@@ -8,7 +8,7 @@ use srag\Plugins\SrLifeCycleManager\Rule\Resolver\ResolverFactory;
 /**
  * Class AbstractComparison
  * @package srag\Plugins\SrLifeCycleManager\Rule\Evaluation
- * @author Thibeau Fuhrer <thf@studer-raimann.ch>
+ * @author Thibeau Fuhrer <thibeau@sr.solutions>
  */
 abstract class AbstractComparison implements IComparison
 {
@@ -20,17 +20,18 @@ abstract class AbstractComparison implements IComparison
     /**
      * @var ResolverFactory
      */
-    private $factory;
+    private $resolvers;
 
     /**
-     * AbstractComparison constructor.
-     * 
-     * @param IRule $rule
+     * AbstractComparison constructor
+     *
+     * @param ResolverFactory $resolvers
+     * @param IRule           $rule
      */
-    public function __construct(IRule $rule)
+    public function __construct(ResolverFactory $resolvers, IRule $rule)
     {
         $this->rule    = $rule;
-        $this->factory = ResolverFactory::getInstance();
+        $this->resolvers = $resolvers;
     }
 
     /**
@@ -46,8 +47,8 @@ abstract class AbstractComparison implements IComparison
      */
     public function compare() : bool
     {
-        $lhs_value = $this->factory->getResolverForType($this->rule->getLhsType())->resolveLhsValue($this);
-        $rhs_value = $this->factory->getResolverForType($this->rule->getRhsType())->resolveRhsValue($this);
+        $lhs_value = $this->resolvers->getResolverForType($this->rule->getLhsType())->resolveLhsValue($this);
+        $rhs_value = $this->resolvers->getResolverForType($this->rule->getRhsType())->resolveRhsValue($this);
 
         switch ($this->rule->getOperator()) {
             case IRule::OPERATOR_EQUAL:
@@ -89,7 +90,7 @@ abstract class AbstractComparison implements IComparison
         // get similarities of exploded value pieces
         $similarities =  array_intersect($lhs_pieces, $rhs_pieces);
 
-        // returns true if at least one similarity was found
+        // returns true if at least oune similarity was found
         return (1 <= count($similarities));
     }
 

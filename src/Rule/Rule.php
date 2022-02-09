@@ -2,12 +2,10 @@
 
 namespace srag\Plugins\SrLifeCycleManager\Rule;
 
-use srag\Plugins\SrLifeCycleManager\Rule\IRule;
-
 /**
- * Class Rule (DTO)
+ * Class RuleDTO
  *
- * @author Thibeau Fuhrer <thf@studer-raimann.ch>
+ * @author Thibeau Fuhrer <thibeau@sr.solutions>
  */
 final class Rule implements IRule
 {
@@ -59,16 +57,16 @@ final class Rule implements IRule
         string $rhs_type,
         $rhs_value
     ) {
-        $this->id           = $id;
-        $this->lhs_type     = $lhs_type;
-        $this->lhs_value    = $lhs_value;
-        $this->operator     = $operator;
-        $this->rhs_type     = $rhs_type;
-        $this->rhs_value    = $rhs_value;
+        $this->id = $id;
+        $this->lhs_type = $lhs_type;
+        $this->lhs_value = $lhs_value;
+        $this->operator = $operator;
+        $this->rhs_type = $rhs_type;
+        $this->rhs_value = $rhs_value;
     }
 
     /**
-     * @inheritDoc
+     * @return int|null
      */
     public function getId() : ?int
     {
@@ -76,7 +74,8 @@ final class Rule implements IRule
     }
 
     /**
-     * @inheritDoc
+     * @param int|null $id
+     * @return IRule
      */
     public function setId(?int $id) : IRule
     {
@@ -85,7 +84,7 @@ final class Rule implements IRule
     }
 
     /**
-     * @inheritDoc
+     * @return string
      */
     public function getLhsType() : string
     {
@@ -93,16 +92,17 @@ final class Rule implements IRule
     }
 
     /**
-     * @inheritDoc
+     * @param string $lhs_type
+     * @return IRule
      */
-    public function setLhsType(string $type) : IRule
+    public function setLhsType(string $lhs_type) : IRule
     {
-        $this->lhs_type = $type;
+        $this->lhs_type = $lhs_type;
         return $this;
     }
 
     /**
-     * @inheritDoc
+     * @return mixed
      */
     public function getLhsValue()
     {
@@ -110,7 +110,8 @@ final class Rule implements IRule
     }
 
     /**
-     * @inheritDoc
+     * @param mixed $lhs_value
+     * @return IRule
      */
     public function setLhsValue($lhs_value) : IRule
     {
@@ -119,7 +120,7 @@ final class Rule implements IRule
     }
 
     /**
-     * @inheritDoc
+     * @return string
      */
     public function getOperator() : string
     {
@@ -127,7 +128,8 @@ final class Rule implements IRule
     }
 
     /**
-     * @inheritDoc
+     * @param string $operator
+     * @return IRule
      */
     public function setOperator(string $operator) : IRule
     {
@@ -136,7 +138,7 @@ final class Rule implements IRule
     }
 
     /**
-     * @inheritDoc
+     * @return string
      */
     public function getRhsType() : string
     {
@@ -144,16 +146,17 @@ final class Rule implements IRule
     }
 
     /**
-     * @inheritDoc
+     * @param string $rhs_type
+     * @return IRule
      */
-    public function setRhsType(string $type) : IRule
+    public function setRhsType(string $rhs_type) : IRule
     {
-        $this->rhs_type = $type;
+        $this->rhs_type = $rhs_type;
         return $this;
     }
 
     /**
-     * @inheritDoc
+     * @return mixed
      */
     public function getRhsValue()
     {
@@ -161,11 +164,12 @@ final class Rule implements IRule
     }
 
     /**
-     * @inheritDoc
+     * @param mixed $rhs_value
+     * @return IRule
      */
-    public function setRhsValue($rhs_rhs_value) : IRule
+    public function setRhsValue($rhs_value) : IRule
     {
-        $this->rhs_value = $rhs_rhs_value;
+        $this->rhs_value = $rhs_value;
         return $this;
     }
 }

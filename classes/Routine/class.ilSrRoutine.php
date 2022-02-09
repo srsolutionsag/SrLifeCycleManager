@@ -5,7 +5,7 @@ use srag\Plugins\SrLifeCycleManager\Routine\IRoutine;
 /**
  * Class ilSrRule is responsible for storing rule-sets in the database.
  *
- * @author Thibeau Fuhrer <thf@studer-raimann.ch>
+ * @author Thibeau Fuhrer <thibeau@sr.solutions>
  */
 final class ilSrRoutine extends ActiveRecord implements IRoutine
 {
@@ -25,7 +25,6 @@ final class ilSrRoutine extends ActiveRecord implements IRoutine
     public const F_OWNER_ID             = 'owner_id';
     public const F_CREATION_DATE        = 'creation_date';
     public const F_OPT_OUT_POSSIBLE     = 'opt_out_possible';
-    public const F_ELONGATION_POSSIBLE  = 'elongation_possible';
     public const F_ELONGATION_DAYS      = 'elongation_days';
 
     /**
@@ -116,16 +115,6 @@ final class ilSrRoutine extends ActiveRecord implements IRoutine
     protected $opt_out_possible;
 
     /**
-     * @var bool
-     *
-     * @con_has_field   true
-     * @con_is_notnull  true
-     * @con_fieldtype   integer
-     * @con_length      1
-     */
-    protected $elongation_possible;
-
-    /**
      * @var int
      *
      * @con_has_field   true
@@ -159,7 +148,6 @@ final class ilSrRoutine extends ActiveRecord implements IRoutine
                 return $this->transformStringToDate($field_value);
             case self::F_ACTIVE:
             case self::F_OPT_OUT_POSSIBLE:
-            case self::F_ELONGATION_POSSIBLE:
                 // boolean values are stored as tinyint, therefore
                 // (bool) $db_value is used to transform it back.
                 return (bool) $field_value;
@@ -185,7 +173,6 @@ final class ilSrRoutine extends ActiveRecord implements IRoutine
                 return $this->transformDateToString($field_name);
             case self::F_ACTIVE:
             case self::F_OPT_OUT_POSSIBLE:
-            case self::F_ELONGATION_POSSIBLE:
                 return (int) $this->{$field_name};
 
             default:
@@ -327,23 +314,6 @@ final class ilSrRoutine extends ActiveRecord implements IRoutine
     public function setOptOutPossible(bool $is_possible) : IRoutine
     {
         $this->opt_out_possible = $is_possible;
-        return $this;
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function isElongationPossible() : bool
-    {
-        return $this->elongation_possible;
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function setElongationPossible(bool $is_possible) : IRoutine
-    {
-        $this->elongation_possible = $is_possible;
         return $this;
     }
 

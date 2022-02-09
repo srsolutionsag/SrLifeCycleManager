@@ -8,7 +8,7 @@ use srag\Plugins\SrLifeCycleManager\Routine\Routine;
 /**
  * Class ilSrToolProvider provides ILIAS with the plugin's tools.
  *
- * @author Thibeau Fuhrer <thf@studer-raimann.ch>
+ * @author Thibeau Fuhrer <thibeau@sr.solutions>
  *
  * The provider is currently only interested in the repository context, as we want
  * to allow our tools to appear just within course objects, if configured.
@@ -75,7 +75,7 @@ class ilSrToolProvider extends AbstractDynamicToolPluginProvider
     {
         return function() : bool {
             // fetch configuration and check if the necessary
-            // config exists and get it's value.
+            // config exists and get its value.
             $config              = ilSrConfig::get();
             $cnf_show_routines   = (isset($config[ilSrConfig::CNF_SHOW_ROUTINES]) && $config[ilSrConfig::CNF_SHOW_ROUTINES]->getValue());
             $cnf_create_routines = (isset($config[ilSrConfig::CNF_CREATE_ROUTINES]) && $config[ilSrConfig::CNF_CREATE_ROUTINES]->getValue());

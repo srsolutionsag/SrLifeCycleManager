@@ -3,22 +3,18 @@
 use srag\Plugins\SrLifeCycleManager\Routine\IRoutineRepository;
 use srag\Plugins\SrLifeCycleManager\Notification\INotificationRepository;
 use srag\Plugins\SrLifeCycleManager\Rule\IRuleRepository;
+use ILIAS\DI\RBACServices;
 
 /**
  * Class ilSrLifeCycleManagerRepository is a factory for all
  * further plugin repositories.
  *
- * @author Thibeau Fuhrer <thf@studer-raimann.ch>
+ * @author Thibeau Fuhrer <thibeau@sr.solutions>
  */
 final class ilSrLifeCycleManagerRepository
 {
     /**
-     * @var self
-     */
-    private static $instance;
-
-    /**
-     * @var \ILIAS\DI\RBACServices
+     * @var RBACServices
      */
     private $rbac;
 
@@ -38,34 +34,14 @@ final class ilSrLifeCycleManagerRepository
     private $rule_repository;
 
     /**
-     * prevents multiple instances
-     */
-    private function __clone() {}
-    private function __wakeup() {}
-
-    /**
      * ilSrLifeCycleManagerRepository constructor (private to prevent multiple instances)
      */
-    private function __construct()
+    public function __construct(ilDBInterface $database, RBACServices $rbac)
     {
-        global $DIC;
-
-        $this->rbac = $DIC->rbac();
-
-        $this->rule_repository          = new ilSrRuleRepository();
-        $this->routine_repository       = new ilSrRoutineRepository($this->rule());
+        $this->rbac = $rbac;
+        $this->rule_repository          = new ilSrRuleRepository($database);
+        $this->routine_repository       = new ilSrRoutineRepository($this->rule_repository);
         $this->notification_repository  = new ilSrNotificationRepository();
-    }
-
-    /**
-     * returns a singleton instance of this repository factory.
-     *
-     * @return self
-     */
-    public static function getInstance() : self
-    {
-        if (!isset(self::$instance)) self::$instance = new self();
-        return self::$instance;
     }
 
     /**
@@ -97,7 +73,7 @@ final class ilSrLifeCycleManagerRepository
      *
      * This method is used for UI input options, therefore this array
      * DOES NOT contain the administrator global role, as it should
-     * always be able to to everything.
+     * always be able to everything.
      *
      * @return array
      */

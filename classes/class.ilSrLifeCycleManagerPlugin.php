@@ -5,7 +5,7 @@ require_once __DIR__ . '/../vendor/autoload.php';
 /**
  * Class ilSrLifeCycleManagerPlugin holds the (singleton) plugin instance.
  *
- * @author Thibeau Fuhrer <thf@studer-raimann.ch>
+ * @author Thibeau Fuhrer <thibeau@sr.solutions>
  *
  * The plugin instance is primarily used to handle I18N, because it provides a method
  * which translates language variables into the corresponding text contained in

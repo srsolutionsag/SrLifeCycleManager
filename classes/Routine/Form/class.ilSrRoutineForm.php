@@ -1,11 +1,13 @@
 <?php
 
 use srag\Plugins\SrLifeCycleManager\Routine\IRoutine;
+use ILIAS\DI\UIServices;
+use ILIAS\Refinery\Factory;
 
 /**
  * Class ilSrRoutineForm
  *
- * @author Thibeau Fuhrer <thf@studer-raimann.ch>
+ * @author Thibeau Fuhrer <thibeau@sr.solutions>
  */
 final class ilSrRoutineForm extends ilSrAbstractMainForm
 {
@@ -45,15 +47,29 @@ final class ilSrRoutineForm extends ilSrAbstractMainForm
     private $scope;
 
     /**
-     * ilSrRoutineForm constructor.
+     * ilSrRoutineForm constructor
      *
-     * @param int           $origin_type
-     * @param int           $owner_id
-     * @param IRoutine|null $routine
-     * @param int|null      $scope
+     * @param UIServices                     $ui
+     * @param ilCtrl                         $ctrl
+     * @param Factory                        $refinery
+     * @param ilSrLifeCycleManagerPlugin     $plugin
+     * @param ilSrLifeCycleManagerRepository $repository
+     * @param int                            $origin_type
+     * @param int                            $owner_id
+     * @param IRoutine|null                  $routine
+     * @param int|null                       $scope
      */
-    public function __construct(int $origin_type, int $owner_id, IRoutine $routine = null, int $scope = null)
-    {
+    public function __construct(
+        UIServices $ui,
+        ilCtrl $ctrl,
+        Factory $refinery,
+        ilSrLifeCycleManagerPlugin $plugin,
+        ilSrLifeCycleManagerRepository $repository,
+        int $origin_type,
+        int $owner_id,
+        IRoutine $routine = null,
+        int $scope = null
+    ) {
         // dependencies MUST be added before the parent
         // constructor is called, as they are already by it.
         $this->origin_type = $origin_type;
@@ -61,7 +77,7 @@ final class ilSrRoutineForm extends ilSrAbstractMainForm
         $this->routine     = $routine;
         $this->scope       = $scope;
 
-        parent::__construct();
+        parent::__construct($ui, $ctrl, $refinery, $plugin, $repository);
     }
 
     /**
@@ -148,7 +164,7 @@ final class ilSrRoutineForm extends ilSrAbstractMainForm
         // if the routine doesn't support elongations and by default,
         // set the display value of INPUT_ELONGATION_POSSIBLE to null
         // in order to uncheck the optional-group.
-        if (null === $this->routine || !$this->routine->isElongationPossible()) {
+        if (null === $this->routine ||  1 > $this->routine->getElongationDays()) {
             $inputs[self::INPUT_ELONGATION_POSSIBLE] = $inputs[self::INPUT_ELONGATION_POSSIBLE]->withValue(null);
         }
 
@@ -182,15 +198,12 @@ final class ilSrRoutineForm extends ilSrAbstractMainForm
             ->setName($form_data[self::INPUT_NAME])
             ->setActive($form_data[self::INPUT_ACTIVE])
             ->setOptOutPossible($form_data[self::INPUT_OPT_OUT])
-            // submitted optional-group is either null or an array
-            // of inputs, hence a (not) empty-check is used.
-            ->setElongationPossible(!empty($form_data[self::INPUT_ELONGATION_POSSIBLE]))
         ;
 
         // if elongation is possible, update the elongation
         // in days attribute. If it's been disabled set the
         // value to null instead.
-        if ($this->routine->isElongationPossible()) {
+        if (!empty($form_data[self::INPUT_ELONGATION_POSSIBLE])) {
             $this->routine->setElongationDays($form_data[self::INPUT_ELONGATION_POSSIBLE][self::INPUT_ELONGATION]);
         } else {
             $this->routine->setElongationDays(null);

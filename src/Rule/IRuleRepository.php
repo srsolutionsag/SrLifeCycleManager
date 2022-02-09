@@ -2,27 +2,29 @@
 
 namespace srag\Plugins\SrLifeCycleManager\Rule;
 
-use srag\Plugins\SrLifeCycleManager\Routine\IRoutine;
-use srag\Plugins\SrLifeCycleManager\Rule\Rule;
-
 /**
  * Interface IRepository
  *
- * @author Thibeau Fuhrer <thf@studer-raimann.ch>
+ * @author Thibeau Fuhrer <thibeau@sr.solutions>
  */
 interface IRuleRepository
 {
     /**
      * returns a rule entry from the database for given id.
-     *
-     * @param int $rule_id
+     * @param int $id
      * @return Rule|null
      */
-    public function get(int $rule_id) : ?Rule;
+    public function get(int $id) : ?Rule;
 
     /**
-     * returns all rules as Rule objects.
-     *
+     * creates or updates a rule entry in the database.
+     * @param Rule $rule
+     * @return Rule
+     */
+    public function store(IRule $rule) : Rule;
+
+    /**
+     * returns all rules as RuleDTO objects.
      * @return Rule[]|null
      */
     public function getAllAsDTO() : ?array;
@@ -35,35 +37,17 @@ interface IRuleRepository
     public function getAllAsArray() : array;
 
     /**
-     * creates or updates a rule entry in the database.
+     * returns all rules for the given comparison.
      *
-     * @param IRule $rule
-     * @return Rule
+     * @param array $value_types
+     * @return array|null
      */
-    public function store(IRule $rule) : Rule;
+    public function getAllForValueTypes(array $value_types) : ?array;
 
     /**
      * deletes a rule entry from the database.
-     *
-     * @param IRule $rule
+     * @param Rule $rule
      * @return bool
      */
     public function delete(IRule $rule) : bool;
-
-    /**
-     * Transforms an ActiveRecord instance to a rule DTO.
-     *
-     * @param IRule $rule
-     * @return Rule
-     */
-    public function transformToDTO(IRule $rule) : Rule;
-
-    /**
-     * Transforms an ActiveRecord instance to array-data.
-     * (primarily used for ilTable2GUIs)
-     *
-     * @param IRule $rule
-     * @return array
-     */
-    public function transformToArray(IRule $rule) : array;
 }

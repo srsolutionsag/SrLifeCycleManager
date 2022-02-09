@@ -5,9 +5,7 @@ namespace srag\Plugins\SrLifeCycleManager\Routine;
 /**
  * Interface IRoutine defines how a routine must look like.
  *
- * @author Thibeau Fuhrer <thf@studer-raimann.ch>
- *
- * @TODO: remove elongation_possible attribute
+ * @author Thibeau Fuhrer <thibeau@sr.solutions>
  */
 interface IRoutine
 {
@@ -76,17 +74,6 @@ interface IRoutine
      * @return IRoutine
      */
     public function setActive(bool $is_active) : IRoutine;
-
-    /**
-     * @return bool
-     */
-    public function isElongationPossible() : bool;
-
-    /**
-     * @param bool $is_possible
-     * @return IRoutine
-     */
-    public function setElongationPossible(bool $is_possible) : IRoutine;
 
     /**
      * @return int|null

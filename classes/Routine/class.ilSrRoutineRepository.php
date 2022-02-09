@@ -11,7 +11,7 @@ use srag\Plugins\SrLifeCycleManager\Rule\IRule;
 /**
  * Class ilSrRoutineRepository
  *
- * @author Thibeau Fuhrer <thf@studer-raimann.ch>
+ * @author Thibeau Fuhrer <thibeau@sr.solutions>
  */
 final class ilSrRoutineRepository implements IRoutineRepository
 {
@@ -239,7 +239,6 @@ final class ilSrRoutineRepository implements IRoutineRepository
             ->setOwnerId($routine->getOwnerId())
             ->setCreationDate($routine->getCreationDate())
             ->setOptOutPossible($routine->isOptOutPossible())
-            ->setElongationPossible($routine->isElongationPossible())
             ->setElongationDays($routine->getElongationDays())
         ;
 
@@ -378,7 +377,6 @@ final class ilSrRoutineRepository implements IRoutineRepository
             $ar_routine->getOwnerId(),
             $ar_routine->getCreationDate(),
             $ar_routine->isOptOutPossible(),
-            $ar_routine->isElongationPossible(),
             $ar_routine->getElongationDays()
         );
     }
@@ -401,7 +399,6 @@ final class ilSrRoutineRepository implements IRoutineRepository
             ilSrRoutine::F_OWNER_ID             => $ar_routine->getOwnerId(),
             ilSrRoutine::F_CREATION_DATE        => $ar_routine->getCreationDate(),
             ilSrRoutine::F_OPT_OUT_POSSIBLE     => $ar_routine->isOptOutPossible(),
-            ilSrRoutine::F_ELONGATION_POSSIBLE  => $ar_routine->isElongationPossible(),
             ilSrRoutine::F_ELONGATION_DAYS      => $ar_routine->getElongationDays(),
         ];
     }

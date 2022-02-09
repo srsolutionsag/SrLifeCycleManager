@@ -7,7 +7,7 @@ use srag\Plugins\SrLifeCycleManager\Rule\Comparison\IComparison;
 /**
  * Interface IValueResolver
  *
- * @author Thibeau Fuhrer <thf@studer-raimann.ch>
+ * @author Thibeau Fuhrer <thibeau@sr.solutions>
  *
  * This interface must be implemented by any value-resolver within this
  * @package srag\Plugins\SrLifeCycleManager\Rule\Resolver.

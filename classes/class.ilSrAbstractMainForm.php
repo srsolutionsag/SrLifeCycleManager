@@ -2,14 +2,16 @@
 
 use Psr\Http\Message\ServerRequestInterface;
 use ILIAS\UI\Component\Input\Container\Form\Standard;
-use ILIAS\UI\Component\Input\Field\Factory;
+use ILIAS\UI\Component\Input\Field\Factory as FieldFactory;
 use ILIAS\UI\Component\Input\Field\Input;
+use ILIAS\Refinery\Factory as Refinery;
+use ILIAS\DI\UIServices;
 
 /**
  * Class ilSrAbstractMainForm provides derived form classes with
  * common dependencies and functionalities.
  *
- * @author Thibeau Fuhrer <thf@studer-raimann.ch>
+ * @author Thibeau Fuhrer <thibeau@sr.solutions>
  */
 abstract class ilSrAbstractMainForm
 {
@@ -35,12 +37,12 @@ abstract class ilSrAbstractMainForm
     protected $ctrl;
 
     /**
-     * @var Factory
+     * @var FieldFactory
      */
     protected $inputs;
 
     /**
-     * @var \ILIAS\Refinery\Factory
+     * @var Refinery
      */
     protected $refinery;
 
@@ -60,29 +62,32 @@ abstract class ilSrAbstractMainForm
     private $form;
 
     /**
-     * @var \ILIAS\DI\UIServices
+     * @var UIServices
      */
     private $ui;
 
     /**
      * ilSrConfigForm constructor
      */
-    public function __construct()
-    {
-        global $DIC;
-
-        $this->ui         = $DIC->ui();
-        $this->ctrl       = $DIC->ctrl();
-        $this->inputs     = $DIC->ui()->factory()->input()->field();
-        $this->refinery   = $DIC->refinery();
-        $this->plugin     = ilSrLifeCycleManagerPlugin::getInstance();
-        $this->repository = ilSrLifeCycleManagerRepository::getInstance();
+    public function __construct(
+        UIServices $ui,
+        ilCtrl $ctrl,
+        Refinery $refinery,
+        ilSrLifeCycleManagerPlugin $plugin,
+        ilSrLifeCycleManagerRepository $repository
+    ) {
+        $this->ui         = $ui;
+        $this->ctrl       = $ctrl;
+        $this->inputs     = $ui->factory()->input()->field();
+        $this->refinery   = $refinery;
+        $this->plugin     = $plugin;
+        $this->repository = $repository;
 
         // initialize the form with the form-action and form-inputs
         // provided by derived classes. (Note that getFormInputs()
         // may be noticed as wrong value-type, due to error in UI
         // service phpdoc-comment).
-        $this->form = $this->ui->factory()->input()->container()->form()->standard(
+        $this->form = $ui->factory()->input()->container()->form()->standard(
             $this->getFormAction(),
             $this->getFormInputs()
         );

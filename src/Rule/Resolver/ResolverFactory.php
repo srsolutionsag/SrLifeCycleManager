@@ -11,46 +11,25 @@ use srag\Plugins\SrLifeCycleManager\Rule\Resolver\Taxonomy\TaxonomyValueResolver
 /**
  * Class ResolverFactory
  *
- * @author Thibeau Fuhrer <thf@studer-raimann.ch>
+ * @author Thibeau Fuhrer <thibeau@sr.solutions>
  */
 final class ResolverFactory
 {
-    /**
-     * @var self
-     */
-    private static $instance;
-
     /**
      * @var IValueResolver[]
      */
     private $resolvers = [];
 
     /**
-     * prevents multiple instances
-     */
-    private function __wakeup() {}
-    private function __clone() {}
-
-    /**
      * ResolverFactory constructor.
      */
-    private function __construct()
+    public function __construct()
     {
         $this->resolvers[CommonValueResolver::class]    = new CommonValueResolver();
         $this->resolvers[TaxonomyValueResolver::class]  = new TaxonomyValueResolver();
         $this->resolvers[CourseValueResolver::class]    = new CourseValueResolver();
         $this->resolvers[UserValueResolver::class]      = new UserValueResolver();
         $this->resolvers[NullValueResolver::class]      = new NullValueResolver();
-    }
-
-    /**
-     * @return self
-     */
-    public static function getInstance() : self
-    {
-        if (!isset(self::$instance)) self::$instance = new self();
-
-        return self::$instance;
     }
 
     /**

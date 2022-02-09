@@ -5,7 +5,7 @@ use srag\Plugins\SrLifeCycleManager\Notification\INotification;
 /**
  * Class ilSrNotification is responsible to store notifications in the database.
  *
- * @author Thibeau Fuhrer <thf@studer-raimann.ch>
+ * @author Thibeau Fuhrer <thibeau@sr.solutions>
  */
 class ilSrNotification extends ActiveRecord implements INotification
 {

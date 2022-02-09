@@ -1,11 +1,9 @@
-<?php
-
-use srag\Plugins\SrLifeCycleManager\Routine\Routine;
+<?php declare(strict_types=1);
 
 /**
  * Class ilSrLifeCycleManagerDispatcher is responsible for ALL plugins requests.
  *
- * @author Thibeau Fuhrer <thf@studer-raimann.ch>
+ * @author Thibeau Fuhrer <thibeau@sr.solutions>
  *
  * @ilCtrl_isCalledBy ilSrLifeCycleManagerDispatcher : ilUIPluginRouterGUI
  * @ilCtrl_isCalledBy ilSrLifeCycleManagerDispatcher : ilSrLifeCycleManagerConfigGUI
@@ -48,9 +46,7 @@ final class ilSrLifeCycleManagerDispatcher
                 throw new LogicException(self::class . " MUST never be executing class.");
         }
 
-        // in case requests are coming from ilUIPluginRouterGUI we need to
-        // print the template manually (doesn't matter if it's repeatedly).
-        $DIC->ui()->mainTemplate()->printToStdout();
+        $this->maybePrintGlobalTemplate();
     }
 
     /**
@@ -71,5 +67,16 @@ final class ilSrLifeCycleManagerDispatcher
             [ilUIPluginRouterGUI::class, self::class, $class],
             $cmd
         );
+    }
+
+    /**
+     * Helper function that prints the global template if the request comes
+     * from a baseclass that doesn't print it by default.
+     */
+    private function maybePrintGlobalTemplate() : void
+    {
+        global $DIC;
+
+        // @TODO: check if this is necessary anywhere.
     }
 }

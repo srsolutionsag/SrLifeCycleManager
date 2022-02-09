@@ -1,11 +1,12 @@
 <?php
 
 use ILIAS\UI\Component\Dropdown\Standard as Dropdown;
+use ILIAS\DI\UIServices;
 
 /**
  * Class ilSrRoutineTable represents all available routines.
  *
- * @author Thibeau Fuhrer <thf@studer-raimann.ch>
+ * @author Thibeau Fuhrer <thibeau@sr.solutions>
  */
 final class ilSrRoutineTable extends ilSrAbstractMainTable
 {
@@ -36,19 +37,28 @@ final class ilSrRoutineTable extends ilSrAbstractMainTable
     private $scope;
 
     /**
-     * ilSrRoutineTable constructor.
+     * ilSrRoutineTable constructor
      *
-     * @param object   $parent_gui
-     * @param string   $parent_cmd
-     * @param int|null $scope
+     * @param UIServices                     $ui
+     * @param ilSrLifeCycleManagerPlugin     $plugin
+     * @param ilSrLifeCycleManagerRepository $repository
+     * @param object                         $parent_gui
+     * @param string                         $parent_cmd
+     * @param int|null                       $scope
      */
-    public function __construct(object $parent_gui, string $parent_cmd, int $scope = null)
-    {
+    public function __construct(
+        UIServices $ui,
+        ilSrLifeCycleManagerPlugin $plugin,
+        ilSrLifeCycleManagerRepository $repository,
+        object $parent_gui,
+        string $parent_cmd,
+        int $scope = null
+    ) {
         // dependencies must be declared before the parent constructor
         // is called, as they're already used by it.
         $this->scope = $scope;
 
-        parent::__construct($parent_gui, $parent_cmd);
+        parent::__construct($ui, $plugin, $repository, $parent_gui, $parent_cmd);
     }
 
     /**

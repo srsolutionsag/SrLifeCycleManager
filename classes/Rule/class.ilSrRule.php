@@ -5,7 +5,7 @@ use srag\Plugins\SrLifeCycleManager\Rule\IRule;
 /**
  * Class ilSrRule is responsible for storing rules in the database.
  *
- * @author Thibeau Fuhrer <thf@studer-raimann.ch>
+ * @author Thibeau Fuhrer <thibeau@sr.solutions>
  */
 final class ilSrRule extends ActiveRecord implements IRule
 {

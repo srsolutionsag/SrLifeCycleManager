@@ -1,9 +1,11 @@
 <?php
 
+use ILIAS\DI\UIServices;
+
 /**
  * Class ilSrAbstractMainTable
  *
- * @author Thibeau Fuhrer <thf@studer-raimann.ch>
+ * @author Thibeau Fuhrer <thibeau@sr.solutions>
  */
 abstract class ilSrAbstractMainTable extends ilTable2GUI
 {
@@ -13,7 +15,7 @@ abstract class ilSrAbstractMainTable extends ilTable2GUI
     protected const VISUAL_DATETIME_FORMAT = 'm-d-Y';
 
     /**
-     * @var \ILIAS\DI\UIServices
+     * @var UIServices
      */
     protected $ui;
 
@@ -30,21 +32,27 @@ abstract class ilSrAbstractMainTable extends ilTable2GUI
     /**
      * ilSrAbstractMainTable constructor
      *
-     * @param Object $parent_gui
-     * @param string $parent_cmd
+     * @param UIServices                     $ui
+     * @param ilSrLifeCycleManagerPlugin     $plugin
+     * @param ilSrLifeCycleManagerRepository $repository
+     * @param Object                         $parent_gui
+     * @param string                         $parent_cmd
      */
-    public function __construct(Object $parent_gui, string $parent_cmd)
-    {
-        global $DIC;
-
-        $this->ui         = $DIC->ui();
-        $this->plugin     = ilSrLifeCycleManagerPlugin::getInstance();
-        $this->repository = ilSrLifeCycleManagerRepository::getInstance();
+    public function __construct(
+        UIServices $ui,
+        ilSrLifeCycleManagerPlugin $plugin,
+        ilSrLifeCycleManagerRepository $repository,
+        Object $parent_gui,
+        string $parent_cmd
+    ) {
+        $this->ui         = $ui;
+        $this->plugin     = $plugin;
+        $this->repository = $repository;
 
         parent::__construct($parent_gui, $parent_cmd);
 
         $this->setId(static::class);
-        $this->setPrefix($this->plugin->getPluginId());
+        $this->setPrefix($plugin->getPluginId());
         $this->setTableColumns($this->getTableColumns());
         $this->setRowTemplate(
             $this->getRowTemplate(),
@@ -52,8 +60,9 @@ abstract class ilSrAbstractMainTable extends ilTable2GUI
             // indicates where templates are located. But somehow
             // if not the plugin-root directory is passed the
             // templates in '/templates/default/' are not found.
-            $this->plugin->getPluginDir()
+            $plugin->getPluginDir()
         );
+
         $this->setData($this->getTableData());
     }
 

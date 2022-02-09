@@ -2,14 +2,14 @@
 
 namespace srag\Plugins\SrLifeCycleManager\Rule\Resolver\Common;
 
-use srag\Plugins\SrLifeCycleManager\Rule\Resolver\IValueResolver;
-use srag\Plugins\SrLifeCycleManager\Rule\Resolver\Common\ICommonValue;
 use srag\Plugins\SrLifeCycleManager\Rule\Comparison\IComparison;
+use srag\Plugins\SrLifeCycleManager\Rule\Resolver\Common\ICommonValue;
+use srag\Plugins\SrLifeCycleManager\Rule\Resolver\IValueResolver;
 
 /**
  * Class CommonValueResolver
  *
- * @author Thibeau Fuhrer <thf@studer-raimann.ch>
+ * @author Thibeau Fuhrer <thibeau@sr.solutions>
  *
  * @package srag\Plugins\SrLifeCycleManager\Rule\Resolver\Common
  */
@@ -50,7 +50,7 @@ final class CommonValueResolver implements IValueResolver
             case self::VALUE_TYPE_BOOL:
                 return (bool) $value;
             case self::VALUE_TYPE_ARRAY:
-                return (array) $value;
+                return (array)explode(",", $value);
 
             default:
                 return null;

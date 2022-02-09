@@ -3,7 +3,7 @@
 /**
  * Class ilSrLifeCycleManagerConfigGUI is the plugin config entry point.
  *
- * @author Thibeau Fuhrer <thf@studer-raimann.ch>
+ * @author Thibeau Fuhrer <thibeau@sr.solutions>
  *
  * ILIAS plugins which can be configured MUST implement this class, as it's the
  * entry point recognized by ILIAS. Neither it's location nor it's name can be

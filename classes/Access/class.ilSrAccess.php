@@ -3,7 +3,7 @@
 /**
  * Class ilSrAccess is responsible for all access checks.
  *
- * @author Thibeau Fuhrer <thf@studer-raimann.ch>
+ * @author Thibeau Fuhrer <thibeau@sr.solutions>
  *
  * This class should ONLY contain PUBLIC STATIC methods, since access-checks
  * are needed within the whole codebase. Dependencies should therefore be either

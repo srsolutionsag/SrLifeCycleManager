@@ -8,7 +8,7 @@ use srag\Plugins\SrLifeCycleManager\Rule\Resolver\IValueResolver;
 /**
  * Class NullValueResolver
  *
- * @author Thibeau Fuhrer <thf@studer-raimann.ch>
+ * @author Thibeau Fuhrer <thibeau@sr.solutions>
  *
  * @package srag\Plugins\SrLifeCycleManager\Rule\Resolver\Common
  */

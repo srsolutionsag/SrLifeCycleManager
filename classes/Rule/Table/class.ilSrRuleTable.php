@@ -2,11 +2,12 @@
 
 use ILIAS\UI\Component\Dropdown\Standard as Dropdown;
 use srag\Plugins\SrLifeCycleManager\Routine\IRoutine;
+use ILIAS\DI\UIServices;
 
 /**
  * Class ilSrRuleTable
  *
- * @author Thibeau Fuhrer <thf@studer-raimann.ch>
+ * @author Thibeau Fuhrer <thibeau@sr.solutions>
  */
 class ilSrRuleTable extends ilSrAbstractMainTable
 {
@@ -26,19 +27,28 @@ class ilSrRuleTable extends ilSrAbstractMainTable
     private $routine;
 
     /**
-     * ilSrRuleTable constructor.
+     * ilSrRuleTable constructor
      *
-     * @param object   $parent_gui
-     * @param string   $parent_cmd
-     * @param IRoutine $routine
+     * @param UIServices                     $ui
+     * @param ilSrLifeCycleManagerPlugin     $plugin
+     * @param ilSrLifeCycleManagerRepository $repository
+     * @param object                         $parent_gui
+     * @param string                         $parent_cmd
+     * @param IRoutine                       $routine
      */
-    public function __construct(object $parent_gui, string $parent_cmd, IRoutine $routine)
-    {
+    public function __construct(
+        UIServices $ui,
+        ilSrLifeCycleManagerPlugin $plugin,
+        ilSrLifeCycleManagerRepository $repository,
+        object $parent_gui,
+        string $parent_cmd,
+        IRoutine $routine
+    ) {
         // dependencies must be declared before the parent constructor
         // is called, as they're already used by it.
         $this->routine = $routine;
 
-        parent::__construct($parent_gui, $parent_cmd);
+        parent::__construct($ui, $plugin, $repository, $parent_gui, $parent_cmd);
     }
 
     /**
@@ -68,7 +78,7 @@ class ilSrRuleTable extends ilSrAbstractMainTable
             self::COL_RULE_OPERATOR,
             self::COL_RULE_LHS_TYPE,
             self::COL_RULE_LHS_VALUE,
-            ''
+            '',
         ];
     }
 

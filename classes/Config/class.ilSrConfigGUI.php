@@ -3,7 +3,7 @@
 /**
  * Class ilSrConfigGUI is responsible for the general plugin configuration.
  *
- * @author Thibeau Fuhrer <thf@studer-raimann.ch>
+ * @author Thibeau Fuhrer <thibeau@sr.solutions>
  *
  * This class is called whenever the plugin-configuration within the
  * plugin administration is requested.
@@ -25,6 +25,23 @@ final class ilSrConfigGUI extends ilSrAbstractMainGUI
     private const MSG_CONFIGURATION_SUCCESS = 'msg_configuration_success';
     private const MSG_CONFIGURATION_ERROR   = 'msg_configuration_error';
     private const PAGE_TITLE                = 'page_title_config';
+
+    /**
+     * @var ilSetting
+     */
+    private $settings;
+
+    /**
+     * ilSrConfigGUI constructor
+     */
+    public function __construct()
+    {
+        global $DIC;
+
+        $this->settings = $DIC->settings();
+
+        parent::__construct();
+    }
 
     /**
      * @inheritDoc
@@ -103,6 +120,13 @@ final class ilSrConfigGUI extends ilSrAbstractMainGUI
      */
     private function getForm() : ilSrConfigForm
     {
-        return new ilSrConfigForm();
+        return new ilSrConfigForm(
+            $this->ui,
+            $this->ctrl,
+            $this->refinery,
+            $this->plugin,
+            $this->repository,
+            $this->settings
+        );
     }
 }

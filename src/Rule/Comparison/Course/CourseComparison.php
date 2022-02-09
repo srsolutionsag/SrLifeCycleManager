@@ -3,16 +3,13 @@
 namespace srag\Plugins\SrLifeCycleManager\Rule\Comparison\Course;
 
 use srag\Plugins\SrLifeCycleManager\Rule\Comparison\AbstractComparison;
-use srag\Plugins\SrLifeCycleManager\Rule\Comparison\Course\ICourseComparison;
-use srag\Plugins\SrLifeCycleManager\Rule\Resolver\Course\CourseValueResolver;
-use srag\Plugins\SrLifeCycleManager\Rule\Resolver\User\UserValueResolver;
-use srag\Plugins\SrLifeCycleManager\Rule\Resolver\Taxonomy\TaxonomyValueResolver;
 use srag\Plugins\SrLifeCycleManager\Rule\IRule;
+use srag\Plugins\SrLifeCycleManager\Rule\Resolver\ResolverFactory;
 
 /**
  * Class CourseComparison
  * @package srag\Plugins\SrLifeCycleManager\Rule\Evaluation\Course
- * @author Thibeau Fuhrer <thf@studer-raimann.ch>
+ * @author Thibeau Fuhrer <thibeau@sr.solutions>
  */
 final class CourseComparison extends AbstractComparison implements ICourseComparison
 {
@@ -29,16 +26,17 @@ final class CourseComparison extends AbstractComparison implements ICourseCompar
     /**
      * CourseComparison constructor.
      *
-     * @param IRule        $rule
-     * @param \ilObjCourse $course
-     * @param \ilObjUser   $user
+     * @param ResolverFactory $resolvers
+     * @param IRule           $rule
+     * @param \ilObjCourse    $course
+     * @param \ilObjUser      $user
      */
-    public function __construct(IRule $rule, \ilObjCourse $course, \ilObjUser $user)
+    public function __construct(ResolverFactory $resolvers, IRule $rule, \ilObjCourse $course, \ilObjUser $user)
     {
         $this->course = $course;
         $this->user   = $user;
 
-        parent::__construct($rule);
+        parent::__construct($resolvers, $rule);
     }
 
     /**

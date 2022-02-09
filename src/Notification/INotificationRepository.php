@@ -5,7 +5,7 @@ namespace srag\Plugins\SrLifeCycleManager\Notification;
 /**
  * Interface INotificationRepository
  *
- * @author Thibeau Fuhrer <thf@studer-raimann.ch>
+ * @author Thibeau Fuhrer <thibeau@sr.solutions>
  */
 interface INotificationRepository
 {

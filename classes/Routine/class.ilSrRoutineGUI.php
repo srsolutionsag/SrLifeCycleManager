@@ -5,7 +5,7 @@ use srag\Plugins\SrLifeCycleManager\Routine\Routine;
 /**
  * Class ilSrRoutineGUI
  *
- * @author Thibeau Fuhrer <thf@studer-raimann.ch>
+ * @author Thibeau Fuhrer <thibeau@sr.solutions>
  */
 final class ilSrRoutineGUI extends ilSrAbstractMainGUI
 {
@@ -288,6 +288,11 @@ final class ilSrRoutineGUI extends ilSrAbstractMainGUI
     private function getForm() : ilSrRoutineForm
     {
         return new ilSrRoutineForm(
+            $this->ui,
+            $this->ctrl,
+            $this->refinery,
+            $this->plugin,
+            $this->repository,
             $this->origin_type,
             $this->user->getId(),
             $this->routine,
@@ -304,6 +309,9 @@ final class ilSrRoutineGUI extends ilSrAbstractMainGUI
     private function getTable() : ilSrRoutineTable
     {
         return new ilSrRoutineTable(
+            $this->ui,
+            $this->plugin,
+            $this->repository,
             $this,
             self::CMD_INDEX,
             $this->scope

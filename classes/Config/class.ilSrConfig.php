@@ -3,7 +3,7 @@
 /**
  * Class ilSrConfig stores all general plugin configurations.
  *
- * @author Thibeau Fuhrer <thf@studer-raimann.ch>
+ * @author Thibeau Fuhrer <thibeau@sr.solutions>
  *
  * This class is used to store any sort of value for a specific CONFIGURATION_IDENTIFIER.
  * Since any type of value is accepted by setValue(), the data will be encoded to

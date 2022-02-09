@@ -11,6 +11,19 @@ use srag\Plugins\SrLifeCycleManager\Rule\Rule;
 final class ilSrRuleRepository implements IRuleRepository
 {
     /**
+     * @var ilDBInterface
+     */
+    protected $database;
+
+    /**
+     * @param ilDBInterface $database
+     */
+    public function __construct(ilDBInterface $database)
+    {
+        $this->database = $database;
+    }
+
+    /**
      * @inheritDoc
      */
     public function get(int $id) : ?Rule

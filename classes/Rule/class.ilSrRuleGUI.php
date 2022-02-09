@@ -6,7 +6,7 @@ use srag\Plugins\SrLifeCycleManager\Rule\Rule;
 /**
  * Class ilSrRuleGUI
  *
- * @author Thibeau Fuhrer <thf@studer-raimann.ch>
+ * @author Thibeau Fuhrer <thibeau@sr.solutions>
  */
 final class ilSrRuleGUI extends ilSrAbstractMainGUI
 {
@@ -24,7 +24,9 @@ final class ilSrRuleGUI extends ilSrAbstractMainGUI
     /**
      * ilSrRuleGUI command names.
      */
-    public const CMD_RULE_ADD = 'add';
+    public const CMD_RULE_ADD       = 'add';
+    public const CMD_RULE_SAVE      = 'save';
+    public const CMD_RULE_DELETE    = 'delete';
 
     /**
      * ilSrRuleGUI message lang-vars.
@@ -48,7 +50,7 @@ final class ilSrRuleGUI extends ilSrAbstractMainGUI
 
         // get dependencies from the current request
         // provided as GET parameters.
-        $this->routine = $this->getRoutineFromRequest();
+        $this->routine = $this->getRoutineFromRequest(true);
     }
 
     /**
@@ -67,6 +69,7 @@ final class ilSrRuleGUI extends ilSrAbstractMainGUI
         return [
             self::CMD_INDEX,
             self::CMD_RULE_ADD,
+            self::CMD_RULE_SAVE,
         ];
     }
 
@@ -94,7 +97,7 @@ final class ilSrRuleGUI extends ilSrAbstractMainGUI
         }
 
         // add the configuration tabs to the current page
-        // an deactivate all tabs by passing an 'invalid'
+        // and deactivate all tabs by passing an invalid
         // character as active tab-id.
         $this->addConfigurationTabs('§');
     }
@@ -137,6 +140,16 @@ final class ilSrRuleGUI extends ilSrAbstractMainGUI
                 self::CMD_INDEX
             )
         );
+
+
+    }
+
+    /**
+     *
+     */
+    protected function save() : void
+    {
+
     }
 
     /**
@@ -194,6 +207,24 @@ final class ilSrRuleGUI extends ilSrAbstractMainGUI
     }
 
     /**
+     * Helper function that initializes the rule-form
+     * and returns it.
+     *
+     * @return ilSrRuleForm
+     */
+    private function getForm() : ilSrRuleForm
+    {
+        return new ilSrRuleForm(
+            $this->ui,
+            $this->ctrl,
+            $this->refinery,
+            $this->plugin,
+            $this->repository,
+            $this->routine
+        );
+    }
+
+    /**
      * Helper function that initializes the rule-table
      * and returns it.
      *
@@ -202,6 +233,9 @@ final class ilSrRuleGUI extends ilSrAbstractMainGUI
     private function getTable() : ilSrRuleTable
     {
         return new ilSrRuleTable(
+            $this->ui,
+            $this->plugin,
+            $this->repository,
             $this,
             self::CMD_INDEX,
             $this->routine

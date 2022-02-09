@@ -5,7 +5,7 @@ use srag\Plugins\SrLifeCycleManager\Routine\IRoutineRule;
 /**
  * Class ilSrRoutineRule is responsible for storing routine-rule (m:m) relations.
  *
- * @author Thibeau Fuhrer <thf@studer-raimann.ch>
+ * @author Thibeau Fuhrer <thibeau@sr.solutions>
  */
 final class ilSrRoutineRule extends ActiveRecord implements IRoutineRule
 {

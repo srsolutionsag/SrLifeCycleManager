@@ -124,11 +124,6 @@ $fields = array(
 		'type' => 'integer',
 		'length' => '1',
 	),
-	'elongation_possible' => array(
-		'notnull' => '1',
-		'type' => 'integer',
-		'length' => '1',
-	),
 	'elongation_days' => array(
 		'type' => 'integer',
 		'length' => '8',

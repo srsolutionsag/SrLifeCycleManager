@@ -5,7 +5,7 @@ use srag\Plugins\SrLifeCycleManager\Routine\IRoutineWhitelistEntry;
 /**
  * Class ilSrRule is responsible for storing rule-sets in the database.
  *
- * @author Thibeau Fuhrer <thf@studer-raimann.ch>
+ * @author Thibeau Fuhrer <thibeau@sr.solutions>
  */
 final class ilSrRoutineWhitelistEntry extends ActiveRecord implements IRoutineWhitelistEntry
 {

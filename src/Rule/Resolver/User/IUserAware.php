@@ -5,7 +5,7 @@ namespace srag\Plugins\SrLifeCycleManager\Rule\Resolver\User;
 /**
  * Interface IUserAware
  *
- * @author Thibeau Fuhrer <thf@studer-raimann.ch>
+ * @author Thibeau Fuhrer <thibeau@sr.solutions>
  *
  * This interface indicates that a @see IComparison is user-aware and could
  * contain dynamic attributes which must be resolved by @see UserValueResolver.

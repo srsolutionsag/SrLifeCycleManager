@@ -2,16 +2,16 @@
 
 namespace srag\Plugins\SrLifeCycleManager\Rule\Comparison;
 
-use srag\Plugins\SrCourseManager\Rule\IRule;
-use srag\Plugins\SrCourseManager\Rule\Resolver\Common\CommonValueResolver;
+use srag\Plugins\SrLifeCycleManager\Rule\IRule;
+use srag\Plugins\SrLifeCycleManager\Rule\Resolver\Common\CommonValueResolver;
 
 /**
  * Interface IComparison
  *
- * @author Thibeau Fuhrer <thf@studer-raimann.ch>
+ * @author Thibeau Fuhrer <thibeau@sr.solutions>
  *
  * This interface must be implemented by any comparison within this
- * @package srag\Plugins\SrCourseManager\Rule\Comparison.
+ *.
  *
  * Comparisons are used to check whether rules are applicable or not. A comparison
  * implements the process of comparing an @see IRule lhs- and rhs-value according
