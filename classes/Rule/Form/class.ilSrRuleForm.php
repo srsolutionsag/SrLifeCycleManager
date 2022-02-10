@@ -63,7 +63,7 @@ class ilSrRuleForm extends ilSrAbstractMainForm
     {
         $inputs = [];
 
-        $inputs[ilSrRule::F_LHS_TYPE] =
+
 
         return $inputs;
     }

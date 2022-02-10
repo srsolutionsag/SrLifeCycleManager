@@ -21,9 +21,9 @@ class ComposerStaticInit78b368899f4397655d4e05c324fa6b84
     );
 
     public static $classMap = array (
-        'ilSrAbstractMainForm' => __DIR__ . '/../..' . '/classes/class.ilSrAbstractMainForm.php',
-        'ilSrAbstractMainGUI' => __DIR__ . '/../..' . '/classes/class.ilSrAbstractMainGUI.php',
-        'ilSrAbstractMainTable' => __DIR__ . '/../..' . '/classes/class.ilSrAbstractMainTable.php',
+        'ilSrAbstractMainForm' => __DIR__ . '/../..' . '/classes/Util/class.ilSrAbstractMainForm.php',
+        'ilSrAbstractMainGUI' => __DIR__ . '/../..' . '/classes/Util/class.ilSrAbstractMainGUI.php',
+        'ilSrAbstractMainTable' => __DIR__ . '/../..' . '/classes/Util/class.ilSrAbstractMainTable.php',
         'ilSrAccess' => __DIR__ . '/../..' . '/classes/Access/class.ilSrAccess.php',
         'ilSrConfig' => __DIR__ . '/../..' . '/classes/Config/class.ilSrConfig.php',
         'ilSrConfigForm' => __DIR__ . '/../..' . '/classes/Config/Form/class.ilSrConfigForm.php',
@@ -45,6 +45,7 @@ class ComposerStaticInit78b368899f4397655d4e05c324fa6b84
         'ilSrRoutineTable' => __DIR__ . '/../..' . '/classes/Routine/Table/class.ilSrRoutineTable.php',
         'ilSrRoutineWhitelistEntry' => __DIR__ . '/../..' . '/classes/Routine/class.ilSrRoutineWhitelistEntry.php',
         'ilSrRule' => __DIR__ . '/../..' . '/classes/Rule/class.ilSrRule.php',
+        'ilSrRuleForm' => __DIR__ . '/../..' . '/classes/Rule/Form/class.ilSrRuleForm.php',
         'ilSrRuleGUI' => __DIR__ . '/../..' . '/classes/Rule/class.ilSrRuleGUI.php',
         'ilSrRuleRepository' => __DIR__ . '/../..' . '/classes/Rule/class.ilSrRuleRepository.php',
         'ilSrRuleTable' => __DIR__ . '/../..' . '/classes/Rule/Table/class.ilSrRuleTable.php',

@@ -6,9 +6,9 @@ $vendorDir = dirname(dirname(__FILE__));
 $baseDir = dirname($vendorDir);
 
 return array(
-    'ilSrAbstractMainForm' => $baseDir . '/classes/class.ilSrAbstractMainForm.php',
-    'ilSrAbstractMainGUI' => $baseDir . '/classes/class.ilSrAbstractMainGUI.php',
-    'ilSrAbstractMainTable' => $baseDir . '/classes/class.ilSrAbstractMainTable.php',
+    'ilSrAbstractMainForm' => $baseDir . '/classes/Util/class.ilSrAbstractMainForm.php',
+    'ilSrAbstractMainGUI' => $baseDir . '/classes/Util/class.ilSrAbstractMainGUI.php',
+    'ilSrAbstractMainTable' => $baseDir . '/classes/Util/class.ilSrAbstractMainTable.php',
     'ilSrAccess' => $baseDir . '/classes/Access/class.ilSrAccess.php',
     'ilSrConfig' => $baseDir . '/classes/Config/class.ilSrConfig.php',
     'ilSrConfigForm' => $baseDir . '/classes/Config/Form/class.ilSrConfigForm.php',
@@ -30,6 +30,7 @@ return array(
     'ilSrRoutineTable' => $baseDir . '/classes/Routine/Table/class.ilSrRoutineTable.php',
     'ilSrRoutineWhitelistEntry' => $baseDir . '/classes/Routine/class.ilSrRoutineWhitelistEntry.php',
     'ilSrRule' => $baseDir . '/classes/Rule/class.ilSrRule.php',
+    'ilSrRuleForm' => $baseDir . '/classes/Rule/Form/class.ilSrRuleForm.php',
     'ilSrRuleGUI' => $baseDir . '/classes/Rule/class.ilSrRuleGUI.php',
     'ilSrRuleRepository' => $baseDir . '/classes/Rule/class.ilSrRuleRepository.php',
     'ilSrRuleTable' => $baseDir . '/classes/Rule/Table/class.ilSrRuleTable.php',
