@@ -14,17 +14,17 @@ namespace srag\Plugins\SrLifeCycleManager\Rule;
  */
 interface IRule
 {
-    public const OPERATOR_EQUAL         = '=';
-    public const OPERATOR_NOT_EQUAL     = '!=';
-    public const OPERATOR_GREATER       = '>';
-    public const OPERATOR_GREATER_EQUAL = '>=';
-    public const OPERATOR_LESSER        = '<';
-    public const OPERATOR_LESSER_EQUAL  = '<=';
-    public const OPERATOR_CONTAINS      = 'in_value';
-    public const OPERATOR_IN_ARRAY      = 'in_array';
+    public const OPERATOR_EQUAL            = 'operator_equal';
+    public const OPERATOR_NOT_EQUAL        = 'operator_not_equal';
+    public const OPERATOR_GREATER          = 'operator_greater';
+    public const OPERATOR_GREATER_EQUAL    = 'operator_greater_equal';
+    public const OPERATOR_LESSER           = 'operator_lesser';
+    public const OPERATOR_LESSER_EQUAL     = 'operator_lesser_equal';
+    public const OPERATOR_CONTAINS         = 'operator_in_value';
+    public const OPERATOR_IN_ARRAY         = 'operator_in_array';
 
     /**
-     * @var string[] possible operators
+     * @var string[] possible operators as string
      */
     public const OPERATORS = [
         self::OPERATOR_EQUAL,
@@ -35,29 +35,6 @@ interface IRule
         self::OPERATOR_LESSER_EQUAL,
         self::OPERATOR_CONTAINS,
         self::OPERATOR_IN_ARRAY,
-    ];
-
-    public const OPERATOR_STRING_EQUAL            = 'operator_equal';
-    public const OPERATOR_STRING_NOT_EQUAL        = 'operator_not_equal';
-    public const OPERATOR_STRING_GREATER          = 'operator_greater';
-    public const OPERATOR_STRING_GREATER_EQUAL    = 'operator_greater_equal';
-    public const OPERATOR_STRING_LESSER           = 'operator_lesser';
-    public const OPERATOR_STRING_LESSER_EQUAL     = 'operator_lesser_equal';
-    public const OPERATOR_STRING_CONTAINS         = 'operator_in_value';
-    public const OPERATOR_STRING_IN_ARRAY         = 'operator_in_array';
-
-    /**
-     * @var string[] possible operators as string
-     */
-    public const OPERATOR_STRINGS = [
-        self::OPERATOR_STRING_EQUAL,
-        self::OPERATOR_STRING_NOT_EQUAL,
-        self::OPERATOR_STRING_GREATER,
-        self::OPERATOR_STRING_GREATER_EQUAL,
-        self::OPERATOR_STRING_LESSER,
-        self::OPERATOR_STRING_LESSER_EQUAL,
-        self::OPERATOR_STRING_CONTAINS,
-        self::OPERATOR_STRING_IN_ARRAY,
     ];
 
     /**

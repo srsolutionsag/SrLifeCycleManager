@@ -61,3 +61,46 @@ action_routine_rules#:#Regeln
 action_routine_notifications#:#Benachrichtigungen
 action_rule_add#:#Regel hinzufügen
 action_rule_delete#:#Enfernen
+
+lhs_value#:#LHS Wert
+rhs_value#:#RHS Wert
+operator#:#Operator
+
+operator_equal#:#=
+operator_not_equal#:#!=
+operator_greater#:#>
+operator_greater_equal#:#>=
+operator_lesser#:#<
+operator_lesser_equal#:#<=
+operator_in_value#:#in (Wert)
+operator_in_array#:#in (Liste)
+
+common_attribute#:#Gewöhnliches Attribut
+common_attribute_type#:#Wert-Typ
+common_attribute_value#:#Wert
+
+course_attribute#:#Kurs Attribut
+course_attribute_value#:#Dynamisches Attribut
+
+group_attribute#:#Gruppen Attribut
+group_attribute_value#:#Dynamisches Attribut
+
+srag\Plugins\SrLifeCycleManager\Rule\Attribute\Course\CourseActive#:#Kurs aktiv
+srag\Plugins\SrLifeCycleManager\Rule\Attribute\Course\CourseEnd#:#Kursende
+srag\Plugins\SrLifeCycleManager\Rule\Attribute\Course\CourseStart#:#Kursstart
+srag\Plugins\SrLifeCycleManager\Rule\Attribute\Course\CourseMember#:#Kursmitglieder
+srag\Plugins\SrLifeCycleManager\Rule\Attribute\Course\CourseMetadata#:#Kurs Metadata
+srag\Plugins\SrLifeCycleManager\Rule\Attribute\Course\CourseTaxonomy#:#Kurs Taxonomie
+srag\Plugins\SrLifeCycleManager\Rule\Attribute\Course\CourseTitle#:#Kurstitel
+
+srag\Plugins\SrLifeCycleManager\Rule\Attribute\Group\GroupTitle#:#Gruppentitel
+srag\Plugins\SrLifeCycleManager\Rule\Attribute\Group\GroupMember#:#Gruppenmitglieder
+srag\Plugins\SrLifeCycleManager\Rule\Attribute\Group\GroupMetadata#:#Gruppen Metadata
+srag\Plugins\SrLifeCycleManager\Rule\Attribute\Group\GroupTaxonomy#:#Gruppen Taxonomie
+
+srag\Plugins\SrLifeCycleManager\Rule\Attribute\Common\CommonBoolean#:#wahr/falsch
+srag\Plugins\SrLifeCycleManager\Rule\Attribute\Common\CommonDateTime#:#Datum (Y-m-d)
+srag\Plugins\SrLifeCycleManager\Rule\Attribute\Common\CommonInteger#:#Ganzzahl
+srag\Plugins\SrLifeCycleManager\Rule\Attribute\Common\CommonList#:#Liste (kommasepariert)
+srag\Plugins\SrLifeCycleManager\Rule\Attribute\Common\CommonNull#:#Leer
+srag\Plugins\SrLifeCycleManager\Rule\Attribute\Common\CommonString#:#Text

@@ -3,6 +3,10 @@
 use ILIAS\DI\UIServices;
 use ILIAS\Refinery\Factory;
 use srag\Plugins\SrLifeCycleManager\Routine\IRoutine;
+use srag\Plugins\SrLifeCycleManager\Rule\Form\RuleFormBuilder;
+use srag\Plugins\SrLifeCycleManager\Rule\Attribute\AttributeFactory;
+use srag\Plugins\SrLifeCycleManager\Rule\Form\Attribute\AttributeInputBuilder;
+use srag\Plugins\SrLifeCycleManager\Rule\Attribute\Common\CommonAttribute;
 
 /**
  * @author Thibeau Fuhrer <thibeau@sr.solutions>
@@ -32,11 +36,25 @@ class ilSrRuleForm extends ilSrAbstractMainForm
         ilSrLifeCycleManagerRepository $repository,
         IRoutine $routine
     ) {
-        // dependencies MUST be added before the parent
-        // constructor is called, as they are already by it.
-        $this->routine = $routine;
+        $this->ui         = $ui;
+        $this->ctrl       = $ctrl;
+        $this->inputs     = $ui->factory()->input()->field();
+        $this->refinery   = $refinery;
+        $this->plugin     = $plugin;
+        $this->repository = $repository;
+        $this->routine    = $routine;
 
-        parent::__construct($ui, $ctrl, $refinery, $plugin, $repository);
+        $form_builder = new RuleFormBuilder(
+            new AttributeFactory(),
+            $ui->factory()->input()->field(),
+            $ui->factory()->input()->container()->form(),
+            $this->refinery,
+            $this->plugin
+        );
+
+        $this->form = $form_builder->getForm(
+            $this->getFormAction()
+        );
     }
 
     /**
@@ -61,11 +79,7 @@ class ilSrRuleForm extends ilSrAbstractMainForm
      */
     protected function getFormInputs() : array
     {
-        $inputs = [];
-
-
-
-        return $inputs;
+        throw new LogicException("This method should not be invoked.");
     }
 
     /**
@@ -73,7 +87,32 @@ class ilSrRuleForm extends ilSrAbstractMainForm
      */
     protected function validateFormData(array $form_data) : bool
     {
-        // TODO: Implement validateFormData() method.
+        // store form-data indexes in variables for readability.
+        $lhs_value = RuleFormBuilder::KEY_LHS_VALUE;
+        $rhs_value = RuleFormBuilder::KEY_RHS_VALUE;
+        $group_type = RuleFormBuilder::INDEX_ATTRIBUTE_TYPE;
+        $group_content = RuleFormBuilder::INDEX_ATTRIBUTE_VALUE;
+        $attr_type = AttributeInputBuilder::KEY_ATTRIBUTE_TYPE;
+        $attr_value = AttributeInputBuilder::KEY_ATTRIBUTE_VALUE;
+
+        if (!empty($form_data[RuleFormBuilder::KEY_LHS_VALUE][RuleFormBuilder::INDEX_ATTRIBUTE_TYPE]) &&
+            CommonAttribute::class === $form_data[RuleFormBuilder::KEY_LHS_VALUE][RuleFormBuilder::INDEX_ATTRIBUTE_TYPE] &&
+            empty($form_data[RuleFormBuilder::KEY_LHS_VALUE][RuleFormBuilder::INDEX_ATTRIBUTE_VALUE][AttributeInputBuilder::KEY_ATTRIBUTE_TYPE])
+        ) {
+
+        }
+
+        $attribute_type_index  = 0;
+        $attribute_value_index = 1;
+
+        if (empty($form_data[RuleFormBuilder::KEY_LHS_VALUE][$attribute_type_index]) ||
+            empty($form_data[RuleFormBuilder::KEY_LHS_VALUE][$attribute_value_index][AttributeInputBuilder::KEY_ATTRIBUTE_VALUE])
+        ) {
+
+        }
+
+        $x = 1;
+        return false;
     }
 
     /**
@@ -81,6 +120,6 @@ class ilSrRuleForm extends ilSrAbstractMainForm
      */
     protected function handleFormData(array $form_data) : void
     {
-        // TODO: Implement handleFormData() method.
+        $x = 1;
     }
 }

@@ -141,7 +141,9 @@ final class ilSrRuleGUI extends ilSrAbstractMainGUI
             )
         );
 
-
+        $this->ui->mainTemplate()->setContent(
+            $this->getForm()->render()
+        );
     }
 
     /**
@@ -149,7 +151,17 @@ final class ilSrRuleGUI extends ilSrAbstractMainGUI
      */
     protected function save() : void
     {
+        $form = $this->getForm();
+        if ($form->handleRequest($this->http->request())) {
+            // redirect to index if submission was valid.
+            $this->sendSuccessMessage(self::MSG_RULE_SUCCESS);
+            $this->repeat();
+        }
 
+        // display the form if the submission was unsuccessful
+        // to display errors.
+        $this->displayErrorMessage(self::MSG_RULE_ERROR);
+        $this->ui->mainTemplate()->setContent($form->render());
     }
 
     /**

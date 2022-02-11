@@ -59,12 +59,12 @@ abstract class ilSrAbstractMainForm
     /**
      * @var Standard
      */
-    private $form;
+    protected $form;
 
     /**
      * @var UIServices
      */
-    private $ui;
+    protected $ui;
 
     /**
      * ilSrConfigForm constructor
