@@ -6,7 +6,6 @@ use srag\Plugins\SrLifeCycleManager\Rule\Rule;
 use srag\Plugins\SrLifeCycleManager\Rule\IRule;
 use srag\Plugins\SrLifeCycleManager\Notification\Notification;
 use srag\Plugins\SrLifeCycleManager\Notification\INotification;
-use srag\Plugins\SrLifeCycleManager\Routine\IRoutineWhitelistEntry;
 
 /**
  * Interface IRoutineRepository
@@ -27,9 +26,9 @@ interface IRoutineRepository
      * Returns null if the given id does not exist.
      *
      * @param int  $routine_id
-     * @return Routine
+     * @return IRoutine
      */
-    public function get(int $routine_id) : ?Routine;
+    public function get(int $routine_id) : ?IRoutine;
 
     /**
      * Returns an empty routine DTO.
@@ -39,14 +38,14 @@ interface IRoutineRepository
      *
      * @param int $origin_type
      * @param int $owner_id
-     * @return Routine
+     * @return IRoutine
      */
     public function getEmpty(int $origin_type, int $owner_id) : IRoutine;
 
     /**
      * Returns all existing routines from the database as DTOs.
      *
-     * @return Routine[]
+     * @return IRoutine[]
      */
     public function getAllAsDTO() : ?array;
 
@@ -66,7 +65,7 @@ interface IRoutineRepository
      *
      * @param int  $ref_id
      * @param bool $as_array
-     * @return Routine[]|array
+     * @return IRoutine[]|array
      */
     public function getAllByScope(int $ref_id, bool $as_array = false) : array;
 
@@ -89,6 +88,25 @@ interface IRoutineRepository
      * @return Notification[]
      */
     public function getNotifications(IRoutine $routine, bool $as_array = false) : array;
+
+    /**
+     * Returns a routine-notification relationship between the given
+     * routine and notification object.
+     *
+     * @param IRoutine      $routine
+     * @param INotification $notification
+     * @return IRoutineNotification|null
+     */
+    public function getNotificationRelation(IRoutine $routine, INotification $notification) : ?IRoutineNotification;
+
+    /**
+     * Returns the notification table data. This deserves a special
+     * method because some joined data is required as array-data.
+     *
+     * @param IRoutine $routine
+     * @return array
+     */
+    public function getNotificationTableData(IRoutine $routine) : array;
 
     /**
      * Returns all whitelist entries for given routine.
@@ -136,7 +154,6 @@ interface IRoutineRepository
      *
      * @param IRoutine $routine
      * @param IRule    $rule
-     * @return Routine
      */
     public function removeRule(IRoutine $routine, IRule $rule) : void;
 

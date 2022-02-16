@@ -29,7 +29,7 @@ class ilSrRoutineForm extends ilSrAbstractForm
 
     /**
      * @param ilSrLifeCycleManagerRepository $repository
-     * @param ilTemplate                     $global_template
+     * @param ilGlobalTemplateInterface      $global_template
      * @param Renderer                       $renderer
      * @param Form                           $form
      * @param int                            $origin_type
@@ -38,7 +38,7 @@ class ilSrRoutineForm extends ilSrAbstractForm
      */
     public function __construct(
         ilSrLifeCycleManagerRepository $repository,
-        ilTemplate $global_template,
+        ilGlobalTemplateInterface $global_template,
         Renderer $renderer,
         Form $form,
         int $origin_type,

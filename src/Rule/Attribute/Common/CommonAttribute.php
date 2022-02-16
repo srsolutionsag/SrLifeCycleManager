@@ -11,4 +11,15 @@ use srag\Plugins\SrLifeCycleManager\Rule\Attribute\IAttribute;
  */
 abstract class CommonAttribute implements IAttribute
 {
+    /**
+     * @var string[]
+     */
+    public const COMMON_ATTRIBUTES = [
+        CommonBoolean::class,
+        CommonInteger::class,
+        CommonString::class,
+        CommonList::class,
+        CommonDateTime::class,
+        CommonNull::class,
+    ];
 }

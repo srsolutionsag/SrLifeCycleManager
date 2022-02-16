@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 use srag\Plugins\SrLifeCycleManager\Routine\IRoutineWhitelistEntry;
 
@@ -7,21 +7,12 @@ use srag\Plugins\SrLifeCycleManager\Routine\IRoutineWhitelistEntry;
  *
  * @author Thibeau Fuhrer <thibeau@sr.solutions>
  */
-final class ilSrRoutineWhitelistEntry extends ActiveRecord implements IRoutineWhitelistEntry
+class ilSrRoutineWhitelistEntry extends ActiveRecord implements IRoutineWhitelistEntry
 {
     /**
      * @var string db table name
      */
     public const TABLE_NAME = ilSrLifeCycleManagerPlugin::PLUGIN_ID . '_routine_w_list';
-
-    /**
-     * ilSrRoutineWhitelistEntry attribute names
-     */
-    public const F_ID               = 'id';
-    public const F_WHITELIST_TYPE   = 'whitelist_type';
-    public const F_ROUTINE_ID       = 'routine_id';
-    public const F_REF_ID           = 'ref_id';
-    public const F_ACTIVE_UNTIL     = 'active_until';
 
     /**
      * @var string mysql date format

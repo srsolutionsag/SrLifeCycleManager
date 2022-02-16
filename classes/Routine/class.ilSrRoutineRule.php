@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 use srag\Plugins\SrLifeCycleManager\Routine\IRoutineRule;
 
@@ -7,19 +7,12 @@ use srag\Plugins\SrLifeCycleManager\Routine\IRoutineRule;
  *
  * @author Thibeau Fuhrer <thibeau@sr.solutions>
  */
-final class ilSrRoutineRule extends ActiveRecord implements IRoutineRule
+class ilSrRoutineRule extends ActiveRecord implements IRoutineRule
 {
     /**
      * @var string db table name
      */
     public const TABLE_NAME = ilSrLifeCycleManagerPlugin::PLUGIN_ID . '_routine_rule';
-
-    /**
-     * ilSrRoutineRule attribute names
-     */
-    public const F_ID           = 'id';
-    public const F_ROUTINE_ID   = 'routine_id';
-    public const F_RULE_ID      = 'rule_id';
 
     /**
      * @var null|int

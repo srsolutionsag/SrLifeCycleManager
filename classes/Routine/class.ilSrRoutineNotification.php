@@ -1,26 +1,16 @@
-<?php
+<?php declare(strict_types=1);
 
 use srag\Plugins\SrLifeCycleManager\Routine\IRoutineNotification;
 
 /**
- * Class ilSrRoutineNotification is responsible for storing routine-rule (m:m) relations.
- *
  * @author Thibeau Fuhrer <thibeau@sr.solutions>
  */
-final class ilSrRoutineNotification extends ActiveRecord implements IRoutineNotification
+class ilSrRoutineNotification extends ActiveRecord implements IRoutineNotification
 {
     /**
      * @var string db table name
      */
     public const TABLE_NAME = ilSrLifeCycleManagerPlugin::PLUGIN_ID . '_routine_msg';
-
-    /**
-     * ilSrRoutineNotification attribute names
-     */
-    public const F_ID                       = 'id';
-    public const F_ROUTINE_ID               = 'routine_id';
-    public const F_NOTIFICATION_ID          = 'rule_id';
-    public const F_DAYS_BEFORE_SUBMISSION   = 'days_before_submission';
 
     /**
      * @var null|int
@@ -101,9 +91,9 @@ final class ilSrRoutineNotification extends ActiveRecord implements IRoutineNoti
     /**
      * @inheritDoc
      */
-    public function setRoutineId(?int $routine_routine_id) : IRoutineNotification
+    public function setRoutineId(?int $routine_id) : IRoutineNotification
     {
-        $this->routine_id = $routine_routine_id;
+        $this->routine_id = $routine_id;
         return $this;
     }
 
@@ -118,9 +108,9 @@ final class ilSrRoutineNotification extends ActiveRecord implements IRoutineNoti
     /**
      * @inheritDoc
      */
-    public function setNotificationId(?int $notification_notification_id) : IRoutineNotification
+    public function setNotificationId(?int $notification_id) : IRoutineNotification
     {
-        $this->notification_id = $notification_notification_id;
+        $this->notification_id = $notification_id;
         return $this;
     }
 

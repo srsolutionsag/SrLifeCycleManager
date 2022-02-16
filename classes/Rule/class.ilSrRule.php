@@ -15,16 +15,6 @@ final class ilSrRule extends ActiveRecord implements IRule
     public const TABLE_NAME = ilSrLifeCycleManagerPlugin::PLUGIN_ID . '_rule';
 
     /**
-     * ilSrRule attribute names
-     */
-    public const F_ID        = 'id';
-    public const F_RHS_TYPE  = 'rhs_type';
-    public const F_RHS_VALUE = 'rhs_value';
-    public const F_OPERATOR  = 'operator';
-    public const F_LHS_TYPE  = 'lhs_type';
-    public const F_LHS_VALUE = 'lhs_value';
-
-    /**
      * @var null|int
      *
      * @con_has_field   true

@@ -34,14 +34,23 @@ final class ilSrLifeCycleManagerRepository
     private $rule_repository;
 
     /**
-     * ilSrLifeCycleManagerRepository constructor (private to prevent multiple instances)
+     * @param ilDBInterface $database
+     * @param RBACServices  $rbac
+     * @param ilTree        $tree
      */
-    public function __construct(ilDBInterface $database, RBACServices $rbac)
-    {
+    public function __construct(
+        ilDBInterface $database,
+        RBACServices $rbac,
+        ilTree $tree
+    ) {
         $this->rbac = $rbac;
-        $this->rule_repository          = new ilSrRuleRepository($database);
-        $this->routine_repository       = new ilSrRoutineRepository($this->rule_repository);
-        $this->notification_repository  = new ilSrNotificationRepository();
+        $this->rule_repository = new ilSrRuleRepository($database);
+        $this->notification_repository = new ilSrNotificationRepository();
+        $this->routine_repository = new ilSrRoutineRepository(
+            $this->rule_repository,
+            $this->notification_repository,
+            $tree
+        );
     }
 
     /**

@@ -3,6 +3,8 @@
 use ILIAS\UI\Component\Dropdown\Standard as Dropdown;
 use srag\Plugins\SrLifeCycleManager\Routine\IRoutine;
 use ILIAS\DI\UIServices;
+use srag\Plugins\SrLifeCycleManager\Rule\Attribute\Common\CommonAttribute;
+use srag\Plugins\SrLifeCycleManager\Rule\IRule;
 
 /**
  * Class ilSrRuleTable
@@ -14,8 +16,8 @@ class ilSrRuleTable extends ilSrAbstractTable
     protected const COL_RULE_RHS_TYPE  = 'col_rule_rhs_type';
     protected const COL_RULE_RHS_VALUE = 'col_rule_rhs_value';
     protected const COL_RULE_OPERATOR  = 'col_rule_operator';
-    protected const COL_RULE_LHS_TYPE  = 'col_rule_rhs_type';
-    protected const COL_RULE_LHS_VALUE = 'col_rule_rhs_value';
+    protected const COL_RULE_LHS_TYPE  = 'col_rule_lhs_type';
+    protected const COL_RULE_LHS_VALUE = 'col_rule_lhs_value';
     protected const COL_ACTIONS        = 'col_actions';
 
     /**
@@ -66,14 +68,44 @@ class ilSrRuleTable extends ilSrAbstractTable
      */
     protected function prepareRowTemplate(ilTemplate $template, array $row_data) : void
     {
-        $template->setVariable(strtoupper(self::COL_RULE_RHS_TYPE), $row_data[ilSrRule::F_RHS_TYPE]);
-        $template->setVariable(strtoupper(self::COL_RULE_RHS_VALUE), $row_data[ilSrRule::F_RHS_VALUE]);
-        $template->setVariable(strtoupper(self::COL_RULE_OPERATOR), $row_data[ilSrRule::F_OPERATOR]);
-        $template->setVariable(strtoupper(self::COL_RULE_LHS_TYPE), $row_data[ilSrRule::F_LHS_TYPE]);
-        $template->setVariable(strtoupper(self::COL_RULE_LHS_VALUE), $row_data[ilSrRule::F_LHS_VALUE]);
+        $template->setVariable(strtoupper(self::COL_RULE_RHS_TYPE), $this->plugin->txt($row_data[IRule::F_RHS_TYPE]));
+        $template->setVariable(
+            strtoupper(self::COL_RULE_RHS_VALUE),
+            $this->getMaybeTranslatedValue(
+                $row_data[IRule::F_RHS_TYPE],
+                $row_data[IRule::F_RHS_VALUE]
+            )
+        );
+
+        $template->setVariable(strtoupper(self::COL_RULE_LHS_TYPE), $this->plugin->txt($row_data[IRule::F_LHS_TYPE]));
+        $template->setVariable(
+            strtoupper(self::COL_RULE_LHS_VALUE),
+            $this->getMaybeTranslatedValue(
+                $row_data[IRule::F_LHS_TYPE],
+                $row_data[IRule::F_LHS_VALUE]
+            )
+        );
+
+        $template->setVariable(strtoupper(self::COL_RULE_OPERATOR), $this->plugin->txt($row_data[IRule::F_OPERATOR]));
         $template->setVariable(strtoupper(self::COL_ACTIONS), $this->ui->renderer()->render(
-            $this->getActionDropdown($row_data[ilSrRule::F_ID])
+            $this->getActionDropdown($row_data[IRule::F_ID])
         ));
+    }
+
+    /**
+     * @param string $attr_type
+     * @param mixed  $attr_value
+     * @return string
+     */
+    protected function getMaybeTranslatedValue(string $attr_type, $attr_value) : string
+    {
+        // common attributes must not be translated because they
+        // hold user generated values.
+        if (in_array($attr_type, CommonAttribute::COMMON_ATTRIBUTES, true)) {
+            return $attr_value;
+        }
+
+        return $this->plugin->txt($attr_value);
     }
 
     /**

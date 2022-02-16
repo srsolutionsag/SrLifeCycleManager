@@ -1,43 +1,41 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace srag\Plugins\SrLifeCycleManager\Rule;
 
 /**
- * Class RuleDTO
- *
  * @author Thibeau Fuhrer <thibeau@sr.solutions>
  */
-final class Rule implements IRule
+class Rule implements IRule
 {
     /**
      * @var int|null
      */
-    private $id;
+    protected $id;
 
     /**
      * @var string
      */
-    private $lhs_type;
+    protected $lhs_type;
 
     /**
      * @var mixed
      */
-    private $lhs_value;
+    protected $lhs_value;
 
     /**
      * @var string
      */
-    private $operator;
+    protected $operator;
 
     /**
      * @var string
      */
-    private $rhs_type;
+    protected $rhs_type;
 
     /**
      * @var mixed
      */
-    private $rhs_value;
+    protected $rhs_value;
 
     /**
      * RuleDTO constructor.

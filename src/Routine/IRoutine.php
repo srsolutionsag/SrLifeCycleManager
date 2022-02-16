@@ -9,6 +9,22 @@ namespace srag\Plugins\SrLifeCycleManager\Routine;
  */
 interface IRoutine
 {
+    /**
+     * IRoutine attribute names
+     */
+    public const F_ID                   = 'id';
+    public const F_NAME                 = 'name';
+    public const F_REF_ID               = 'ref_id';
+    public const F_ACTIVE               = 'active';
+    public const F_ORIGIN_TYPE          = 'origin_type';
+    public const F_OWNER_ID             = 'owner_id';
+    public const F_CREATION_DATE        = 'creation_date';
+    public const F_OPT_OUT_POSSIBLE     = 'opt_out_possible';
+    public const F_ELONGATION_DAYS      = 'elongation_days';
+
+    /**
+     * IRoutine origin types
+     */
     public const ORIGIN_TYPE_ADMINISTRATION = 1;
     public const ORIGIN_TYPE_REPOSITORY = 2;
     public const ORIGIN_TYPE_EXTERNAL = 3;

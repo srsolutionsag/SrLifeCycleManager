@@ -19,7 +19,7 @@ abstract class ilSrAbstractForm implements IFormImplementation
     protected $repository;
 
     /**
-     * @var ilTemplate
+     * @var ilGlobalPageTemplate
      */
     protected $global_template;
 
@@ -35,13 +35,13 @@ abstract class ilSrAbstractForm implements IFormImplementation
 
     /**
      * @param ilSrLifeCycleManagerRepository $repository
-     * @param ilTemplate                     $global_template
+     * @param ilGlobalTemplateInterface      $global_template
      * @param Renderer                       $renderer
      * @param Form                           $form
      */
     public function __construct(
         ilSrLifeCycleManagerRepository $repository,
-        ilTemplate $global_template,
+        ilGlobalTemplateInterface $global_template,
         Renderer $renderer,
         Form $form
     ) {

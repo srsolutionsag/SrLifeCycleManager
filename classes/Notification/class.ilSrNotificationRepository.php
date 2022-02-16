@@ -1,12 +1,10 @@
-<?php
+<?php declare(strict_types=1);
 
 use srag\Plugins\SrLifeCycleManager\Notification\INotificationRepository;
 use srag\Plugins\SrLifeCycleManager\Notification\INotification;
 use srag\Plugins\SrLifeCycleManager\Notification\Notification;
 
 /**
- * Class ilSrNotificationRepository
- *
  * @author Thibeau Fuhrer <thibeau@sr.solutions>
  */
 final class ilSrNotificationRepository implements INotificationRepository
@@ -14,7 +12,7 @@ final class ilSrNotificationRepository implements INotificationRepository
     /**
      * @inheritDoc
      */
-    public function get(int $notification_id) : ?Notification
+    public function get(int $notification_id) : ?INotification
     {
         /**
          * @var $ar_notification ilSrNotification|null
@@ -30,7 +28,7 @@ final class ilSrNotificationRepository implements INotificationRepository
     /**
      * @inheritDoc
      */
-    public function store(INotification $notification) : Notification
+    public function store(INotification $notification) : INotification
     {
         $ar_notification = (null !== $notification->getId()) ?
             (ilSrNotification::find($notification->getId()) ?? new ilSrNotification()) :
@@ -61,16 +59,24 @@ final class ilSrNotificationRepository implements INotificationRepository
     }
 
     /**
-     * transforms an ActiveRecord instance to a DTO.
-     *
-     * @param INotification $ar_notification
-     * @return Notification
+     * @inheritDoc
      */
-    private function transformToDTO(INotification $ar_notification) : Notification
+    public function transformToDTO(INotification $ar_notification) : INotification
     {
         return new Notification(
             $ar_notification->getId(),
             $ar_notification->getMessage()
         );
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function transformToArray(INotification $ar_notification) : array
+    {
+        return [
+            INotification::F_ID => $ar_notification->getId(),
+            INotification::F_MESSAGE => $ar_notification->getMessage()
+        ];
     }
 }

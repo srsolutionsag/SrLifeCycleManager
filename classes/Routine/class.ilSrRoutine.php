@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 use srag\Plugins\SrLifeCycleManager\Routine\IRoutine;
 
@@ -7,7 +7,7 @@ use srag\Plugins\SrLifeCycleManager\Routine\IRoutine;
  *
  * @author Thibeau Fuhrer <thibeau@sr.solutions>
  */
-final class ilSrRoutine extends ActiveRecord implements IRoutine
+class ilSrRoutine extends ActiveRecord implements IRoutine
 {
     /**
      * @var string db table name
@@ -15,22 +15,9 @@ final class ilSrRoutine extends ActiveRecord implements IRoutine
     public const TABLE_NAME = ilSrLifeCycleManagerPlugin::PLUGIN_ID . '_routine';
 
     /**
-     * ilSrRule attribute names
-     */
-    public const F_ID                   = 'id';
-    public const F_NAME                 = 'name';
-    public const F_REF_ID               = 'ref_id';
-    public const F_ACTIVE               = 'active';
-    public const F_ORIGIN_TYPE          = 'origin_type';
-    public const F_OWNER_ID             = 'owner_id';
-    public const F_CREATION_DATE        = 'creation_date';
-    public const F_OPT_OUT_POSSIBLE     = 'opt_out_possible';
-    public const F_ELONGATION_DAYS      = 'elongation_days';
-
-    /**
      * @var string mysql date format
      */
-    private const MYSQL_DATE_FORMAT = 'Y-m-d';
+    protected const MYSQL_DATE_FORMAT = 'Y-m-d';
 
     /**
      * @var null|int
@@ -164,9 +151,9 @@ final class ilSrRoutine extends ActiveRecord implements IRoutine
      * @see ActiveRecord::getArrayForConnector()
      *
      * @param $field_name
-     * @return mixed|null
+     * @return int|string|null
      */
-    public function sleep($field_name) : ?string
+    public function sleep($field_name)
     {
         switch ($field_name) {
             case self::F_CREATION_DATE:
@@ -340,7 +327,7 @@ final class ilSrRoutine extends ActiveRecord implements IRoutine
      * @param string $value
      * @return DateTime|null
      */
-    private function transformStringToDate(string $value) : ?DateTime
+    protected function transformStringToDate(string $value) : ?DateTime
     {
         if (!empty($value)) {
             $datetime = DateTime::createFromFormat(self::MYSQL_DATE_FORMAT, $value);
@@ -357,7 +344,7 @@ final class ilSrRoutine extends ActiveRecord implements IRoutine
      * @param string $field_name
      * @return string|null
      */
-    private function transformDateToString(string $field_name) : ?string
+    protected function transformDateToString(string $field_name) : ?string
     {
         $datetime = $this->{$field_name};
         if (null !== $datetime) {

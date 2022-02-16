@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 use srag\Plugins\SrLifeCycleManager\Rule\IRuleRepository;
 use srag\Plugins\SrLifeCycleManager\Routine\IRoutineWhitelistEntry;
@@ -7,39 +7,47 @@ use srag\Plugins\SrLifeCycleManager\Notification\INotification;
 use srag\Plugins\SrLifeCycleManager\Routine\Routine;
 use srag\Plugins\SrLifeCycleManager\Routine\IRoutine;
 use srag\Plugins\SrLifeCycleManager\Rule\IRule;
+use srag\Plugins\SrLifeCycleManager\Routine\IRoutineRule;
+use srag\Plugins\SrLifeCycleManager\Routine\IRoutineNotification;
+use srag\Plugins\SrLifeCycleManager\Notification\INotificationRepository;
 
 /**
- * Class ilSrRoutineRepository
- *
  * @author Thibeau Fuhrer <thibeau@sr.solutions>
  */
-final class ilSrRoutineRepository implements IRoutineRepository
+class ilSrRoutineRepository implements IRoutineRepository
 {
     /**
      * @var ilTree
      */
-    private $tree;
+    protected $tree;
 
     /**
      * @var IRuleRepository
      */
-    private $rule_repository;
+    protected $rule_repository;
+
+    /**
+     * @var INotificationRepository
+     */
+    protected $notification_repository;
 
     /**
      * ilSrRoutineRepository constructor.
      */
-    public function __construct(IRuleRepository $rule_repository)
-    {
-        global $DIC;
-
-        $this->tree = $DIC->repositoryTree();
+    public function __construct(
+        IRuleRepository $rule_repository,
+        INotificationRepository $notification_repository,
+        ilTree $tree
+    ) {
         $this->rule_repository = $rule_repository;
+        $this->notification_repository = $notification_repository;
+        $this->tree = $tree;
     }
 
     /**
      * @inheritDoc
      */
-    public function get(int $routine_id) : ?Routine
+    public function get(int $routine_id) : ?IRoutine
     {
         /**
          * @var $ar_routine ilSrRoutine|null
@@ -63,7 +71,6 @@ final class ilSrRoutineRepository implements IRoutineRepository
             $origin_type,
             $owner_id,
             new DateTime(),
-            false,
             false,
             null
         );
@@ -151,19 +158,23 @@ final class ilSrRoutineRepository implements IRoutineRepository
     {
         // if no id is set the routine wasn't stored yet,
         // therefore no action required.
-        if (null === $routine->getId()) return [];
+        if (null === $routine->getId()) {
+            return [];
+        }
 
         // fetches all rules that have a relation to the
         // provided routine id.
         $ar_rules = ilSrRule::leftjoin(
             ilSrRoutineRule::TABLE_NAME,
-            ilSrRule::F_ID,
-            ilSrRoutineRule::F_RULE_ID
+            IRule::F_ID,
+            IRoutineRule::F_RULE_ID
         )->where([
-            ilSrRoutineRule::F_ROUTINE_ID => $routine->getId(),
+            IRoutineRule::F_ROUTINE_ID => $routine->getId(),
         ])->get();
 
-        if (empty($ar_rules)) return [];
+        if (empty($ar_rules)) {
+            return [];
+        }
 
         $rules = [];
         foreach ($ar_rules as $ar_rule) {
@@ -182,7 +193,50 @@ final class ilSrRoutineRepository implements IRoutineRepository
      */
     public function getNotifications(IRoutine $routine, bool $as_array = false) : array
     {
-        // TODO: Implement getNotifications() method.
+        $ar_notifications = ilSrRoutineNotification::where([
+            IRoutineNotification::F_ROUTINE_ID => $routine->getId()
+        ], '=')->get();
+
+        $notifications = [];
+        foreach ($ar_notifications as $notification) {
+            if ($as_array) {
+                $notifications[] = $this->notification_repository->transformToArray($notification);
+            } else {
+                $notifications[] = $this->notification_repository->transformToDTO($notification);
+            }
+        }
+
+        return $notifications;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function getNotificationTableData(IRoutine $routine) : array
+    {
+        return ilSrRoutineNotification::leftjoin(
+            ilSrNotification::TABLE_NAME,
+            IRoutineNotification::F_NOTIFICATION_ID,
+            INotification::F_ID
+        )->where([
+            IRoutineNotification::F_ROUTINE_ID => $routine->getId()
+        ])->getArray();
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function getNotificationRelation(IRoutine $routine, INotification $notification) : ?IRoutineNotification
+    {
+        /**
+         * @var $ar_relation ilSrRoutineNotification
+         */
+        $ar_relation = ilSrRoutineNotification::where([
+            IRoutineNotification::F_ROUTINE_ID      => $routine->getId(),
+            IRoutineNotification::F_NOTIFICATION_ID => $notification->getId(),
+        ], '=')->first();
+
+        return $ar_relation;
     }
 
     /**
@@ -211,7 +265,20 @@ final class ilSrRoutineRepository implements IRoutineRepository
      */
     public function addNotification(IRoutine $routine, INotification $notification) : void
     {
-        // TODO: Implement addNotification() method.
+        // abort if the relationship already exists.
+        if (!empty(ilSrRoutineNotification::where([
+            IRoutineNotification::F_ROUTINE_ID      => $routine->getId(),
+            IRoutineNotification::F_NOTIFICATION_ID => $notification->getId(),
+        ], '=')->get())) {
+            return;
+        }
+
+        $routine_notification_relation = new ilSrRoutineNotification();
+        $routine_notification_relation
+            ->setRoutineId($routine->getId())
+            ->setNotificationId($notification->getId())
+            ->store()
+        ;
     }
 
     /**
@@ -259,8 +326,8 @@ final class ilSrRoutineRepository implements IRoutineRepository
     {
         ilSrRoutineRule::where(
             [
-                ilSrRoutineRule::F_ROUTINE_ID => $routine->getId(),
-                ilSrRoutineRule::F_RULE_ID    => $rule->getId(),
+                IRoutineRule::F_ROUTINE_ID => $routine->getId(),
+                IRoutineRule::F_RULE_ID    => $rule->getId(),
             ],
             "="
         )->first()->delete();
@@ -311,7 +378,7 @@ final class ilSrRoutineRepository implements IRoutineRepository
             }
         }
 
-        // finally delete the routine itself and return.
+        // finally, delete the routine itself and return.
         $ar_routine->delete();
         return true;
     }
@@ -331,20 +398,20 @@ final class ilSrRoutineRepository implements IRoutineRepository
      * @param IRoutine $routine
      * @return array
      */
-    private function getRelations(IRoutine $routine) : array
+    protected function getRelations(IRoutine $routine) : array
     {
         $relations = [];
 
         $relations[IRule::class] = ilSrRoutineRule::where([
-            ilSrRoutineRule::F_ROUTINE_ID => $routine->getId(),
+            IRoutineRule::F_ROUTINE_ID => $routine->getId(),
         ])->get();
 
         $relations[INotification::class] = ilSrRoutineNotification::where([
-            ilSrRoutineNotification::F_ROUTINE_ID => $routine->getId(),
+            IRoutineNotification::F_ROUTINE_ID => $routine->getId(),
         ])->get();
 
         $relations[IRoutineWhitelistEntry::class] = ilSrRoutineWhitelistEntry::where([
-            ilSrRoutineWhitelistEntry::F_ROUTINE_ID => $routine->getId(),
+            IRoutineWhitelistEntry::F_ROUTINE_ID => $routine->getId(),
         ])->get();
 
         return $relations;
@@ -356,7 +423,7 @@ final class ilSrRoutineRepository implements IRoutineRepository
      * @param int $ref_id
      * @return array|null
      */
-    private function getParentIdsRecursively(int $ref_id) : ?array
+    protected function getParentIdsRecursively(int $ref_id) : ?array
     {
         static $parents;
 
@@ -375,9 +442,9 @@ final class ilSrRoutineRepository implements IRoutineRepository
      * transforms an ActiveRecord instance into a DTO.
      *
      * @param ilSrRoutine $ar_routine
-     * @return Routine
+     * @return IRoutine
      */
-    private function transformToDTO(ilSrRoutine $ar_routine) : Routine
+    protected function transformToDTO(ilSrRoutine $ar_routine) : IRoutine
     {
         return new Routine(
             $ar_routine->getId(),
@@ -399,18 +466,18 @@ final class ilSrRoutineRepository implements IRoutineRepository
      * @param ilSrRoutine $ar_routine
      * @return array
      */
-    private function transformToArray(ilSrRoutine $ar_routine) : array
+    protected function transformToArray(ilSrRoutine $ar_routine) : array
     {
         return [
-            ilSrRoutine::F_ID                   => $ar_routine->getId(),
-            ilSrRoutine::F_NAME                 => $ar_routine->getName(),
-            ilSrRoutine::F_REF_ID               => $ar_routine->getRefId(),
-            ilSrRoutine::F_ACTIVE               => $ar_routine->isActive(),
-            ilSrRoutine::F_ORIGIN_TYPE          => $ar_routine->getOriginType(),
-            ilSrRoutine::F_OWNER_ID             => $ar_routine->getOwnerId(),
-            ilSrRoutine::F_CREATION_DATE        => $ar_routine->getCreationDate(),
-            ilSrRoutine::F_OPT_OUT_POSSIBLE     => $ar_routine->isOptOutPossible(),
-            ilSrRoutine::F_ELONGATION_DAYS      => $ar_routine->getElongationDays(),
+            IRoutine::F_ID                   => $ar_routine->getId(),
+            IRoutine::F_NAME                 => $ar_routine->getName(),
+            IRoutine::F_REF_ID               => $ar_routine->getRefId(),
+            IRoutine::F_ACTIVE               => $ar_routine->isActive(),
+            IRoutine::F_ORIGIN_TYPE          => $ar_routine->getOriginType(),
+            IRoutine::F_OWNER_ID             => $ar_routine->getOwnerId(),
+            IRoutine::F_CREATION_DATE        => $ar_routine->getCreationDate(),
+            IRoutine::F_OPT_OUT_POSSIBLE     => $ar_routine->isOptOutPossible(),
+            IRoutine::F_ELONGATION_DAYS      => $ar_routine->getElongationDays(),
         ];
     }
 }

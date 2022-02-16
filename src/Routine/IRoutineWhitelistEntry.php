@@ -2,13 +2,25 @@
 
 namespace srag\Plugins\SrLifeCycleManager\Routine;
 
+use DateTime;
+
 /**
- * Interface IRoutineWhitelistEntry
- *
  * @author Thibeau Fuhrer <thibeau@sr.solutions>
  */
 interface IRoutineWhitelistEntry
 {
+    /**
+     * IRoutineWhitelistEntry attribute names
+     */
+    public const F_ID               = 'id';
+    public const F_WHITELIST_TYPE   = 'whitelist_type';
+    public const F_ROUTINE_ID       = 'routine_id';
+    public const F_REF_ID           = 'ref_id';
+    public const F_ACTIVE_UNTIL     = 'active_until';
+
+    /**
+     * IRoutineWhitelistEntry elongation type
+     */
     public const WHITELIST_TYPE_OPT_OUT    = 1;
     public const WHITELIST_TYPE_ELONGATION = 2;
 
@@ -65,13 +77,13 @@ interface IRoutineWhitelistEntry
     public function setRefId(int $ref_id) : IRoutineWhitelistEntry;
 
     /**
-     * @return \DateTime|null
+     * @return DateTime|null
      */
-    public function getActiveUntil() : ?\DateTime;
+    public function getActiveUntil() : ?DateTime;
 
     /**
-     * @param \DateTime $date
+     * @param DateTime $date
      * @return IRoutineWhitelistEntry
      */
-    public function setActiveUntil(\DateTime $date) : IRoutineWhitelistEntry;
+    public function setActiveUntil(DateTime $date) : IRoutineWhitelistEntry;
 }

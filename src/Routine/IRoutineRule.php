@@ -3,12 +3,17 @@
 namespace srag\Plugins\SrLifeCycleManager\Routine;
 
 /**
- * Interface IRoutineNotification defines how a routine-rule relation must look like.
- *
  * @author Thibeau Fuhrer <thibeau@sr.solutions>
  */
 interface IRoutineRule
 {
+    /**
+     * IRoutineRule attribute names
+     */
+    public const F_ID           = 'id';
+    public const F_ROUTINE_ID   = 'routine_id';
+    public const F_RULE_ID      = 'rule_id';
+
     /**
      * @return int|null
      */

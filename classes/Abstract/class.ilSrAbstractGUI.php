@@ -123,7 +123,8 @@ abstract class ilSrAbstractGUI
         $this->plugin = ilSrLifeCycleManagerPlugin::getInstance();
         $this->repository = new ilSrLifeCycleManagerRepository(
             $DIC->database(),
-            $DIC->rbac()
+            $DIC->rbac(),
+            $DIC->repositoryTree()
         );
 
         $this->form_builders = new FormBuilderFactory(
@@ -331,9 +332,9 @@ abstract class ilSrAbstractGUI
      * classes and is somewhat core to the plugin.
      *
      * @param bool $keep_alive
-     * @return Routine|null
+     * @return IRoutine|null
      */
-    protected function getRoutineFromRequest(bool $keep_alive = false) : ?Routine
+    protected function getRoutineFromRequest(bool $keep_alive = false) : ?IRoutine
     {
         $routine_id = $this->getQueryParamFromRequest(self::QUERY_PARAM_ROUTINE_ID, $keep_alive);
         if (null !== $routine_id) {
@@ -350,9 +351,10 @@ abstract class ilSrAbstractGUI
      * the routine entry from the database. By doing this the developer
      * does not have to concern about the routine's state.
      *
-     * @return Routine|null
+     * @return IRoutine|null
+     * @deprecated
      */
-    protected function getRoutineFromSession() : ?Routine
+    protected function getRoutineFromSession() : ?IRoutine
     {
         $routine_id = ilSession::get(self::SESSION_PARAM_ROUTINE_ID);
         if (null !== $routine_id) {

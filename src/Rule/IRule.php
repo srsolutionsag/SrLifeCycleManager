@@ -14,6 +14,13 @@ namespace srag\Plugins\SrLifeCycleManager\Rule;
  */
 interface IRule
 {
+    public const F_ID        = 'id';
+    public const F_RHS_TYPE  = 'rhs_type';
+    public const F_RHS_VALUE = 'rhs_value';
+    public const F_OPERATOR  = 'operator';
+    public const F_LHS_TYPE  = 'lhs_type';
+    public const F_LHS_VALUE = 'lhs_value';
+
     public const OPERATOR_EQUAL            = 'operator_equal';
     public const OPERATOR_NOT_EQUAL        = 'operator_not_equal';
     public const OPERATOR_GREATER          = 'operator_greater';

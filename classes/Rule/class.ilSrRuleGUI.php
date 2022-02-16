@@ -10,27 +10,15 @@ use srag\Plugins\SrLifeCycleManager\Rule\Rule;
  */
 class ilSrRuleGUI extends ilSrAbstractGUI
 {
-    /**
-     * @var string rule id GET parameter name.
-     */
     public const QUERY_PARAM_RULE_ID = 'rule_id';
 
-    /**
-     * ilSrRuleGUI action names.
-     */
     public const ACTION_RULE_ADD    = 'action_rule_add';
     public const ACTION_RULE_DELETE = 'action_rule_delete';
 
-    /**
-     * ilSrRuleGUI command names.
-     */
     public const CMD_RULE_ADD       = 'add';
     public const CMD_RULE_SAVE      = 'save';
     public const CMD_RULE_DELETE    = 'delete';
 
-    /**
-     * ilSrRuleGUI message lang-vars.
-     */
     protected const MSG_ROUTINE_NOT_FOUND = 'msg_routine_not_found';
     protected const MSG_RULE_SUCCESS      = 'msg_rule_success';
     protected const MSG_RULE_ERROR        = 'msg_rule_error';
@@ -70,6 +58,7 @@ class ilSrRuleGUI extends ilSrAbstractGUI
             self::CMD_INDEX,
             self::CMD_RULE_ADD,
             self::CMD_RULE_SAVE,
+            self::CMD_RULE_DELETE
         ];
     }
 

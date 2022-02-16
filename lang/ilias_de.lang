@@ -35,8 +35,10 @@ col_routine_elongation_days#:#Verlängerung (Tage)
 col_rule_rhs_type#:#RHS Typ
 col_rule_rhs_value#:#RHS Wert
 col_rule_operator#:#Operator
-col_rule_rhs_type#:#LHS Typ
-col_rule_rhs_value#:#LHS Wert
+col_rule_lhs_type#:#LHS Typ
+col_rule_lhs_value#:#LHS Wert
+col_notification_message#:#Benachrichtigung
+col_notification_days#:#Senden (in Tagen bevor Routine)
 
 input_name_routine_ref_id#:#Ref-id (scope)
 input_name_routine_name#:#Name
@@ -85,6 +87,7 @@ course_attribute_value#:#Dynamisches Attribut
 group_attribute#:#Gruppen Attribut
 group_attribute_value#:#Dynamisches Attribut
 
+srag\Plugins\SrLifeCycleManager\Rule\Attribute\Course\CourseAttribute#:#Kursattribut
 srag\Plugins\SrLifeCycleManager\Rule\Attribute\Course\CourseActive#:#Kurs aktiv
 srag\Plugins\SrLifeCycleManager\Rule\Attribute\Course\CourseEnd#:#Kursende
 srag\Plugins\SrLifeCycleManager\Rule\Attribute\Course\CourseStart#:#Kursstart
@@ -93,11 +96,13 @@ srag\Plugins\SrLifeCycleManager\Rule\Attribute\Course\CourseMetadata#:#Kurs Meta
 srag\Plugins\SrLifeCycleManager\Rule\Attribute\Course\CourseTaxonomy#:#Kurs Taxonomie
 srag\Plugins\SrLifeCycleManager\Rule\Attribute\Course\CourseTitle#:#Kurstitel
 
+srag\Plugins\SrLifeCycleManager\Rule\Attribute\Group\GroupAttribute#:#Gruppenattribut
 srag\Plugins\SrLifeCycleManager\Rule\Attribute\Group\GroupTitle#:#Gruppentitel
 srag\Plugins\SrLifeCycleManager\Rule\Attribute\Group\GroupMember#:#Gruppenmitglieder
 srag\Plugins\SrLifeCycleManager\Rule\Attribute\Group\GroupMetadata#:#Gruppen Metadata
 srag\Plugins\SrLifeCycleManager\Rule\Attribute\Group\GroupTaxonomy#:#Gruppen Taxonomie
 
+srag\Plugins\SrLifeCycleManager\Rule\Attribute\Common\CommonAttribute#:#Gewöhnliches Attribut
 srag\Plugins\SrLifeCycleManager\Rule\Attribute\Common\CommonBoolean#:#wahr/falsch
 srag\Plugins\SrLifeCycleManager\Rule\Attribute\Common\CommonDateTime#:#Datum (Y-m-d)
 srag\Plugins\SrLifeCycleManager\Rule\Attribute\Common\CommonInteger#:#Ganzzahl

@@ -7,12 +7,21 @@ namespace srag\Plugins\SrLifeCycleManager\Builder\Form\Config;
 use srag\Plugins\SrLifeCycleManager\Builder\Form\FormBuilder;
 use ILIAS\UI\Component\Input\Container\Form\Form;
 use ilSrConfig;
+use ILIAS\UI\Component\Input\Field\Factory as InputFactory;
+use ILIAS\UI\Component\Input\Container\Form\Factory as FormFactory;
+use ILIAS\Refinery\Factory as Refinery;
+use ilPlugin;
 
 /**
  * @author Thibeau Fuhrer <thibeau@sr.solutions>
  */
 class ConfigFormBuilder extends FormBuilder
 {
+    /**
+     * @var ilSrConfig[]
+     */
+    protected $config;
+
     /**
      * @var bool
      */
@@ -22,6 +31,23 @@ class ConfigFormBuilder extends FormBuilder
      * @var string[]
      */
     protected $global_roles = [];
+
+    /**
+     * @param InputFactory $input_factory
+     * @param FormFactory  $form_factory
+     * @param Refinery     $refinery
+     * @param ilPlugin     $plugin
+     */
+    public function __construct(
+        InputFactory $input_factory,
+        FormFactory $form_factory,
+        Refinery $refinery,
+        ilPlugin $plugin
+    ) {
+        parent::__construct($input_factory, $form_factory, $refinery, $plugin);
+
+        $this->config = ilSrConfig::get();
+    }
 
     /**
      * @param bool $is_bin_active

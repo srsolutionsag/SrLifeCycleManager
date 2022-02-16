@@ -12,20 +12,20 @@ interface IRuleRepository
     /**
      * returns a rule entry from the database for given id.
      * @param int $id
-     * @return Rule|null
+     * @return IRule|null
      */
-    public function get(int $id) : ?Rule;
+    public function get(int $id) : ?IRule;
 
     /**
      * creates or updates a rule entry in the database.
-     * @param Rule $rule
-     * @return Rule
+     * @param IRule $rule
+     * @return IRule
      */
-    public function store(IRule $rule) : Rule;
+    public function store(IRule $rule) : IRule;
 
     /**
      * returns all rules as RuleDTO objects.
-     * @return Rule[]|null
+     * @return IRule[]|null
      */
     public function getAllAsDTO() : ?array;
 

@@ -1,77 +1,74 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace srag\Plugins\SrLifeCycleManager\Routine;
 
 use srag\Plugins\SrLifeCycleManager\Rule\IRule;
 use srag\Plugins\SrLifeCycleManager\Notification\INotification;
-use srag\Plugins\SrLifeCycleManager\Routine\IRoutineWhitelistEntry;
 
 /**
- * Class Routine (DTO)
- *
  * @author Thibeau Fuhrer <thibeau@sr.solutions>
  */
-final class Routine implements IRoutine
+class Routine implements IRoutine
 {
     /**
      * @var int|null
      */
-    private $id;
+    protected $id;
 
     /**
      * @var string
      */
-    private $name;
+    protected $name;
 
     /**
      * @var int
      */
-    private $ref_id;
+    protected $ref_id;
 
     /**
      * @var bool
      */
-    private $active;
+    protected $active;
 
     /**
      * @var int
      */
-    private $origin_type;
+    protected $origin_type;
 
     /**
      * @var int
      */
-    private $owner_id;
+    protected $owner_id;
 
     /**
      * @var \DateTime
      */
-    private $creation_date;
+    protected $creation_date;
 
     /**
      * @var bool
      */
-    private $opt_out_possible;
+    protected $opt_out_possible;
 
     /**
      * @var int|null
      */
-    private $elongation_days;
+    protected $elongation_days;
 
     /**
      * @var IRule[]
      */
-    private $rules;
+    protected $rules;
 
     /**
      * @var INotification[]
      */
-    private $notifications;
+    protected $notifications;
 
     /**
      * @var IRoutineWhitelistEntry[]
      */
-    private $whitelist;
+    protected $whitelist;
 
     /**
      * Routine constructor
@@ -275,9 +272,9 @@ final class Routine implements IRoutine
 
     /**
      * @param IRule[] $rules
-     * @return Routine
+     * @return IRoutine
      */
-    public function addRules(array $rules) : Routine
+    public function addRules(array $rules) : IRoutine
     {
         if (!empty($rules)) {
             foreach ($rules as $rule) {
@@ -298,9 +295,9 @@ final class Routine implements IRoutine
 
     /**
      * @param INotification[] $notifications
-     * @return Routine
+     * @return IRoutine
      */
-    public function addNotifications(array $notifications) : Routine
+    public function addNotifications(array $notifications) : IRoutine
     {
         if (!empty($notifications)) {
             foreach ($notifications as $notification) {
@@ -321,9 +318,9 @@ final class Routine implements IRoutine
 
     /**
      * @param IRoutineWhitelistEntry[] $entries
-     * @return Routine
+     * @return IRoutine
      */
-    public function addWhitelistEntries(array $entries) : Routine
+    public function addWhitelistEntries(array $entries) : IRoutine
     {
         if (!empty($entries)) {
             foreach ($entries as $entry) {

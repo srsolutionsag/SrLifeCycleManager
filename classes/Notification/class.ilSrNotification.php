@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 use srag\Plugins\SrLifeCycleManager\Notification\INotification;
 
@@ -13,12 +13,6 @@ class ilSrNotification extends ActiveRecord implements INotification
      * @var string db table name
      */
     public const TABLE_NAME = ilSrLifeCycleManagerPlugin::PLUGIN_ID . '_msg';
-
-    /**
-     * ilSrNotification attribute names
-     */
-    public const F_ID       = 'id';
-    public const F_MESSAGE  = 'message';
 
     /**
      * @var null|int

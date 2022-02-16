@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace srag\Plugins\SrLifeCycleManager\Notification;
 
@@ -7,17 +7,17 @@ namespace srag\Plugins\SrLifeCycleManager\Notification;
  *
  * @author Thibeau Fuhrer <thibeau@sr.solutions>
  */
-final class Notification implements INotification
+class Notification implements INotification
 {
     /**
      * @var int|null
      */
-    private $id;
+    protected $id;
 
     /**
      * @var string
      */
-    private $message;
+    protected $message;
 
     /**
      * Notification constructor

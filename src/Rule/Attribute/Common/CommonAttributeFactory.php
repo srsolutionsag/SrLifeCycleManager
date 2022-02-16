@@ -44,13 +44,6 @@ class CommonAttributeFactory
      */
     public function getAttributeList() : array
     {
-        return [
-            CommonBoolean::class,
-            CommonInteger::class,
-            CommonString::class,
-            CommonList::class,
-            CommonDateTime::class,
-            CommonNull::class,
-        ];
+        return CommonAttribute::COMMON_ATTRIBUTES;
     }
 }

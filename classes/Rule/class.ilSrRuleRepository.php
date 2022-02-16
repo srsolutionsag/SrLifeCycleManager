@@ -1,14 +1,13 @@
-<?php
+<?php declare(strict_types=1);
 
 use srag\Plugins\SrLifeCycleManager\Rule\IRuleRepository;
-use srag\Plugins\SrLifeCycleManager\Routine\IRoutine;
 use srag\Plugins\SrLifeCycleManager\Rule\IRule;
 use srag\Plugins\SrLifeCycleManager\Rule\Rule;
 
 /**
  * Class ilSrRuleRepository
  */
-final class ilSrRuleRepository implements IRuleRepository
+class ilSrRuleRepository implements IRuleRepository
 {
     /**
      * @var ilDBInterface
@@ -26,7 +25,7 @@ final class ilSrRuleRepository implements IRuleRepository
     /**
      * @inheritDoc
      */
-    public function get(int $id) : ?Rule
+    public function get(int $id) : ?IRule
     {
         /**
          * @var $ar_rule ilSrRule
@@ -40,7 +39,7 @@ final class ilSrRuleRepository implements IRuleRepository
     /**
      * @inheritDoc
      */
-    public function store(IRule $rule) : Rule
+    public function store(IRule $rule) : IRule
     {
         // fetch existing rule or create new AR instance
         if (null !== $rule->getId()) {
@@ -55,7 +54,7 @@ final class ilSrRuleRepository implements IRuleRepository
             ->setOperator($rule->getOperator())
             ->setRhsType($rule->getRhsType())
             ->setRhsValue($rule->getRhsValue())
-            ->store();
+            ->store()
         ;
 
         return $this->transformToDTO($ar_rule);
@@ -110,6 +109,7 @@ final class ilSrRuleRepository implements IRuleRepository
         $query_values = [];
         $query = "SELECT * FROM " . ilSrRule::TABLE_NAME;
 
+        // @TODO: replace this shit with IN operator
         for ($i = 0, $type_count = count($value_types); $i < $type_count; $i++) {
             if ($i === 0) {
                 $query .= " WHERE lhs_type = %s";
@@ -165,15 +165,16 @@ final class ilSrRuleRepository implements IRuleRepository
             }
         }
 
-        // finally delete the rule itself and return.
+        // finally, delete the rule itself and return.
         $ar_rule->delete();
         return false;
     }
 
     /**
-     * @inheritDoc
+     * @param IRule $rule
+     * @return IRule
      */
-    public function transformToDTO(IRule $rule) : Rule
+    public function transformToDTO(IRule $rule) : IRule
     {
         return new Rule(
             $rule->getId(),
@@ -186,17 +187,18 @@ final class ilSrRuleRepository implements IRuleRepository
     }
 
     /**
-     * @inheritDoc
+     * @param IRule $rule
+     * @return array
      */
     public function transformToArray(IRule $rule) : array
     {
         return  [
-            ilSrRule::F_ID => $rule->getId(),
-            ilSrRule::F_LHS_TYPE => $rule->getLhsType(),
-            ilSrRule::F_LHS_VALUE => $rule->getLhsValue(),
-            ilSrRule::F_OPERATOR => $rule->getOperator(),
-            ilSrRule::F_RHS_TYPE => $rule->getRhsType(),
-            ilSrRule::F_RHS_VALUE => $rule->getRhsValue(),
+            IRule::F_ID => $rule->getId(),
+            IRule::F_LHS_TYPE => $rule->getLhsType(),
+            IRule::F_LHS_VALUE => $rule->getLhsValue(),
+            IRule::F_OPERATOR => $rule->getOperator(),
+            IRule::F_RHS_TYPE => $rule->getRhsType(),
+            IRule::F_RHS_VALUE => $rule->getRhsValue(),
         ];
     }
 }

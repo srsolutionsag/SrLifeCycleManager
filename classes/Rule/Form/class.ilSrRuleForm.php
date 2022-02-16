@@ -21,14 +21,14 @@ class ilSrRuleForm extends ilSrAbstractForm
 
     /**
      * @param ilSrLifeCycleManagerRepository $repository
-     * @param ilTemplate                     $global_template
+     * @param ilGlobalTemplateInterface      $global_template
      * @param Renderer                       $renderer
      * @param Form                           $form
      * @param IRoutine                       $routine
      */
     public function __construct(
         ilSrLifeCycleManagerRepository $repository,
-        ilTemplate $global_template,
+        ilGlobalTemplateInterface $global_template,
         Renderer $renderer,
         Form $form,
         IRoutine $routine
@@ -78,24 +78,24 @@ class ilSrRuleForm extends ilSrAbstractForm
     protected function handleFormData(array $form_data) : void
     {
         // store form-data indexes in variables for readability.
-        $lhs_value = RuleFormBuilder::KEY_LHS_VALUE;
-        $rhs_value = RuleFormBuilder::KEY_RHS_VALUE;
-        $group_type = RuleFormBuilder::INDEX_ATTRIBUTE_TYPE;
-        $group_content = RuleFormBuilder::INDEX_ATTRIBUTE_VALUE;
-        $attr_type = AttributeInputBuilder::KEY_ATTRIBUTE_TYPE;
-        $attr_value = AttributeInputBuilder::KEY_ATTRIBUTE_VALUE;
+        $key_lhs_value = RuleFormBuilder::KEY_LHS_VALUE;
+        $key_rhs_value = RuleFormBuilder::KEY_RHS_VALUE;
+        $key_group_type = RuleFormBuilder::INDEX_ATTRIBUTE_TYPE;
+        $key_group_content = RuleFormBuilder::INDEX_ATTRIBUTE_VALUE;
+        $key_attr_type = AttributeInputBuilder::KEY_ATTRIBUTE_TYPE;
+        $key_attr_value = AttributeInputBuilder::KEY_ATTRIBUTE_VALUE;
 
-        $lhs_value = $form_data[$lhs_value][$group_content][$attr_value];
-        $rhs_value = $form_data[$rhs_value][$group_content][$attr_value];
+        $lhs_value = $form_data[$key_lhs_value][$key_group_content][$key_attr_value];
+        $rhs_value = $form_data[$key_rhs_value][$key_group_content][$key_attr_value];
 
-        $lhs_type = (CommonAttribute::class === $form_data[$lhs_value][$group_type]) ?
-            $form_data[$lhs_value][$group_content][$attr_type] :
-            $form_data[$lhs_value][$group_type]
+        $lhs_type = (CommonAttribute::class === $form_data[$key_lhs_value][$key_group_type]) ?
+            $form_data[$key_lhs_value][$key_group_content][$key_attr_type] :
+            $form_data[$key_lhs_value][$key_group_type]
         ;
 
-        $rhs_type = (CommonAttribute::class === $form_data[$rhs_value][$group_type]) ?
-            $form_data[$rhs_value][$group_content][$attr_type] :
-            $form_data[$rhs_value][$group_type]
+        $rhs_type = (CommonAttribute::class === $form_data[$key_rhs_value][$key_group_type]) ?
+            $form_data[$key_rhs_value][$key_group_content][$key_attr_type] :
+            $form_data[$key_rhs_value][$key_group_type]
         ;
 
         $rule = new Rule(
