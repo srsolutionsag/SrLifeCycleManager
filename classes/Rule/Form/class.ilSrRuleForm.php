@@ -1,85 +1,41 @@
-<?php
+<?php declare(strict_types=1);
 
-use ILIAS\DI\UIServices;
-use ILIAS\Refinery\Factory;
-use srag\Plugins\SrLifeCycleManager\Routine\IRoutine;
-use srag\Plugins\SrLifeCycleManager\Rule\Form\RuleFormBuilder;
-use srag\Plugins\SrLifeCycleManager\Rule\Attribute\AttributeFactory;
-use srag\Plugins\SrLifeCycleManager\Rule\Form\Attribute\AttributeInputBuilder;
+use srag\Plugins\SrLifeCycleManager\Builder\Form\Rule\Attribute\AttributeInputBuilder;
+use srag\Plugins\SrLifeCycleManager\Builder\Form\Rule\RuleFormBuilder;
 use srag\Plugins\SrLifeCycleManager\Rule\Attribute\Common\CommonAttribute;
+use srag\Plugins\SrLifeCycleManager\Rule\Attribute\Common\CommonNull;
+use srag\Plugins\SrLifeCycleManager\Rule\Rule;
+use srag\Plugins\SrLifeCycleManager\Routine\IRoutine;
+use ILIAS\UI\Component\Input\Container\Form\Form;
+use ILIAS\UI\Renderer;
 
 /**
  * @author Thibeau Fuhrer <thibeau@sr.solutions>
  */
-class ilSrRuleForm extends ilSrAbstractMainForm
+class ilSrRuleForm extends ilSrAbstractForm
 {
     /**
      * @var IRoutine
      */
-    private $routine;
+    protected $routine;
 
     /**
-     * ilSrRuleForm constructor
-     *
-     * @param UIServices                     $ui
-     * @param ilCtrl                         $ctrl
-     * @param Factory                        $refinery
-     * @param ilSrLifeCycleManagerPlugin     $plugin
      * @param ilSrLifeCycleManagerRepository $repository
+     * @param ilTemplate                     $global_template
+     * @param Renderer                       $renderer
+     * @param Form                           $form
      * @param IRoutine                       $routine
      */
     public function __construct(
-        UIServices $ui,
-        ilCtrl $ctrl,
-        Factory $refinery,
-        ilSrLifeCycleManagerPlugin $plugin,
         ilSrLifeCycleManagerRepository $repository,
+        ilTemplate $global_template,
+        Renderer $renderer,
+        Form $form,
         IRoutine $routine
     ) {
-        $this->ui         = $ui;
-        $this->ctrl       = $ctrl;
-        $this->inputs     = $ui->factory()->input()->field();
-        $this->refinery   = $refinery;
-        $this->plugin     = $plugin;
-        $this->repository = $repository;
-        $this->routine    = $routine;
+        parent::__construct($repository, $global_template, $renderer, $form);
 
-        $form_builder = new RuleFormBuilder(
-            new AttributeFactory(),
-            $ui->factory()->input()->field(),
-            $ui->factory()->input()->container()->form(),
-            $this->refinery,
-            $this->plugin
-        );
-
-        $this->form = $form_builder->getForm(
-            $this->getFormAction()
-        );
-    }
-
-    /**
-     * @inheritDoc
-     */
-    protected function getFormAction() : string
-    {
-        $this->ctrl->setParameterByClass(
-            ilSrRuleGUI::class,
-            ilSrRuleGUI::QUERY_PARAM_ROUTINE_ID,
-            $this->routine->getId()
-        );
-
-        return $this->ctrl->getFormActionByClass(
-            ilSrRuleGUI::class,
-            ilSrRuleGUI::CMD_RULE_SAVE
-        );
-    }
-
-    /**
-     * @inheritDoc
-     */
-    protected function getFormInputs() : array
-    {
-        throw new LogicException("This method should not be invoked.");
+        $this->routine = $routine;
     }
 
     /**
@@ -95,24 +51,25 @@ class ilSrRuleForm extends ilSrAbstractMainForm
         $attr_type = AttributeInputBuilder::KEY_ATTRIBUTE_TYPE;
         $attr_value = AttributeInputBuilder::KEY_ATTRIBUTE_VALUE;
 
-        if (!empty($form_data[RuleFormBuilder::KEY_LHS_VALUE][RuleFormBuilder::INDEX_ATTRIBUTE_TYPE]) &&
-            CommonAttribute::class === $form_data[RuleFormBuilder::KEY_LHS_VALUE][RuleFormBuilder::INDEX_ATTRIBUTE_TYPE] &&
-            empty($form_data[RuleFormBuilder::KEY_LHS_VALUE][RuleFormBuilder::INDEX_ATTRIBUTE_VALUE][AttributeInputBuilder::KEY_ATTRIBUTE_TYPE])
+        // validate that the LHS value type is not empty for all other types
+        // than CommonNull.
+        if (CommonAttribute::class === $form_data[$lhs_value][$group_type] &&
+            CommonNull::class !== $form_data[$lhs_value][$group_content][$attr_type] &&
+            empty($form_data[$lhs_value][$group_content][$attr_value])
         ) {
-
+            return false;
         }
 
-        $attribute_type_index  = 0;
-        $attribute_value_index = 1;
-
-        if (empty($form_data[RuleFormBuilder::KEY_LHS_VALUE][$attribute_type_index]) ||
-            empty($form_data[RuleFormBuilder::KEY_LHS_VALUE][$attribute_value_index][AttributeInputBuilder::KEY_ATTRIBUTE_VALUE])
+        // validate that the RHS value type is not empty for all other types
+        // than CommonNull.
+        if (CommonAttribute::class === $form_data[$rhs_value][$group_type] &&
+            CommonNull::class !== $form_data[$rhs_value][$group_content][$attr_type] &&
+            empty($form_data[$rhs_value][$group_content][$attr_value])
         ) {
-
+            return false;
         }
 
-        $x = 1;
-        return false;
+        return true;
     }
 
     /**
@@ -120,6 +77,40 @@ class ilSrRuleForm extends ilSrAbstractMainForm
      */
     protected function handleFormData(array $form_data) : void
     {
-        $x = 1;
+        // store form-data indexes in variables for readability.
+        $lhs_value = RuleFormBuilder::KEY_LHS_VALUE;
+        $rhs_value = RuleFormBuilder::KEY_RHS_VALUE;
+        $group_type = RuleFormBuilder::INDEX_ATTRIBUTE_TYPE;
+        $group_content = RuleFormBuilder::INDEX_ATTRIBUTE_VALUE;
+        $attr_type = AttributeInputBuilder::KEY_ATTRIBUTE_TYPE;
+        $attr_value = AttributeInputBuilder::KEY_ATTRIBUTE_VALUE;
+
+        $lhs_value = $form_data[$lhs_value][$group_content][$attr_value];
+        $rhs_value = $form_data[$rhs_value][$group_content][$attr_value];
+
+        $lhs_type = (CommonAttribute::class === $form_data[$lhs_value][$group_type]) ?
+            $form_data[$lhs_value][$group_content][$attr_type] :
+            $form_data[$lhs_value][$group_type]
+        ;
+
+        $rhs_type = (CommonAttribute::class === $form_data[$rhs_value][$group_type]) ?
+            $form_data[$rhs_value][$group_content][$attr_type] :
+            $form_data[$rhs_value][$group_type]
+        ;
+
+        $rule = new Rule(
+            null,
+            $lhs_type,
+            $lhs_value,
+            $form_data[RuleFormBuilder::KEY_OPERATOR],
+            $rhs_type,
+            $rhs_value
+        );
+
+        // store the new rule and create a relation to the current routine.
+        $this->repository->routine()->addRule(
+            $this->routine,
+            $this->repository->rule()->store($rule)
+        );
     }
 }

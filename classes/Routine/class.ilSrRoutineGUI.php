@@ -1,13 +1,14 @@
-<?php
+<?php declare(strict_types=1);
 
 use srag\Plugins\SrLifeCycleManager\Routine\Routine;
+use srag\Plugins\SrLifeCycleManager\Routine\IRoutine;
 
 /**
  * Class ilSrRoutineGUI
  *
  * @author Thibeau Fuhrer <thibeau@sr.solutions>
  */
-final class ilSrRoutineGUI extends ilSrAbstractMainGUI
+class ilSrRoutineGUI extends ilSrAbstractGUI
 {
     /**
      * @var string routine scope (ref-id) GET parameter name.
@@ -33,25 +34,25 @@ final class ilSrRoutineGUI extends ilSrAbstractMainGUI
     /**
      * ilSrRoutineGUI lang vars.
      */
-    private const MSG_ROUTINE_SUCCESS = 'msg_routine_success';
-    private const MSG_ROUTINE_ERROR   = 'msg_routine_error';
-    private const MSG_ORIGIN_UNKNOWN  = 'msg_routine_origin_unknown';
-    private const PAGE_TITLE          = 'page_title_routine';
+    protected const MSG_ROUTINE_SUCCESS = 'msg_routine_success';
+    protected const MSG_ROUTINE_ERROR   = 'msg_routine_error';
+    protected const MSG_ORIGIN_UNKNOWN  = 'msg_routine_origin_unknown';
+    protected const PAGE_TITLE          = 'page_title_routine';
 
     /**
      * @var int|null
      */
-    private $origin_type;
+    protected $origin_type;
 
     /**
      * @var Routine|null
      */
-    private $routine;
+    protected $routine;
 
     /**
      * @var int|null
      */
-    private $scope;
+    protected $scope;
 
     /**
      * ilSrRoutineGUI constructor.
@@ -60,7 +61,7 @@ final class ilSrRoutineGUI extends ilSrAbstractMainGUI
     {
         parent::__construct();
 
-        // TEST
+        // @TODO: check if this is necessary
         $this->ctrl->saveParameterByClass(
             self::class,
             self::QUERY_PARAM_ROUTINE_SCOPE
@@ -160,9 +161,7 @@ final class ilSrRoutineGUI extends ilSrAbstractMainGUI
         // display the form only if the origin-type could be
         // determined, as it would lead to an error else.
         if (null !== $this->origin_type) {
-            $this->ui->mainTemplate()->setContent(
-                $this->getForm()->render()
-            );
+            $this->getForm()->printToGlobalTemplate();
         } else {
             $this->displayErrorMessage(self::MSG_ORIGIN_UNKNOWN);
         }
@@ -191,7 +190,7 @@ final class ilSrRoutineGUI extends ilSrAbstractMainGUI
         // display the form if the submission was unsuccessful
         // to display errors.
         $this->displayErrorMessage(self::MSG_ROUTINE_ERROR);
-        $this->ui->mainTemplate()->setContent($form->render());
+        $this->ui->mainTemplate()->setContent($form->printToGlobalTemplate());
     }
 
     /**
@@ -223,7 +222,7 @@ final class ilSrRoutineGUI extends ilSrAbstractMainGUI
      *
      * @return int|null
      */
-    private function getOriginTypeFromRequest() : ?int
+    protected function getOriginTypeFromRequest() : ?int
     {
         // fetch the first array-entry from ilCtrl's call-
         // history. This is always the base-class.
@@ -234,9 +233,9 @@ final class ilSrRoutineGUI extends ilSrAbstractMainGUI
         // the according origin-type.
         switch ($base_class['class']) {
             case ilUIPluginRouterGUI::class:
-                return Routine::ORIGIN_TYPE_REPOSITORY;
+                return IRoutine::ORIGIN_TYPE_REPOSITORY;
             case ilAdministrationGUI::class:
-                return Routine::ORIGIN_TYPE_ADMINISTRATION;
+                return IRoutine::ORIGIN_TYPE_ADMINISTRATION;
 
             default:
                 return null;
@@ -250,7 +249,7 @@ final class ilSrRoutineGUI extends ilSrAbstractMainGUI
      * or added to a table-row-entry's dropdown actions (like add
      * for example).
      */
-    private function addRoutineToolbar() : void
+    protected function addRoutineToolbar() : void
     {
         // create a button instance to create new routines.
         $button = ilLinkButton::getInstance();
@@ -273,10 +272,53 @@ final class ilSrRoutineGUI extends ilSrAbstractMainGUI
      *
      * @return int|null
      */
-    private function getScopeFromRequest() : ?int
+    protected function getScopeFromRequest() : ?int
     {
         $scope = $this->getQueryParamFromRequest(self::QUERY_PARAM_ROUTINE_SCOPE, false);
         return ($scope) ? (int) $scope : null;
+    }
+
+    /**
+     * Gathers all the routines, if a scope is provided only routines
+     * within are considered.
+     *
+     * @return array
+     */
+    protected function getTableData() : array
+    {
+        // if a scope was provided, the table should only
+        // display routines within this scope (displayed
+        // ref-id's might differ from current scope).
+        if (null !== $this->scope) {
+            return $this->repository->routine()->getAllByScope($this->scope, true);
+        }
+
+        return $this->repository->routine()->getAllAsArray();
+    }
+
+    /**
+     * Returns the form action for routines. If an existing routine
+     * is being edited, the query param will be set first.
+     *
+     * @return string
+     */
+    protected function getFormAction() : string
+    {
+        // if the form has been initialized with a routine,
+        // the id must be set as a GET parameter before
+        // generating the form-action.
+        if (null !== $this->routine) {
+            $this->ctrl->setParameterByClass(
+                self::class,
+                self::QUERY_PARAM_ROUTINE_ID,
+                $this->routine->getId()
+            );
+        }
+
+        return $this->ctrl->getFormActionByClass(
+            self::class,
+            self::CMD_ROUTINE_SAVE
+        );
     }
 
     /**
@@ -285,18 +327,20 @@ final class ilSrRoutineGUI extends ilSrAbstractMainGUI
      *
      * @return ilSrRoutineForm
      */
-    private function getForm() : ilSrRoutineForm
+    protected function getForm() : ilSrRoutineForm
     {
         return new ilSrRoutineForm(
-            $this->ui,
-            $this->ctrl,
-            $this->refinery,
-            $this->plugin,
             $this->repository,
+            $this->ui->mainTemplate(),
+            $this->ui->renderer(),
+            $this->form_builders
+                ->routine()
+                ->withRoutine($this->routine)
+                ->withScope($this->scope)
+                ->getForm($this->getFormAction())
+            ,
             $this->origin_type,
-            $this->user->getId(),
-            $this->routine,
-            $this->scope
+            $this->user->getId()
         );
     }
 
@@ -306,15 +350,15 @@ final class ilSrRoutineGUI extends ilSrAbstractMainGUI
      *
      * @return ilSrRoutineTable
      */
-    private function getTable() : ilSrRoutineTable
+    protected function getTable() : ilSrRoutineTable
     {
         return new ilSrRoutineTable(
             $this->ui,
             $this->plugin,
-            $this->repository,
             $this,
             self::CMD_INDEX,
-            $this->scope
+            'tpl.routine_table_row.html',
+            $this->getTableData()
         );
     }
 }

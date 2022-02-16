@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 use ILIAS\UI\Component\Dropdown\Standard as Dropdown;
 use srag\Plugins\SrLifeCycleManager\Routine\IRoutine;
@@ -9,62 +9,41 @@ use ILIAS\DI\UIServices;
  *
  * @author Thibeau Fuhrer <thibeau@sr.solutions>
  */
-class ilSrRuleTable extends ilSrAbstractMainTable
+class ilSrRuleTable extends ilSrAbstractTable
 {
-    /**
-     * ilSrRuleTable column names.
-     */
-    private const COL_RULE_RHS_TYPE  = 'col_rule_rhs_type';
-    private const COL_RULE_RHS_VALUE = 'col_rule_rhs_value';
-    private const COL_RULE_OPERATOR  = 'col_rule_operator';
-    private const COL_RULE_LHS_TYPE  = 'col_rule_rhs_type';
-    private const COL_RULE_LHS_VALUE = 'col_rule_rhs_value';
-    private const COL_ACTIONS        = 'col_actions';
+    protected const COL_RULE_RHS_TYPE  = 'col_rule_rhs_type';
+    protected const COL_RULE_RHS_VALUE = 'col_rule_rhs_value';
+    protected const COL_RULE_OPERATOR  = 'col_rule_operator';
+    protected const COL_RULE_LHS_TYPE  = 'col_rule_rhs_type';
+    protected const COL_RULE_LHS_VALUE = 'col_rule_rhs_value';
+    protected const COL_ACTIONS        = 'col_actions';
 
     /**
      * @var IRoutine
      */
-    private $routine;
+    protected $routine;
 
     /**
-     * ilSrRuleTable constructor
-     *
-     * @param UIServices                     $ui
-     * @param ilSrLifeCycleManagerPlugin     $plugin
-     * @param ilSrLifeCycleManagerRepository $repository
-     * @param object                         $parent_gui
-     * @param string                         $parent_cmd
-     * @param IRoutine                       $routine
+     * @param UIServices                 $ui
+     * @param ilSrLifeCycleManagerPlugin $plugin
+     * @param object                     $parent_gui
+     * @param string                     $parent_cmd
+     * @param string                     $row_template
+     * @param array                      $table_data
+     * @param IRoutine                   $routine
      */
     public function __construct(
         UIServices $ui,
         ilSrLifeCycleManagerPlugin $plugin,
-        ilSrLifeCycleManagerRepository $repository,
         object $parent_gui,
         string $parent_cmd,
+        string $row_template,
+        array $table_data,
         IRoutine $routine
     ) {
-        // dependencies must be declared before the parent constructor
-        // is called, as they're already used by it.
+        parent::__construct($ui, $plugin, $parent_gui, $parent_cmd, $row_template, $table_data);
+
         $this->routine = $routine;
-
-        parent::__construct($ui, $plugin, $repository, $parent_gui, $parent_cmd);
-    }
-
-    /**
-     * @inheritDoc
-     */
-    protected function getTableData() : array
-    {
-        return $this->repository->routine()->getRules($this->routine, true);
-    }
-
-    /**
-     * @inheritDoc
-     */
-    protected function getRowTemplate() : string
-    {
-        return 'tpl.rule_table_row.html';
     }
 
     /**
@@ -103,7 +82,7 @@ class ilSrRuleTable extends ilSrAbstractMainTable
      * @param int $rule_id
      * @return Dropdown
      */
-    private function getActionDropdown(int $rule_id) : Dropdown
+    protected function getActionDropdown(int $rule_id) : Dropdown
     {
         $this->ctrl->setParameterByClass(
             ilSrRuleGUI::class,

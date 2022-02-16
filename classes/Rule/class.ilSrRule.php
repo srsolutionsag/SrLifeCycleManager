@@ -51,7 +51,7 @@ final class ilSrRule extends ActiveRecord implements IRule
      * @var mixed
      *
      * @con_has_field   true
-     * @con_is_notnull  true
+     * @con_is_notnull  false
      * @con_fieldtype   clob
      * @con_length      4000
      */
@@ -63,7 +63,7 @@ final class ilSrRule extends ActiveRecord implements IRule
      * @con_has_field   true
      * @con_is_notnull  true
      * @con_fieldtype   text
-     * @con_length      20
+     * @con_length      64
      */
     protected $operator;
 
@@ -81,7 +81,7 @@ final class ilSrRule extends ActiveRecord implements IRule
      * @var mixed
      *
      * @con_has_field   true
-     * @con_is_notnull  true
+     * @con_is_notnull  false
      * @con_fieldtype   clob
      * @con_length      4000
      */

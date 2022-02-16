@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 /**
  * Class ilSrConfigGUI is responsible for the general plugin configuration.
@@ -9,10 +9,10 @@
  * plugin administration is requested.
  *
  * It's responsible for general configuration and displays a form on
- * the first request. Further commands implemented in this class are
+ * the first request. Further, commands implemented in this class are
  * the change and store these configurations.
  */
-final class ilSrConfigGUI extends ilSrAbstractMainGUI
+class ilSrConfigGUI extends ilSrAbstractGUI
 {
     /**
      * ilSrConfigGUI command names (methods)
@@ -22,14 +22,14 @@ final class ilSrConfigGUI extends ilSrAbstractMainGUI
     /**
      * ilSrConfigGUI lang vars
      */
-    private const MSG_CONFIGURATION_SUCCESS = 'msg_configuration_success';
-    private const MSG_CONFIGURATION_ERROR   = 'msg_configuration_error';
-    private const PAGE_TITLE                = 'page_title_config';
+    protected const MSG_CONFIGURATION_SUCCESS = 'msg_configuration_success';
+    protected const MSG_CONFIGURATION_ERROR   = 'msg_configuration_error';
+    protected const PAGE_TITLE                = 'page_title_config';
 
     /**
      * @var ilSetting
      */
-    private $settings;
+    protected $settings;
 
     /**
      * ilSrConfigGUI constructor
@@ -89,9 +89,7 @@ final class ilSrConfigGUI extends ilSrAbstractMainGUI
      */
     protected function index() : void
     {
-        $this->ui->mainTemplate()->setContent(
-            $this->getForm()->render()
-        );
+        $this->getForm()->printToGlobalTemplate();
     }
 
     /**
@@ -107,8 +105,19 @@ final class ilSrConfigGUI extends ilSrAbstractMainGUI
         }
 
         $this->sendErrorMessage(self::MSG_CONFIGURATION_ERROR);
-        $this->ui->mainTemplate()->setContent(
-            $form->render()
+        $form->printToGlobalTemplate();
+    }
+
+    /**
+     * Returns the configuration form action.
+     *
+     * @return string
+     */
+    protected function getFormAction() : string
+    {
+        return $this->ctrl->getFormActionByClass(
+            self::class,
+            self::CMD_CONFIG_SAVE
         );
     }
 
@@ -118,15 +127,17 @@ final class ilSrConfigGUI extends ilSrAbstractMainGUI
      *
      * @return ilSrConfigForm
      */
-    private function getForm() : ilSrConfigForm
+    protected function getForm() : ilSrConfigForm
     {
         return new ilSrConfigForm(
-            $this->ui,
-            $this->ctrl,
-            $this->refinery,
-            $this->plugin,
             $this->repository,
-            $this->settings
+            $this->ui->mainTemplate(),
+            $this->ui->renderer(),
+            $this->form_builders
+                ->config()
+                ->withBinActive((bool) $this->settings->get('enable_trash'))
+                ->withGlobalRoles($this->repository->getGlobalRoleOptions())
+                ->getForm($this->getFormAction())
         );
     }
 }

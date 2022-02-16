@@ -1,88 +1,28 @@
-<?php
+<?php declare(strict_types=1);
 
 use ILIAS\UI\Component\Dropdown\Standard as Dropdown;
-use ILIAS\DI\UIServices;
 
 /**
  * Class ilSrRoutineTable represents all available routines.
  *
  * @author Thibeau Fuhrer <thibeau@sr.solutions>
  */
-final class ilSrRoutineTable extends ilSrAbstractMainTable
+class ilSrRoutineTable extends ilSrAbstractTable
 {
-    /**
-     * ilSrRoutineTable column names.
-     */
-    private const COL_REF_ID            = 'col_routine_ref_id';
-    private const COL_NAME              = 'col_routine_name';
-    private const COL_ACTIVE            = 'col_routine_active';
-    private const COL_ORIGIN_TYPE       = 'col_routine_origin_type';
-    private const COL_OWNER             = 'col_routine_owner_id';
-    private const COL_CREATION_DATE     = 'col_routine_creation_date';
-    private const COL_OPT_OUT_POSSIBLE  = 'col_routine_opt_out_possible';
-    private const COL_ELONGATION_DAYS   = 'col_routine_elongation_days';
-    private const COL_ACTIONS           = 'col_actions';
+    protected const STATUS_ACTIVE         = 'status_active';
+    protected const STATUS_INACTIVE       = 'status_inactive';
+    protected const STATUS_POSSIBLE       = 'status_possible';
+    protected const STATUS_IMPOSSIBLE     = 'status_impossible';
 
-    /**
-     * ilSrRoutineTable lang vars
-     */
-    private const STATUS_ACTIVE     = 'status_active';
-    private const STATUS_INACTIVE   = 'status_inactive';
-    private const STATUS_POSSIBLE   = 'status_possible';
-    private const STATUS_IMPOSSIBLE = 'status_impossible';
-
-    /**
-     * @var int|null
-     */
-    private $scope;
-
-    /**
-     * ilSrRoutineTable constructor
-     *
-     * @param UIServices                     $ui
-     * @param ilSrLifeCycleManagerPlugin     $plugin
-     * @param ilSrLifeCycleManagerRepository $repository
-     * @param object                         $parent_gui
-     * @param string                         $parent_cmd
-     * @param int|null                       $scope
-     */
-    public function __construct(
-        UIServices $ui,
-        ilSrLifeCycleManagerPlugin $plugin,
-        ilSrLifeCycleManagerRepository $repository,
-        object $parent_gui,
-        string $parent_cmd,
-        int $scope = null
-    ) {
-        // dependencies must be declared before the parent constructor
-        // is called, as they're already used by it.
-        $this->scope = $scope;
-
-        parent::__construct($ui, $plugin, $repository, $parent_gui, $parent_cmd);
-    }
-
-    /**
-     * @inheritDoc
-     */
-    protected function getRowTemplate() : string
-    {
-        return 'tpl.routine_table_row.html';
-    }
-
-    /**
-     * @inheritDoc
-     */
-    protected function getTableData() : array
-    {
-        // if a scope was provided, the table should only
-        // display routines within this scope (displayed
-        // ref-id's might differ from current scope).
-        if (null !== $this->scope) {
-            return $this->repository->routine()->getAllByScope($this->scope, true);
-        }
-
-        return $this->repository->routine()->getAllAsArray();
-    }
+    protected const COL_REF_ID            = 'col_routine_ref_id';
+    protected const COL_NAME              = 'col_routine_name';
+    protected const COL_ACTIVE            = 'col_routine_active';
+    protected const COL_ORIGIN_TYPE       = 'col_routine_origin_type';
+    protected const COL_OWNER             = 'col_routine_owner_id';
+    protected const COL_CREATION_DATE     = 'col_routine_creation_date';
+    protected const COL_OPT_OUT_POSSIBLE  = 'col_routine_opt_out_possible';
+    protected const COL_ELONGATION_DAYS   = 'col_routine_elongation_days';
+    protected const COL_ACTIONS           = 'col_actions';
 
     /**
      * @inheritDoc
@@ -149,7 +89,7 @@ final class ilSrRoutineTable extends ilSrAbstractMainTable
      * @param int $routine_id
      * @return Dropdown
      */
-    private function getActionDropdown(int $routine_id) : Dropdown
+    protected function getActionDropdown(int $routine_id) : Dropdown
     {
         $this->setActionParameters($routine_id);
         return $this->ui->factory()->dropdown()->standard([
@@ -196,7 +136,7 @@ final class ilSrRoutineTable extends ilSrAbstractMainTable
      *
      * @param int $routine_id
      */
-    private function setActionParameters(int $routine_id) : void
+    protected function setActionParameters(int $routine_id) : void
     {
         $this->ctrl->setParameterByClass(
             ilSrRoutineGUI::class,

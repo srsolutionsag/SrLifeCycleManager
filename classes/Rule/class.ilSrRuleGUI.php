@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 use srag\Plugins\SrLifeCycleManager\Routine\IRoutine;
 use srag\Plugins\SrLifeCycleManager\Rule\Rule;
@@ -8,7 +8,7 @@ use srag\Plugins\SrLifeCycleManager\Rule\Rule;
  *
  * @author Thibeau Fuhrer <thibeau@sr.solutions>
  */
-final class ilSrRuleGUI extends ilSrAbstractMainGUI
+class ilSrRuleGUI extends ilSrAbstractGUI
 {
     /**
      * @var string rule id GET parameter name.
@@ -31,15 +31,15 @@ final class ilSrRuleGUI extends ilSrAbstractMainGUI
     /**
      * ilSrRuleGUI message lang-vars.
      */
-    private const MSG_ROUTINE_NOT_FOUND = 'msg_routine_not_found';
-    private const MSG_RULE_SUCCESS      = 'msg_rule_success';
-    private const MSG_RULE_ERROR        = 'msg_rule_error';
-    private const PAGE_TITLE            = 'page_title_rules';
+    protected const MSG_ROUTINE_NOT_FOUND = 'msg_routine_not_found';
+    protected const MSG_RULE_SUCCESS      = 'msg_rule_success';
+    protected const MSG_RULE_ERROR        = 'msg_rule_error';
+    protected const PAGE_TITLE            = 'page_title_rules';
 
     /**
      * @var IRoutine|null
      */
-    private $routine;
+    protected $routine;
 
     /**
      * ilSrRuleGUI constructor.
@@ -128,7 +128,10 @@ final class ilSrRuleGUI extends ilSrAbstractMainGUI
     }
 
     /**
+     * Displays a form to create new rules.
      *
+     * The method does however not process it, the form will be
+     * submitted to @see ilSrRuleGUI::save().
      */
     protected function add() : void
     {
@@ -141,13 +144,15 @@ final class ilSrRuleGUI extends ilSrAbstractMainGUI
             )
         );
 
-        $this->ui->mainTemplate()->setContent(
-            $this->getForm()->render()
-        );
+        $this->getForm()->printToGlobalTemplate();
     }
 
     /**
+     * Processes the submitted form-data and creates a new rule that is
+     * related to the current routine.
      *
+     * If the creation fails or any inputs are invalid, the form will
+     * be displayed again with an according error message.
      */
     protected function save() : void
     {
@@ -161,7 +166,7 @@ final class ilSrRuleGUI extends ilSrAbstractMainGUI
         // display the form if the submission was unsuccessful
         // to display errors.
         $this->displayErrorMessage(self::MSG_RULE_ERROR);
-        $this->ui->mainTemplate()->setContent($form->render());
+        $form->printToGlobalTemplate();
     }
 
     /**
@@ -188,7 +193,7 @@ final class ilSrRuleGUI extends ilSrAbstractMainGUI
      * or added to a table-row-entry's dropdown actions (like add
      * for example).
      */
-    private function addRuleToolbar() : void
+    protected function addRuleToolbar() : void
     {
         // create a button instance to create new routines.
         $button = ilLinkButton::getInstance();
@@ -208,14 +213,45 @@ final class ilSrRuleGUI extends ilSrAbstractMainGUI
      *
      * @return Rule|null
      */
-    private function getRuleFromRequest() : ?Rule
+    protected function getRuleFromRequest() : ?Rule
     {
         $rule_id = $this->getQueryParamFromRequest(self::QUERY_PARAM_RULE_ID);
         if (null !== $rule_id) {
-            return $this->repository->rule()->get($rule_id);
+            return $this->repository->rule()->get((int) $rule_id);
         }
 
         return null;
+    }
+
+    /**
+     * Returns the form action for rules.
+     *
+     * @return string
+     */
+    protected function getFormAction() : string
+    {
+        // the current routine must be passed along so the
+        // relationship can be created.
+        $this->ctrl->setParameterByClass(
+            self::class,
+            self::QUERY_PARAM_ROUTINE_ID,
+            $this->routine->getId()
+        );
+
+        return $this->ctrl->getFormActionByClass(
+            self::class,
+            self::CMD_RULE_SAVE
+        );
+    }
+
+    /**
+     * Gathers all the rules for related to the current routine.
+     *
+     * @return array
+     */
+    protected function getTableData() : array
+    {
+        return $this->repository->routine()->getRules($this->routine, true);
     }
 
     /**
@@ -224,14 +260,16 @@ final class ilSrRuleGUI extends ilSrAbstractMainGUI
      *
      * @return ilSrRuleForm
      */
-    private function getForm() : ilSrRuleForm
+    protected function getForm() : ilSrRuleForm
     {
         return new ilSrRuleForm(
-            $this->ui,
-            $this->ctrl,
-            $this->refinery,
-            $this->plugin,
             $this->repository,
+            $this->ui->mainTemplate(),
+            $this->ui->renderer(),
+            $this->form_builders
+                ->rule()
+                ->getForm($this->getFormAction())
+            ,
             $this->routine
         );
     }
@@ -242,14 +280,15 @@ final class ilSrRuleGUI extends ilSrAbstractMainGUI
      *
      * @return ilSrRuleTable
      */
-    private function getTable() : ilSrRuleTable
+    protected function getTable() : ilSrRuleTable
     {
         return new ilSrRuleTable(
             $this->ui,
             $this->plugin,
-            $this->repository,
             $this,
             self::CMD_INDEX,
+            'tpl.rule_table_row.html',
+            $this->getTableData(),
             $this->routine
         );
     }

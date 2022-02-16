@@ -53,7 +53,7 @@ final class ilSrRoutineRepository implements IRoutineRepository
     /**
      * @inheritDoc
      */
-    public function getEmpty(int $origin_type, int $owner_id) : Routine
+    public function getEmpty(int $origin_type, int $owner_id) : IRoutine
     {
         return new Routine(
             null,
@@ -196,15 +196,20 @@ final class ilSrRoutineRepository implements IRoutineRepository
     /**
      * @inheritDoc
      */
-    public function addRule(IRoutine $routine, IRule $rule) : Routine
+    public function addRule(IRoutine $routine, IRule $rule) : void
     {
-        // TODO: Implement addRule() method.
+        $routine_rule_relation = new ilSrRoutineRule();
+        $routine_rule_relation
+            ->setRoutineId($routine->getId())
+            ->setRuleId($rule->getId())
+            ->store()
+        ;
     }
 
     /**
      * @inheritDoc
      */
-    public function addNotification(IRoutine $routine, INotification $notification) : Routine
+    public function addNotification(IRoutine $routine, INotification $notification) : void
     {
         // TODO: Implement addNotification() method.
     }
@@ -214,15 +219,15 @@ final class ilSrRoutineRepository implements IRoutineRepository
      */
     public function addWhitelistEntry(
         IRoutine $routine,
-        \srag\Plugins\SrLifeCycleManager\Routine\IRoutineWhitelistEntry $entry
-    ) : Routine {
+        IRoutineWhitelistEntry $entry
+    ) : void {
         // TODO: Implement addWhitelistEntry() method.
     }
 
     /**
      * @inheritDoc
      */
-    public function store(IRoutine $routine) : Routine
+    public function store(IRoutine $routine) : IRoutine
     {
         if (null !== $routine->getId()) {
             $ar_routine = ilSrRoutine::find($routine->getId()) ?? new ilSrRoutine();
@@ -250,15 +255,21 @@ final class ilSrRoutineRepository implements IRoutineRepository
     /**
      * @inheritDoc
      */
-    public function removeRule(IRoutine $routine, IRule $rule) : Routine
+    public function removeRule(IRoutine $routine, IRule $rule) : void
     {
-        // TODO: Implement removeRule() method.
+        ilSrRoutineRule::where(
+            [
+                ilSrRoutineRule::F_ROUTINE_ID => $routine->getId(),
+                ilSrRoutineRule::F_RULE_ID    => $rule->getId(),
+            ],
+            "="
+        )->first()->delete();
     }
 
     /**
      * @inheritDoc
      */
-    public function removeNotification(IRoutine $routine, INotification $notification) : Routine
+    public function removeNotification(IRoutine $routine, INotification $notification) : void
     {
         // TODO: Implement removeNotification() method.
     }
@@ -268,8 +279,8 @@ final class ilSrRoutineRepository implements IRoutineRepository
      */
     public function removeWhitelistEntry(
         IRoutine $routine,
-        \srag\Plugins\SrLifeCycleManager\Routine\IRoutineWhitelistEntry $entry
-    ) : Routine {
+        IRoutineWhitelistEntry $entry
+    ) : void {
         // TODO: Implement removeWhitelistEntry() method.
     }
 

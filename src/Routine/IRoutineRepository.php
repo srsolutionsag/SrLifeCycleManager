@@ -41,7 +41,7 @@ interface IRoutineRepository
      * @param int $owner_id
      * @return Routine
      */
-    public function getEmpty(int $origin_type, int $owner_id) : Routine;
+    public function getEmpty(int $origin_type, int $owner_id) : IRoutine;
 
     /**
      * Returns all existing routines from the database as DTOs.
@@ -104,35 +104,32 @@ interface IRoutineRepository
      *
      * @param IRoutine $routine
      * @param IRule    $rule
-     * @return Routine
      */
-    public function addRule(IRoutine $routine, IRule $rule) : Routine;
+    public function addRule(IRoutine $routine, IRule $rule) : void;
 
     /**
      * Stores a routine-notification relation between given routine and rule.
      *
      * @param IRoutine      $routine
      * @param INotification $notification
-     * @return Routine
      */
-    public function addNotification(IRoutine $routine, INotification $notification) : Routine;
+    public function addNotification(IRoutine $routine, INotification $notification) : void;
 
     /**
      * Stores the given whitelist entry related to the given routine.
      *
      * @param IRoutine               $routine
      * @param IRoutineWhitelistEntry $entry
-     * @return Routine
      */
-    public function addWhitelistEntry(IRoutine $routine, IRoutineWhitelistEntry $entry) : Routine;
+    public function addWhitelistEntry(IRoutine $routine, IRoutineWhitelistEntry $entry) : void;
 
     /**
      * Creates or updates the given routine in the database.
      *
      * @param IRoutine $routine
-     * @return Routine
+     * @return IRoutine
      */
-    public function store(IRoutine $routine) : Routine;
+    public function store(IRoutine $routine) : IRoutine;
 
     /**
      * Removes a routine-rule relation between given routine and rule.
@@ -141,25 +138,23 @@ interface IRoutineRepository
      * @param IRule    $rule
      * @return Routine
      */
-    public function removeRule(IRoutine $routine, IRule $rule) : Routine;
+    public function removeRule(IRoutine $routine, IRule $rule) : void;
 
     /**
      * Removes a routine-notification relation between given routine and notification.
      *
      * @param IRoutine      $routine
      * @param INotification $notification
-     * @return Routine
      */
-    public function removeNotification(IRoutine $routine, INotification $notification) : Routine;
+    public function removeNotification(IRoutine $routine, INotification $notification) : void;
 
     /**
      * Removes a routine whitelist entry from the given routine.
      *
      * @param IRoutine               $routine
      * @param IRoutineWhitelistEntry $entry
-     * @return Routine
      */
-    public function removeWhitelistEntry(IRoutine $routine, IRoutineWhitelistEntry $entry) : Routine;
+    public function removeWhitelistEntry(IRoutine $routine, IRoutineWhitelistEntry $entry) : void;
 
     /**
      * Deletes an existing routine from the database.

@@ -5,7 +5,7 @@
  *
  * @author Thibeau Fuhrer <thibeau@sr.solutions>
  */
-final class ilSrNotificationGUI extends ilSrAbstractMainGUI
+final class ilSrNotificationGUI extends ilSrAbstractGUI
 {
     /**
      * @inheritDoc

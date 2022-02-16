@@ -1,107 +1,12 @@
-<?php
-
-use ILIAS\Refinery\Factory;
-use ILIAS\DI\UIServices;
+<?php declare(strict_types=1);
 
 /**
  * Class ilSrConfigForm is responsible for the configuration form.
  *
  * @author Thibeau Fuhrer <thibeau@sr.solutions>
  */
-class ilSrConfigForm extends ilSrAbstractMainForm
+class ilSrConfigForm extends ilSrAbstractForm
 {
-    /**
-     * @var ilSrConfig[]
-     */
-    private $config;
-
-    /**
-     * @var ilSetting
-     */
-    private $settings;
-
-    /**
-     * ilSrConfigForm constructor
-     *
-     * @param UIServices                     $ui
-     * @param ilCtrl                         $ctrl
-     * @param Factory                        $refinery
-     * @param ilSrLifeCycleManagerPlugin     $plugin
-     * @param ilSrLifeCycleManagerRepository $repository
-     * @param ilSetting                      $settings
-     */
-    public function __construct(
-        UIServices $ui,
-        ilCtrl $ctrl,
-        Factory $refinery,
-        ilSrLifeCycleManagerPlugin $plugin,
-        ilSrLifeCycleManagerRepository $repository,
-        ilSetting $settings
-    ) {
-        // dependencies must be declared before the parent constructor
-        // is called, as they're already used by it.
-        $this->config   = ilSrConfig::get();
-        $this->settings = $settings;
-
-        parent::__construct($ui, $ctrl, $refinery, $plugin, $repository);
-    }
-
-    /**
-     * @inheritDoc
-     */
-    protected function getFormAction() : string
-    {
-        return $this->ctrl->getFormActionByClass(
-            ilSrConfigGUI::class,
-            ilSrConfigGUI::CMD_CONFIG_SAVE
-        );
-    }
-
-    /**
-     * @inheritDoc
-     */
-    protected function getFormInputs() : array
-    {
-        $inputs = [];
-
-        $inputs[ilSrConfig::CNF_GLOBAL_ROLES] = $this->inputs->multiSelect(
-            $this->plugin->txt(ilSrConfig::CNF_GLOBAL_ROLES),
-            $this->repository->getGlobalRoleOptions()
-        )
-        ->withValue((isset($this->config[ilSrConfig::CNF_GLOBAL_ROLES])) ?
-            $this->config[ilSrConfig::CNF_GLOBAL_ROLES]->getValue() : []
-        );
-
-        // add move-to-bin input only if ILIAS trash is enabled.
-        if ($this->settings->get('enable_trash')) {
-            $inputs[ilSrConfig::CNF_MOVE_TO_BIN] = $this->inputs->checkbox(
-                $this->plugin->txt(ilSrConfig::CNF_MOVE_TO_BIN)
-            )
-            ->withValue(
-                isset($this->config[ilSrConfig::CNF_MOVE_TO_BIN]) &&
-                $this->config[ilSrConfig::CNF_MOVE_TO_BIN]->getValue()
-            );
-        }
-
-        $inputs[ilSrConfig::CNF_SHOW_ROUTINES] = $this->inputs->checkbox(
-            $this->plugin->txt(ilSrConfig::CNF_SHOW_ROUTINES)
-        )
-        ->withValue(
-            isset($this->config[ilSrConfig::CNF_SHOW_ROUTINES]) &&
-            $this->config[ilSrConfig::CNF_SHOW_ROUTINES]->getValue()
-        );
-
-        $inputs[ilSrConfig::CNF_CREATE_ROUTINES] = $this->inputs->checkbox(
-            $this->plugin->txt(ilSrConfig::CNF_CREATE_ROUTINES)
-        )
-        ->withValue(
-            isset($this->config[ilSrConfig::CNF_CREATE_ROUTINES]) &&
-            $this->config[ilSrConfig::CNF_CREATE_ROUTINES]->getValue()
-        );
-
-        return $inputs;
-    }
-
     /**
      * @inheritDoc
      */

@@ -6,9 +6,9 @@ $vendorDir = dirname(dirname(__FILE__));
 $baseDir = dirname($vendorDir);
 
 return array(
-    'ilSrAbstractMainForm' => $baseDir . '/classes/Util/class.ilSrAbstractMainForm.php',
-    'ilSrAbstractMainGUI' => $baseDir . '/classes/Util/class.ilSrAbstractMainGUI.php',
-    'ilSrAbstractMainTable' => $baseDir . '/classes/Util/class.ilSrAbstractMainTable.php',
+    'ilSrAbstractForm' => $baseDir . '/classes/Abstract/class.ilSrAbstractForm.php',
+    'ilSrAbstractGUI' => $baseDir . '/classes/Abstract/class.ilSrAbstractGUI.php',
+    'ilSrAbstractTable' => $baseDir . '/classes/Abstract/class.ilSrAbstractTable.php',
     'ilSrAccess' => $baseDir . '/classes/Access/class.ilSrAccess.php',
     'ilSrConfig' => $baseDir . '/classes/Config/class.ilSrConfig.php',
     'ilSrConfigForm' => $baseDir . '/classes/Config/Form/class.ilSrConfigForm.php',
