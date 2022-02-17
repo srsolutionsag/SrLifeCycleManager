@@ -3,14 +3,21 @@
 namespace srag\Plugins\SrLifeCycleManager\Rule;
 
 /**
+ * Rule DTO
+ *
  * @author Thibeau Fuhrer <thibeau@sr.solutions>
  */
-class Rule implements IRule
+class Rule implements IRoutineAwareRule
 {
     /**
      * @var int|null
      */
-    protected $id;
+    protected $rule_id;
+
+    /**
+     * @var int
+     */
+    protected $routine_id;
 
     /**
      * @var string
@@ -38,24 +45,25 @@ class Rule implements IRule
     protected $rhs_value;
 
     /**
-     * RuleDTO constructor.
-     *
-     * @param int|null $id
      * @param string   $lhs_type
      * @param mixed    $lhs_value
      * @param string   $operator
      * @param string   $rhs_type
      * @param mixed    $rhs_value
+     * @param int      $routine_id
+     * @param int|null $rule_id
      */
     public function __construct(
-        int $id = null,
         string $lhs_type,
         $lhs_value,
         string $operator,
         string $rhs_type,
-        $rhs_value
+        $rhs_value,
+        int $routine_id,
+        int $rule_id = null
     ) {
-        $this->id = $id;
+        $this->rule_id = $rule_id;
+        $this->routine_id = $routine_id;
         $this->lhs_type = $lhs_type;
         $this->lhs_value = $lhs_value;
         $this->operator = $operator;
@@ -66,18 +74,18 @@ class Rule implements IRule
     /**
      * @return int|null
      */
-    public function getId() : ?int
+    public function getRuleId() : ?int
     {
-        return $this->id;
+        return $this->rule_id;
     }
 
     /**
-     * @param int|null $id
+     * @param int|null $rule_id
      * @return IRule
      */
-    public function setId(?int $id) : IRule
+    public function setRuleId(?int $rule_id) : IRule
     {
-        $this->id = $id;
+        $this->rule_id = $rule_id;
         return $this;
     }
 
@@ -90,12 +98,12 @@ class Rule implements IRule
     }
 
     /**
-     * @param string $lhs_type
+     * @param string $type
      * @return IRule
      */
-    public function setLhsType(string $lhs_type) : IRule
+    public function setLhsType(string $type) : IRule
     {
-        $this->lhs_type = $lhs_type;
+        $this->lhs_type = $type;
         return $this;
     }
 
@@ -108,12 +116,12 @@ class Rule implements IRule
     }
 
     /**
-     * @param mixed $lhs_value
+     * @param mixed $value
      * @return IRule
      */
-    public function setLhsValue($lhs_value) : IRule
+    public function setLhsValue($value) : IRule
     {
-        $this->lhs_value = $lhs_value;
+        $this->lhs_value = $value;
         return $this;
     }
 
@@ -144,12 +152,12 @@ class Rule implements IRule
     }
 
     /**
-     * @param string $rhs_type
+     * @param string $type
      * @return IRule
      */
-    public function setRhsType(string $rhs_type) : IRule
+    public function setRhsType(string $type) : IRule
     {
-        $this->rhs_type = $rhs_type;
+        $this->rhs_type = $type;
         return $this;
     }
 
@@ -162,12 +170,29 @@ class Rule implements IRule
     }
 
     /**
-     * @param mixed $rhs_value
+     * @param mixed $value
      * @return IRule
      */
-    public function setRhsValue($rhs_value) : IRule
+    public function setRhsValue($value) : IRule
     {
-        $this->rhs_value = $rhs_value;
+        $this->rhs_value = $value;
+        return $this;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function getRoutineId() : int
+    {
+        return $this->routine_id;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function setRoutineId(int $routine_id) : IRoutineAwareRule
+    {
+        $this->routine_id = $routine_id;
         return $this;
     }
 }

@@ -1,4 +1,4 @@
-<?php
+<?php // strict types are not possible with ActiveRecord.
 
 /**
  * Class ilSrConfig stores all general plugin configurations.

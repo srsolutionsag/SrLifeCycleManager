@@ -3,18 +3,13 @@
 namespace srag\Plugins\SrLifeCycleManager\Rule;
 
 /**
- * Interface IRule
+ * IRule describes the DAO of a rule.
  *
  * @author Thibeau Fuhrer <thibeau@sr.solutions>
- *
- * This interface defines what a rule must look like.
- *
- * The implementation should be either as DTO or AR, depending
- * on how the database access is handled.
  */
 interface IRule
 {
-    public const F_ID        = 'id';
+    public const F_RULE_ID   = 'rule_id';
     public const F_RHS_TYPE  = 'rhs_type';
     public const F_RHS_VALUE = 'rhs_value';
     public const F_OPERATOR  = 'operator';
@@ -47,13 +42,13 @@ interface IRule
     /**
      * @return int|null
      */
-    public function getId() : ?int;
+    public function getRuleId() : ?int;
 
     /**
-     * @param int|null $id
+     * @param int|null $rule_id
      * @return IRule
      */
-    public function setId(?int $id) : IRule;
+    public function setRuleId(?int $rule_id) : IRule;
 
     /**
      * @return string

@@ -1,13 +1,13 @@
-<?php declare(strict_types=1);
+<?php // strict types are not possible with ActiveRecord.
 
-use srag\Plugins\SrLifeCycleManager\Routine\IRoutineRule;
+use srag\Plugins\SrLifeCycleManager\Rule\IRoutineRuleRelation;
 
 /**
- * Class ilSrRoutineRule is responsible for storing routine-rule (m:m) relations.
+ * Routine-Rule relationship DAO
  *
  * @author Thibeau Fuhrer <thibeau@sr.solutions>
  */
-class ilSrRoutineRule extends ActiveRecord implements IRoutineRule
+class ilSrRoutineRule extends ActiveRecord implements IRoutineRuleRelation
 {
     /**
      * @var string db table name
@@ -25,7 +25,7 @@ class ilSrRoutineRule extends ActiveRecord implements IRoutineRule
      * @con_fieldtype   integer
      * @con_length      8
      */
-    protected $id;
+    protected $relation_id;
 
     /**
      * @var null|int
@@ -58,17 +58,17 @@ class ilSrRoutineRule extends ActiveRecord implements IRoutineRule
     /**
      * @inheritDoc
      */
-    public function getId() : ?int
+    public function getRelationId() : ?int
     {
-        return $this->id;
+        return $this->relation_id;
     }
 
     /**
      * @inheritDoc
      */
-    public function setId(?int $id) : IRoutineRule
+    public function setRelationId(?int $relation_id) : IRoutineRuleRelation
     {
-        $this->id = $id;
+        $this->relation_id = $relation_id;
         return $this;
     }
 
@@ -83,7 +83,7 @@ class ilSrRoutineRule extends ActiveRecord implements IRoutineRule
     /**
      * @inheritDoc
      */
-    public function setRoutineId(?int $routine_id) : IRoutineRule
+    public function setRoutineId(?int $routine_id) : IRoutineRuleRelation
     {
         $this->routine_id = $routine_id;
         return $this;
@@ -100,7 +100,7 @@ class ilSrRoutineRule extends ActiveRecord implements IRoutineRule
     /**
      * @inheritDoc
      */
-    public function setRuleId(?int $rule_id) : IRoutineRule
+    public function setRuleId(?int $rule_id) : IRoutineRuleRelation
     {
         $this->rule_id = $rule_id;
         return $this;

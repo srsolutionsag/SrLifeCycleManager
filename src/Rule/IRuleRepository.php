@@ -10,44 +10,40 @@ namespace srag\Plugins\SrLifeCycleManager\Rule;
 interface IRuleRepository
 {
     /**
-     * returns a rule entry from the database for given id.
-     * @param int $id
-     * @return IRule|null
-     */
-    public function get(int $id) : ?IRule;
-
-    /**
-     * creates or updates a rule entry in the database.
-     * @param IRule $rule
-     * @return IRule
-     */
-    public function store(IRule $rule) : IRule;
-
-    /**
-     * returns all rules as RuleDTO objects.
-     * @return IRule[]|null
-     */
-    public function getAllAsDTO() : ?array;
-
-    /**
-     * returns all rules as array-data.
+     * Returns an existing rule for the given routine and rule id.
      *
+     * @param int $routine_id
+     * @param int $rule_id
+     * @return IRoutineAwareRule|null
+     */
+    public function get(int $routine_id, int $rule_id) : ?IRoutineAwareRule;
+
+    /**
+     * Returns all rules related to the given routine id.
+     *
+     * To retrieve routines as array-data true can be passed as an argument
+     * (usually required by ilTableGUI).
+     *
+     * @param int  $routine_id
+     * @param bool $array_data
      * @return array
      */
-    public function getAllAsArray() : array;
+    public function getAll(int $routine_id, bool $array_data = false) : array;
 
     /**
-     * returns all rules for the given comparison.
+     * Creates or updates a rule entry in the database.
      *
-     * @param array $value_types
-     * @return array|null
+     * @param IRoutineAwareRule $rule
+     * @return IRoutineAwareRule
      */
-    public function getAllForValueTypes(array $value_types) : ?array;
+    public function store(IRoutineAwareRule $rule) : IRoutineAwareRule;
 
     /**
-     * deletes a rule entry from the database.
-     * @param Rule $rule
+     * Deletes a rule entry from the database and all it's relations
+     * (manually because ilias does not support constraints).
+     *
+     * @param IRoutineAwareRule $rule
      * @return bool
      */
-    public function delete(IRule $rule) : bool;
+    public function delete(IRoutineAwareRule $rule) : bool;
 }

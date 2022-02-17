@@ -23,7 +23,7 @@ if (! $ilDB->tableExists('srlcm_config')) {
 <#2>
 <?php
 $fields = array(
-    'id' => array(
+    'rule_id' => array(
         'notnull' => '1',
         'type' => 'integer',
         'length' => '8',
@@ -64,7 +64,7 @@ if (! $ilDB->tableExists('srlcm_rule')) {
 <#3>
 <?php
 $fields = array(
-    'id' => array(
+    'notification_id' => array(
         'notnull' => '1',
         'type' => 'integer',
         'length' => '8',
@@ -85,7 +85,7 @@ if (! $ilDB->tableExists('srlcm_msg')) {
 <#4>
 <?php
 $fields = array(
-	'id' => array(
+	'routine_id' => array(
 		'notnull' => '1',
 		'type' => 'integer',
 		'length' => '8',
@@ -140,7 +140,7 @@ if (! $ilDB->tableExists('srlcm_routine')) {
 <#5>
 <?php
 $fields = array(
-    'id' => array(
+    'relation_id' => array(
         'notnull' => '1',
         'type' => 'integer',
         'length' => '8',
@@ -166,7 +166,7 @@ if (! $ilDB->tableExists('srlcm_routine_rule')) {
 <#6>
 <?php
 $fields = array(
-    'id' => array(
+    'relation_id' => array(
         'notnull' => '1',
         'type' => 'integer',
         'length' => '8',
@@ -195,7 +195,7 @@ if (! $ilDB->tableExists('srlcm_routine_msg')) {
 <#7>
 <?php
 $fields = array(
-    'id' => array(
+    'whitelist_id' => array(
         'notnull' => '1',
         'type' => 'integer',
         'length' => '8',

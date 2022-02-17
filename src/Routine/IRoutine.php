@@ -2,8 +2,10 @@
 
 namespace srag\Plugins\SrLifeCycleManager\Routine;
 
+use DateTime;
+
 /**
- * Interface IRoutine defines how a routine must look like.
+ * IRoutine describes the DAO of a routine.
  *
  * @author Thibeau Fuhrer <thibeau@sr.solutions>
  */
@@ -12,7 +14,7 @@ interface IRoutine
     /**
      * IRoutine attribute names
      */
-    public const F_ID                   = 'id';
+    public const F_ROUTINE_ID           = 'routine_id';
     public const F_NAME                 = 'name';
     public const F_REF_ID               = 'ref_id';
     public const F_ACTIVE               = 'active';
@@ -50,13 +52,13 @@ interface IRoutine
     /**
      * @return int|null
      */
-    public function getId() : ?int;
+    public function getRoutineId() : ?int;
 
     /**
-     * @param int $id
+     * @param int $routine_id
      * @return IRoutine
      */
-    public function setId(int $id) : IRoutine;
+    public function setRoutineId(int $routine_id) : IRoutine;
 
     /**
      * @return string
@@ -136,13 +138,13 @@ interface IRoutine
     public function setOwnerId(int $owner_id) : IRoutine;
 
     /**
-     * @return \DateTime
+     * @return DateTime
      */
-    public function getCreationDate() : \DateTime;
+    public function getCreationDate() : DateTime;
 
     /**
-     * @param \DateTime $date
+     * @param DateTime $date
      * @return IRoutine
      */
-    public function setCreationDate(\DateTime $date) : IRoutine;
+    public function setCreationDate(DateTime $date) : IRoutine;
 }

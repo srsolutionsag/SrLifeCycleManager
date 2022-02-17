@@ -4,10 +4,9 @@
 
 namespace srag\Plugins\SrLifeCycleManager\Builder\Form\Notification;
 
+use srag\Plugins\SrLifeCycleManager\Notification\IRoutineAwareNotification;
 use srag\Plugins\SrLifeCycleManager\Builder\Form\FormBuilder;
 use ILIAS\UI\Component\Input\Container\Form\Form;
-use srag\Plugins\SrLifeCycleManager\Notification\INotification;
-use srag\Plugins\SrLifeCycleManager\Routine\IRoutineNotification;
 
 /**
  * @author Thibeau Fuhrer <thibeau@sr.solutions>
@@ -18,32 +17,17 @@ class NotificationFormBuilder extends FormBuilder
     public const INPUT_NOTIFICATION_DAYS    = 'input_notification_days';
 
     /**
-     * @var INotification|null
+     * @var IRoutineAwareNotification|null
      */
     protected $notification = null;
 
     /**
-     * @var IRoutineNotification|null
-     */
-    protected $routine_relation = null;
-
-    /**
-     * @param INotification|null $notification
+     * @param IRoutineAwareNotification|null $notification
      * @return $this
      */
-    public function withNotification(?INotification $notification) : self
+    public function withNotification(?IRoutineAwareNotification $notification) : self
     {
         $this->notification = $notification;
-        return $this;
-    }
-
-    /**
-     * @param IRoutineNotification|null $routine_relation
-     * @return $this
-     */
-    public function withRoutineRelation(?IRoutineNotification $routine_relation) : self
-    {
-        $this->routine_relation = $routine_relation;
         return $this;
     }
 
@@ -54,19 +38,19 @@ class NotificationFormBuilder extends FormBuilder
     {
         $inputs = [];
 
-        $inputs[INotification::F_MESSAGE] = $this->input_factory
+        $inputs[self::INPUT_NOTIFICATION_MESSAGE] = $this->input_factory
             ->textarea($this->translate(self::INPUT_NOTIFICATION_MESSAGE))
             ->withValue((null !== $this->notification) ?
-                $this->notification->getMessage() : null
+                $this->notification->getMessage() : ''
             )
+            ->withRequired(true)
         ;
 
-        $inputs[IRoutineNotification::F_DAYS_BEFORE_SUBMISSION] = $this->input_factory
-            ->text($this->translate(self::INPUT_NOTIFICATION_DAYS))
-            ->withAdditionalTransformation($this->refinery->numeric()->isNumeric())
-            ->withAdditionalTransformation($this->refinery->to()->int())
-            ->withValue((null !== $this->routine_relation) ?
-                $this->routine_relation->getDaysBeforeSubmission() : null
+        $inputs[self::INPUT_NOTIFICATION_DAYS] = $this->input_factory
+            ->numeric($this->translate(self::INPUT_NOTIFICATION_DAYS))
+            ->withRequired(true)
+            ->withValue((null !== $this->notification) ?
+                $this->notification->getDaysBeforeSubmission() : null
             )
         ;
 

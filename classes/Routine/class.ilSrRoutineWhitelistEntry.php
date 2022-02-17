@@ -1,13 +1,11 @@
-<?php declare(strict_types=1);
+<?php // strict types are not possible with ActiveRecord.
 
-use srag\Plugins\SrLifeCycleManager\Routine\IRoutineWhitelistEntry;
+use srag\Plugins\SrLifeCycleManager\Routine\IRoutineWhitelist;
 
 /**
- * Class ilSrRule is responsible for storing rule-sets in the database.
- *
  * @author Thibeau Fuhrer <thibeau@sr.solutions>
  */
-class ilSrRoutineWhitelistEntry extends ActiveRecord implements IRoutineWhitelistEntry
+class ilSrRoutineWhitelist extends ActiveRecord implements IRoutineWhitelist
 {
     /**
      * @var string db table name
@@ -30,7 +28,7 @@ class ilSrRoutineWhitelistEntry extends ActiveRecord implements IRoutineWhitelis
      * @con_fieldtype   integer
      * @con_length      8
      */
-    protected $id;
+    protected $whitelist_id;
 
     /**
      * @var int
@@ -123,17 +121,17 @@ class ilSrRoutineWhitelistEntry extends ActiveRecord implements IRoutineWhitelis
     /**
      * @inheritDoc
      */
-    public function getId() : ?int
+    public function getWhitelistId() : ?int
     {
-        return $this->id;
+        return $this->whitelist_id;
     }
 
     /**
      * @inheritDoc
      */
-    public function setId(?int $id) : IRoutineWhitelistEntry
+    public function setWhitelistId(?int $whitelist_id) : IRoutineWhitelist
     {
-        $this->id = $id;
+        $this->whitelist_id = $whitelist_id;
         return $this;
     }
 
@@ -148,9 +146,9 @@ class ilSrRoutineWhitelistEntry extends ActiveRecord implements IRoutineWhitelis
     /**
      * @inheritDoc
      */
-    public function setWhitelistType(int $whitelist_type) : IRoutineWhitelistEntry
+    public function setWhitelistType(int $type) : IRoutineWhitelist
     {
-        $this->whitelist_type = $whitelist_type;
+        $this->whitelist_type = $type;
         return $this;
     }
 
@@ -165,7 +163,7 @@ class ilSrRoutineWhitelistEntry extends ActiveRecord implements IRoutineWhitelis
     /**
      * @inheritDoc
      */
-    public function setRoutineId(int $routine_id) : IRoutineWhitelistEntry
+    public function setRoutineId(int $routine_id) : IRoutineWhitelist
     {
         $this->routine_id = $routine_id;
         return $this;
@@ -182,7 +180,7 @@ class ilSrRoutineWhitelistEntry extends ActiveRecord implements IRoutineWhitelis
     /**
      * @inheritDoc
      */
-    public function setRefId(int $ref_id) : IRoutineWhitelistEntry
+    public function setRefId(int $ref_id) : IRoutineWhitelist
     {
         $this->ref_id = $ref_id;
         return $this;
@@ -199,7 +197,7 @@ class ilSrRoutineWhitelistEntry extends ActiveRecord implements IRoutineWhitelis
     /**
      * @inheritDoc
      */
-    public function setActiveUntil(?DateTime $date) : IRoutineWhitelistEntry
+    public function setActiveUntil(?DateTime $date) : IRoutineWhitelist
     {
         $this->active_until = $date;
         return $this;

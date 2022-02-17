@@ -2,7 +2,8 @@
 
 use srag\Plugins\SrLifeCycleManager\Routine\IRoutine;
 use srag\Plugins\SrLifeCycleManager\Notification\INotification;
-use srag\Plugins\SrLifeCycleManager\Routine\IRoutineNotification;
+use srag\Plugins\SrLifeCycleManager\Notification\IRoutineAwareNotification;
+use srag\Plugins\SrLifeCycleManager\Notification\IRoutineNotificationRelation;
 
 /**
  * @author Thibeau Fuhrer <thibeau@sr.solutions>
@@ -11,15 +12,19 @@ class ilSrNotificationGUI extends ilSrAbstractGUI
 {
     public const QUERY_PARAM_NOTIFICATION_ID = 'notification_id';
 
+    public const CMD_NOTIFICATION_ADD    = 'add';
+    public const CMD_NOTIFICATION_SAVE   = 'save';
+    public const CMD_NOTIFICATION_EDIT   = 'add';
+    public const CMD_NOTIFICATION_DELETE = 'delete';
+
+    public const ACTION_NOTIFICATION_ADD = 'action_notification_add';
+    public const ACTION_NOTIFICATION_EDIT = 'action_notification_edit';
+    public const ACTION_NOTIFICATION_DELETE = 'action_notification_delete';
+
     protected const PAGE_TITLE               = 'page_title_notifications';
     protected const MSG_ROUTINE_NOT_FOUND    = 'msg_routine_not_found';
     protected const MSG_NOTIFICATION_SUCCESS = 'msg_notification_success';
     protected const MSG_NOTIFICATION_ERROR   = 'msg_notification_error';
-
-    public const CMD_NOTIFICATION_ADD    = 'add';
-    public const CMD_NOTIFICATION_SAVE   = 'save';
-    public const CMD_NOTIFICATION_EDIT   = 'edit';
-    public const CMD_NOTIFICATION_DELETE = 'delete';
 
     /**
      * @var IRoutine|null
@@ -27,14 +32,9 @@ class ilSrNotificationGUI extends ilSrAbstractGUI
     protected $routine;
 
     /**
-     * @var INotification|null
+     * @var IRoutineAwareNotification|null
      */
     protected $notification;
-
-    /**
-     * @var IRoutineNotification|null
-     */
-    protected $routine_notification_relation = null;
 
     /**
      * @inheritDoc
@@ -45,16 +45,6 @@ class ilSrNotificationGUI extends ilSrAbstractGUI
 
         $this->routine = $this->getRoutineFromRequest(true);
         $this->notification = $this->getNotificationFromRequest();
-
-        if (null !== $this->notification) {
-            $this->routine_notification_relation = $this->repository
-                ->routine()
-                ->getNotificationRelation(
-                    $this->routine,
-                    $this->notification
-                )
-            ;
-        }
     }
 
     /**
@@ -127,9 +117,76 @@ class ilSrNotificationGUI extends ilSrAbstractGUI
             )
         );
 
+        $this->addNotificationToolbar();
         $this->ui->mainTemplate()->setContent(
             $this->getTable()->getHTML()
         );
+    }
+
+    /**
+     * Displays a notification form on the current page.
+     *
+     * This method does however not process it, form submissions are
+     * sent to @see ilSrNotificationGUI::save().
+     */
+    protected function add() : void
+    {
+        $this->getForm()->printToGlobalTemplate();
+    }
+
+    /**
+     * Processes the submitted form-data and creates a new notification
+     * that is related to the current routine.
+     *
+     * If the creation fails or any inputs are invalid, the form will
+     * be displayed again with an according error message.
+     */
+    protected function save() : void
+    {
+        $form = $this->getForm();
+        if ($form->handleRequest($this->http->request())) {
+            $this->displaySuccessMessage(self::MSG_NOTIFICATION_SUCCESS);
+            $this->repeat();
+        }
+
+        $form->printToGlobalTemplate();
+    }
+
+    /**
+     * Deletes an existing notification and relation to the current routine.
+     */
+    protected function delete() : void
+    {
+        $notification = $this->getNotificationFromRequest();
+        if (null !== $this->routine && null !== $notification) {
+            $this->sendSuccessMessage(self::MSG_NOTIFICATION_SUCCESS);
+        } else {
+            $this->sendErrorMessage(self::MSG_NOTIFICATION_ERROR);
+        }
+
+        $this->repeat();
+    }
+
+    /**
+     * Displays a notification action-toolbar on the current page.
+     *
+     * The toolbar SHOULD contain actions that cannot be implemented
+     * or added to a table-row-entry's dropdown actions (like add
+     * for example).
+     */
+    protected function addNotificationToolbar() : void
+    {
+        // create a button instance to create new routines.
+        $button = ilLinkButton::getInstance();
+        $button->setPrimary(true);
+        $button->setCaption($this->plugin->txt(self::ACTION_NOTIFICATION_ADD), false);
+        $button->setUrl($this->ctrl->getLinkTargetByClass(
+            self::class,
+            self::CMD_NOTIFICATION_ADD
+        ));
+
+        $this->toolbar->addButtonInstance($button);
+        $this->ui->mainTemplate()->setContent($this->toolbar->getHTML());
     }
 
     /**
@@ -140,13 +197,16 @@ class ilSrNotificationGUI extends ilSrAbstractGUI
      * classes and is somewhat core to the plugin.
      *
      * @param bool $keep_alive
-     * @return INotification|null
+     * @return IRoutineAwareNotification|null
      */
-    protected function getNotificationFromRequest(bool $keep_alive = false) : ?INotification
+    protected function getNotificationFromRequest(bool $keep_alive = false) : ?IRoutineAwareNotification
     {
         $notification_id = $this->getQueryParamFromRequest(self::QUERY_PARAM_NOTIFICATION_ID, $keep_alive);
         if (null !== $notification_id) {
-            return $this->repository->notification()->get((int) $notification_id);
+            return $this->repository->notification()->get(
+                $this->routine->getRoutineId(),
+                (int) $notification_id
+            );
         }
 
         return null;
@@ -159,7 +219,7 @@ class ilSrNotificationGUI extends ilSrAbstractGUI
      */
     protected function getTableData() : array
     {
-        return $this->repository->routine()->getNotificationTableData($this->routine);
+        return $this->repository->notification()->getAll($this->routine->getRoutineId(), true);
     }
 
     /**
@@ -173,7 +233,7 @@ class ilSrNotificationGUI extends ilSrAbstractGUI
         $this->ctrl->setParameterByClass(
             self::class,
             self::QUERY_PARAM_ROUTINE_ID,
-            $this->routine->getId()
+            $this->routine->getRoutineId()
         );
 
         return $this->ctrl->getFormActionByClass(
@@ -197,7 +257,6 @@ class ilSrNotificationGUI extends ilSrAbstractGUI
             $this->form_builders
                 ->notification()
                 ->withNotification($this->notification)
-                ->withRoutineRelation($this->routine_notification_relation)
                 ->getForm($this->getFormAction()),
             $this->routine,
             $this->notification
@@ -217,7 +276,7 @@ class ilSrNotificationGUI extends ilSrAbstractGUI
             $this->plugin,
             $this,
             self::CMD_INDEX,
-            'tpl.notification_row.html',
+            'tpl.notification_table_row.html',
             $this->getTableData()
         );
     }

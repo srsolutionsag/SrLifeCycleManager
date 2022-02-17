@@ -2,10 +2,11 @@
 
 namespace srag\Plugins\SrLifeCycleManager\Routine;
 
-use srag\Plugins\SrLifeCycleManager\Rule\IRule;
-use srag\Plugins\SrLifeCycleManager\Notification\INotification;
+use DateTime;
 
 /**
+ * Routine DTO
+ *
  * @author Thibeau Fuhrer <thibeau@sr.solutions>
  */
 class Routine implements IRoutine
@@ -13,7 +14,7 @@ class Routine implements IRoutine
     /**
      * @var int|null
      */
-    protected $id;
+    protected $routine_id;
 
     /**
      * @var string
@@ -41,7 +42,7 @@ class Routine implements IRoutine
     protected $owner_id;
 
     /**
-     * @var \DateTime
+     * @var DateTime
      */
     protected $creation_date;
 
@@ -56,73 +57,52 @@ class Routine implements IRoutine
     protected $elongation_days;
 
     /**
-     * @var IRule[]
-     */
-    protected $rules;
-
-    /**
-     * @var INotification[]
-     */
-    protected $notifications;
-
-    /**
-     * @var IRoutineWhitelistEntry[]
-     */
-    protected $whitelist;
-
-    /**
-     * Routine constructor
-     *
-     * @param int|null  $id
-     * @param string    $name
-     * @param int       $ref_id
-     * @param bool      $is_active
-     * @param int       $origin_type
-     * @param int       $owner_id
-     * @param \DateTime $creation_date
-     * @param bool      $is_opt_out_possible
-     * @param int|null  $elongation_days
+     * @param string   $name
+     * @param int      $ref_id
+     * @param bool     $is_active
+     * @param int      $origin_type
+     * @param int      $owner_id
+     * @param DateTime $creation_date
+     * @param bool     $is_opt_out_possible
+     * @param int|null $elongation_days
+     * @param int|null $routine_id
      */
     public function __construct(
-        ?int $id,
         string $name,
         int $ref_id,
         bool $is_active,
         int $origin_type,
         int $owner_id,
-        \DateTime $creation_date,
+        DateTime $creation_date,
         bool $is_opt_out_possible,
-        int $elongation_days = null
+        int $elongation_days = null,
+        int $routine_id = null
     ) {
-        $this->id                   = $id;
-        $this->name                 = $name;
-        $this->ref_id               = $ref_id;
-        $this->active               = $is_active;
-        $this->origin_type          = $origin_type;
-        $this->owner_id             = $owner_id;
-        $this->creation_date        = $creation_date;
-        $this->opt_out_possible     = $is_opt_out_possible;
-        $this->elongation_days      = $elongation_days;
-
-        $this->rules = [];
-        $this->notifications = [];
-        $this->whitelist = [];
+        $this->routine_id = $routine_id;
+        $this->name = $name;
+        $this->ref_id = $ref_id;
+        $this->active = $is_active;
+        $this->origin_type = $origin_type;
+        $this->owner_id = $owner_id;
+        $this->creation_date = $creation_date;
+        $this->opt_out_possible = $is_opt_out_possible;
+        $this->elongation_days = $elongation_days;
     }
 
     /**
      * @inheritDoc
      */
-    public function getId() : ?int
+    public function getRoutineId() : ?int
     {
-        return $this->id;
+        return $this->routine_id;
     }
 
     /**
      * @inheritDoc
      */
-    public function setId(int $id) : IRoutine
+    public function setRoutineId(int $routine_id) : IRoutine
     {
-        $this->id = $id;
+        $this->routine_id = $routine_id;
         return $this;
     }
 
@@ -248,7 +228,7 @@ class Routine implements IRoutine
     /**
      * @inheritDoc
      */
-    public function getCreationDate() : \DateTime
+    public function getCreationDate() : DateTime
     {
         return $this->creation_date;
     }
@@ -256,78 +236,9 @@ class Routine implements IRoutine
     /**
      * @inheritDoc
      */
-    public function setCreationDate(\DateTime $date) : IRoutine
+    public function setCreationDate(DateTime $date) : IRoutine
     {
         $this->creation_date = $date;
-        return $this;
-    }
-
-    /**
-     * @return IRule[]
-     */
-    public function getRules() : array
-    {
-        return $this->rules;
-    }
-
-    /**
-     * @param IRule[] $rules
-     * @return IRoutine
-     */
-    public function addRules(array $rules) : IRoutine
-    {
-        if (!empty($rules)) {
-            foreach ($rules as $rule) {
-                $this->rules[] = $rule;
-            }
-        }
-
-        return $this;
-    }
-
-    /**
-     * @return INotification[]
-     */
-    public function getNotifications() : array
-    {
-        return $this->notifications;
-    }
-
-    /**
-     * @param INotification[] $notifications
-     * @return IRoutine
-     */
-    public function addNotifications(array $notifications) : IRoutine
-    {
-        if (!empty($notifications)) {
-            foreach ($notifications as $notification) {
-                $this->notifications[] = $notification;
-            }
-        }
-
-        return $this;
-    }
-
-    /**
-     * @return IRoutineWhitelistEntry[]
-     */
-    public function getWhitelist() : array
-    {
-        return $this->whitelist;
-    }
-
-    /**
-     * @param IRoutineWhitelistEntry[] $entries
-     * @return IRoutine
-     */
-    public function addWhitelistEntries(array $entries) : IRoutine
-    {
-        if (!empty($entries)) {
-            foreach ($entries as $entry) {
-                $this->whitelist[] = $entry;
-            }
-        }
-
         return $this;
     }
 }

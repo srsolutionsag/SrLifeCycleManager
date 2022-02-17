@@ -80,7 +80,7 @@ class ilSrRoutineTable extends ilSrAbstractTable
         $template->setVariable(strtoupper(self::COL_OPT_OUT_POSSIBLE), $status_opt_out);
         $template->setVariable(strtoupper(self::COL_ELONGATION_DAYS), $row_data[IRoutine::F_ELONGATION_DAYS]);
         $template->setVariable(strtoupper(self::COL_ACTIONS), $this->ui->renderer()->render(
-            $this->getActionDropdown($row_data[IRoutine::F_ID])
+            $this->getActionDropdown($row_data[IRoutine::F_ROUTINE_ID])
         ));
     }
 

@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 use srag\Plugins\SrLifeCycleManager\Routine\IRoutineRepository;
 use srag\Plugins\SrLifeCycleManager\Notification\INotificationRepository;
@@ -11,27 +11,32 @@ use ILIAS\DI\RBACServices;
  *
  * @author Thibeau Fuhrer <thibeau@sr.solutions>
  */
-final class ilSrLifeCycleManagerRepository
+class ilSrLifeCycleManagerRepository
 {
     /**
      * @var RBACServices
      */
-    private $rbac;
+    protected $rbac;
+
+    /**
+     * @var ilDBInterface
+     */
+    protected $database;
 
     /**
      * @var IRoutineRepository
      */
-    private $routine_repository;
+    protected $routine_repository;
 
     /**
      * @var INotificationRepository;
      */
-    private $notification_repository;
+    protected $notification_repository;
 
     /**
      * @var IRuleRepository
      */
-    private $rule_repository;
+    protected $rule_repository;
 
     /**
      * @param ilDBInterface $database
@@ -43,14 +48,11 @@ final class ilSrLifeCycleManagerRepository
         RBACServices $rbac,
         ilTree $tree
     ) {
-        $this->rbac = $rbac;
-        $this->rule_repository = new ilSrRuleRepository($database);
+        $this->rule_repository = new ilSrRuleRepository();
         $this->notification_repository = new ilSrNotificationRepository();
-        $this->routine_repository = new ilSrRoutineRepository(
-            $this->rule_repository,
-            $this->notification_repository,
-            $tree
-        );
+        $this->routine_repository = new ilSrRoutineRepository($tree);
+        $this->database = $database;
+        $this->rbac = $rbac;
     }
 
     /**

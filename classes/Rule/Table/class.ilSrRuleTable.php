@@ -88,7 +88,7 @@ class ilSrRuleTable extends ilSrAbstractTable
 
         $template->setVariable(strtoupper(self::COL_RULE_OPERATOR), $this->plugin->txt($row_data[IRule::F_OPERATOR]));
         $template->setVariable(strtoupper(self::COL_ACTIONS), $this->ui->renderer()->render(
-            $this->getActionDropdown($row_data[IRule::F_ID])
+            $this->getActionDropdown($row_data[IRule::F_RULE_ID])
         ));
     }
 

@@ -1,7 +1,8 @@
 <?php declare(strict_types=1);
 
 use srag\Plugins\SrLifeCycleManager\Routine\IRoutine;
-use srag\Plugins\SrLifeCycleManager\Rule\Rule;
+use srag\Plugins\SrLifeCycleManager\Rule\IRule;
+use srag\Plugins\SrLifeCycleManager\Rule\IRoutineAwareRule;
 
 /**
  * Class ilSrRuleGUI
@@ -165,7 +166,7 @@ class ilSrRuleGUI extends ilSrAbstractGUI
     protected function delete() : void
     {
         $rule = $this->getRuleFromRequest();
-        if (null !== $rule) {
+        if (null !== $this->routine && null !== $rule) {
             $this->repository->rule()->delete($rule);
             $this->sendSuccessMessage(self::MSG_RULE_SUCCESS);
         } else {
@@ -200,13 +201,16 @@ class ilSrRuleGUI extends ilSrAbstractGUI
     /**
      * Returns the provided rule of the current request.
      *
-     * @return Rule|null
+     * @return IRoutineAwareRule|null
      */
-    protected function getRuleFromRequest() : ?Rule
+    protected function getRuleFromRequest() : ?IRoutineAwareRule
     {
         $rule_id = $this->getQueryParamFromRequest(self::QUERY_PARAM_RULE_ID);
         if (null !== $rule_id) {
-            return $this->repository->rule()->get((int) $rule_id);
+            return $this->repository->rule()->get(
+                $this->routine->getRoutineId(),
+                (int) $rule_id
+            );
         }
 
         return null;
@@ -224,7 +228,7 @@ class ilSrRuleGUI extends ilSrAbstractGUI
         $this->ctrl->setParameterByClass(
             self::class,
             self::QUERY_PARAM_ROUTINE_ID,
-            $this->routine->getId()
+            $this->routine->getRoutineId()
         );
 
         return $this->ctrl->getFormActionByClass(
@@ -240,7 +244,7 @@ class ilSrRuleGUI extends ilSrAbstractGUI
      */
     protected function getTableData() : array
     {
-        return $this->repository->routine()->getRules($this->routine, true);
+        return $this->repository->rule()->getAll($this->routine->getRoutineId(), true);
     }
 
     /**

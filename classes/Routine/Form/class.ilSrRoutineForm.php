@@ -77,7 +77,7 @@ class ilSrRoutineForm extends ilSrAbstractForm
         }
 
         $this->routine
-            ->setRefId($form_data[RoutineFormBuilder::INPUT_REF_ID])
+            ->setRefId((int) $form_data[RoutineFormBuilder::INPUT_REF_ID])
             ->setName($form_data[RoutineFormBuilder::INPUT_NAME])
             ->setActive($form_data[RoutineFormBuilder::INPUT_ACTIVE])
             ->setOptOutPossible($form_data[RoutineFormBuilder::INPUT_OPT_OUT])
@@ -87,7 +87,7 @@ class ilSrRoutineForm extends ilSrAbstractForm
         // in days attribute. If it's been disabled set the
         // value to null instead.
         if (!empty($form_data[RoutineFormBuilder::INPUT_ELONGATION_POSSIBLE])) {
-            $this->routine->setElongationDays($form_data[RoutineFormBuilder::INPUT_ELONGATION_POSSIBLE][RoutineFormBuilder::INPUT_ELONGATION]);
+            $this->routine->setElongationDays((int) $form_data[RoutineFormBuilder::INPUT_ELONGATION_POSSIBLE][RoutineFormBuilder::INPUT_ELONGATION]);
         } else {
             $this->routine->setElongationDays(null);
         }

@@ -9,11 +9,14 @@ msg_origin_unknown#:#Es wurde kein, oder ein unbekannter Herkunftstyp geliefert.
 msg_routine_not_found#:#Es wurde keine Routine geliefert, oder sie existiert nicht mehr.
 msg_rule_success#:#Regel(n) erfolgreich aktualisiert.
 msg_rule_error#:#Regel(n) konnten nicht aktualisiert werden.
+msg_notification_success#:#Benachrichtigung(en) erfolgreich aktualisiert.
+msg_notification_error#:#Benachrichtigung(en) konnten nicht aktualisiert werden.
 msg_back_to#:#Zurück
 
 page_title_rules#:#SrLifeCycleManager Regeln
 page_title_config#:#SrLifeCycleManager Einstellungen
 page_title_routine#:#SrLifeCycleManager Routinen
+page_title_notifications#:#SrLifeCycleManager Benachrichtigungen
 
 tab_config_index#:#Einstellungen
 tab_routine_index#:#Routinen
@@ -63,6 +66,9 @@ action_routine_rules#:#Regeln
 action_routine_notifications#:#Benachrichtigungen
 action_rule_add#:#Regel hinzufügen
 action_rule_delete#:#Enfernen
+action_notification_add#:#Benachrichtigung hinzufügen
+action_notification_edit#:#Bearbeiten
+action_notification_delete#:#Löschen
 
 lhs_value#:#LHS Wert
 rhs_value#:#RHS Wert

@@ -58,7 +58,7 @@ class RoutineFormBuilder extends FormBuilder
         $inputs = [];
 
         $inputs[self::INPUT_REF_ID] = $this->input_factory
-            ->text($this->translate(self::INPUT_REF_ID))
+            ->numeric($this->translate(self::INPUT_REF_ID))
             ->withRequired(true)
             // note that provided scope is only used if no routine was provided,
             // as we don't want to override the already stored value.
@@ -66,8 +66,6 @@ class RoutineFormBuilder extends FormBuilder
             // if a scope was provided the value of this input should not
             // be changeable by the user.
             ->withDisabled(null !== $this->scope)
-            ->withAdditionalTransformation($this->refinery->numeric()->isNumeric())
-            ->withAdditionalTransformation($this->refinery->to()->int())
             ->withAdditionalTransformation($this->getRefIdValidationConstraint())
         ;
 
@@ -92,10 +90,8 @@ class RoutineFormBuilder extends FormBuilder
             ->optionalGroup(
                 [
                     self::INPUT_ELONGATION => $this->input_factory
-                        ->text($this->translate(self::INPUT_ELONGATION))
+                        ->numeric($this->translate(self::INPUT_ELONGATION))
                         ->withValue((null !== $this->routine) ? (string) $this->routine->getElongationDays() : '')
-                        ->withAdditionalTransformation($this->refinery->numeric()->isNumeric())
-                        ->withAdditionalTransformation($this->refinery->to()->int())
                     ,
                 ],
                 $this->translate(self::INPUT_ELONGATION_POSSIBLE)

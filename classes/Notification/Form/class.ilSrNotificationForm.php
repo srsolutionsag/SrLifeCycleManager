@@ -2,12 +2,12 @@
 
 /* Copyright (c) 2022 Thibeau Fuhrer <thibeau@sr.solutions> Extended GPL, see docs/LICENSE */
 
-use srag\Plugins\SrLifeCycleManager\Notification\INotification;
+use srag\Plugins\SrLifeCycleManager\Builder\Form\Notification\NotificationFormBuilder;
+use srag\Plugins\SrLifeCycleManager\Notification\IRoutineAwareNotification;
+use srag\Plugins\SrLifeCycleManager\Notification\Notification;
 use srag\Plugins\SrLifeCycleManager\Routine\IRoutine;
 use ILIAS\UI\Component\Input\Container\Form\Form;
 use ILIAS\UI\Renderer;
-use srag\Plugins\SrLifeCycleManager\Builder\Form\Notification\NotificationFormBuilder;
-use srag\Plugins\SrLifeCycleManager\Notification\Notification;
 
 /**
  * @author Thibeau Fuhrer <thibeau@sr.solutions>
@@ -15,7 +15,7 @@ use srag\Plugins\SrLifeCycleManager\Notification\Notification;
 class ilSrNotificationForm extends ilSrAbstractForm
 {
     /**
-     * @var INotification|null
+     * @var IRoutineAwareNotification|null
      */
     protected $notification;
 
@@ -30,7 +30,7 @@ class ilSrNotificationForm extends ilSrAbstractForm
      * @param Renderer                       $renderer
      * @param Form                           $form
      * @param IRoutine                       $routine
-     * @param INotification|null             $notification
+     * @param IRoutineAwareNotification|null $notification
      */
     public function __construct(
         ilSrLifeCycleManagerRepository $repository,
@@ -38,7 +38,7 @@ class ilSrNotificationForm extends ilSrAbstractForm
         Renderer $renderer,
         Form $form,
         IRoutine  $routine,
-        INotification $notification = null
+        IRoutineAwareNotification $notification = null
     ) {
         parent::__construct($repository, $global_template, $renderer, $form);
 
@@ -53,7 +53,7 @@ class ilSrNotificationForm extends ilSrAbstractForm
     {
         // the submitted notification is invalid if the
         // message is empty.
-        return empty($form_data[NotificationFormBuilder::INPUT_NOTIFICATION_MESSAGE]);
+        return !empty($form_data[NotificationFormBuilder::INPUT_NOTIFICATION_MESSAGE]);
     }
 
     /**
@@ -62,20 +62,23 @@ class ilSrNotificationForm extends ilSrAbstractForm
     protected function handleFormData(array $form_data) : void
     {
         $notification_message = $form_data[NotificationFormBuilder::INPUT_NOTIFICATION_MESSAGE];
+        $days_before_submission = $form_data[NotificationFormBuilder::INPUT_NOTIFICATION_DAYS];
 
         if (null === $this->notification) {
-            $notification = $this->repository->notification()->store(
+            $this->repository->notification()->store(
                 new Notification(
-                    null,
-                    $notification_message
+                    $notification_message,
+                    $days_before_submission,
+                    $this->routine->getRoutineId()
                 )
             );
-
-            $this->repository->routine()->addNotification($this->routine, $notification);
         } else {
-            $this->repository->notification()->store(
-                $this->notification->setMessage($notification_message)
-            );
+            $this->notification
+                ->setDaysBeforeSubmission($days_before_submission)
+                ->setMessage($notification_message)
+            ;
+
+            $this->repository->notification()->store($this->notification);
         }
     }
 }

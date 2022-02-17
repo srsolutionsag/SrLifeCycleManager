@@ -1,9 +1,9 @@
-<?php declare(strict_types=1);
+<?php // strict types are not possible with ActiveRecord.
 
 use srag\Plugins\SrLifeCycleManager\Routine\IRoutine;
 
 /**
- * Class ilSrRule is responsible for storing rule-sets in the database.
+ * Routine DAO
  *
  * @author Thibeau Fuhrer <thibeau@sr.solutions>
  */
@@ -171,7 +171,7 @@ class ilSrRoutine extends ActiveRecord implements IRoutine
     /**
      * @inheritDoc
      */
-    public function getId() : ?int
+    public function getRoutineId() : ?int
     {
         return $this->id;
     }
@@ -179,9 +179,9 @@ class ilSrRoutine extends ActiveRecord implements IRoutine
     /**
      * @inheritDoc
      */
-    public function setId(?int $id) : IRoutine
+    public function setRoutineId(?int $routine_id) : IRoutine
     {
-        $this->id = $id;
+        $this->id = $routine_id;
         return $this;
     }
 

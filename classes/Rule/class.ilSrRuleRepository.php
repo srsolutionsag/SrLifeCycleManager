@@ -1,6 +1,8 @@
 <?php declare(strict_types=1);
 
 use srag\Plugins\SrLifeCycleManager\Rule\IRuleRepository;
+use srag\Plugins\SrLifeCycleManager\Rule\IRoutineAwareRule;
+use srag\Plugins\SrLifeCycleManager\Rule\IRoutineRuleRelation;
 use srag\Plugins\SrLifeCycleManager\Rule\IRule;
 use srag\Plugins\SrLifeCycleManager\Rule\Rule;
 
@@ -10,43 +12,58 @@ use srag\Plugins\SrLifeCycleManager\Rule\Rule;
 class ilSrRuleRepository implements IRuleRepository
 {
     /**
-     * @var ilDBInterface
-     */
-    protected $database;
-
-    /**
-     * @param ilDBInterface $database
-     */
-    public function __construct(ilDBInterface $database)
-    {
-        $this->database = $database;
-    }
-
-    /**
      * @inheritDoc
      */
-    public function get(int $id) : ?IRule
+    public function get(int $routine_id, int $rule_id) : ?IRoutineAwareRule
     {
-        /**
-         * @var $ar_rule ilSrRule
-         */
-        $ar_rule = ilSrRule::find($id);
-        return (null !== $ar_rule) ?
-            $this->transformToDTO($ar_rule) : null
-        ;
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function store(IRule $rule) : IRule
-    {
-        // fetch existing rule or create new AR instance
-        if (null !== $rule->getId()) {
-            $ar_rule = ilSrRule::find($rule->getId()) ?? new ilSrRule();
-        } else {
-            $ar_rule = new ilSrRule();
+        /** @var $ar_rule ilSrRule|null */
+        $ar_rule = ilSrRule::find($rule_id);
+        if (null === $ar_rule) {
+            return null;
         }
+
+        /** @var $ar_relation ilSrRoutineRule */
+        $ar_relation = $this->getRelationList($routine_id, $rule_id)->first();
+
+        return $this->transformToDTO($ar_rule, $ar_relation);
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function getAll(int $routine_id, bool $array_data = false) : array
+    {
+        /** @var $ar_relations ilSrRoutineRule[] */
+        $ar_relations = ilSrRoutineRule::where([
+            IRoutineRuleRelation::F_ROUTINE_ID => $routine_id,
+        ], '=')->get();
+
+        $rules = [];
+        foreach ($ar_relations as $ar_relation) {
+            /** @var $ar_rule ilSrRule|null */
+            $ar_rule = ilSrRule::find($ar_relation->getRuleId());
+            if (null === $ar_rule) {
+                continue;
+            }
+
+            $rules[] = ($array_data) ?
+                $this->transformToArray($ar_rule, $ar_relation) :
+                $this->transformToDTO($ar_rule, $ar_relation)
+            ;
+        }
+
+        return $rules;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function store(IRoutineAwareRule $rule) : IRoutineAwareRule
+    {
+        $ar_rule = (null !== $rule->getRuleId()) ?
+            (ilSrRule::find($rule->getRuleId()) ?? new ilSrRule()) :
+            new ilSrRule()
+        ;
 
         $ar_rule
             ->setLhsType($rule->getLhsType())
@@ -57,148 +74,108 @@ class ilSrRuleRepository implements IRuleRepository
             ->store()
         ;
 
-        return $this->transformToDTO($ar_rule);
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function getAllAsDTO() : ?array
-    {
-        /**
-         * @var $ar_rules ilSrRule[]
-         */
-        $ar_rules = ilSrRule::get();
-        if (empty($ar_rules)) return null;
-
-        $rules = [];
-        foreach ($ar_rules as $ar_rule) {
-            $rules[] = $this->transformToDTO($ar_rule);
-        }
-
-        return $rules;
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function getAllAsArray() : array
-    {
-        /**
-         * @var $ar_rules ilSrRule[]
-         */
-        $ar_rules = ilSrRule::get();
-        if (empty($ar_rules)) return [];
-
-        $rules = [];
-        foreach ($ar_rules as $ar_rule) {
-            $rules[] = $this->transformToArray($ar_rule);
-        }
-
-        return $rules;
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function getAllForValueTypes(array $value_types) : ?array
-    {
-        global $DIC;
-
-        $query_types = [];
-        $query_values = [];
-        $query = "SELECT * FROM " . ilSrRule::TABLE_NAME;
-
-        // @TODO: replace this shit with IN operator
-        for ($i = 0, $type_count = count($value_types); $i < $type_count; $i++) {
-            if ($i === 0) {
-                $query .= " WHERE lhs_type = %s";
-                $query .= " OR rhs_type = %s";
-            } else {
-                $query .= " OR lhs_type = %s";
-                $query .= " OR rhs_type = %s";
-            }
-
-            // add query-type and query-value twice
-            $query_types[] = 'text';
-            $query_types[] = 'text';
-            $query_values[] = $value_types[$i];
-            $query_values[] = $value_types[$i];
-        }
-
-        $results = $DIC->database()->fetchAll(
-            $DIC->database()->queryF($query, $query_types, $query_values)
+        $ar_relations = $this->getRelationList(
+            $rule->getRoutineId(),
+            $rule->getRuleId()
         );
 
-        if (empty($results)) return null;
-
-        $rules = [];
-        foreach ($results as $rule_data) {
-            $rules[] = $this->transformToDTO($rule_data);
+        /** @var $ar_relation ilSrRoutineRule */
+        if (empty($ar_relations->get())) {
+            $ar_relation = new ilSrRoutineRule();
+            $ar_relation
+                ->setRoutineId($rule->getRoutineId())
+                ->setRuleId($rule->getRuleId())
+                ->store()
+            ;
+        } else {
+            $ar_relation = $ar_relations->first();
         }
 
-        return $rules;
+        return $this->transformToDTO($ar_rule, $ar_relation);
     }
 
     /**
      * @inheritDoc
      */
-    public function delete(IRule $rule) : bool
+    public function delete(IRoutineAwareRule $rule) : bool
     {
-        // nothing to do, rule hasn't been saved to the
-        // database yet
-        if (null === $rule->getId()) return true;
-
-        // abort if the given rule was not found in the
-        // database.
-        $ar_rule = ilSrRule::find($rule->getId());
-        if (null === $ar_rule) return false;
-
-        $ar_routines = ilSrRoutineRule::where([
-            ilSrRoutineRule::F_RULE_ID => $rule->getId(),
-        ])->get();
-
-        // delete all routine relations of this rule.
-        if (!empty($ar_routines)) {
-            foreach ($ar_routines as $relation) {
-                $relation->delete();
-            }
+        // nothing to do, rule hasn't been saved to the database yet.
+        if (null === $rule->getRuleId()) {
+            return true;
         }
 
-        // finally, delete the rule itself and return.
-        $ar_rule->delete();
+        $ar_rule = ilSrRule::find($rule->getRuleId());
+        if (null !== $ar_rule) {
+            $ar_relations = $this->getRelationList(
+                $rule->getRoutineId(),
+                $rule->getRuleId()
+            );
+
+            foreach ($ar_relations->get() as $ar_relation) {
+                $ar_relation->delete();
+            }
+
+            $ar_rule->delete();
+            return true;
+        }
+
         return false;
     }
 
     /**
-     * @param IRule $rule
-     * @return IRule
+     * Helper function that returns the ar list of the routine-rule relations.
+     *
+     * @param int $routine_id
+     * @param int $rule_id
+     * @return ActiveRecordList
      */
-    public function transformToDTO(IRule $rule) : IRule
+    protected function getRelationList(int $routine_id, int $rule_id) : ActiveRecordList
+    {
+        return ilSrRoutineRule::where([
+            IRoutineRuleRelation::F_ROUTINE_ID => $routine_id,
+            IRoutineRuleRelation::F_RULE_ID => $rule_id,
+        ], '=');
+    }
+
+    /**
+     * Helper function that transforms the given rule and relation data
+     * to a rule DTO.
+     *
+     * @param IRule                $ar_rule
+     * @param IRoutineRuleRelation $ar_relation
+     * @return IRoutineAwareRule
+     */
+    protected function transformToDTO(IRule $ar_rule, IRoutineRuleRelation $ar_relation) : IRoutineAwareRule
     {
         return new Rule(
-            $rule->getId(),
-            $rule->getLhsType(),
-            $rule->getLhsValue(),
-            $rule->getOperator(),
-            $rule->getRhsType(),
-            $rule->getRhsValue()
+            $ar_rule->getLhsType(),
+            $ar_rule->getLhsValue(),
+            $ar_rule->getOperator(),
+            $ar_rule->getRhsType(),
+            $ar_rule->getRhsValue(),
+            $ar_relation->getRoutineId(),
+            $ar_rule->getRuleId()
         );
     }
 
     /**
-     * @param IRule $rule
-     * @return array
+     * Helper function that transforms the given rule and relation data
+     * to array-data.
+     *
+     * @param IRule                $ar_rule
+     * @param IRoutineRuleRelation $ar_relation
+     * @return array<string, mixed>
      */
-    public function transformToArray(IRule $rule) : array
+    protected function transformToArray(IRule $ar_rule, IRoutineRuleRelation $ar_relation) : array
     {
         return  [
-            IRule::F_ID => $rule->getId(),
-            IRule::F_LHS_TYPE => $rule->getLhsType(),
-            IRule::F_LHS_VALUE => $rule->getLhsValue(),
-            IRule::F_OPERATOR => $rule->getOperator(),
-            IRule::F_RHS_TYPE => $rule->getRhsType(),
-            IRule::F_RHS_VALUE => $rule->getRhsValue(),
+            IRoutineRuleRelation::F_ROUTINE_ID => $ar_relation->getRoutineId(),
+            IRule::F_RULE_ID => $ar_rule->getRuleId(),
+            IRule::F_LHS_TYPE => $ar_rule->getLhsType(),
+            IRule::F_LHS_VALUE => $ar_rule->getLhsValue(),
+            IRule::F_OPERATOR => $ar_rule->getOperator(),
+            IRule::F_RHS_TYPE => $ar_rule->getRhsType(),
+            IRule::F_RHS_VALUE => $ar_rule->getRhsValue(),
         ];
     }
 }

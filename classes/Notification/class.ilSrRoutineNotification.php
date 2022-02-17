@@ -1,11 +1,13 @@
-<?php declare(strict_types=1);
+<?php // strict types are not possible with ActiveRecord.
 
-use srag\Plugins\SrLifeCycleManager\Routine\IRoutineNotification;
+use srag\Plugins\SrLifeCycleManager\Notification\IRoutineNotificationRelation;
 
 /**
+ * Routine-Notification relationship DAO.
+ *
  * @author Thibeau Fuhrer <thibeau@sr.solutions>
  */
-class ilSrRoutineNotification extends ActiveRecord implements IRoutineNotification
+class ilSrRoutineNotification extends ActiveRecord implements IRoutineNotificationRelation
 {
     /**
      * @var string db table name
@@ -23,7 +25,7 @@ class ilSrRoutineNotification extends ActiveRecord implements IRoutineNotificati
      * @con_fieldtype   integer
      * @con_length      8
      */
-    protected $id;
+    protected $relation_id;
 
     /**
      * @var null|int
@@ -66,17 +68,17 @@ class ilSrRoutineNotification extends ActiveRecord implements IRoutineNotificati
     /**
      * @inheritDoc
      */
-    public function getId() : ?int
+    public function getRelationId() : ?int
     {
-        return $this->id;
+        return $this->relation_id;
     }
 
     /**
      * @inheritDoc
      */
-    public function setId(?int $id) : IRoutineNotification
+    public function setRelationId(?int $relation_id) : IRoutineNotificationRelation
     {
-        $this->id = $id;
+        $this->relation_id = $relation_id;
         return $this;
     }
 
@@ -91,7 +93,7 @@ class ilSrRoutineNotification extends ActiveRecord implements IRoutineNotificati
     /**
      * @inheritDoc
      */
-    public function setRoutineId(?int $routine_id) : IRoutineNotification
+    public function setRoutineId(?int $routine_id) : IRoutineNotificationRelation
     {
         $this->routine_id = $routine_id;
         return $this;
@@ -108,7 +110,7 @@ class ilSrRoutineNotification extends ActiveRecord implements IRoutineNotificati
     /**
      * @inheritDoc
      */
-    public function setNotificationId(?int $notification_id) : IRoutineNotification
+    public function setNotificationId(?int $notification_id) : IRoutineNotificationRelation
     {
         $this->notification_id = $notification_id;
         return $this;
@@ -125,7 +127,7 @@ class ilSrRoutineNotification extends ActiveRecord implements IRoutineNotificati
     /**
      * @inheritDoc
      */
-    public function setDaysBeforeSubmission(int $days) : IRoutineNotification
+    public function setDaysBeforeSubmission(int $days) : IRoutineNotificationRelation
     {
         $this->days_before_submission = $days;
         return $this;

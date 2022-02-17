@@ -61,7 +61,6 @@ class ilSrRoutineGUI extends ilSrAbstractGUI
     {
         parent::__construct();
 
-        // @TODO: check if this is necessary
         $this->ctrl->saveParameterByClass(
             self::class,
             self::QUERY_PARAM_ROUTINE_SCOPE
@@ -190,7 +189,7 @@ class ilSrRoutineGUI extends ilSrAbstractGUI
         // display the form if the submission was unsuccessful
         // to display errors.
         $this->displayErrorMessage(self::MSG_ROUTINE_ERROR);
-        $this->ui->mainTemplate()->setContent($form->printToGlobalTemplate());
+        $form->printToGlobalTemplate();
     }
 
     /**
@@ -274,7 +273,7 @@ class ilSrRoutineGUI extends ilSrAbstractGUI
      */
     protected function getScopeFromRequest() : ?int
     {
-        $scope = $this->getQueryParamFromRequest(self::QUERY_PARAM_ROUTINE_SCOPE, false);
+        $scope = $this->getQueryParamFromRequest(self::QUERY_PARAM_ROUTINE_SCOPE);
         return ($scope) ? (int) $scope : null;
     }
 
@@ -293,7 +292,7 @@ class ilSrRoutineGUI extends ilSrAbstractGUI
             return $this->repository->routine()->getAllByScope($this->scope, true);
         }
 
-        return $this->repository->routine()->getAllAsArray();
+        return $this->repository->routine()->getAll(true);
     }
 
     /**
@@ -311,7 +310,7 @@ class ilSrRoutineGUI extends ilSrAbstractGUI
             $this->ctrl->setParameterByClass(
                 self::class,
                 self::QUERY_PARAM_ROUTINE_ID,
-                $this->routine->getId()
+                $this->routine->getRoutineId()
             );
         }
 
@@ -340,7 +339,8 @@ class ilSrRoutineGUI extends ilSrAbstractGUI
                 ->getForm($this->getFormAction())
             ,
             $this->origin_type,
-            $this->user->getId()
+            $this->user->getId(),
+            $this->routine
         );
     }
 

@@ -9,11 +9,14 @@ msg_origin_unknown#:#An unknown origin type was provided (or none at all).
 msg_routine_not_found#:#There was no routine-id provided or it doesn't exist.
 msg_rule_success#:#Rule(s) successfully updated.
 msg_rule_error#:#Could not update rule(s).
+msg_notification_success#:#Notification(s) successfully updated.
+msg_notification_error#:#Could not update notification(s).
 msg_back_to#:#Back
 
-page_title_rules#:#SrLifeCycleManager Rules
+page_title_rules#:#SrLifeCycleManager rules
 page_title_config#:#SrLifeCycleManager configuration
 page_title_routine#:#SrLifeCycleManager routines
+page_title_notifications#:#SrLifeCycleManager notifications
 
 tab_config_index#:#Configuration
 tab_routine_index#:#Routines
@@ -63,6 +66,9 @@ action_routine_rules#:#Rules
 action_routine_notifications#:#Notifications
 action_rule_add#:#Add rule
 action_rule_delete#:#Remove
+action_notification_add#:#Add notification
+action_notification_edit#:#Edit
+action_notification_delete#:#Remove
 
 lhs_value#:#LHS Value
 rhs_value#:#RHS Value

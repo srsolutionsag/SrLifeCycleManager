@@ -98,19 +98,15 @@ class ilSrRuleForm extends ilSrAbstractForm
             $form_data[$key_rhs_value][$key_group_type]
         ;
 
-        $rule = new Rule(
-            null,
-            $lhs_type,
-            $lhs_value,
-            $form_data[RuleFormBuilder::KEY_OPERATOR],
-            $rhs_type,
-            $rhs_value
-        );
-
-        // store the new rule and create a relation to the current routine.
-        $this->repository->routine()->addRule(
-            $this->routine,
-            $this->repository->rule()->store($rule)
+        $this->repository->rule()->store(
+            new Rule(
+                $lhs_type,
+                $lhs_value,
+                $form_data[RuleFormBuilder::KEY_OPERATOR],
+                $rhs_type,
+                $rhs_value,
+                $this->routine->getRoutineId()
+            )
         );
     }
 }

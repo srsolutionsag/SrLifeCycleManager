@@ -3,26 +3,25 @@
 namespace srag\Plugins\SrLifeCycleManager\Notification;
 
 /**
+ * INotification describes the DAO of a notification.
+ *
  * @author Thibeau Fuhrer <thibeau@sr.solutions>
  */
 interface INotification
 {
-    /**
-     * INotification attribute names
-     */
-    public const F_ID       = 'id';
-    public const F_MESSAGE  = 'message';
+    public const F_NOTIFICATION_ID = 'notification_id';
+    public const F_MESSAGE = 'message';
 
     /**
      * @return int|null
      */
-    public function getId() : ?int;
+    public function getNotificationId() : ?int;
 
     /**
-     * @param int $id
+     * @param int $notification_id
      * @return INotification
      */
-    public function setId(int $id) : INotification;
+    public function setNotificationId(int $notification_id) : INotification;
 
     /**
      * @return string

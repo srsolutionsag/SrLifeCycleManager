@@ -1,9 +1,9 @@
-<?php
+<?php // strict types are not possible with ActiveRecord.
 
 use srag\Plugins\SrLifeCycleManager\Rule\IRule;
 
 /**
- * Class ilSrRule is responsible for storing rules in the database.
+ * Rule DAO
  *
  * @author Thibeau Fuhrer <thibeau@sr.solutions>
  */
@@ -25,7 +25,7 @@ final class ilSrRule extends ActiveRecord implements IRule
      * @con_fieldtype   integer
      * @con_length      8
      */
-    protected $id;
+    protected $rule_id;
 
     /**
      * @var string
@@ -88,18 +88,18 @@ final class ilSrRule extends ActiveRecord implements IRule
     /**
      * @return int|null
      */
-    public function getId() : ?int
+    public function getRuleId() : ?int
     {
-        return $this->id;
+        return $this->rule_id;
     }
 
     /**
-     * @param int|null $id
+     * @param int|null $rule_id
      * @return ilSrRule
      */
-    public function setId(?int $id) : IRule
+    public function setRuleId(?int $rule_id) : IRule
     {
-        $this->id = $id;
+        $this->rule_id = $rule_id;
         return $this;
     }
 
@@ -130,12 +130,12 @@ final class ilSrRule extends ActiveRecord implements IRule
     }
 
     /**
-     * @param mixed $lhs_value
+     * @param mixed $value
      * @return ilSrRule
      */
-    public function setLhsValue($lhs_value) : IRule
+    public function setLhsValue($value) : IRule
     {
-        $this->lhs_value = $lhs_value;
+        $this->lhs_value = $value;
         return $this;
     }
 
@@ -184,12 +184,12 @@ final class ilSrRule extends ActiveRecord implements IRule
     }
 
     /**
-     * @param mixed $rhs_value
+     * @param mixed $value
      * @return ilSrRule
      */
-    public function setRhsValue($rhs_value) : IRule
+    public function setRhsValue($value) : IRule
     {
-        $this->rhs_value = $rhs_value;
+        $this->rhs_value = $value;
         return $this;
     }
 }

@@ -1,11 +1,10 @@
 <?php declare(strict_types=1);
 
-use srag\Plugins\SrLifeCycleManager\Routine\Routine;
+use srag\Plugins\SrLifeCycleManager\Builder\Form\FormBuilderFactory;
 use srag\Plugins\SrLifeCycleManager\Routine\IRoutine;
 use ILIAS\Refinery\Factory as Refinery;
 use ILIAS\DI\UIServices;
 use ILIAS\DI\HTTPServices;
-use srag\Plugins\SrLifeCycleManager\Builder\Form\FormBuilderFactory;
 
 /**
  * Class ilSrAbstractMainGUI provides derived GUI classes with common
@@ -375,7 +374,7 @@ abstract class ilSrAbstractGUI
      */
     protected function storeRoutineToSession(IRoutine $routine) : void
     {
-        ilSession::set(self::SESSION_PARAM_ROUTINE_ID, $routine->getId());
+        ilSession::set(self::SESSION_PARAM_ROUTINE_ID, $routine->getRoutineId());
     }
 
     /**

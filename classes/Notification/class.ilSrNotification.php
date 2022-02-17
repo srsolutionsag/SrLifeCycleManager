@@ -1,9 +1,9 @@
-<?php declare(strict_types=1);
+<?php // strict types are not possible with ActiveRecord.
 
 use srag\Plugins\SrLifeCycleManager\Notification\INotification;
 
 /**
- * Class ilSrNotification is responsible to store notifications in the database.
+ * Notification DAO
  *
  * @author Thibeau Fuhrer <thibeau@sr.solutions>
  */
@@ -25,7 +25,7 @@ class ilSrNotification extends ActiveRecord implements INotification
      * @con_fieldtype   integer
      * @con_length      8
      */
-    protected $id;
+    protected $notification_id;
 
     /**
      * @var string
@@ -47,17 +47,17 @@ class ilSrNotification extends ActiveRecord implements INotification
     /**
      * @inheritDoc
      */
-    public function getId() : ?int
+    public function getNotificationId() : ?int
     {
-        return $this->id;
+        return $this->notification_id;
     }
 
     /**
      * @inheritDoc
      */
-    public function setId(int $id) : INotification
+    public function setNotificationId(int $notification_id) : INotification
     {
-        $this->id = $id;
+        $this->notification_id = $notification_id;
         return $this;
     }
 
