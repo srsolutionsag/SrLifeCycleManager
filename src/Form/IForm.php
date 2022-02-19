@@ -2,20 +2,14 @@
 
 /* Copyright (c) 2021 Thibeau Fuhrer <thibeau@sr.solutions> Extended GPL, see docs/LICENSE */
 
-namespace srag\Plugins\SrLifeCycleManager\Builder\Form;
+namespace srag\Plugins\SrLifeCycleManager\Form;
 
 use Psr\Http\Message\ServerRequestInterface;
 
 /**
- * Interface IFormImplementation
- *
  * @author Thibeau Fuhrer <thibeau@sr.solutions>
- *
- * This form describes how an ilias form implementation should look
- * like. The minimal requirement should be handling requests and
- * eventually rendering the generated form to the main template.
  */
-interface IFormImplementation
+interface IForm
 {
     /**
      * Handles the form submission for the given request.
@@ -33,7 +27,9 @@ interface IFormImplementation
     public function handleRequest(ServerRequestInterface $request) : bool;
 
     /**
-     * Prints the current form to the global template.
+     * Returns the rendered form HTML string.
+     *
+     * @return string
      */
-    public function printToGlobalTemplate() : void;
+    public function render() : string;
 }

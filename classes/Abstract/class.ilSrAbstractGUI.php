@@ -1,7 +1,8 @@
 <?php declare(strict_types=1);
 
-use srag\Plugins\SrLifeCycleManager\Builder\Form\FormBuilderFactory;
 use srag\Plugins\SrLifeCycleManager\Routine\IRoutine;
+use srag\Plugins\SrLifeCycleManager\IRepository;
+
 use ILIAS\Refinery\Factory as Refinery;
 use ILIAS\DI\UIServices;
 use ILIAS\DI\HTTPServices;
@@ -35,11 +36,6 @@ abstract class ilSrAbstractGUI
      * @var string routine-id GET parameter name.
      */
     public const QUERY_PARAM_ROUTINE_ID = 'routine_id';
-
-    /**
-     * @var string associative session parameter for routines.
-     */
-    private const SESSION_PARAM_ROUTINE_ID = ilSrLifeCycleManagerPlugin::PLUGIN_ID . '_routine_id';
 
     /**
      * ilSrAbstractMainGUI common lang vars
@@ -95,14 +91,9 @@ abstract class ilSrAbstractGUI
     protected $plugin;
 
     /**
-     * @var ilSrLifeCycleManagerRepository
+     * @var IRepository
      */
     protected $repository;
-
-    /**
-     * @var FormBuilderFactory
-     */
-    protected $form_builders;
 
     /**
      * ilSrAbstractMainGUI constructor
@@ -124,13 +115,6 @@ abstract class ilSrAbstractGUI
             $DIC->database(),
             $DIC->rbac(),
             $DIC->repositoryTree()
-        );
-
-        $this->form_builders = new FormBuilderFactory(
-            $DIC->ui()->factory()->input()->field(),
-            $DIC->ui()->factory()->input()->container()->form(),
-            $this->refinery,
-            $this->plugin
         );
     }
 
@@ -195,10 +179,9 @@ abstract class ilSrAbstractGUI
     {
         // if requests are made from another base-class than the
         // ilAdministrationGUI, the page MUST be set up manually.
-        // That's because this plugin is a CronHook plugin doesn't
-        // normally use GUIs.
-        $base_class = $this->ctrl->getCallHistory()[0];
-        if (ilAdministrationGUI::class !== $base_class['class']) {
+        // That's because this plugin is a CronHook plugin and
+        // doesn't normally use GUIs.
+        if (IRoutine::ORIGIN_TYPE_REPOSITORY === ilSrLifeCycleManagerDispatcher::getOriginTypeFromRequest()) {
             $this->setupGlobalTemplate($this->ui->mainTemplate());
         }
 
@@ -341,50 +324,6 @@ abstract class ilSrAbstractGUI
         }
 
         return null;
-    }
-
-    /**
-     * Returns the stored routine from the current session.
-     *
-     * This method uses the routine-id stored in the session to fetch
-     * the routine entry from the database. By doing this the developer
-     * does not have to concern about the routine's state.
-     *
-     * @return IRoutine|null
-     * @deprecated
-     */
-    protected function getRoutineFromSession() : ?IRoutine
-    {
-        $routine_id = ilSession::get(self::SESSION_PARAM_ROUTINE_ID);
-        if (null !== $routine_id) {
-            return $this->repository->routine()->get((int) $routine_id);
-        }
-
-        return null;
-    }
-
-    /**
-     * Stores the given routine in the current session.
-     *
-     * Note that only the routine's id is stored, as we don't want
-     * to store the whole object. This way the routine has to be
-     * fetched from the database and is always up-to-date.
-     *
-     * @param IRoutine $routine
-     */
-    protected function storeRoutineToSession(IRoutine $routine) : void
-    {
-        ilSession::set(self::SESSION_PARAM_ROUTINE_ID, $routine->getRoutineId());
-    }
-
-    /**
-     * Removes the routine currently stored in the session.
-     */
-    protected function removeRoutineFromSession() : void
-    {
-        if (ilSession::get(self::SESSION_PARAM_ROUTINE_ID)) {
-            ilSession::clear(self::SESSION_PARAM_ROUTINE_ID);
-        }
     }
 
     /**

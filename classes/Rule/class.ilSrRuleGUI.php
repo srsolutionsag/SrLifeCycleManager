@@ -1,8 +1,10 @@
 <?php declare(strict_types=1);
 
 use srag\Plugins\SrLifeCycleManager\Routine\IRoutine;
-use srag\Plugins\SrLifeCycleManager\Rule\IRule;
 use srag\Plugins\SrLifeCycleManager\Rule\IRoutineAwareRule;
+use srag\Plugins\SrLifeCycleManager\Form\Rule\RuleFormBuilder;
+use srag\Plugins\SrLifeCycleManager\Form\Rule\RuleForm;
+use srag\Plugins\SrLifeCycleManager\Form\Rule\RuleFormDirector;
 
 /**
  * Class ilSrRuleGUI
@@ -26,9 +28,19 @@ class ilSrRuleGUI extends ilSrAbstractGUI
     protected const PAGE_TITLE            = 'page_title_rules';
 
     /**
-     * @var IRoutine|null
+     * @var IRoutine
      */
     protected $routine;
+
+    /**
+     * @var IRoutineAwareRule|null
+     */
+    protected $rule;
+
+    /**
+     * @var RuleFormBuilder
+     */
+    protected $form_builder;
 
     /**
      * ilSrRuleGUI constructor.
@@ -37,9 +49,16 @@ class ilSrRuleGUI extends ilSrAbstractGUI
     {
         parent::__construct();
 
-        // get dependencies from the current request
-        // provided as GET parameters.
         $this->routine = $this->getRoutineFromRequest(true);
+        $this->rule = $this->getRuleFromRequest();
+
+        $this->form_builder = new RuleFormBuilder(
+            $this->ui->factory()->input()->container()->form(),
+            $this->ui->factory()->input()->field(),
+            $this->refinery,
+            $this->plugin,
+            $this->getFormAction()
+        );
     }
 
     /**
@@ -68,10 +87,22 @@ class ilSrRuleGUI extends ilSrAbstractGUI
      */
     protected function canUserExecuteCommand(int $user_id, string $command) : bool
     {
-        // all actions implemented by this GUI require the
-        // user to be assigned to at least one configured
-        // global role, or the administrator role.
-        return ilSrAccess::isUserAssignedToConfiguredRole($user_id) || ilSrAccess::isUserAdministrator($user_id);
+        // the index command can always be executed because
+        // rules must be visible to object administrators.
+        if (self::CMD_INDEX === $command) {
+            return true;
+        }
+
+        // rules can only be deleted by the owner of the routine
+        // and if general access is granted.
+        if (null !== $this->routine && $user_id !== $this->routine->getOwnerId()) {
+            return (
+                ilSrAccess::isUserAssignedToConfiguredRole($user_id) ||
+                ilSrAccess::isUserAdministrator($user_id)
+            );
+        }
+
+        return false;
     }
 
     /**
@@ -134,7 +165,9 @@ class ilSrRuleGUI extends ilSrAbstractGUI
             )
         );
 
-        $this->getForm()->printToGlobalTemplate();
+        $this->ui->mainTemplate()->setContent(
+            $this->getForm()->render()
+        );
     }
 
     /**
@@ -156,7 +189,9 @@ class ilSrRuleGUI extends ilSrAbstractGUI
         // display the form if the submission was unsuccessful
         // to display errors.
         $this->displayErrorMessage(self::MSG_RULE_ERROR);
-        $form->printToGlobalTemplate();
+        $this->ui->mainTemplate()->setContent(
+            $form->render()
+        );
     }
 
     /**
@@ -207,10 +242,10 @@ class ilSrRuleGUI extends ilSrAbstractGUI
     {
         $rule_id = $this->getQueryParamFromRequest(self::QUERY_PARAM_RULE_ID);
         if (null !== $rule_id) {
-            return $this->repository->rule()->get(
-                $this->routine->getRoutineId(),
-                (int) $rule_id
-            );
+            return
+                $this->repository->rule()->get($this->routine->getRoutineId(), (int) $rule_id) ??
+                $this->repository->rule()->getEmpty($this->routine->getRoutineId())
+            ;
         }
 
         return null;
@@ -251,20 +286,20 @@ class ilSrRuleGUI extends ilSrAbstractGUI
      * Helper function that initializes the rule-form
      * and returns it.
      *
-     * @return ilSrRuleForm
+     * @return RuleForm
      */
-    protected function getForm() : ilSrRuleForm
+    protected function getForm() : RuleForm
     {
-        return new ilSrRuleForm(
-            $this->repository,
-            $this->ui->mainTemplate(),
+        $director = new RuleFormDirector(
             $this->ui->renderer(),
-            $this->form_builders
-                ->rule()
-                ->getForm($this->getFormAction())
-            ,
-            $this->routine
+            $this->form_builder,
+            $this->repository,
+            $this->rule ?? $this->repository->rule()->getEmpty(
+                $this->routine->getRoutineId()
+            )
         );
+
+        return $director->getStandardForm();
     }
 
     /**
@@ -282,7 +317,8 @@ class ilSrRuleGUI extends ilSrAbstractGUI
             self::CMD_INDEX,
             'tpl.rule_table_row.html',
             $this->getTableData(),
-            $this->routine
+            $this->routine,
+            $this->user
         );
     }
 }

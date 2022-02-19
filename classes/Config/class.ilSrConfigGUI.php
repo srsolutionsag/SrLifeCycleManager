@@ -1,5 +1,9 @@
 <?php declare(strict_types=1);
 
+use srag\Plugins\SrLifeCycleManager\Form\Config\ConfigForm;
+use srag\Plugins\SrLifeCycleManager\Form\Config\ConfigFormBuilder;
+use srag\Plugins\SrLifeCycleManager\Config\IConfig;
+
 /**
  * Class ilSrConfigGUI is responsible for the general plugin configuration.
  *
@@ -27,20 +31,32 @@ class ilSrConfigGUI extends ilSrAbstractGUI
     protected const PAGE_TITLE                = 'page_title_config';
 
     /**
-     * @var ilSetting
+     * @var ConfigFormBuilder
      */
-    protected $settings;
+    protected $form_builder;
 
     /**
      * ilSrConfigGUI constructor
      */
     public function __construct()
     {
+        parent::__construct();
+
         global $DIC;
 
-        $this->settings = $DIC->settings();
+        /** @var $config IConfig[] */
+        $config = ilSrConfig::get();
 
-        parent::__construct();
+        $this->form_builder = new ConfigFormBuilder(
+            $this->ui->factory()->input()->container()->form(),
+            $this->ui->factory()->input()->field(),
+            $this->refinery,
+            $this->plugin,
+            $this->getFormAction(),
+            $config,
+            $this->repository->getGlobalRoleOptions(),
+            (bool) $DIC->settings()->get('enable_trash')
+        );
     }
 
     /**
@@ -89,7 +105,9 @@ class ilSrConfigGUI extends ilSrAbstractGUI
      */
     protected function index() : void
     {
-        $this->getForm()->printToGlobalTemplate();
+        $this->ui->mainTemplate()->setContent(
+            $this->getForm()->render()
+        );
     }
 
     /**
@@ -105,7 +123,9 @@ class ilSrConfigGUI extends ilSrAbstractGUI
         }
 
         $this->sendErrorMessage(self::MSG_CONFIGURATION_ERROR);
-        $form->printToGlobalTemplate();
+        $this->ui->mainTemplate()->setContent(
+            $this->getForm()->render()
+        );
     }
 
     /**
@@ -125,19 +145,14 @@ class ilSrConfigGUI extends ilSrAbstractGUI
      * Helper function that initialises the configuration form and
      * returns it.
      *
-     * @return ilSrConfigForm
+     * @return ConfigForm
      */
-    protected function getForm() : ilSrConfigForm
+    protected function getForm() : ConfigForm
     {
-        return new ilSrConfigForm(
+        return new ConfigForm(
             $this->repository,
-            $this->ui->mainTemplate(),
             $this->ui->renderer(),
-            $this->form_builders
-                ->config()
-                ->withBinActive((bool) $this->settings->get('enable_trash'))
-                ->withGlobalRoles($this->repository->getGlobalRoleOptions())
-                ->getForm($this->getFormAction())
+            $this->form_builder
         );
     }
 }

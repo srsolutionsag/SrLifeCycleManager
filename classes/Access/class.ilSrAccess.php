@@ -1,4 +1,6 @@
-<?php
+<?php declare(strict_types=1);
+
+use srag\Plugins\SrLifeCycleManager\Config\IConfig;
 
 /**
  * Class ilSrAccess is responsible for all access checks.
@@ -28,7 +30,7 @@ final class ilSrAccess
      * checks if a user for given id is eligible to manage routines by checking
      * assigned roles for administrator or configured global roles.
      *
-     * @see ilSrConfig::CNF_GLOBAL_ROLES
+     * @see IConfig::CNF_GLOBAL_ROLES
      *
      * @param int $user_id
      * @return bool
@@ -37,10 +39,8 @@ final class ilSrAccess
     {
         global $DIC;
 
-        /**
-         * @var $config ilSrConfig
-         */
-        $config = ilSrConfig::find(ilSrConfig::CNF_GLOBAL_ROLES);
+        /** @var $config IConfig */
+        $config = ilSrConfig::find(IConfig::CNF_GLOBAL_ROLES);
         if (null !== $config) {
             return $DIC->rbac()->review()->isAssignedToAtLeastOneGivenRole($user_id, $config->getValue());
         }

@@ -26,6 +26,11 @@ class ilSrRuleTable extends ilSrAbstractTable
     protected $routine;
 
     /**
+     * @var ilObjUser
+     */
+    protected $user;
+
+    /**
      * @param UIServices                 $ui
      * @param ilSrLifeCycleManagerPlugin $plugin
      * @param object                     $parent_gui
@@ -33,6 +38,7 @@ class ilSrRuleTable extends ilSrAbstractTable
      * @param string                     $row_template
      * @param array                      $table_data
      * @param IRoutine                   $routine
+     * @param ilObjUser                  $user
      */
     public function __construct(
         UIServices $ui,
@@ -41,11 +47,13 @@ class ilSrRuleTable extends ilSrAbstractTable
         string $parent_cmd,
         string $row_template,
         array $table_data,
-        IRoutine $routine
+        IRoutine $routine,
+        ilObjUser $user
     ) {
         parent::__construct($ui, $plugin, $parent_gui, $parent_cmd, $row_template, $table_data);
 
         $this->routine = $routine;
+        $this->user = $user;
     }
 
     /**
@@ -68,6 +76,7 @@ class ilSrRuleTable extends ilSrAbstractTable
      */
     protected function prepareRowTemplate(ilTemplate $template, array $row_data) : void
     {
+        $template->setVariable(strtoupper(self::COL_RULE_OPERATOR), $this->plugin->txt($row_data[IRule::F_OPERATOR]));
         $template->setVariable(strtoupper(self::COL_RULE_RHS_TYPE), $this->plugin->txt($row_data[IRule::F_RHS_TYPE]));
         $template->setVariable(
             strtoupper(self::COL_RULE_RHS_VALUE),
@@ -86,10 +95,13 @@ class ilSrRuleTable extends ilSrAbstractTable
             )
         );
 
-        $template->setVariable(strtoupper(self::COL_RULE_OPERATOR), $this->plugin->txt($row_data[IRule::F_OPERATOR]));
-        $template->setVariable(strtoupper(self::COL_ACTIONS), $this->ui->renderer()->render(
-            $this->getActionDropdown($row_data[IRule::F_RULE_ID])
-        ));
+        // only display the action dropdown if the current user owns
+        // the related routine.
+        if ($this->user->getId() === $this->routine->getOwnerId()) {
+            $template->setVariable(strtoupper(self::COL_ACTIONS), $this->ui->renderer()->render(
+                $this->getActionDropdown($row_data[IRule::F_RULE_ID])
+            ));
+        }
     }
 
     /**

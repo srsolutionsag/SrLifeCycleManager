@@ -31,6 +31,12 @@ interface IRuleRepository
     public function getAll(int $routine_id, bool $array_data = false) : array;
 
     /**
+     * @param int $routine_id
+     * @return IRoutineAwareRule|null
+     */
+    public function getEmpty(int $routine_id) : ?IRoutineAwareRule;
+
+    /**
      * Creates or updates a rule entry in the database.
      *
      * @param IRoutineAwareRule $rule

@@ -3,7 +3,8 @@
 /* Copyright (c) 2022 Thibeau Fuhrer <thibeau@sr.solutions> Extended GPL, see docs/LICENSE */
 
 use srag\Plugins\SrLifeCycleManager\Notification\INotification;
-use srag\Plugins\SrLifeCycleManager\Routine\IRoutineNotificationRelation;
+use srag\Plugins\SrLifeCycleManager\Notification\IRoutineNotificationRelation;
+
 use ILIAS\UI\Component\Dropdown\Dropdown;
 
 /**
@@ -21,8 +22,8 @@ class ilSrNotificationTable extends ilSrAbstractTable
     protected function getTableColumns() : array
     {
         return [
-            self::COL_NOTIFICATION_MESSAGE,
             self::COL_NOTIFICATION_DAYS,
+            self::COL_NOTIFICATION_MESSAGE,
             '',
         ];
     }
@@ -32,8 +33,8 @@ class ilSrNotificationTable extends ilSrAbstractTable
      */
     protected function prepareRowTemplate(ilTemplate $template, array $row_data) : void
     {
-        $template->setVariable(strtoupper(self::COL_NOTIFICATION_MESSAGE), $row_data[INotification::F_MESSAGE]);
         $template->setVariable(strtoupper(self::COL_NOTIFICATION_DAYS), $row_data[IRoutineNotificationRelation::F_DAYS_BEFORE_SUBMISSION]);
+        $template->setVariable(strtoupper(self::COL_NOTIFICATION_MESSAGE), $row_data[INotification::F_MESSAGE]);
         $template->setVariable(strtoupper(self::COL_NOTIFICATION_ACTIONS),
             $this->ui->renderer()->render($this->getActionDropdown(
                 (int) $row_data[IRoutineNotificationRelation::F_ROUTINE_ID],

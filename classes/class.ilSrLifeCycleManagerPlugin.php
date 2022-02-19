@@ -2,6 +2,8 @@
 
 require_once __DIR__ . '/../vendor/autoload.php';
 
+use srag\Plugins\SrLifeCycleManager\ITranslator;
+
 /**
  * Class ilSrLifeCycleManagerPlugin holds the (singleton) plugin instance.
  *
@@ -15,7 +17,7 @@ require_once __DIR__ . '/../vendor/autoload.php';
  * rule-sets registered in the administration of this plugin, and applying them -
  * deleting (old) course objects that match an active routine's rules.
  */
-final class ilSrLifeCycleManagerPlugin extends ilCronHookPlugin
+final class ilSrLifeCycleManagerPlugin extends ilCronHookPlugin implements ITranslator
 {
     /**
      * @var string

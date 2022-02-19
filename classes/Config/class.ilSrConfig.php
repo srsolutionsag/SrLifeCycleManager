@@ -1,5 +1,7 @@
 <?php // strict types are not possible with ActiveRecord.
 
+use srag\Plugins\SrLifeCycleManager\Config\IConfig;
+
 /**
  * Class ilSrConfig stores all general plugin configurations.
  *
@@ -33,7 +35,7 @@
  *              ->setValue(mixed $value)
  *              ->store();
  */
-final class ilSrConfig extends ActiveRecord
+class ilSrConfig extends ActiveRecord implements IConfig
 {
     /**
      * @var string db table name
@@ -49,33 +51,6 @@ final class ilSrConfig extends ActiveRecord
      * @var string regex pattern for identifier validation
      */
     private const IDENTIFIER_REGEX = '/^[A-Za-z0-9_-]*$/';
-
-    /**
-     * @var string config determines whether or not a user
-     *             can manage routines (and rules).
-     */
-    public const CNF_GLOBAL_ROLES    = 'cnf_global_roles';
-
-    /**
-     * @var string config determines whether or not objects that
-     *             match a routines rule-set are moved to the bin
-     *             first, or are removed entirely.
-     */
-    public const CNF_MOVE_TO_BIN     = 'cnf_move_to_bin';
-
-    /**
-     * @var string config determines whether or not routines can
-     *             be added by the tool provider displayed in the
-     *             repository context.
-     */
-    public const CNF_CREATE_ROUTINES = 'cnf_create_routines_repository';
-
-    /**
-     * @var string config determines whether or not active routines
-     *             are shown in the tool provider displayed in the
-     *             repository context's current object.
-     */
-    public const CNF_SHOW_ROUTINES   = 'cnf_show_routines_repository';
 
     /**
      * @var string
@@ -116,10 +91,9 @@ final class ilSrConfig extends ActiveRecord
     }
 
     /**
-     * @param string $identifier
-     * @return ilSrConfig
+     * @inheritDoc
      */
-    public function setIdentifier(string $identifier) : ilSrConfig
+    public function setIdentifier(string $identifier) : IConfig
     {
         // thrown exception can be ignored, as this is ONLY for
         // development purposes.
@@ -129,7 +103,7 @@ final class ilSrConfig extends ActiveRecord
     }
 
     /**
-     * @return string|array
+     * @inheritDoc
      */
     public function getValue()
     {
@@ -144,10 +118,9 @@ final class ilSrConfig extends ActiveRecord
     }
 
     /**
-     * @param mixed $value
-     * @return ilSrConfig
+     * @inheritDoc
      */
-    public function setValue($value) : ilSrConfig
+    public function setValue($value) : IConfig
     {
         if (!is_array((array) $value)) {
             // lowercase string values for easier comparison

@@ -21,17 +21,6 @@ interface IRoutineAwareNotification extends INotification
     /**
      * @return int
      */
-    public function getRelationId() : int;
-
-    /**
-     * @param int $relation_id
-     * @return IRoutineAwareNotification
-     */
-    public function setRelationId(int $relation_id) : IRoutineAwareNotification;
-
-    /**
-     * @return int
-     */
     public function getRoutineId() : int;
 
     /**

@@ -1,7 +1,8 @@
 <?php declare(strict_types=1);
 
-use ILIAS\UI\Component\Dropdown\Standard as Dropdown;
 use srag\Plugins\SrLifeCycleManager\Routine\IRoutine;
+use ILIAS\UI\Component\Dropdown\Standard as Dropdown;
+use ILIAS\DI\UIServices;
 
 /**
  * Class ilSrRoutineTable represents all available routines.
@@ -24,6 +25,34 @@ class ilSrRoutineTable extends ilSrAbstractTable
     protected const COL_OPT_OUT_POSSIBLE  = 'col_routine_opt_out_possible';
     protected const COL_ELONGATION_DAYS   = 'col_routine_elongation_days';
     protected const COL_ACTIONS           = 'col_actions';
+
+    /**
+     * @var ilObjUser
+     */
+    protected $user;
+
+    /**
+     * @param UIServices                 $ui
+     * @param ilSrLifeCycleManagerPlugin $plugin
+     * @param object                     $parent_gui
+     * @param string                     $parent_cmd
+     * @param string                     $row_template
+     * @param array                      $table_data
+     * @param ilObjUser                  $user
+     */
+    public function __construct(
+        UIServices $ui,
+        ilSrLifeCycleManagerPlugin $plugin,
+        object $parent_gui,
+        string $parent_cmd,
+        string $row_template,
+        array $table_data,
+        ilObjUser $user
+    ) {
+        parent::__construct($ui, $plugin, $parent_gui, $parent_cmd, $row_template, $table_data);
+
+        $this->user = $user;
+    }
 
     /**
      * @inheritDoc
@@ -79,53 +108,65 @@ class ilSrRoutineTable extends ilSrAbstractTable
         $template->setVariable(strtoupper(self::COL_CREATION_DATE), $creation_date);
         $template->setVariable(strtoupper(self::COL_OPT_OUT_POSSIBLE), $status_opt_out);
         $template->setVariable(strtoupper(self::COL_ELONGATION_DAYS), $row_data[IRoutine::F_ELONGATION_DAYS]);
-        $template->setVariable(strtoupper(self::COL_ACTIONS), $this->ui->renderer()->render(
-            $this->getActionDropdown($row_data[IRoutine::F_ROUTINE_ID])
-        ));
+        $template->setVariable(strtoupper(self::COL_ACTIONS),
+            $this->ui->renderer()->render(
+                $this->getActionDropdown(
+                    $row_data[IRoutine::F_ROUTINE_ID],
+                    $row_data[IRoutine::F_OWNER_ID]
+                )
+            )
+        );
     }
 
     /**
      * returns an action dropdown for each routine row-entry.
-     *
      * @param int $routine_id
+     * @param int $owner_id
      * @return Dropdown
      */
-    protected function getActionDropdown(int $routine_id) : Dropdown
+    protected function getActionDropdown(int $routine_id, int $owner_id) : Dropdown
     {
         $this->setActionParameters($routine_id);
-        return $this->ui->factory()->dropdown()->standard([
-            $this->ui->factory()->button()->shy(
+
+        // only let owners edit their routines.
+        if ($owner_id === $this->user_id) {
+            $inputs[] = $this->ui->factory()->button()->shy(
                 $this->plugin->txt(ilSrRoutineGUI::ACTION_ROUTINE_EDIT),
                 $this->ctrl->getLinkTargetByClass(
                     ilSrRoutineGUI::class,
                     ilSrRoutineGUI::CMD_ROUTINE_EDIT
                 )
-            ),
+            );
+        }
 
-            $this->ui->factory()->button()->shy(
-                $this->plugin->txt(ilSrRoutineGUI::ACTION_ROUTINE_RULES),
-                $this->ctrl->getLinkTargetByClass(
-                    ilSrRuleGUI::class,
-                    ilSrRuleGUI::CMD_INDEX
-                )
-            ),
+        $inputs[] = $this->ui->factory()->button()->shy(
+            $this->plugin->txt(ilSrRoutineGUI::ACTION_ROUTINE_RULES),
+            $this->ctrl->getLinkTargetByClass(
+                ilSrRuleGUI::class,
+                ilSrRuleGUI::CMD_INDEX
+            )
+        );
 
-            $this->ui->factory()->button()->shy(
-                $this->plugin->txt(ilSrRoutineGUI::ACTION_ROUTINE_NOTIFICATIONS),
-                $this->ctrl->getLinkTargetByClass(
-                    ilSrNotificationGUI::class,
-                    ilSrNotificationGUI::CMD_INDEX
-                )
-            ),
+        $inputs[] = $this->ui->factory()->button()->shy(
+            $this->plugin->txt(ilSrRoutineGUI::ACTION_ROUTINE_NOTIFICATIONS),
+            $this->ctrl->getLinkTargetByClass(
+                ilSrNotificationGUI::class,
+                ilSrNotificationGUI::CMD_INDEX
+            )
+        );
 
-            $this->ui->factory()->button()->shy(
+        // only let owners delete their routines.
+        if ($owner_id === $this->user_id) {
+            $inputs[] = $this->ui->factory()->button()->shy(
                 $this->plugin->txt(ilSrRoutineGUI::ACTION_ROUTINE_DELETE),
                 $this->ctrl->getLinkTargetByClass(
                     ilSrRoutineGUI::class,
                     ilSrRoutineGUI::CMD_ROUTINE_DELETE
                 )
-            ),
-        ]);
+            );
+        }
+
+        return $this->ui->factory()->dropdown()->standard($inputs);
     }
 
     /**

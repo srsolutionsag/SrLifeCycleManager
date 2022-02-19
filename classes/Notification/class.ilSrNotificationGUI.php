@@ -1,9 +1,9 @@
 <?php declare(strict_types=1);
 
 use srag\Plugins\SrLifeCycleManager\Routine\IRoutine;
-use srag\Plugins\SrLifeCycleManager\Notification\INotification;
 use srag\Plugins\SrLifeCycleManager\Notification\IRoutineAwareNotification;
-use srag\Plugins\SrLifeCycleManager\Notification\IRoutineNotificationRelation;
+use srag\Plugins\SrLifeCycleManager\Form\Notification\NotificationForm;
+use srag\Plugins\SrLifeCycleManager\Form\Notification\NotificationFormBuilder;
 
 /**
  * @author Thibeau Fuhrer <thibeau@sr.solutions>
@@ -27,7 +27,7 @@ class ilSrNotificationGUI extends ilSrAbstractGUI
     protected const MSG_NOTIFICATION_ERROR   = 'msg_notification_error';
 
     /**
-     * @var IRoutine|null
+     * @var IRoutine
      */
     protected $routine;
 
@@ -74,10 +74,17 @@ class ilSrNotificationGUI extends ilSrAbstractGUI
      */
     protected function canUserExecuteCommand(int $user_id, string $command) : bool
     {
-        // all actions implemented by this GUI require the
-        // user to be assigned to at least one configured
-        // global role, or the administrator role.
-        return ilSrAccess::isUserAssignedToConfiguredRole($user_id) || ilSrAccess::isUserAdministrator($user_id);
+        // notifications can only be seen by the routine owner and
+        // if general access is granted.
+        if (null !== $this->routine &&
+            $user_id === $this->routine->getOwnerId() && (
+            ilSrAccess::isUserAssignedToConfiguredRole($user_id) ||
+            ilSrAccess::isUserAdministrator($user_id)
+        )) {
+            return true;
+        }
+
+        return false;
     }
 
     /**
@@ -131,7 +138,9 @@ class ilSrNotificationGUI extends ilSrAbstractGUI
      */
     protected function add() : void
     {
-        $this->getForm()->printToGlobalTemplate();
+        $this->ui->mainTemplate()->setContent(
+            $this->getForm()->render()
+        );
     }
 
     /**
@@ -149,7 +158,9 @@ class ilSrNotificationGUI extends ilSrAbstractGUI
             $this->repeat();
         }
 
-        $form->printToGlobalTemplate();
+        $this->ui->mainTemplate()->setContent(
+            $this->getForm()->render()
+        );
     }
 
     /**
@@ -159,6 +170,7 @@ class ilSrNotificationGUI extends ilSrAbstractGUI
     {
         $notification = $this->getNotificationFromRequest();
         if (null !== $this->routine && null !== $notification) {
+            $this->repository->notification()->delete($notification);
             $this->sendSuccessMessage(self::MSG_NOTIFICATION_SUCCESS);
         } else {
             $this->sendErrorMessage(self::MSG_NOTIFICATION_ERROR);
@@ -236,6 +248,15 @@ class ilSrNotificationGUI extends ilSrAbstractGUI
             $this->routine->getRoutineId()
         );
 
+        // pass along the notification id in case one was being edited.
+        if (null !== $this->notification) {
+            $this->ctrl->setParameterByClass(
+                self::class,
+                self::QUERY_PARAM_NOTIFICATION_ID,
+                $this->notification->getNotificationId()
+            );
+        }
+
         return $this->ctrl->getFormActionByClass(
             self::class,
             self::CMD_NOTIFICATION_SAVE
@@ -246,20 +267,25 @@ class ilSrNotificationGUI extends ilSrAbstractGUI
      * Helper function that initializes and returns the
      * notifications form.
      *
-     * @return ilSrNotificationForm
+     * @return NotificationForm
      */
-    protected function getForm() : ilSrNotificationForm
+    protected function getForm() : NotificationForm
     {
-        return new ilSrNotificationForm(
+        $builder = new NotificationFormBuilder(
+            $this->ui->factory()->input()->container()->form(),
+            $this->ui->factory()->input()->field(),
+            $this->refinery,
+            $this->plugin,
+            $this->getFormAction(),
+            $this->notification ?? $this->repository->notification()->getEmpty(
+                $this->routine->getRoutineId()
+            )
+        );
+
+        return new NotificationForm(
             $this->repository,
-            $this->ui->mainTemplate(),
             $this->ui->renderer(),
-            $this->form_builders
-                ->notification()
-                ->withNotification($this->notification)
-                ->getForm($this->getFormAction()),
-            $this->routine,
-            $this->notification
+            $builder
         );
     }
 

@@ -58,6 +58,21 @@ class ilSrRuleRepository implements IRuleRepository
     /**
      * @inheritDoc
      */
+    public function getEmpty(int $routine_id) : ?IRoutineAwareRule
+    {
+        return new Rule(
+            "",
+            null,
+            "",
+            "",
+            null,
+            $routine_id
+        );
+    }
+
+    /**
+     * @inheritDoc
+     */
     public function store(IRoutineAwareRule $rule) : IRoutineAwareRule
     {
         $ar_rule = (null !== $rule->getRuleId()) ?
@@ -76,7 +91,7 @@ class ilSrRuleRepository implements IRuleRepository
 
         $ar_relations = $this->getRelationList(
             $rule->getRoutineId(),
-            $rule->getRuleId()
+            $ar_rule->getRuleId()
         );
 
         /** @var $ar_relation ilSrRoutineRule */
@@ -84,7 +99,7 @@ class ilSrRuleRepository implements IRuleRepository
             $ar_relation = new ilSrRoutineRule();
             $ar_relation
                 ->setRoutineId($rule->getRoutineId())
-                ->setRuleId($rule->getRuleId())
+                ->setRuleId($ar_rule->getRuleId())
                 ->store()
             ;
         } else {

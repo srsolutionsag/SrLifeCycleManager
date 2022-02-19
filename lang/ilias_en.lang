@@ -41,7 +41,7 @@ col_rule_operator#:#Operator
 col_rule_lhs_type#:#LHS type
 col_rule_lhs_value#:#LHS value
 col_notification_message#:#Notification message
-col_notification_days#:#Sent (in days before routine)
+col_notification_days#:#Sent (in days before deletion)
 
 input_name_routine_ref_id#:#Ref-id (scope)
 input_name_routine_name#:#Name
@@ -49,6 +49,8 @@ input_name_routine_active#:#Active?
 input_name_routine_opt_out#:#Opt-out possible?
 input_name_routine_elongation#:#Elongation possible?
 input_name_routine_elongation_possible#:#Elongation (in days)
+input_name_notification_message#:#Notification message
+input_name_notification_days#:#Sent (in days before deletion)
 
 routine_origin_type_admin#:#Administration
 routine_origin_type_repo#:#Repository

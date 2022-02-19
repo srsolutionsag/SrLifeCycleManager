@@ -20,11 +20,6 @@ class Notification implements IRoutineAwareNotification
     protected $routine_id;
 
     /**
-     * @var int
-     */
-    protected $relation_id;
-
-    /**
      * @var string
      */
     protected $message;
@@ -46,10 +41,10 @@ class Notification implements IRoutineAwareNotification
         int $routine_id,
         int $notification_id = null
     ) {
-        $this->notification_id = $notification_id;
         $this->message = $message;
         $this->routine_id = $routine_id;
         $this->days_before_submission = $days_before_submission;
+        $this->notification_id = $notification_id;
     }
 
     /**

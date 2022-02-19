@@ -30,7 +30,7 @@ class ilSrRoutine extends ActiveRecord implements IRoutine
      * @con_fieldtype   integer
      * @con_length      8
      */
-    protected $id;
+    protected $routine_id;
 
     /**
      * @var string
@@ -173,7 +173,7 @@ class ilSrRoutine extends ActiveRecord implements IRoutine
      */
     public function getRoutineId() : ?int
     {
-        return $this->id;
+        return $this->routine_id;
     }
 
     /**
@@ -181,7 +181,7 @@ class ilSrRoutine extends ActiveRecord implements IRoutine
      */
     public function setRoutineId(?int $routine_id) : IRoutine
     {
-        $this->id = $routine_id;
+        $this->routine_id = $routine_id;
         return $this;
     }
 

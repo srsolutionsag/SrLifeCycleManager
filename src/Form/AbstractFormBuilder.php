@@ -2,19 +2,22 @@
 
 /* Copyright (c) 2022 Thibeau Fuhrer <thibeau@sr.solutions> Extended GPL, see docs/LICENSE */
 
-namespace srag\Plugins\SrLifeCycleManager\Builder\Form;
+namespace srag\Plugins\SrLifeCycleManager\Form;
+
+use srag\Plugins\SrLifeCycleManager\ITranslator;
 
 use ILIAS\UI\Component\Input\Container\Form\Factory as FormFactory;
+use ILIAS\UI\Component\Input\Container\Form\Form as UIForm;
 use ILIAS\UI\Component\Input\Field\Factory as InputFactory;
+use ILIAS\UI\Component\Input\Field\Input;
 use ILIAS\Refinery\Factory as Refinery;
-use ILIAS\Refinery\Constraint;
+use ILIAS\Refinery\Custom\Constraint;
 use ilObject2;
-use ilPlugin;
 
 /**
  * @author Thibeau Fuhrer <thibeau@sr.solutions>
  */
-abstract class FormBuilder implements IFormBuilder
+abstract class AbstractFormBuilder implements IFormBuilder
 {
     private const MSG_INVALID_REF_ID = 'msg_invalid_ref_id';
 
@@ -24,36 +27,55 @@ abstract class FormBuilder implements IFormBuilder
     protected $input_factory;
 
     /**
-     * @var FormFactory
-     */
-    protected $form_factory;
-
-    /**
      * @var Refinery
      */
     protected $refinery;
 
     /**
-     * @var ilPlugin
+     * @var ITranslator
      */
-    protected $plugin;
+    protected $translator;
 
     /**
-     * @param ilPlugin     $plugin
-     * @param InputFactory $input_factory
+     * @var string|null
+     */
+    protected $form_action;
+
+    /**
+     * @var FormFactory
+     */
+    private $form_factory;
+
+    /**
      * @param FormFactory  $form_factory
+     * @param InputFactory $input_factory
      * @param Refinery     $refinery
+     * @param ITranslator  $translator
+     * @param string       $form_action
      */
     public function __construct(
-        InputFactory $input_factory,
         FormFactory $form_factory,
+        InputFactory $input_factory,
         Refinery $refinery,
-        ilPlugin $plugin
+        ITranslator $translator,
+        string $form_action
     ) {
-        $this->input_factory = $input_factory;
         $this->form_factory = $form_factory;
+        $this->input_factory = $input_factory;
         $this->refinery = $refinery;
-        $this->plugin = $plugin;
+        $this->translator = $translator;
+        $this->form_action = $form_action;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function getForm() : UIForm
+    {
+        return $this->form_factory->standard(
+            $this->form_action,
+            $this->getInputs()
+        );
     }
 
     /**
@@ -65,9 +87,10 @@ abstract class FormBuilder implements IFormBuilder
             static function(int $ref_id) : ?int {
                 return (ilObject2::_exists($ref_id, true)) ? $ref_id : null;
             },
-            $this->plugin->txt(self::MSG_INVALID_REF_ID)
+            $this->translate(self::MSG_INVALID_REF_ID)
         );
     }
+
 
     /**
      * @param string $lang_var
@@ -75,6 +98,11 @@ abstract class FormBuilder implements IFormBuilder
      */
     protected function translate(string $lang_var) : string
     {
-        return $this->plugin->txt($lang_var);
+        return $this->translator->txt($lang_var);
     }
+
+    /**
+     * @return Input[]
+     */
+    abstract protected function getInputs() : array;
 }

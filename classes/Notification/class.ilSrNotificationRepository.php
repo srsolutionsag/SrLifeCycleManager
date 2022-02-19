@@ -58,6 +58,18 @@ class ilSrNotificationRepository implements INotificationRepository
     /**
      * @inheritDoc
      */
+    public function getEmpty(int $routine_id) : IRoutineAwareNotification
+    {
+        return new Notification(
+            '',
+            0,
+            $routine_id
+        );
+    }
+
+    /**
+     * @inheritDoc
+     */
     public function store(IRoutineAwareNotification $notification) : IRoutineAwareNotification
     {
         $ar_notification = (null !== $notification->getNotificationId()) ?
@@ -70,7 +82,7 @@ class ilSrNotificationRepository implements INotificationRepository
 
         $ar_relations = $this->getRelationList(
             $notification->getRoutineId(),
-            $notification->getNotificationId()
+            $ar_notification->getNotificationId()
         );
 
         /** @var $ar_relation ilSrRoutineNotification */

@@ -4,6 +4,7 @@ use srag\Plugins\SrLifeCycleManager\Routine\IRoutineRepository;
 use srag\Plugins\SrLifeCycleManager\Notification\INotificationRepository;
 use srag\Plugins\SrLifeCycleManager\Rule\IRuleRepository;
 use ILIAS\DI\RBACServices;
+use srag\Plugins\SrLifeCycleManager\IRepository;
 
 /**
  * Class ilSrLifeCycleManagerRepository is a factory for all
@@ -11,7 +12,7 @@ use ILIAS\DI\RBACServices;
  *
  * @author Thibeau Fuhrer <thibeau@sr.solutions>
  */
-class ilSrLifeCycleManagerRepository
+class ilSrLifeCycleManagerRepository implements IRepository
 {
     /**
      * @var RBACServices
@@ -56,7 +57,7 @@ class ilSrLifeCycleManagerRepository
     }
 
     /**
-     * @return IRoutineRepository
+     * @inheritDoc
      */
     public function routine() : IRoutineRepository
     {
@@ -64,7 +65,7 @@ class ilSrLifeCycleManagerRepository
     }
 
     /**
-     * @return INotificationRepository
+     * @inheritDoc
      */
     public function notification() : INotificationRepository
     {
@@ -72,7 +73,7 @@ class ilSrLifeCycleManagerRepository
     }
 
     /**
-     * @return IRuleRepository
+     * @inheritDoc
      */
     public function rule() : IRuleRepository
     {

@@ -1,7 +1,8 @@
 <?php declare(strict_types=1);
 
 use srag\Plugins\SrLifeCycleManager\Routine\Routine;
-use srag\Plugins\SrLifeCycleManager\Routine\IRoutine;
+use srag\Plugins\SrLifeCycleManager\Form\Routine\RoutineForm;
+use srag\Plugins\SrLifeCycleManager\Form\Routine\RoutineFormBuilder;
 
 /**
  * Class ilSrRoutineGUI
@@ -45,7 +46,7 @@ class ilSrRoutineGUI extends ilSrAbstractGUI
     protected $origin_type;
 
     /**
-     * @var Routine|null
+     * @var Routine
      */
     protected $routine;
 
@@ -53,6 +54,11 @@ class ilSrRoutineGUI extends ilSrAbstractGUI
      * @var int|null
      */
     protected $scope;
+
+    /**
+     * @var RoutineFormBuilder
+     */
+    protected $form_builder;
 
     /**
      * ilSrRoutineGUI constructor.
@@ -66,11 +72,24 @@ class ilSrRoutineGUI extends ilSrAbstractGUI
             self::QUERY_PARAM_ROUTINE_SCOPE
         );
 
-        // get dependencies from the current request
-        // provided as GET parameters.
-        $this->origin_type = $this->getOriginTypeFromRequest();
-        $this->routine     = $this->getRoutineFromRequest();
-        $this->scope       = $this->getScopeFromRequest();
+        $this->origin_type = ilSrLifeCycleManagerDispatcher::getOriginTypeFromRequest();
+        $this->scope = $this->getScopeFromRequest();
+        $this->routine = $this->getRoutineFromRequest() ??
+            $this->repository->routine()->getEmpty(
+                $this->origin_type,
+                $this->user->getId()
+            )
+        ;
+
+        $this->form_builder = new RoutineFormBuilder(
+            $this->ui->factory()->input()->container()->form(),
+            $this->ui->factory()->input()->field(),
+            $this->refinery,
+            $this->plugin,
+            $this->getFormAction(),
+            $this->routine,
+            $this->scope
+        );
     }
 
     /**
@@ -99,10 +118,32 @@ class ilSrRoutineGUI extends ilSrAbstractGUI
      */
     protected function canUserExecuteCommand(int $user_id, string $command) : bool
     {
+        // the index command can always be executed because
+        // routines must be visible to object administrators.
+        if (self::CMD_INDEX === $command) {
+            return true;
+        }
+
+        // a routine can only be edited or deleted by the owner
+        // and if general access is granted.
+        if (null !== $this->routine && (
+            self::CMD_ROUTINE_EDIT === $command ||
+            self::CMD_ROUTINE_DELETE === $command
+        )) {
+            return (
+                $user_id === $this->routine->getOwnerId() && (
+                ilSrAccess::isUserAssignedToConfiguredRole($user_id) ||
+                ilSrAccess::isUserAdministrator($user_id)
+            ));
+        }
+
         // all actions implemented by this GUI require the
         // user to be assigned to at least one configured
         // global role, or the administrator role.
-        return ilSrAccess::isUserAssignedToConfiguredRole($user_id) || ilSrAccess::isUserAdministrator($user_id);
+        return (
+            ilSrAccess::isUserAssignedToConfiguredRole($user_id) ||
+            ilSrAccess::isUserAdministrator($user_id)
+        );
     }
 
     /**
@@ -160,7 +201,9 @@ class ilSrRoutineGUI extends ilSrAbstractGUI
         // display the form only if the origin-type could be
         // determined, as it would lead to an error else.
         if (null !== $this->origin_type) {
-            $this->getForm()->printToGlobalTemplate();
+            $this->ui->mainTemplate()->setContent(
+                $this->getForm()->render()
+            );
         } else {
             $this->displayErrorMessage(self::MSG_ORIGIN_UNKNOWN);
         }
@@ -189,7 +232,9 @@ class ilSrRoutineGUI extends ilSrAbstractGUI
         // display the form if the submission was unsuccessful
         // to display errors.
         $this->displayErrorMessage(self::MSG_ROUTINE_ERROR);
-        $form->printToGlobalTemplate();
+        $this->ui->mainTemplate()->setContent(
+            $this->getForm()->render()
+        );
     }
 
     /**
@@ -209,36 +254,6 @@ class ilSrRoutineGUI extends ilSrAbstractGUI
         }
 
         $this->repeat();
-    }
-
-    /**
-     * Returns the origin-type of the current request.
-     *
-     * The origin-type is determined by ilCtrl's call-history,
-     * whereas the base-class is the defining property.
-     * Note that this method currently DOES NOT support
-     * @see Routine::ORIGIN_TYPE_EXTERNAL.
-     *
-     * @return int|null
-     */
-    protected function getOriginTypeFromRequest() : ?int
-    {
-        // fetch the first array-entry from ilCtrl's call-
-        // history. This is always the base-class.
-        $call_history = $this->ctrl->getCallHistory();
-        $base_class   = array_shift($call_history);
-
-        // check the implementation class-name and return
-        // the according origin-type.
-        switch ($base_class['class']) {
-            case ilUIPluginRouterGUI::class:
-                return IRoutine::ORIGIN_TYPE_REPOSITORY;
-            case ilAdministrationGUI::class:
-                return IRoutine::ORIGIN_TYPE_ADMINISTRATION;
-
-            default:
-                return null;
-        }
     }
 
     /**
@@ -323,24 +338,14 @@ class ilSrRoutineGUI extends ilSrAbstractGUI
     /**
      * Helper function that initializes the routine form and
      * returns it.
-     *
-     * @return ilSrRoutineForm
+     * @return RoutineForm
      */
-    protected function getForm() : ilSrRoutineForm
+    protected function getForm() : RoutineForm
     {
-        return new ilSrRoutineForm(
+        return new RoutineForm(
             $this->repository,
-            $this->ui->mainTemplate(),
             $this->ui->renderer(),
-            $this->form_builders
-                ->routine()
-                ->withRoutine($this->routine)
-                ->withScope($this->scope)
-                ->getForm($this->getFormAction())
-            ,
-            $this->origin_type,
-            $this->user->getId(),
-            $this->routine
+            $this->form_builder
         );
     }
 
@@ -358,7 +363,8 @@ class ilSrRoutineGUI extends ilSrAbstractGUI
             $this,
             self::CMD_INDEX,
             'tpl.routine_table_row.html',
-            $this->getTableData()
+            $this->getTableData(),
+            $this->user
         );
     }
 }

@@ -1,9 +1,10 @@
-<?php
+<?php declare(strict_types=1);
+
+use srag\Plugins\SrLifeCycleManager\Config\IConfig;
 
 use ILIAS\GlobalScreen\Scope\Tool\Provider\AbstractDynamicToolPluginProvider;
 use ILIAS\GlobalScreen\ScreenContext\Stack\ContextCollection;
 use ILIAS\GlobalScreen\ScreenContext\Stack\CalledContexts;
-use srag\Plugins\SrLifeCycleManager\Routine\Routine;
 
 /**
  * Class ilSrToolProvider provides ILIAS with the plugin's tools.
@@ -44,23 +45,23 @@ class ilSrToolProvider extends AbstractDynamicToolPluginProvider
                 ->withTitle($this->plugin->txt('tool_main_entry'))
                 ->withAvailableCallable($this->getToolAvailabilityClosure())
                 ->withVisibilityCallable($this->getToolVisibilityClosure())
-                ->withContent(
-                    // although this method accepts any UI component, it's
-                    // renderer can only manage legacy components. therefore
-                    // this component is misused to wrap a rendered component.
-                    $this->dic->ui()->factory()->legacy(
-                        $this->dic->ui()->renderer()->render(
-                            $this->dic->ui()->factory()->button()->standard(
-                                $this->plugin->txt('take me to routines!'),
-                                ilSrLifeCycleManagerDispatcher::buildFullyQualifiedLinkTarget(
-                                    ilSrRoutineGUI::class,
-                                    ilSrRoutineGUI::CMD_INDEX
-                                    // that's some deep nesting I know, but I really wanted
-                                    // this in just a return statement :).
+                ->withContentWrapper(
+                    function () : ILIAS\UI\Component\Component {
+                        // although this method accepts any UI component, it's
+                        // renderer can only manage legacy components. therefore,
+                        // this component is misused to wrap a rendered component.
+                        return $this->dic->ui()->factory()->legacy(
+                            $this->dic->ui()->renderer()->render(
+                                $this->dic->ui()->factory()->button()->standard(
+                                    $this->plugin->txt('take me to routines!'),
+                                    ilSrLifeCycleManagerDispatcher::buildFullyQualifiedLinkTarget(
+                                        ilSrRoutineGUI::class,
+                                        ilSrRoutineGUI::CMD_INDEX
+                                    )
                                 )
                             )
-                        )
-                    )
+                        );
+                    }
                 )
             ,
         ];
@@ -71,14 +72,15 @@ class ilSrToolProvider extends AbstractDynamicToolPluginProvider
      *
      * @return Closure
      */
-    private function getToolVisibilityClosure() : Closure
+    protected function getToolVisibilityClosure() : Closure
     {
         return function() : bool {
             // fetch configuration and check if the necessary
             // config exists and get its value.
+            /** @var $config IConfig[] */
             $config              = ilSrConfig::get();
-            $cnf_show_routines   = (isset($config[ilSrConfig::CNF_SHOW_ROUTINES]) && $config[ilSrConfig::CNF_SHOW_ROUTINES]->getValue());
-            $cnf_create_routines = (isset($config[ilSrConfig::CNF_CREATE_ROUTINES]) && $config[ilSrConfig::CNF_CREATE_ROUTINES]->getValue());
+            $cnf_show_routines   = (isset($config[IConfig::CNF_SHOW_ROUTINES]) && $config[IConfig::CNF_SHOW_ROUTINES]->getValue());
+            $cnf_create_routines = (isset($config[IConfig::CNF_CREATE_ROUTINES]) && $config[IConfig::CNF_CREATE_ROUTINES]->getValue());
 
             // save access checks in variables for readability.
             $user_id             = $this->dic->user()->getId();
@@ -105,7 +107,7 @@ class ilSrToolProvider extends AbstractDynamicToolPluginProvider
      *
      * @return Closure
      */
-    private function getToolAvailabilityClosure() : Closure
+    protected function getToolAvailabilityClosure() : Closure
     {
         return function() : bool {
             // the availability of the tool depends on the
@@ -119,7 +121,7 @@ class ilSrToolProvider extends AbstractDynamicToolPluginProvider
      *
      * @return int|null
      */
-    private function getCurrentScopeFromRequest() : ?int
+    protected function getCurrentScopeFromRequest() : ?int
     {
         $target = $this->dic->http()->request()->getQueryParams()['target'] ?? null;
         $ref_id = $this->dic->http()->request()->getQueryParams()['ref_id'] ?? null;

@@ -54,7 +54,7 @@ $fields = array(
 );
 if (! $ilDB->tableExists('srlcm_rule')) {
     $ilDB->createTable('srlcm_rule', $fields);
-    $ilDB->addPrimaryKey('srlcm_rule', array( 'id' ));
+    $ilDB->addPrimaryKey('srlcm_rule', array( 'rule_id' ));
 
     if (! $ilDB->sequenceExists('srlcm_rule')) {
         $ilDB->createSequence('srlcm_rule');
@@ -76,7 +76,7 @@ $fields = array(
 );
 if (! $ilDB->tableExists('srlcm_msg')) {
     $ilDB->createTable('srlcm_msg', $fields);
-    $ilDB->addPrimaryKey('srlcm_msg', array( 'id' ));
+    $ilDB->addPrimaryKey('srlcm_msg', array( 'notification_id' ));
     if (! $ilDB->sequenceExists('srlcm_msg')) {
         $ilDB->createSequence('srlcm_msg');
     }
@@ -131,7 +131,7 @@ $fields = array(
 );
 if (! $ilDB->tableExists('srlcm_routine')) {
 	$ilDB->createTable('srlcm_routine', $fields);
-	$ilDB->addPrimaryKey('srlcm_routine', array( 'id' ));
+	$ilDB->addPrimaryKey('srlcm_routine', array( 'routine_id' ));
 	if (! $ilDB->sequenceExists('srlcm_routine')) {
 		$ilDB->createSequence('srlcm_routine');
 	}
@@ -157,7 +157,7 @@ $fields = array(
 );
 if (! $ilDB->tableExists('srlcm_routine_rule')) {
     $ilDB->createTable('srlcm_routine_rule', $fields);
-    $ilDB->addPrimaryKey('srlcm_routine_rule', array( 'id' ));
+    $ilDB->addPrimaryKey('srlcm_routine_rule', array( 'relation_id' ));
     if (! $ilDB->sequenceExists('srlcm_routine_rule')) {
         $ilDB->createSequence('srlcm_routine_rule');
     }
@@ -186,7 +186,7 @@ $fields = array(
 );
 if (! $ilDB->tableExists('srlcm_routine_msg')) {
     $ilDB->createTable('srlcm_routine_msg', $fields);
-    $ilDB->addPrimaryKey('srlcm_routine_msg', array( 'id' ));
+    $ilDB->addPrimaryKey('srlcm_routine_msg', array( 'relation_id' ));
     if (! $ilDB->sequenceExists('srlcm_routine_msg')) {
         $ilDB->createSequence('srlcm_routine_msg');
     }
@@ -222,7 +222,7 @@ $fields = array(
 );
 if (! $ilDB->tableExists('srlcm_routine_w_list')) {
     $ilDB->createTable('srlcm_routine_w_list', $fields);
-    $ilDB->addPrimaryKey('srlcm_routine_w_list', array( 'id' ));
+    $ilDB->addPrimaryKey('srlcm_routine_w_list', array( 'whitelist_id' ));
     if (! $ilDB->sequenceExists('srlcm_routine_w_list')) {
         $ilDB->createSequence('srlcm_routine_w_list');
     }
