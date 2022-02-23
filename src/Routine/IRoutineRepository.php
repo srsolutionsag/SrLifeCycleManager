@@ -10,6 +10,13 @@ use DateTime;
 interface IRoutineRepository
 {
     /**
+     * Returns the routine-whitelist repository.
+     *
+     * @return IRoutineWhitelistRepository
+     */
+    public function whitelist() : IRoutineWhitelistRepository;
+
+    /**
      * Returns a routine from the database for the given id.
      * Returns null if the given id does not exist.
      *

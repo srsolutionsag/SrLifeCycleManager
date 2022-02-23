@@ -19,6 +19,14 @@ use srag\Plugins\SrLifeCycleManager\Rule\Attribute\Group\GroupAttribute;
 class AttributeFactory
 {
     /**
+     * @var string[] supported object types for comparisons.
+     */
+    public const SUPPORTED_OBJECT_TYPES = [
+        'crs', // course objects
+        'grp', // group objects
+    ];
+
+    /**
      * @var CommonAttributeFactory
      */
     protected $common_factory;

@@ -2,10 +2,9 @@
 
 namespace srag\Plugins\SrLifeCycleManager\Notification;
 
-/**
+use DateTime;/**
  * INotificationRepository describes the CRUD operations of a
  * notification repository.
- *
  * @author Thibeau Fuhrer <thibeau@sr.solutions>
  */
 interface INotificationRepository
@@ -31,6 +30,14 @@ interface INotificationRepository
      * @return IRoutineAwareNotification[]|array<int, array>
      */
     public function getAll(int $routine_id, bool $array_data = false) : array;
+
+    /**
+     * Returns all notifications that should be executed on the given date.
+     *
+     * @param DateTime $exec_date
+     * @return IRoutineAwareNotification[]
+     */
+    public function getAllByRoutineExecutionDate(DateTime $exec_date) : array;
 
     /**
      * @param int $routine_id

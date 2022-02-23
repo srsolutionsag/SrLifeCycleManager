@@ -20,6 +20,8 @@ class NotificationFormBuilder extends AbstractFormBuilder
     public const INPUT_NOTIFICATION_MESSAGE = 'input_name_notification_message';
     public const INPUT_NOTIFICATION_DAYS = 'input_name_notification_days';
 
+    protected const INPUT_NOTIFICATION_MESSAGE_INFO = 'input_name_notification_message_info';
+
     /**
      * @var IRoutineAwareNotification
      */
@@ -60,7 +62,10 @@ class NotificationFormBuilder extends AbstractFormBuilder
     protected function getInputs() : array
     {
         $inputs[self::INPUT_NOTIFICATION_MESSAGE] = $this->input_factory
-            ->textarea($this->translate(self::INPUT_NOTIFICATION_MESSAGE))
+            ->textarea(
+                $this->translate(self::INPUT_NOTIFICATION_MESSAGE),
+                $this->translate(self::INPUT_NOTIFICATION_MESSAGE_INFO)
+            )
             ->withValue((null !== $this->notification) ?
                 $this->notification->getMessage() : ''
             )

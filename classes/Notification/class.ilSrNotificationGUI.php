@@ -12,9 +12,9 @@ class ilSrNotificationGUI extends ilSrAbstractGUI
 {
     public const QUERY_PARAM_NOTIFICATION_ID = 'notification_id';
 
-    public const CMD_NOTIFICATION_ADD    = 'add';
+    public const CMD_NOTIFICATION_ADD    = 'edit';
+    public const CMD_NOTIFICATION_EDIT   = 'edit';
     public const CMD_NOTIFICATION_SAVE   = 'save';
-    public const CMD_NOTIFICATION_EDIT   = 'add';
     public const CMD_NOTIFICATION_DELETE = 'delete';
 
     public const ACTION_NOTIFICATION_ADD = 'action_notification_add';
@@ -37,20 +37,16 @@ class ilSrNotificationGUI extends ilSrAbstractGUI
     protected $notification;
 
     /**
-     * @var int|null
-     */
-    protected $scope;
-
-    /**
      * @inheritDoc
      */
     public function __construct()
     {
         parent::__construct();
 
+        $this->keepAlive(self::QUERY_PARAM_ROUTINE_SCOPE);
+
         $this->routine = $this->getRoutineFromRequest(true);
         $this->notification = $this->getNotificationFromRequest();
-        $this->scope = $this->getScopeFromRequest();
     }
 
     /**
@@ -143,7 +139,7 @@ class ilSrNotificationGUI extends ilSrAbstractGUI
      * This method does however not process it, form submissions are
      * sent to @see ilSrNotificationGUI::save().
      */
-    protected function add() : void
+    protected function edit() : void
     {
         $this->ui->mainTemplate()->setContent(
             $this->getForm()->render()

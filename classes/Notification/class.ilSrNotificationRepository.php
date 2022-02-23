@@ -5,8 +5,6 @@ use srag\Plugins\SrLifeCycleManager\Notification\INotification;
 use srag\Plugins\SrLifeCycleManager\Notification\Notification;
 use srag\Plugins\SrLifeCycleManager\Notification\IRoutineAwareNotification;
 use srag\Plugins\SrLifeCycleManager\Notification\IRoutineNotificationRelation;
-use srag\Plugins\SrLifeCycleManager\Routine\IRoutine;
-use srag\Plugins\SrLifeCycleManager\Routine\IRoutineRepository;
 
 /**
  * @author Thibeau Fuhrer <thibeau@sr.solutions>
@@ -19,17 +17,10 @@ class ilSrNotificationRepository implements INotificationRepository
     protected $database;
 
     /**
-     * @var IRoutineRepository
-     */
-    protected $routine_repository;
-
-    /**
-     * @param IRoutineRepository $routine_repository
      * @param ilDBInterface      $database
      */
-    public function __construct(IRoutineRepository $routine_repository, ilDBInterface $database)
+    public function __construct(ilDBInterface $database)
     {
-        $this->routine_repository = $routine_repository;
         $this->database = $database;
     }
 
@@ -78,30 +69,22 @@ class ilSrNotificationRepository implements INotificationRepository
     }
 
     /**
-     * @todo: add to interface
-     *
-     * @param IRoutine $routine
-     * @return array|null
+     * @inheritDoc
      */
-    public function getAllByRoutine(IRoutine $routine) : ?array
+    public function getAllByRoutineExecutionDate(DateTime $exec_date) : array
     {
-        $exec_date = $this->routine_repository->getNextExecutionDate($routine);
-        if (null === $exec_date) {
-            return null;
-        }
-
+        $exec_date_string = $exec_date->format(ilSrRoutine::MYSQL_DATE_FORMAT);
         $notification_table = ilSrNotification::TABLE_NAME;
         $routine_table = ilSrRoutine::TABLE_NAME;
         $relation_table = ilSrRoutineNotification::TABLE_NAME;
-        $exec_date = $exec_date->format(ilSrRoutine::MYSQL_DATE_FORMAT);
 
         $query = "
             SELECT msg.message, rel.notification_id, rel.routine_id, rel.days_before_submission 
                 FROM $notification_table AS msg
                 JOIN $relation_table AS rel ON rel.notification_id = msg.notification_id
                 JOIN $routine_table AS routine ON routine.routine_id = rel.routine_id
-                WHERE routine.active = 1
-                AND CURDATE() >= DATE_ADD('$exec_date', INTERVAL rel.days_before_submission DAY)
+                WHERE '$exec_date_string' = DATE_ADD(CURRENT_DATE(), INTERVAL (rel.days_before_submission) DAY)
+                AND routine.active = 1
             ;
         ";
 
@@ -110,16 +93,16 @@ class ilSrNotificationRepository implements INotificationRepository
         );
 
         if (empty($results)) {
-            return null;
+            return [];
         }
 
         $notifications = [];
         foreach ($results as $result) {
             $notifications[] = new Notification(
                 $result[INotification::F_MESSAGE],
-                $result[IRoutineNotificationRelation::F_DAYS_BEFORE_SUBMISSION],
-                $result[IRoutineNotificationRelation::F_ROUTINE_ID],
-                $result[IRoutineNotificationRelation::F_NOTIFICATION_ID]
+                (int) $result[IRoutineNotificationRelation::F_DAYS_BEFORE_SUBMISSION],
+                (int) $result[IRoutineNotificationRelation::F_ROUTINE_ID],
+                (int) $result[IRoutineNotificationRelation::F_NOTIFICATION_ID]
             );
         }
 
@@ -159,15 +142,16 @@ class ilSrNotificationRepository implements INotificationRepository
         /** @var $ar_relation ilSrRoutineNotification */
         if (empty($ar_relations->get())) {
             $ar_relation = new ilSrRoutineNotification();
-            $ar_relation
-                ->setNotificationId($ar_notification->getNotificationId())
-                ->setRoutineId($notification->getRoutineId())
-                ->setDaysBeforeSubmission($notification->getDaysBeforeSubmission())
-                ->store()
-            ;
         } else {
             $ar_relation = $ar_relations->first();
         }
+
+        $ar_relation
+            ->setNotificationId($ar_notification->getNotificationId())
+            ->setRoutineId($notification->getRoutineId())
+            ->setDaysBeforeSubmission($notification->getDaysBeforeSubmission())
+            ->store()
+        ;
 
         return $this->transformToDTO($ar_notification, $ar_relation);
     }

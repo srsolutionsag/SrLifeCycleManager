@@ -2,7 +2,7 @@
 
 /* Copyright (c) 2022 Thibeau Fuhrer <thibeau@sr.solutions> Extended GPL, see docs/LICENSE */
 
-use srag\Plugins\SrLifeCycleManager\Config\IConfigAr;
+use srag\Plugins\SrLifeCycleManager\Config\IConfig;
 
 /**
  * @author Thibeau Fuhrer <thibeau@sr.solutions>
@@ -20,19 +20,19 @@ abstract class ilSrAbstractCronJob extends ilCronJob
     protected $logger;
 
     /**
-     * @var IConfigAr[]
+     * @var IConfig
      */
     protected $config;
 
     /**
      * @param ilSrLifeCycleManagerRepository $repository
      * @param ilLogger                       $logger
-     * @param IConfigAr[]                    $config
+     * @param IConfig                        $config
      */
     public function __construct(
         ilSrLifeCycleManagerRepository $repository,
         ilLogger $logger,
-        array $config
+        IConfig $config
     ) {
         $this->repository = $repository;
         $this->logger = $logger;

@@ -15,7 +15,7 @@ class ilSrRoutineWhitelist extends ActiveRecord implements IRoutineWhitelist
     /**
      * @var string mysql date format
      */
-    private const MYSQL_DATE_FORMAT = 'Y-m-d';
+    public const MYSQL_DATE_FORMAT = 'Y-m-d';
 
     /**
      * @var null|int
@@ -61,7 +61,7 @@ class ilSrRoutineWhitelist extends ActiveRecord implements IRoutineWhitelist
     protected $ref_id;
 
     /**
-     * @var \DateTime|null
+     * @var DateTime|null
      *
      * @con_has_field   true
      * @con_is_notnull  false

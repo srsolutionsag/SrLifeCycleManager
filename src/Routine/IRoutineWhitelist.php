@@ -76,8 +76,8 @@ interface IRoutineWhitelist
     public function getActiveUntil() : ?DateTime;
 
     /**
-     * @param DateTime $date
+     * @param DateTime|null $date
      * @return IRoutineWhitelist
      */
-    public function setActiveUntil(DateTime $date) : IRoutineWhitelist;
+    public function setActiveUntil(?DateTime $date) : IRoutineWhitelist;
 }

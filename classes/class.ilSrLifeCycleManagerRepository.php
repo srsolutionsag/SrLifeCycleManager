@@ -24,6 +24,11 @@ class ilSrLifeCycleManagerRepository implements IRepository
     protected $rbac;
 
     /**
+     * @var ilTree
+     */
+    protected $tree;
+
+    /**
      * @var ilDBInterface
      */
     protected $database;
@@ -63,13 +68,18 @@ class ilSrLifeCycleManagerRepository implements IRepository
         RBACServices $rbac,
         ilTree $tree
     ) {
+        $this->attribute_factory = new AttributeFactory();
         $this->config_repository = new ilSrConfigRepository();
         $this->rule_repository = new ilSrRuleRepository($database);
-        $this->routine_repository = new ilSrRoutineRepository($database, $tree);
-        $this->notification_repository = new ilSrNotificationRepository($this->routine_repository, $database);
-        $this->attribute_factory = new AttributeFactory();
+        $this->notification_repository = new ilSrNotificationRepository($database);
+        $this->routine_repository = new ilSrRoutineRepository(
+            new ilSrRoutineWhitelistRepository(),
+            $database,
+            $tree
+        );
 
         $this->database = $database;
+        $this->tree = $tree;
         $this->rbac = $rbac;
     }
 
@@ -136,5 +146,61 @@ class ilSrLifeCycleManagerRepository implements IRepository
         }
 
         return $role_options;
+    }
+
+    /**
+     * Recursively gathers all children of the given ref-id which are
+     * either a course or group object.
+     *
+     * @TODO: might not be very performant and is rather resource greedy.
+     *
+     * @param int $ref_id
+     * @return array
+     */
+    public function getDeletableObjects(int $ref_id) : array
+    {
+        $objects = [];
+
+        $deletable_objects = $this->tree->getChildsByTypeFilter($ref_id, ['crs', 'cat', 'grp', 'fold']);
+        if (empty($deletable_objects)) {
+            return [];
+        }
+
+        foreach ($deletable_objects as $deletable_object) {
+            if (in_array($deletable_object['type'], AttributeFactory::SUPPORTED_OBJECT_TYPES, true)) {
+                $objects[] = $deletable_object;
+            } else {
+                $deletable_child_objects = $this->getDeletableObjects((int) $deletable_object['ref_id']);
+                if (!empty($deletable_child_objects)) {
+                    $this->addArrayValues($objects, $deletable_child_objects);
+                    // $objects = array_merge($objects, $deletable_child_objects);
+                }
+            }
+        }
+
+        return $objects;
+    }
+
+    /**
+     * @param int $ref_id
+     * @return array
+     */
+    public function getAdministrators(int $ref_id) : array
+    {
+        return ilParticipants::getInstance($ref_id)->getAdmins();
+    }
+
+    /**
+     * Replacement for PHP's built-in array_merge(...) function.
+     *
+     * @param $original
+     * @param $array
+     * @return void
+     */
+    protected function addArrayValues(&$original, $array) : void
+    {
+        foreach ($array as $value) {
+            $original[] = $value;
+        }
     }
 }

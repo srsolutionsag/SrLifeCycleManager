@@ -27,13 +27,13 @@ class ilSrConfigRepository implements IConfigRepository
                     $config_object->setPrivilegedRoles($ar_config->getValue());
                     break;
                 case IConfigAr::CNF_MOVE_TO_BIN:
-                    $config_object->setMoveToBin($ar_config->getValue());
+                    $config_object->setMoveToBin((bool) $ar_config->getValue());
                     break;
                 case IConfigAr::CNF_SHOW_ROUTINES:
-                    $config_object->setShowRoutinesInRepository($ar_config->getValue());
+                    $config_object->setShowRoutinesInRepository((bool) $ar_config->getValue());
                     break;
                 case IConfigAr::CNF_CREATE_ROUTINES:
-                    $config_object->setCreateRoutinesInRepository($ar_config->getValue());
+                    $config_object->setCreateRoutinesInRepository((bool) $ar_config->getValue());
                     break;
             }
         }

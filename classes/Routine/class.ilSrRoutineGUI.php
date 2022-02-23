@@ -3,6 +3,7 @@
 use srag\Plugins\SrLifeCycleManager\Form\Routine\RoutineForm;
 use srag\Plugins\SrLifeCycleManager\Form\Routine\RoutineFormBuilder;
 use srag\Plugins\SrLifeCycleManager\Routine\IRoutine;
+use srag\Plugins\SrLifeCycleManager\Routine\RoutineWhitelist;
 
 /**
  * Class ilSrRoutineGUI
@@ -12,11 +13,17 @@ use srag\Plugins\SrLifeCycleManager\Routine\IRoutine;
 class ilSrRoutineGUI extends ilSrAbstractGUI
 {
     /**
+     * @var string opt-out query parameter name.
+     */
+    public const QUERY_PARAM_WHITELIST_OPT_OUT = 'whitelist_opt_out';
+
+    /**
      * ilSrRoutineGUI command names (methods)
      */
     public const CMD_ROUTINE_EDIT   = 'edit';
     public const CMD_ROUTINE_SAVE   = 'save';
     public const CMD_ROUTINE_DELETE = 'delete';
+    public const CMD_WHITELIST_ADD  = 'addWhitelistEntry';
 
     /**
      * ilSrRoutineGUI action names.
@@ -99,6 +106,7 @@ class ilSrRoutineGUI extends ilSrAbstractGUI
             self::CMD_ROUTINE_SAVE,
             self::CMD_ROUTINE_EDIT,
             self::CMD_ROUTINE_DELETE,
+            self::CMD_WHITELIST_ADD,
         ];
     }
 
@@ -239,6 +247,22 @@ class ilSrRoutineGUI extends ilSrAbstractGUI
         }
 
         $this->repeat();
+    }
+
+    protected function addWhitelistEntry() : void
+    {
+        $ref_id = $this->getQueryParamFromRequest('ref_id');
+        $opt_out = $this->getQueryParamFromRequest(self::QUERY_PARAM_WHITELIST_OPT_OUT);
+        if (null === $ref_id) {
+            $this->displayErrorMessage(self::MSG_OBJECT_NOT_FOUND);
+            return;
+        }
+
+        $this->repository->routine()->whitelist()->add(
+            new RoutineWhitelist(
+                ""
+            )
+        );
     }
 
     /**

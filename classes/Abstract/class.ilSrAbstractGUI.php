@@ -346,6 +346,25 @@ abstract class ilSrAbstractGUI
     }
 
     /**
+     * Helper function to keep a query parameter alive for further link
+     * targets and redirects.
+     *
+     * @param string $parameter_name
+     * @return void
+     */
+    protected function keepAlive(string $parameter_name) : void
+    {
+        $value = $this->getQueryParamFromRequest($parameter_name);
+        if (null !== $value) {
+            $this->ctrl->setParameterByClass(
+                static::class,
+                $parameter_name,
+                $value
+            );
+        }
+    }
+
+    /**
      * displays an error message for given lang-var on the next page (redirect).
      *
      * @param string $lang_var

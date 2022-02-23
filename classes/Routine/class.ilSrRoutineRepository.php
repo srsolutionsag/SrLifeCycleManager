@@ -8,12 +8,18 @@ use srag\Plugins\SrLifeCycleManager\Notification\INotification;
 use srag\Plugins\SrLifeCycleManager\Routine\IRoutineWhitelist;
 use srag\Plugins\SrLifeCycleManager\Rule\IRoutineRuleRelation;
 use srag\Plugins\SrLifeCycleManager\Notification\IRoutineNotificationRelation;
+use srag\Plugins\SrLifeCycleManager\Routine\IRoutineWhitelistRepository;
 
 /**
  * @author Thibeau Fuhrer <thibeau@sr.solutions>
  */
 class ilSrRoutineRepository implements IRoutineRepository
 {
+    /**
+     * @var IRoutineWhitelistRepository
+     */
+    protected $whitelist_repository;
+
     /**
      * @var ilDBInterface
      */
@@ -25,13 +31,26 @@ class ilSrRoutineRepository implements IRoutineRepository
     protected $tree;
 
     /**
-     * @param ilDBInterface $database
-     * @param ilTree        $tree
+     * @param IRoutineWhitelistRepository $whitelist_repository
+     * @param ilDBInterface               $database
+     * @param ilTree                      $tree
      */
-    public function __construct(ilDBInterface $database, ilTree $tree)
-    {
+    public function __construct(
+        IRoutineWhitelistRepository $whitelist_repository,
+        ilDBInterface $database,
+        ilTree $tree
+    ) {
+        $this->whitelist_repository = $whitelist_repository;
         $this->database = $database;
         $this->tree = $tree;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function whitelist() : IRoutineWhitelistRepository
+    {
+        return $this->whitelist_repository;
     }
 
     /**

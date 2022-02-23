@@ -50,6 +50,7 @@ input_name_routine_active#:#Aktiv?
 input_name_routine_opt_out#:#Opt-out möglich?
 input_name_routine_elongation#:#Verlängerung möglich?
 input_name_routine_elongation_possible#:#Verlängerung (in Tage)
+input_name_notification_message_info#:#Benutze [EXTENSION_LINK] für einen Link, mit dem Empfänger das Objekt um die definierte Zeit verlängern können. <br /> Benutze [OBJECT_LINK] für einen Link zum Objekt, dass gelöscht werden soll.
 input_name_execution_dates#:#Ausführungsdaten (DD/MM)
 input_name_execution_dates_info#:#Wenn sie ein Datum geschrieben habe, drücken Sie "Enter" um es hinzuzufügen.
 

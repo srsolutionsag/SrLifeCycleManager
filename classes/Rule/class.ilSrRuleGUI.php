@@ -38,11 +38,6 @@ class ilSrRuleGUI extends ilSrAbstractGUI
     protected $rule;
 
     /**
-     * @var int|null
-     */
-    protected $scope;
-
-    /**
      * @var RuleFormBuilder
      */
     protected $form_builder;
@@ -54,9 +49,10 @@ class ilSrRuleGUI extends ilSrAbstractGUI
     {
         parent::__construct();
 
+        $this->keepAlive(self::QUERY_PARAM_ROUTINE_SCOPE);
+
         $this->routine = $this->getRoutineFromRequest(true);
         $this->rule = $this->getRuleFromRequest();
-        $this->scope = $this->getScopeFromRequest();
 
         $this->form_builder = new RuleFormBuilder(
             $this->ui->factory()->input()->container()->form(),

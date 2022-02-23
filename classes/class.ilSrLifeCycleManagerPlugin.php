@@ -3,6 +3,7 @@
 require_once __DIR__ . '/../vendor/autoload.php';
 
 use srag\Plugins\SrLifeCycleManager\ITranslator;
+use ILIAS\DI\Container;
 
 /**
  * Class ilSrLifeCycleManagerPlugin holds the (singleton) plugin instance.
@@ -35,19 +36,14 @@ class ilSrLifeCycleManagerPlugin extends ilCronHookPlugin implements ITranslator
     public const PLUGIN_NAME = 'SrLifeCycleManager';
 
     /**
+     * @var array<string, ilCronJob>
+     */
+    protected $cron_job_instances = [];
+
+    /**
      * @var self
      */
     private static $instance;
-
-    /**
-     * @var ilSrLifeCycleManagerRepository
-     */
-    protected $repository;
-
-    /**
-     * @var ilLogger
-     */
-    protected $logger;
 
     /**
      * prevents multiple instances.
@@ -63,24 +59,11 @@ class ilSrLifeCycleManagerPlugin extends ilCronHookPlugin implements ITranslator
         global $DIC;
         parent::__construct();
 
+        $this->cron_job_instances = $this->safelyInitializeCronJobs($DIC);
+
         // register global-screen providers (for tools and main-menu entries)
         $this->provider_collection->setToolProvider(new ilSrToolProvider($DIC, $this));
         $this->provider_collection->setMainBarProvider(new ilSrMenuProvider($DIC, $this));
-
-        // Safely initializes dependencies, as this class will also be
-        // loaded for CLI operations where they might not be available.
-        if ($DIC->offsetExists('ilDB') &&
-            $DIC->offsetExists('ilLoggerFactory') &&
-            $DIC->offsetExists('tree') &&
-            $DIC->offsetExists('rbacreview')
-        ) {
-            $this->logger = $DIC->logger()->root();
-            $this->repository = new ilSrLifeCycleManagerRepository(
-                $DIC->database(),
-                $DIC->rbac(),
-                $DIC->repositoryTree()
-            );
-        }
     }
 
     /**
@@ -112,20 +95,11 @@ class ilSrLifeCycleManagerPlugin extends ilCronHookPlugin implements ITranslator
      */
     public static function getInstance() : self
     {
-        if (!isset(self::$instance)) self::$instance = new self();
+        if (!isset(self::$instance)) {
+            self::$instance = new self();
+        }
 
         return self::$instance;
-    }
-
-    /**
-     * @return ilCronJob[]
-     */
-    public function getCronJobInstances() : array
-    {
-        return [
-            $this->loadJobInstance(ilSrNotificationJob::class),
-            $this->loadJobInstance(ilSrRoutineJob::class),
-        ];
     }
 
     /**
@@ -136,10 +110,10 @@ class ilSrLifeCycleManagerPlugin extends ilCronHookPlugin implements ITranslator
     {
         switch ($a_job_id) {
             case ilSrNotificationJob::class:
-                return $this->loadJobInstance(ilSrNotificationJob::class);
+                return $this->cron_job_instances[ilSrNotificationJob::class];
 
             case ilSrRoutineJob::class:
-                return $this->loadJobInstance(ilSrRoutineJob::class);
+                return $this->cron_job_instances[ilSrRoutineJob::class];
 
             default:
                 throw new LogicException("Tried loading cron job '$a_job_id' which does not exist.");
@@ -147,14 +121,53 @@ class ilSrLifeCycleManagerPlugin extends ilCronHookPlugin implements ITranslator
     }
 
     /**
-     * @param string $class_name
-     * @return ilCronJob
+     * @return ilCronJob[]
      */
-    protected function loadJobInstance(string $class_name) : ilCronJob
+    public function getCronJobInstances() : array
     {
-        return new $class_name(
-            $this->repository,
-            $this->logger
-        );
+        return $this->cron_job_instances;
+    }
+
+    /**
+     * Helper function that initializes all cron-job instances of
+     * this plugin, if the required dependencies are available.
+     *
+     * @return array<string, ilCronJob>
+     */
+    protected function safelyInitializeCronJobs(Container $dic) : array
+    {
+        if ($dic->offsetExists('ilDB') &&
+            $dic->offsetExists('ilLoggerFactory') &&
+            $dic->offsetExists('tree') &&
+            $dic->offsetExists('rbacreview') &&
+            $dic->offsetExists('ctrl') &&
+            $dic->offsetExists('mail.mime.sender.factory')
+        ) {
+            $repository = new ilSrLifeCycleManagerRepository(
+                $dic->database(),
+                $dic->rbac(),
+                $dic->repositoryTree()
+            );
+
+            $configuration = $repository->config()->get();
+
+            return [
+                ilSrNotificationJob::class => new ilSrNotificationJob(
+                    $repository,
+                    $dic->logger()->root(),
+                    $configuration,
+                    $dic['mail.mime.sender.factory']->system(),
+                    $dic->ctrl()
+                ),
+
+                ilSrRoutineJob::class => new ilSrRoutineJob(
+                    $repository,
+                    $dic->logger()->root(),
+                    $configuration
+                ),
+            ];
+        }
+
+        return [];
     }
 }
