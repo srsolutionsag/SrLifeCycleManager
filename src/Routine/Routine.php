@@ -3,6 +3,7 @@
 namespace srag\Plugins\SrLifeCycleManager\Routine;
 
 use DateTime;
+use DateInterval;
 
 /**
  * Routine DTO
@@ -57,6 +58,11 @@ class Routine implements IRoutine
     protected $elongation_days;
 
     /**
+     * @var string[]
+     */
+    protected $execution_dates = [];
+
+    /**
      * @param string   $name
      * @param int      $ref_id
      * @param bool     $is_active
@@ -64,6 +70,7 @@ class Routine implements IRoutine
      * @param int      $owner_id
      * @param DateTime $creation_date
      * @param bool     $is_opt_out_possible
+     * @param string[] $execution_dates
      * @param int|null $elongation_days
      * @param int|null $routine_id
      */
@@ -75,6 +82,7 @@ class Routine implements IRoutine
         int $owner_id,
         DateTime $creation_date,
         bool $is_opt_out_possible,
+        array $execution_dates,
         int $elongation_days = null,
         int $routine_id = null
     ) {
@@ -85,6 +93,7 @@ class Routine implements IRoutine
         $this->origin_type = $origin_type;
         $this->owner_id = $owner_id;
         $this->creation_date = $creation_date;
+        $this->execution_dates = $execution_dates;
         $this->opt_out_possible = $is_opt_out_possible;
         $this->elongation_days = $elongation_days;
     }
@@ -239,6 +248,23 @@ class Routine implements IRoutine
     public function setCreationDate(DateTime $date) : IRoutine
     {
         $this->creation_date = $date;
+        return $this;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function getExecutionDates() : array
+    {
+        return $this->execution_dates;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function setExecutionDates(array $dates) : IRoutine
+    {
+        $this->execution_dates = $dates;
         return $this;
     }
 }

@@ -6,11 +6,13 @@ $vendorDir = dirname(dirname(__FILE__));
 $baseDir = dirname($vendorDir);
 
 return array(
+    'ilSrAbstractCronJob' => $baseDir . '/classes/Abstract/class.ilSrAbstractCronJob.php',
     'ilSrAbstractGUI' => $baseDir . '/classes/Abstract/class.ilSrAbstractGUI.php',
     'ilSrAbstractTable' => $baseDir . '/classes/Abstract/class.ilSrAbstractTable.php',
     'ilSrAccess' => $baseDir . '/classes/Access/class.ilSrAccess.php',
     'ilSrConfig' => $baseDir . '/classes/Config/class.ilSrConfig.php',
     'ilSrConfigGUI' => $baseDir . '/classes/Config/class.ilSrConfigGUI.php',
+    'ilSrConfigRepository' => $baseDir . '/classes/Config/class.ilSrConfigRepository.php',
     'ilSrLifeCycleManagerConfigGUI' => $baseDir . '/classes/class.ilSrLifeCycleManagerConfigGUI.php',
     'ilSrLifeCycleManagerDispatcher' => $baseDir . '/classes/class.ilSrLifeCycleManagerDispatcher.php',
     'ilSrLifeCycleManagerPlugin' => $baseDir . '/classes/class.ilSrLifeCycleManagerPlugin.php',
@@ -18,10 +20,12 @@ return array(
     'ilSrMenuProvider' => $baseDir . '/classes/Provider/class.ilSrMenuProvider.php',
     'ilSrNotification' => $baseDir . '/classes/Notification/class.ilSrNotification.php',
     'ilSrNotificationGUI' => $baseDir . '/classes/Notification/class.ilSrNotificationGUI.php',
+    'ilSrNotificationJob' => $baseDir . '/classes/Notification/class.ilSrNotificationJob.php',
     'ilSrNotificationRepository' => $baseDir . '/classes/Notification/class.ilSrNotificationRepository.php',
     'ilSrNotificationTable' => $baseDir . '/classes/Notification/class.ilSrNotificationTable.php',
     'ilSrRoutine' => $baseDir . '/classes/Routine/class.ilSrRoutine.php',
     'ilSrRoutineGUI' => $baseDir . '/classes/Routine/class.ilSrRoutineGUI.php',
+    'ilSrRoutineJob' => $baseDir . '/classes/Routine/class.ilSrRoutineJob.php',
     'ilSrRoutineNotification' => $baseDir . '/classes/Notification/class.ilSrRoutineNotification.php',
     'ilSrRoutineRepository' => $baseDir . '/classes/Routine/class.ilSrRoutineRepository.php',
     'ilSrRoutineRule' => $baseDir . '/classes/Rule/class.ilSrRoutineRule.php',

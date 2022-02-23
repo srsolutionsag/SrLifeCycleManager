@@ -128,17 +128,6 @@ class ilSrRoutineTable extends ilSrAbstractTable
     {
         $this->setActionParameters($routine_id);
 
-        // only let owners edit their routines.
-        if ($owner_id === $this->user_id) {
-            $inputs[] = $this->ui->factory()->button()->shy(
-                $this->plugin->txt(ilSrRoutineGUI::ACTION_ROUTINE_EDIT),
-                $this->ctrl->getLinkTargetByClass(
-                    ilSrRoutineGUI::class,
-                    ilSrRoutineGUI::CMD_ROUTINE_EDIT
-                )
-            );
-        }
-
         $inputs[] = $this->ui->factory()->button()->shy(
             $this->plugin->txt(ilSrRoutineGUI::ACTION_ROUTINE_RULES),
             $this->ctrl->getLinkTargetByClass(
@@ -147,16 +136,27 @@ class ilSrRoutineTable extends ilSrAbstractTable
             )
         );
 
-        $inputs[] = $this->ui->factory()->button()->shy(
-            $this->plugin->txt(ilSrRoutineGUI::ACTION_ROUTINE_NOTIFICATIONS),
-            $this->ctrl->getLinkTargetByClass(
-                ilSrNotificationGUI::class,
-                ilSrNotificationGUI::CMD_INDEX
-            )
-        );
+        // these actions are only necessary if the user is administrator
+        // or the owner of the current routine.
+        if ($owner_id === $this->user->getId() ||
+            ilSrAccess::isUserAdministrator($this->user->getId())
+        ) {
+            $inputs[] = $this->ui->factory()->button()->shy(
+                $this->plugin->txt(ilSrRoutineGUI::ACTION_ROUTINE_EDIT),
+                $this->ctrl->getLinkTargetByClass(
+                    ilSrRoutineGUI::class,
+                    ilSrRoutineGUI::CMD_ROUTINE_EDIT
+                )
+            );
 
-        // only let owners delete their routines.
-        if ($owner_id === $this->user_id) {
+            $inputs[] = $this->ui->factory()->button()->shy(
+                $this->plugin->txt(ilSrRoutineGUI::ACTION_ROUTINE_NOTIFICATIONS),
+                $this->ctrl->getLinkTargetByClass(
+                    ilSrNotificationGUI::class,
+                    ilSrNotificationGUI::CMD_INDEX
+                )
+            );
+
             $inputs[] = $this->ui->factory()->button()->shy(
                 $this->plugin->txt(ilSrRoutineGUI::ACTION_ROUTINE_DELETE),
                 $this->ctrl->getLinkTargetByClass(

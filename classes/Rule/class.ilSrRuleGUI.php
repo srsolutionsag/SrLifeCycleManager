@@ -38,6 +38,11 @@ class ilSrRuleGUI extends ilSrAbstractGUI
     protected $rule;
 
     /**
+     * @var int|null
+     */
+    protected $scope;
+
+    /**
      * @var RuleFormBuilder
      */
     protected $form_builder;
@@ -51,6 +56,7 @@ class ilSrRuleGUI extends ilSrAbstractGUI
 
         $this->routine = $this->getRoutineFromRequest(true);
         $this->rule = $this->getRuleFromRequest();
+        $this->scope = $this->getScopeFromRequest();
 
         $this->form_builder = new RuleFormBuilder(
             $this->ui->factory()->input()->container()->form(),
@@ -88,18 +94,20 @@ class ilSrRuleGUI extends ilSrAbstractGUI
     protected function canUserExecuteCommand(int $user_id, string $command) : bool
     {
         // the index command can always be executed because
-        // rules must be visible to object administrators.
+        // rules must be visible to object tutors etc.
         if (self::CMD_INDEX === $command) {
             return true;
         }
 
-        // rules can only be deleted by the owner of the routine
-        // and if general access is granted.
-        if (null !== $this->routine && $user_id !== $this->routine->getOwnerId()) {
-            return (
-                ilSrAccess::isUserAssignedToConfiguredRole($user_id) ||
-                ilSrAccess::isUserAdministrator($user_id)
-            );
+        // administrators should be able to execute all commands.
+        if (ilSrAccess::isUserAdministrator($user_id)) {
+            return true;
+        }
+
+        // if the current user is the owner of the related routine,
+        // he should be able to execute all commands too.
+        if (null !== $this->routine && ilSrAccess::isUserAssignedToConfiguredRole($user_id)) {
+            return ($user_id === $this->routine->getOwnerId());
         }
 
         return false;
@@ -110,17 +118,17 @@ class ilSrRuleGUI extends ilSrAbstractGUI
      */
     protected function beforeCommand(string $command) : void
     {
+        // add the configuration tabs to the current page
+        // and deactivate all tabs by passing an invalid
+        // character as active tab-id.
+        $this->addConfigurationTabs('§');
+
         // abort if no routine was provided, as all actions
         // of this GUI depend on it.
         if (null === $this->routine) {
             $this->displayErrorMessage(self::MSG_ROUTINE_NOT_FOUND);
             return;
         }
-
-        // add the configuration tabs to the current page
-        // and deactivate all tabs by passing an invalid
-        // character as active tab-id.
-        $this->addConfigurationTabs('§');
     }
 
     /**
@@ -142,7 +150,13 @@ class ilSrRuleGUI extends ilSrAbstractGUI
             )
         );
 
-        $this->addRuleToolbar();
+        // only display the toolbar for routine owners or administrators.
+        if ($this->routine->getOwnerId() === $this->user->getId() ||
+            ilSrAccess::isUserAdministrator($this->user->getId())
+        ) {
+            $this->addRuleToolbar();
+        }
+
         $this->ui->mainTemplate()->setContent(
             $this->getTable()->getHTML()
         );
@@ -299,7 +313,7 @@ class ilSrRuleGUI extends ilSrAbstractGUI
             )
         );
 
-        return $director->getStandardForm();
+        return $director->getCourseAttributeForm();
     }
 
     /**

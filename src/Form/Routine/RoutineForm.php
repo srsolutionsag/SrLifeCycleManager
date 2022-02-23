@@ -40,10 +40,11 @@ class RoutineForm extends AbstractForm
      */
     protected function isValid(array $post_data) : bool
     {
-        // ensure that at least the routine's ref-id and name were submitted.
+        // ensure that at least the routine's ref-id, name and exec dates were submitted.
         return (
             null !== $post_data[RoutineFormBuilder::INPUT_REF_ID] &&
-            null !== $post_data[RoutineFormBuilder::INPUT_NAME]
+            null !== $post_data[RoutineFormBuilder::INPUT_NAME] &&
+            !empty($post_data[RoutineFormBuilder::INPUT_EXECUTION_DATES])
         );
     }
 
@@ -55,6 +56,7 @@ class RoutineForm extends AbstractForm
         $this->routine
             ->setRefId((int) $post_data[RoutineFormBuilder::INPUT_REF_ID])
             ->setName($post_data[RoutineFormBuilder::INPUT_NAME])
+            ->setExecutionDates($post_data[RoutineFormBuilder::INPUT_EXECUTION_DATES])
             ->setActive($post_data[RoutineFormBuilder::INPUT_ACTIVE])
             ->setOptOutPossible($post_data[RoutineFormBuilder::INPUT_OPT_OUT])
         ;

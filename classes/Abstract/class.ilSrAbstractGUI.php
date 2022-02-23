@@ -38,6 +38,11 @@ abstract class ilSrAbstractGUI
     public const QUERY_PARAM_ROUTINE_ID = 'routine_id';
 
     /**
+     * @var string routine scope (ref-id) GET parameter name.
+     */
+    public const QUERY_PARAM_ROUTINE_SCOPE  = 'routine_ref_id';
+
+    /**
      * ilSrAbstractMainGUI common lang vars
      */
     protected const MSG_PERMISSION_DENIED   = 'msg_permission_denied';
@@ -324,6 +329,20 @@ abstract class ilSrAbstractGUI
         }
 
         return null;
+    }
+
+    /**
+     * Returns the provided routine scope of the current request.
+     *
+     * If a scope was provided it is also kept alive, so that
+     * further commands can still access it after redirects.
+     *
+     * @return int|null
+     */
+    protected function getScopeFromRequest() : ?int
+    {
+        $scope = $this->getQueryParamFromRequest(self::QUERY_PARAM_ROUTINE_SCOPE, true);
+        return ($scope) ? (int) $scope : null;
     }
 
     /**

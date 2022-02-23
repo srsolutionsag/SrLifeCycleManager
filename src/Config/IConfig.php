@@ -1,6 +1,6 @@
-<?php
+<?php declare(strict_types=1);
 
-/* Copyright (c) 2021 Thibeau Fuhrer <thibeau@sr.solutions> Extended GPL, see docs/LICENSE */
+/* Copyright (c) 2022 Thibeau Fuhrer <thibeau@sr.solutions> Extended GPL, see docs/LICENSE */
 
 namespace srag\Plugins\SrLifeCycleManager\Config;
 
@@ -10,47 +10,42 @@ namespace srag\Plugins\SrLifeCycleManager\Config;
 interface IConfig
 {
     /**
-     * @var string config determines whether a user can manage routines (and rules).
+     * @return array
      */
-    public const CNF_GLOBAL_ROLES = 'cnf_global_roles';
+    public function getPrivilegedRoles() : array;
 
     /**
-     * @var string config determines whether objects that  match a routines rule-set are
-     *             moved to the bin first, or are removed entirely.
+     * @param array $privileged_roles
      */
-    public const CNF_MOVE_TO_BIN = 'cnf_move_to_bin';
+    public function setPrivilegedRoles(array $privileged_roles) : void;
 
     /**
-     * @var string config determines whether routines can be added by the tool provider
-     *             displayed in the repository context.
+     * @return bool
      */
-    public const CNF_CREATE_ROUTINES = 'cnf_create_routines_repository';
+    public function shouldMoveToBin() : bool;
 
     /**
-     * @var string config determines whether active routines are shown in the tool provider
-     *             displayed in the repository context's current object.
+     * @param bool $move_to_bin
      */
-    public const CNF_SHOW_ROUTINES = 'cnf_show_routines_repository';
+    public function setMoveToBin(bool $move_to_bin) : void;
 
     /**
-     * @return string
+     * @return bool
      */
-    public function getIdentifier() : string;
+    public function showRoutinesInRepository() : bool;
 
     /**
-     * @param string $identifier
-     * @return IConfig
+     * @param bool $show_in_repository
      */
-    public function setIdentifier(string $identifier) : IConfig;
+    public function setShowRoutinesInRepository(bool $show_in_repository) : void;
 
     /**
-     * @return mixed
+     * @return bool
      */
-    public function getValue();
+    public function createRoutinesInRepository() : bool;
 
     /**
-     * @param mixed $value
-     * @return IConfig
+     * @param bool $create_in_repository
      */
-    public function setValue($value) : IConfig;
+    public function setCreateRoutinesInRepository(bool $create_in_repository) : void;
 }

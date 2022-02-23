@@ -12,6 +12,19 @@ use srag\Plugins\SrLifeCycleManager\Rule\Rule;
 class ilSrRuleRepository implements IRuleRepository
 {
     /**
+     * @var ilDBInterface
+     */
+    protected $database;
+
+    /**
+     * @param ilDBInterface $database
+     */
+    public function __construct(ilDBInterface $database)
+    {
+        $this->database = $database;
+    }
+
+    /**
      * @inheritDoc
      */
     public function get(int $routine_id, int $rule_id) : ?IRoutineAwareRule
@@ -33,23 +46,38 @@ class ilSrRuleRepository implements IRuleRepository
      */
     public function getAll(int $routine_id, bool $array_data = false) : array
     {
-        /** @var $ar_relations ilSrRoutineRule[] */
-        $ar_relations = ilSrRoutineRule::where([
-            IRoutineRuleRelation::F_ROUTINE_ID => $routine_id,
-        ], '=')->get();
+        $routine_table = ilSrRoutine::TABLE_NAME;
+        $relation_table = ilSrRoutineRule::TABLE_NAME;
+        $rule_table = ilSrRule::TABLE_NAME;
+
+        $query = "
+            SELECT rel.routine_id, rel.rule_id, rule.lhs_type, rule.lhs_value, rule.operator, rule.rhs_type, rule.rhs_value 
+                FROM $routine_table AS routine
+                JOIN $relation_table AS rel ON routine.routine_id = rel.routine_id
+                JOIN $rule_table AS rule ON rel.rule_id = rule.rule_id
+                WHERE routine.routine_id = $routine_id
+            ;
+        ";
+
+        $results = $this->database->fetchAll(
+            $this->database->query($query)
+        );
+
+        if ($array_data) {
+            return $results;
+        }
 
         $rules = [];
-        foreach ($ar_relations as $ar_relation) {
-            /** @var $ar_rule ilSrRule|null */
-            $ar_rule = ilSrRule::find($ar_relation->getRuleId());
-            if (null === $ar_rule) {
-                continue;
-            }
-
-            $rules[] = ($array_data) ?
-                $this->transformToArray($ar_rule, $ar_relation) :
-                $this->transformToDTO($ar_rule, $ar_relation)
-            ;
+        foreach ($results as $result) {
+            $rules[] = new Rule(
+                $result[IRule::F_LHS_TYPE],
+                $result[IRule::F_LHS_VALUE],
+                $result[IRule::F_OPERATOR],
+                $result[IRule::F_RHS_TYPE],
+                $result[IRule::F_RHS_VALUE],
+                $result[IRoutineRuleRelation::F_ROUTINE_ID],
+                $result[IRoutineRuleRelation::F_RULE_ID]
+            );
         }
 
         return $rules;

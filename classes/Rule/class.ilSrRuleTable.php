@@ -96,8 +96,10 @@ class ilSrRuleTable extends ilSrAbstractTable
         );
 
         // only display the action dropdown if the current user owns
-        // the related routine.
-        if ($this->user->getId() === $this->routine->getOwnerId()) {
+        // the related routine or is administrator.
+        if ($this->user->getId() === $this->routine->getOwnerId() ||
+            ilSrAccess::isUserAdministrator($this->user->getId())
+        ) {
             $template->setVariable(strtoupper(self::COL_ACTIONS), $this->ui->renderer()->render(
                 $this->getActionDropdown($row_data[IRule::F_RULE_ID])
             ));

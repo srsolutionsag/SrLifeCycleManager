@@ -101,15 +101,16 @@ class Comparison implements IComparison
      */
     protected function findComparableValueTypes(IAttribute $lhs_attribute, IAttribute $rhs_attribute) : ?string
     {
-        foreach ($lhs_attribute->getComparableValueTypes() as $lhs_type) {
-            foreach ($rhs_attribute->getComparableValueTypes() as $rhs_type) {
-                if ($lhs_type === $rhs_type) {
-                    return $lhs_type;
-                }
-            }
+        $similarities = array_intersect(
+            $lhs_attribute->getComparableValueTypes(),
+            $rhs_attribute->getComparableValueTypes()
+        );
+
+        if (1 < count($similarities)) {
+            return null;
         }
 
-        return null;
+        return $similarities[0];
     }
 
     /**
@@ -128,6 +129,9 @@ class Comparison implements IComparison
 
         // get similarities of exploded value pieces
         $similarities =  array_intersect($lhs_pieces, $rhs_pieces);
+
+        // @TODO: might check the length of the similarity as well.
+        // @TODO: might ignore certain similarities like 'the', 'a', '&'.
 
         // returns true if at least one similarity was found
         return (1 <= count($similarities));

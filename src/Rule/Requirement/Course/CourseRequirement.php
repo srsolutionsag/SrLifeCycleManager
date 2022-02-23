@@ -28,8 +28,8 @@ class CourseRequirement implements ICourseRequirement
      * @param ilObjCourse|null   $course
      */
     public function __construct(
-        ?ilDBInterface $database = null,
-        ?ilObjCourse $course = null
+        ilDBInterface $database = null,
+        ilObjCourse $course = null
     ) {
         $this->database = $database;
         $this->course = $course;

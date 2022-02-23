@@ -128,6 +128,11 @@ $fields = array(
 		'type' => 'integer',
 		'length' => '8',
 	),
+    'execution_dates' => array(
+        'notnull' => '1',
+        'type' => 'text',
+        'length' => '4000',
+    ),
 );
 if (! $ilDB->tableExists('srlcm_routine')) {
 	$ilDB->createTable('srlcm_routine', $fields);

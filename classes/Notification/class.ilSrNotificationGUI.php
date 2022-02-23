@@ -37,6 +37,11 @@ class ilSrNotificationGUI extends ilSrAbstractGUI
     protected $notification;
 
     /**
+     * @var int|null
+     */
+    protected $scope;
+
+    /**
      * @inheritDoc
      */
     public function __construct()
@@ -45,6 +50,7 @@ class ilSrNotificationGUI extends ilSrAbstractGUI
 
         $this->routine = $this->getRoutineFromRequest(true);
         $this->notification = $this->getNotificationFromRequest();
+        $this->scope = $this->getScopeFromRequest();
     }
 
     /**
@@ -74,14 +80,15 @@ class ilSrNotificationGUI extends ilSrAbstractGUI
      */
     protected function canUserExecuteCommand(int $user_id, string $command) : bool
     {
-        // notifications can only be seen by the routine owner and
-        // if general access is granted.
-        if (null !== $this->routine &&
-            $user_id === $this->routine->getOwnerId() && (
-            ilSrAccess::isUserAssignedToConfiguredRole($user_id) ||
-            ilSrAccess::isUserAdministrator($user_id)
-        )) {
+        // administrators should be able to execute all commands.
+        if (ilSrAccess::isUserAdministrator($user_id)) {
             return true;
+        }
+
+        // if the current user is the owner of the related routine,
+        // he should be able to execute all commands too.
+        if (null !== $this->routine && ilSrAccess::isUserAssignedToConfiguredRole($user_id)) {
+            return ($user_id === $this->routine->getOwnerId());
         }
 
         return false;
@@ -92,17 +99,17 @@ class ilSrNotificationGUI extends ilSrAbstractGUI
      */
     protected function beforeCommand(string $command) : void
     {
+        // add the configuration tabs to the current page
+        // and deactivate all tabs by passing an invalid
+        // character as active tab-id.
+        $this->addConfigurationTabs('§');
+
         // abort if no routine was provided, as all actions
         // of this GUI depend on it.
         if (null === $this->routine) {
             $this->displayErrorMessage(self::MSG_ROUTINE_NOT_FOUND);
             return;
         }
-
-        // add the configuration tabs to the current page
-        // and deactivate all tabs by passing an invalid
-        // character as active tab-id.
-        $this->addConfigurationTabs('§');
     }
 
     /**
@@ -159,7 +166,7 @@ class ilSrNotificationGUI extends ilSrAbstractGUI
         }
 
         $this->ui->mainTemplate()->setContent(
-            $this->getForm()->render()
+            $form->render()
         );
     }
 

@@ -23,6 +23,7 @@ interface IRoutine
     public const F_CREATION_DATE        = 'creation_date';
     public const F_OPT_OUT_POSSIBLE     = 'opt_out_possible';
     public const F_ELONGATION_DAYS      = 'elongation_days';
+    public const F_EXECUTIONS_DATES     = 'execution_dates';
 
     /**
      * IRoutine origin types
@@ -48,6 +49,11 @@ interface IRoutine
         self::ORIGIN_TYPE_REPOSITORY     => 'routine_origin_type_repo',
         self::ORIGIN_TYPE_EXTERNAL       => 'routine_origin_type_ext',
     ];
+
+    /**
+     * @var string datetime format for execution dates.
+     */
+    public const EXECUTION_DATES_FORMAT = 'd/m';
 
     /**
      * @return int|null
@@ -147,4 +153,15 @@ interface IRoutine
      * @return IRoutine
      */
     public function setCreationDate(DateTime $date) : IRoutine;
+
+    /**
+     * @return string[]
+     */
+    public function getExecutionDates() : array;
+
+    /**
+     * @param string[] $dates (@see IRoutine::EXECUTION_DATES_FORMAT)
+     * @return IRoutine
+     */
+    public function setExecutionDates(array $dates) : IRoutine;
 }

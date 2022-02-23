@@ -4,10 +4,10 @@ use srag\Plugins\SrLifeCycleManager\Routine\IRoutineRepository;
 use srag\Plugins\SrLifeCycleManager\Routine\IRoutine;
 use srag\Plugins\SrLifeCycleManager\Routine\Routine;
 use srag\Plugins\SrLifeCycleManager\Rule\IRule;
-use srag\Plugins\SrLifeCycleManager\Routine\IRoutineRuleRelation;
 use srag\Plugins\SrLifeCycleManager\Notification\INotification;
-use srag\Plugins\SrLifeCycleManager\Routine\IRoutineNotificationRelation;
 use srag\Plugins\SrLifeCycleManager\Routine\IRoutineWhitelist;
+use srag\Plugins\SrLifeCycleManager\Rule\IRoutineRuleRelation;
+use srag\Plugins\SrLifeCycleManager\Notification\IRoutineNotificationRelation;
 
 /**
  * @author Thibeau Fuhrer <thibeau@sr.solutions>
@@ -15,15 +15,22 @@ use srag\Plugins\SrLifeCycleManager\Routine\IRoutineWhitelist;
 class ilSrRoutineRepository implements IRoutineRepository
 {
     /**
+     * @var ilDBInterface
+     */
+    protected $database;
+
+    /**
      * @var ilTree
      */
     protected $tree;
 
     /**
-     * @param ilTree $tree
+     * @param ilDBInterface $database
+     * @param ilTree        $tree
      */
-    public function __construct(ilTree $tree)
+    public function __construct(ilDBInterface $database, ilTree $tree)
     {
+        $this->database = $database;
         $this->tree = $tree;
     }
 
@@ -61,23 +68,35 @@ class ilSrRoutineRepository implements IRoutineRepository
         $parents = $this->getParentIdsRecursively($ref_id);
         $parents[] = $ref_id;
 
-        $routines = [];
-        foreach ($parents as $parent_id) {
-            // selects all routines which have the current
-            // parent id stored.
-            /** @var $ar_routines ilSrRoutine[] */
-            $ar_routines = ilSrRoutine::where([
-                IRoutine::F_REF_ID => $parent_id,
-            ], '')->get();
+        $routine_table = ilSrRoutine::TABLE_NAME;
+        $in_group = implode(',', $parents);
 
-            foreach ($ar_routines as $ar_routine) {
-                // map the routines to their id so duplicates will be
-                // overwritten.
-                $routines[$ar_routine->getRoutineId()] = ($array_data) ?
-                    $this->transformToArray($ar_routine) :
-                    $this->transformToDTO($ar_routine)
-                ;
-            }
+        $query = "
+            SELECT * FROM $routine_table AS routine WHERE routine.ref_id IN ($in_group);
+        ";
+
+        $results = $this->database->fetchAll(
+            $this->database->query($query)
+        );
+
+        if ($array_data) {
+            return $results;
+        }
+
+        $routines = [];
+        foreach ($results as $result) {
+            $routines[] = new Routine(
+                $result[IRoutine::F_NAME],
+                $result[IRoutine::F_REF_ID],
+                (bool) $result[IRoutine::F_ACTIVE],
+                $result[IRoutine::F_ORIGIN_TYPE],
+                $result[IRoutine::F_OWNER_ID],
+                DateTime::createFromFormat(ilSrRoutine::MYSQL_DATE_FORMAT, $result[IRoutine::F_CREATION_DATE]),
+                (bool) $result[IRoutine::F_OPT_OUT_POSSIBLE],
+                explode(',', $result[IRoutine::F_EXECUTIONS_DATES]),
+                $result[IRoutine::F_ELONGATION_DAYS],
+                $result[IRoutine::F_ROUTINE_ID]
+            );
         }
 
         return $routines;
@@ -95,8 +114,41 @@ class ilSrRoutineRepository implements IRoutineRepository
             $origin_type,
             $owner_id,
             new DateTime(),
-            false
+            false,
+            []
         );
+    }
+
+
+    /**
+     * @inheritDoc
+     */
+    public function getNextExecutionDate(IRoutine $routine) : ?DateTime
+    {
+        $today = new DateTime();
+        $closest = null;
+
+        foreach ($routine->getExecutionDates() as $date) {
+            // build the execution date from the given string and stored format.
+            $exec_date = DateTime::createFromFormat(IRoutine::EXECUTION_DATES_FORMAT, $date);
+
+            // if the execution date is already in the past, the date will be
+            // added 1 year.
+            if ($today > $exec_date) {
+                $exec_date->add(new DateInterval("P1Y"));
+            }
+
+            // set the closest date if:
+            //      (a) the exec date is after today and closest is null, or
+            //      (b) the exec date is after today BUT before the closest.
+            if ((null === $closest && $today < $exec_date) ||
+                (null !== $closest && $today < $exec_date && $closest > $exec_date)
+            ) {
+                $closest = $exec_date;
+            }
+        }
+
+        return $closest;
     }
 
     /**
@@ -119,6 +171,7 @@ class ilSrRoutineRepository implements IRoutineRepository
             ->setCreationDate($routine->getCreationDate())
             ->setOptOutPossible($routine->isOptOutPossible())
             ->setElongationDays($routine->getElongationDays())
+            ->setExecutionDates($routine->getExecutionDates())
             ->store()
         ;
 
@@ -199,7 +252,7 @@ class ilSrRoutineRepository implements IRoutineRepository
      * @param int $ref_id
      * @return array|null
      */
-    protected function getParentIdsRecursively(int $ref_id) : ?array
+    public function getParentIdsRecursively(int $ref_id) : ?array
     {
         static $parents;
 
@@ -208,7 +261,7 @@ class ilSrRoutineRepository implements IRoutineRepository
         // a string (not as stated by the phpdoc).
         if (null !== $parent_id && 0 < (int) $parent_id) {
             $parents[] = (int) $parent_id;
-            $this->getParentIdsRecursively($parent_id);
+            $this->getParentIdsRecursively((int) $parent_id);
         }
 
         return (!empty($parents)) ? $parents : null;
@@ -268,6 +321,7 @@ class ilSrRoutineRepository implements IRoutineRepository
             $ar_routine->getOwnerId(),
             $ar_routine->getCreationDate(),
             $ar_routine->isOptOutPossible(),
+            $ar_routine->getExecutionDates(),
             $ar_routine->getElongationDays(),
             $ar_routine->getRoutineId()
         );
@@ -292,6 +346,7 @@ class ilSrRoutineRepository implements IRoutineRepository
             IRoutine::F_CREATION_DATE        => $ar_routine->getCreationDate(),
             IRoutine::F_OPT_OUT_POSSIBLE     => $ar_routine->isOptOutPossible(),
             IRoutine::F_ELONGATION_DAYS      => $ar_routine->getElongationDays(),
+            IRoutine::F_EXECUTIONS_DATES     => $ar_routine->getExecutionDates(),
         ];
     }
 }

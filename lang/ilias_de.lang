@@ -12,6 +12,7 @@ msg_rule_error#:#Regel(n) konnten nicht aktualisiert werden.
 msg_notification_success#:#Benachrichtigung(en) erfolgreich aktualisiert.
 msg_notification_error#:#Benachrichtigung(en) konnten nicht aktualisiert werden.
 msg_back_to#:#Zurück
+msg_invalid_execution_dates#:#Eines der eingegeben Daten entspricht nicht dem Format DD/MM.
 
 page_title_rules#:#SrLifeCycleManager Regeln
 page_title_config#:#SrLifeCycleManager Einstellungen
@@ -49,6 +50,8 @@ input_name_routine_active#:#Aktiv?
 input_name_routine_opt_out#:#Opt-out möglich?
 input_name_routine_elongation#:#Verlängerung möglich?
 input_name_routine_elongation_possible#:#Verlängerung (in Tage)
+input_name_execution_dates#:#Ausführungsdaten (DD/MM)
+input_name_execution_dates_info#:#Wenn sie ein Datum geschrieben habe, drücken Sie "Enter" um es hinzuzufügen.
 
 routine_origin_type_admin#:#Administration
 routine_origin_type_repo#:#Magazin

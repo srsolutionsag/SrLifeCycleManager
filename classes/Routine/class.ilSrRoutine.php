@@ -17,7 +17,7 @@ class ilSrRoutine extends ActiveRecord implements IRoutine
     /**
      * @var string mysql date format
      */
-    protected const MYSQL_DATE_FORMAT = 'Y-m-d';
+    public const MYSQL_DATE_FORMAT = 'Y-m-d';
 
     /**
      * @var null|int
@@ -112,6 +112,16 @@ class ilSrRoutine extends ActiveRecord implements IRoutine
     protected $elongation_days;
 
     /**
+     * @var string[]
+     *
+     * @con_has_field   true
+     * @con_is_notnull  true
+     * @con_fieldtype   text
+     * @con_length      4000
+     */
+    protected $execution_dates = [];
+
+    /**
      * @inheritDoc
      */
     public static function returnDbTableName() : string
@@ -126,11 +136,13 @@ class ilSrRoutine extends ActiveRecord implements IRoutine
      *
      * @param $field_name
      * @param $field_value
-     * @return mixed|null
+     * @return bool|DateTime|string[]|null
      */
     public function wakeUp($field_name, $field_value)
     {
         switch ($field_name) {
+            case self::F_EXECUTIONS_DATES:
+                return explode(',', $field_value);
             case self::F_CREATION_DATE:
                 return $this->transformStringToDate($field_value);
             case self::F_ACTIVE:
@@ -156,6 +168,8 @@ class ilSrRoutine extends ActiveRecord implements IRoutine
     public function sleep($field_name)
     {
         switch ($field_name) {
+            case self::F_EXECUTIONS_DATES:
+                return implode(',', $this->{$field_name});
             case self::F_CREATION_DATE:
                 return $this->transformDateToString($field_name);
             case self::F_ACTIVE:
@@ -318,6 +332,23 @@ class ilSrRoutine extends ActiveRecord implements IRoutine
     public function setElongationDays(?int $days) : IRoutine
     {
         $this->elongation_days = $days;
+        return $this;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function getExecutionDates() : array
+    {
+        return $this->execution_dates;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function setExecutionDates(array $dates) : IRoutine
+    {
+        $this->execution_dates = $dates;
         return $this;
     }
 

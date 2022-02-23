@@ -1,6 +1,6 @@
 <?php // strict types are not possible with ActiveRecord.
 
-use srag\Plugins\SrLifeCycleManager\Config\IConfig;
+use srag\Plugins\SrLifeCycleManager\Config\IConfigAr;
 
 /**
  * Class ilSrConfig stores all general plugin configurations.
@@ -35,7 +35,7 @@ use srag\Plugins\SrLifeCycleManager\Config\IConfig;
  *              ->setValue(mixed $value)
  *              ->store();
  */
-class ilSrConfig extends ActiveRecord implements IConfig
+class ilSrConfig extends ActiveRecord implements IConfigAr
 {
     /**
      * @var string db table name
@@ -93,7 +93,7 @@ class ilSrConfig extends ActiveRecord implements IConfig
     /**
      * @inheritDoc
      */
-    public function setIdentifier(string $identifier) : IConfig
+    public function setIdentifier(string $identifier) : IConfigAr
     {
         // thrown exception can be ignored, as this is ONLY for
         // development purposes.
@@ -108,7 +108,10 @@ class ilSrConfig extends ActiveRecord implements IConfig
     public function getValue()
     {
         $value = json_decode($this->value, true);
-        if (empty($value)) return null;
+        if (empty($value)) {
+            return null;
+        }
+
         if (is_array($value) && !empty((array) $value)) {
             return (array) $value;
         }
@@ -120,7 +123,7 @@ class ilSrConfig extends ActiveRecord implements IConfig
     /**
      * @inheritDoc
      */
-    public function setValue($value) : IConfig
+    public function setValue($value) : IConfigAr
     {
         if (!is_array((array) $value)) {
             // lowercase string values for easier comparison

@@ -7,12 +7,18 @@ namespace srag\Plugins\SrLifeCycleManager;
 use srag\Plugins\SrLifeCycleManager\Rule\IRuleRepository;
 use srag\Plugins\SrLifeCycleManager\Notification\INotificationRepository;
 use srag\Plugins\SrLifeCycleManager\Routine\IRoutineRepository;
+use srag\Plugins\SrLifeCycleManager\Config\IConfigRepository;
 
 /**
  * @author Thibeau Fuhrer <thibeau@sr.solutions>
  */
 interface IRepository
 {
+    /**
+     * @return IConfigRepository
+     */
+    public function config() : IConfigRepository;
+
     /**
      * @return IRoutineRepository
      */

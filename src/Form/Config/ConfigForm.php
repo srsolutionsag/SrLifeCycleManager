@@ -8,7 +8,6 @@ use srag\Plugins\SrLifeCycleManager\Form\AbstractForm;
 use srag\Plugins\SrLifeCycleManager\IRepository;
 
 use ILIAS\UI\Renderer;
-use ilSrConfig;
 
 /**
  * @author Thibeau Fuhrer <thibeau@sr.solutions>
@@ -43,16 +42,6 @@ class ConfigForm extends AbstractForm
      */
     protected function process(array $post_data) : void
     {
-        foreach ($post_data as $identifier => $value) {
-            // try to find an existing database entry for current
-            // $identifier or create a new instance.
-            $config = ilSrConfig::find($identifier) ?? new ilSrConfig();
-            $config
-                // this may be redundant, but more performant than if-else
-                ->setIdentifier($identifier)
-                ->setValue($value)
-                ->store()
-            ;
-        }
+        $this->repository->config()->store($post_data);
     }
 }

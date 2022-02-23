@@ -2,6 +2,8 @@
 
 namespace srag\Plugins\SrLifeCycleManager\Routine;
 
+use DateTime;
+
 /**
  * @author Thibeau Fuhrer <thibeau@sr.solutions>
  */
@@ -46,6 +48,15 @@ interface IRoutineRepository
      * @return IRoutine
      */
     public function getEmpty(int $origin_type, int $owner_id) : IRoutine;
+
+    /**
+     * Returns the closest possible execution date in the future for the
+     * execution dates of the given routine-id.
+     *
+     * @param IRoutine $routine
+     * @return DateTime|null
+     */
+    public function getNextExecutionDate(IRoutine $routine) : ?DateTime;
 
     /**
      * Creates or updates the given routine in the database.

@@ -21,11 +21,13 @@ class ComposerStaticInit78b368899f4397655d4e05c324fa6b84
     );
 
     public static $classMap = array (
+        'ilSrAbstractCronJob' => __DIR__ . '/../..' . '/classes/Abstract/class.ilSrAbstractCronJob.php',
         'ilSrAbstractGUI' => __DIR__ . '/../..' . '/classes/Abstract/class.ilSrAbstractGUI.php',
         'ilSrAbstractTable' => __DIR__ . '/../..' . '/classes/Abstract/class.ilSrAbstractTable.php',
         'ilSrAccess' => __DIR__ . '/../..' . '/classes/Access/class.ilSrAccess.php',
         'ilSrConfig' => __DIR__ . '/../..' . '/classes/Config/class.ilSrConfig.php',
         'ilSrConfigGUI' => __DIR__ . '/../..' . '/classes/Config/class.ilSrConfigGUI.php',
+        'ilSrConfigRepository' => __DIR__ . '/../..' . '/classes/Config/class.ilSrConfigRepository.php',
         'ilSrLifeCycleManagerConfigGUI' => __DIR__ . '/../..' . '/classes/class.ilSrLifeCycleManagerConfigGUI.php',
         'ilSrLifeCycleManagerDispatcher' => __DIR__ . '/../..' . '/classes/class.ilSrLifeCycleManagerDispatcher.php',
         'ilSrLifeCycleManagerPlugin' => __DIR__ . '/../..' . '/classes/class.ilSrLifeCycleManagerPlugin.php',
@@ -33,10 +35,12 @@ class ComposerStaticInit78b368899f4397655d4e05c324fa6b84
         'ilSrMenuProvider' => __DIR__ . '/../..' . '/classes/Provider/class.ilSrMenuProvider.php',
         'ilSrNotification' => __DIR__ . '/../..' . '/classes/Notification/class.ilSrNotification.php',
         'ilSrNotificationGUI' => __DIR__ . '/../..' . '/classes/Notification/class.ilSrNotificationGUI.php',
+        'ilSrNotificationJob' => __DIR__ . '/../..' . '/classes/Notification/class.ilSrNotificationJob.php',
         'ilSrNotificationRepository' => __DIR__ . '/../..' . '/classes/Notification/class.ilSrNotificationRepository.php',
         'ilSrNotificationTable' => __DIR__ . '/../..' . '/classes/Notification/class.ilSrNotificationTable.php',
         'ilSrRoutine' => __DIR__ . '/../..' . '/classes/Routine/class.ilSrRoutine.php',
         'ilSrRoutineGUI' => __DIR__ . '/../..' . '/classes/Routine/class.ilSrRoutineGUI.php',
+        'ilSrRoutineJob' => __DIR__ . '/../..' . '/classes/Routine/class.ilSrRoutineJob.php',
         'ilSrRoutineNotification' => __DIR__ . '/../..' . '/classes/Notification/class.ilSrRoutineNotification.php',
         'ilSrRoutineRepository' => __DIR__ . '/../..' . '/classes/Routine/class.ilSrRoutineRepository.php',
         'ilSrRoutineRule' => __DIR__ . '/../..' . '/classes/Rule/class.ilSrRoutineRule.php',

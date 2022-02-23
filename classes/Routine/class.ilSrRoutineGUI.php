@@ -1,8 +1,8 @@
 <?php declare(strict_types=1);
 
-use srag\Plugins\SrLifeCycleManager\Routine\Routine;
 use srag\Plugins\SrLifeCycleManager\Form\Routine\RoutineForm;
 use srag\Plugins\SrLifeCycleManager\Form\Routine\RoutineFormBuilder;
+use srag\Plugins\SrLifeCycleManager\Routine\IRoutine;
 
 /**
  * Class ilSrRoutineGUI
@@ -11,11 +11,6 @@ use srag\Plugins\SrLifeCycleManager\Form\Routine\RoutineFormBuilder;
  */
 class ilSrRoutineGUI extends ilSrAbstractGUI
 {
-    /**
-     * @var string routine scope (ref-id) GET parameter name.
-     */
-    public const QUERY_PARAM_ROUTINE_SCOPE  = 'routine_ref_id';
-
     /**
      * ilSrRoutineGUI command names (methods)
      */
@@ -46,7 +41,7 @@ class ilSrRoutineGUI extends ilSrAbstractGUI
     protected $origin_type;
 
     /**
-     * @var Routine
+     * @var IRoutine
      */
     protected $routine;
 
@@ -67,11 +62,6 @@ class ilSrRoutineGUI extends ilSrAbstractGUI
     {
         parent::__construct();
 
-        $this->ctrl->saveParameterByClass(
-            self::class,
-            self::QUERY_PARAM_ROUTINE_SCOPE
-        );
-
         $this->origin_type = ilSrLifeCycleManagerDispatcher::getOriginTypeFromRequest();
         $this->scope = $this->getScopeFromRequest();
         $this->routine = $this->getRoutineFromRequest() ??
@@ -87,8 +77,7 @@ class ilSrRoutineGUI extends ilSrAbstractGUI
             $this->refinery,
             $this->plugin,
             $this->getFormAction(),
-            $this->routine,
-            $this->scope
+            $this->routine
         );
     }
 
@@ -119,31 +108,23 @@ class ilSrRoutineGUI extends ilSrAbstractGUI
     protected function canUserExecuteCommand(int $user_id, string $command) : bool
     {
         // the index command can always be executed because
-        // routines must be visible to object administrators.
+        // routines must be visible to object tutors etc.
         if (self::CMD_INDEX === $command) {
             return true;
         }
 
-        // a routine can only be edited or deleted by the owner
-        // and if general access is granted.
-        if (null !== $this->routine && (
-            self::CMD_ROUTINE_EDIT === $command ||
-            self::CMD_ROUTINE_DELETE === $command
-        )) {
-            return (
-                $user_id === $this->routine->getOwnerId() && (
-                ilSrAccess::isUserAssignedToConfiguredRole($user_id) ||
-                ilSrAccess::isUserAdministrator($user_id)
-            ));
+        // administrators should be able to execute all commands.
+        if (ilSrAccess::isUserAdministrator($user_id)) {
+            return true;
         }
 
-        // all actions implemented by this GUI require the
-        // user to be assigned to at least one configured
-        // global role, or the administrator role.
-        return (
-            ilSrAccess::isUserAssignedToConfiguredRole($user_id) ||
-            ilSrAccess::isUserAdministrator($user_id)
-        );
+        // if the current routine is already stored, check if the
+        // user is the owner and can therefore execute all commands.
+        if (null !== $this->routine->getRoutineId() && ilSrAccess::isUserAssignedToConfiguredRole($user_id)) {
+            return $user_id === $this->routine->getOwnerId();
+        }
+
+        return false;
     }
 
     /**
@@ -173,7 +154,11 @@ class ilSrRoutineGUI extends ilSrAbstractGUI
      */
     protected function index() : void
     {
-        $this->addRoutineToolbar();
+        // only display the toolbar if the user can manage them.
+        if (ilSrAccess::isUserAssignedToConfiguredRole($this->user->getId())) {
+            $this->addRoutineToolbar();
+        }
+
         $this->ui->mainTemplate()->setContent(
             $this->getTable()->getHTML()
         );
@@ -233,7 +218,7 @@ class ilSrRoutineGUI extends ilSrAbstractGUI
         // to display errors.
         $this->displayErrorMessage(self::MSG_ROUTINE_ERROR);
         $this->ui->mainTemplate()->setContent(
-            $this->getForm()->render()
+            $form->render()
         );
     }
 
@@ -276,20 +261,6 @@ class ilSrRoutineGUI extends ilSrAbstractGUI
 
         $this->toolbar->addButtonInstance($button);
         $this->ui->mainTemplate()->setContent($this->toolbar->getHTML());
-    }
-
-    /**
-     * Returns the provided routine scope of the current request.
-     *
-     * If a scope was provided it is also kept alive, so that
-     * further commands can still access it after redirects.
-     *
-     * @return int|null
-     */
-    protected function getScopeFromRequest() : ?int
-    {
-        $scope = $this->getQueryParamFromRequest(self::QUERY_PARAM_ROUTINE_SCOPE);
-        return ($scope) ? (int) $scope : null;
     }
 
     /**

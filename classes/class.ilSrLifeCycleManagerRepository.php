@@ -5,6 +5,10 @@ use srag\Plugins\SrLifeCycleManager\Notification\INotificationRepository;
 use srag\Plugins\SrLifeCycleManager\Rule\IRuleRepository;
 use ILIAS\DI\RBACServices;
 use srag\Plugins\SrLifeCycleManager\IRepository;
+use srag\Plugins\SrLifeCycleManager\Rule\Comparison\Comparison;
+use srag\Plugins\SrLifeCycleManager\Rule\Requirement\Course\CourseRequirement;
+use srag\Plugins\SrLifeCycleManager\Rule\Attribute\AttributeFactory;
+use srag\Plugins\SrLifeCycleManager\Config\IConfigRepository;
 
 /**
  * Class ilSrLifeCycleManagerRepository is a factory for all
@@ -25,6 +29,11 @@ class ilSrLifeCycleManagerRepository implements IRepository
     protected $database;
 
     /**
+     * @var IConfigRepository
+     */
+    protected $config_repository;
+
+    /**
      * @var IRoutineRepository
      */
     protected $routine_repository;
@@ -40,6 +49,11 @@ class ilSrLifeCycleManagerRepository implements IRepository
     protected $rule_repository;
 
     /**
+     * @var AttributeFactory
+     */
+    protected $attribute_factory;
+
+    /**
      * @param ilDBInterface $database
      * @param RBACServices  $rbac
      * @param ilTree        $tree
@@ -49,11 +63,22 @@ class ilSrLifeCycleManagerRepository implements IRepository
         RBACServices $rbac,
         ilTree $tree
     ) {
-        $this->rule_repository = new ilSrRuleRepository();
-        $this->notification_repository = new ilSrNotificationRepository();
-        $this->routine_repository = new ilSrRoutineRepository($tree);
+        $this->config_repository = new ilSrConfigRepository();
+        $this->rule_repository = new ilSrRuleRepository($database);
+        $this->routine_repository = new ilSrRoutineRepository($database, $tree);
+        $this->notification_repository = new ilSrNotificationRepository($this->routine_repository, $database);
+        $this->attribute_factory = new AttributeFactory();
+
         $this->database = $database;
         $this->rbac = $rbac;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function config() : IConfigRepository
+    {
+        return $this->config_repository;
     }
 
     /**
@@ -94,7 +119,9 @@ class ilSrLifeCycleManagerRepository implements IRepository
         $role_options = [];
         $global_roles = $this->rbac->review()->getRolesByFilter(ilRbacReview::FILTER_ALL_GLOBAL);
 
-        if (empty($global_roles)) return $role_options;
+        if (empty($global_roles)) {
+            return $role_options;
+        }
 
         foreach ($global_roles as $role_data) {
             $role_id = (int) $role_data['obj_id'];

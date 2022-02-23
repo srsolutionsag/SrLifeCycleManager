@@ -2,7 +2,7 @@
 
 use srag\Plugins\SrLifeCycleManager\Form\Config\ConfigForm;
 use srag\Plugins\SrLifeCycleManager\Form\Config\ConfigFormBuilder;
-use srag\Plugins\SrLifeCycleManager\Config\IConfig;
+use srag\Plugins\SrLifeCycleManager\Config\IConfigAr;
 
 /**
  * Class ilSrConfigGUI is responsible for the general plugin configuration.
@@ -40,12 +40,8 @@ class ilSrConfigGUI extends ilSrAbstractGUI
      */
     public function __construct()
     {
-        parent::__construct();
-
         global $DIC;
-
-        /** @var $config IConfig[] */
-        $config = ilSrConfig::get();
+        parent::__construct();
 
         $this->form_builder = new ConfigFormBuilder(
             $this->ui->factory()->input()->container()->form(),
@@ -53,7 +49,7 @@ class ilSrConfigGUI extends ilSrAbstractGUI
             $this->refinery,
             $this->plugin,
             $this->getFormAction(),
-            $config,
+            $this->repository->config()->get(),
             $this->repository->getGlobalRoleOptions(),
             (bool) $DIC->settings()->get('enable_trash')
         );

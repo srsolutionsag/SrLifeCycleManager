@@ -17,7 +17,7 @@ use srag\Plugins\SrLifeCycleManager\ITranslator;
  * rule-sets registered in the administration of this plugin, and applying them -
  * deleting (old) course objects that match an active routine's rules.
  */
-final class ilSrLifeCycleManagerPlugin extends ilCronHookPlugin implements ITranslator
+class ilSrLifeCycleManagerPlugin extends ilCronHookPlugin implements ITranslator
 {
     /**
      * @var string
@@ -40,6 +40,16 @@ final class ilSrLifeCycleManagerPlugin extends ilCronHookPlugin implements ITran
     private static $instance;
 
     /**
+     * @var ilSrLifeCycleManagerRepository
+     */
+    protected $repository;
+
+    /**
+     * @var ilLogger
+     */
+    protected $logger;
+
+    /**
      * prevents multiple instances.
      */
     private function __clone() {}
@@ -56,6 +66,21 @@ final class ilSrLifeCycleManagerPlugin extends ilCronHookPlugin implements ITran
         // register global-screen providers (for tools and main-menu entries)
         $this->provider_collection->setToolProvider(new ilSrToolProvider($DIC, $this));
         $this->provider_collection->setMainBarProvider(new ilSrMenuProvider($DIC, $this));
+
+        // Safely initializes dependencies, as this class will also be
+        // loaded for CLI operations where they might not be available.
+        if ($DIC->offsetExists('ilDB') &&
+            $DIC->offsetExists('ilLoggerFactory') &&
+            $DIC->offsetExists('tree') &&
+            $DIC->offsetExists('rbacreview')
+        ) {
+            $this->logger = $DIC->logger()->root();
+            $this->repository = new ilSrLifeCycleManagerRepository(
+                $DIC->database(),
+                $DIC->rbac(),
+                $DIC->repositoryTree()
+            );
+        }
     }
 
     /**
@@ -77,7 +102,7 @@ final class ilSrLifeCycleManagerPlugin extends ilCronHookPlugin implements ITran
     /**
      * @inheritDoc
      */
-    public function getPluginName()
+    public function getPluginName() : string
     {
         return self::PLUGIN_NAME;
     }
@@ -93,20 +118,43 @@ final class ilSrLifeCycleManagerPlugin extends ilCronHookPlugin implements ITran
     }
 
     /**
-     * returns all cronjob instances of this plugin.
+     * @return ilCronJob[]
      */
-    public function getCronJobInstances()
+    public function getCronJobInstances() : array
     {
-        // TODO: Implement getCronJobInstances() method.
+        return [
+            $this->loadJobInstance(ilSrNotificationJob::class),
+            $this->loadJobInstance(ilSrRoutineJob::class),
+        ];
     }
 
     /**
-     * returns a single cronjob instance.
-     *
-     * @param $a_job_id
+     * @param string $a_job_id
+     * @return ilCronJob
      */
-    public function getCronJobInstance($a_job_id)
+    public function getCronJobInstance($a_job_id) : ilCronJob
     {
-        // TODO: Implement getCronJobInstance() method.
+        switch ($a_job_id) {
+            case ilSrNotificationJob::class:
+                return $this->loadJobInstance(ilSrNotificationJob::class);
+
+            case ilSrRoutineJob::class:
+                return $this->loadJobInstance(ilSrRoutineJob::class);
+
+            default:
+                throw new LogicException("Tried loading cron job '$a_job_id' which does not exist.");
+        }
+    }
+
+    /**
+     * @param string $class_name
+     * @return ilCronJob
+     */
+    protected function loadJobInstance(string $class_name) : ilCronJob
+    {
+        return new $class_name(
+            $this->repository,
+            $this->logger
+        );
     }
 }

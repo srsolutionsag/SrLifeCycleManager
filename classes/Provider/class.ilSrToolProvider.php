@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-use srag\Plugins\SrLifeCycleManager\Config\IConfig;
+use srag\Plugins\SrLifeCycleManager\Config\IConfigAr;
 
 use ILIAS\GlobalScreen\Scope\Tool\Provider\AbstractDynamicToolPluginProvider;
 use ILIAS\GlobalScreen\ScreenContext\Stack\ContextCollection;
@@ -46,22 +46,7 @@ class ilSrToolProvider extends AbstractDynamicToolPluginProvider
                 ->withAvailableCallable($this->getToolAvailabilityClosure())
                 ->withVisibilityCallable($this->getToolVisibilityClosure())
                 ->withContentWrapper(
-                    function () : ILIAS\UI\Component\Component {
-                        // although this method accepts any UI component, it's
-                        // renderer can only manage legacy components. therefore,
-                        // this component is misused to wrap a rendered component.
-                        return $this->dic->ui()->factory()->legacy(
-                            $this->dic->ui()->renderer()->render(
-                                $this->dic->ui()->factory()->button()->standard(
-                                    $this->plugin->txt('take me to routines!'),
-                                    ilSrLifeCycleManagerDispatcher::buildFullyQualifiedLinkTarget(
-                                        ilSrRoutineGUI::class,
-                                        ilSrRoutineGUI::CMD_INDEX
-                                    )
-                                )
-                            )
-                        );
-                    }
+                    $this->getContentWrapper()
                 )
             ,
         ];
@@ -77,10 +62,10 @@ class ilSrToolProvider extends AbstractDynamicToolPluginProvider
         return function() : bool {
             // fetch configuration and check if the necessary
             // config exists and get its value.
-            /** @var $config IConfig[] */
+            /** @var $config IConfigAr[] */
             $config              = ilSrConfig::get();
-            $cnf_show_routines   = (isset($config[IConfig::CNF_SHOW_ROUTINES]) && $config[IConfig::CNF_SHOW_ROUTINES]->getValue());
-            $cnf_create_routines = (isset($config[IConfig::CNF_CREATE_ROUTINES]) && $config[IConfig::CNF_CREATE_ROUTINES]->getValue());
+            $cnf_show_routines   = (isset($config[IConfigAr::CNF_SHOW_ROUTINES]) && $config[IConfigAr::CNF_SHOW_ROUTINES]->getValue());
+            $cnf_create_routines = (isset($config[IConfigAr::CNF_CREATE_ROUTINES]) && $config[IConfigAr::CNF_CREATE_ROUTINES]->getValue());
 
             // save access checks in variables for readability.
             $user_id             = $this->dic->user()->getId();
@@ -94,7 +79,7 @@ class ilSrToolProvider extends AbstractDynamicToolPluginProvider
             //      1) the user is administrator
             //      2) it's configured that configured roles can manage
             //         routines via tool
-            //      3) it's configured that active roles are displayed
+            //      3) it's configured that active routines are displayed
             //
             // the order is important as we are checking them in one
             // statement.
@@ -128,7 +113,9 @@ class ilSrToolProvider extends AbstractDynamicToolPluginProvider
 
         // if a ref-id parameter is provided the value can
         // certainly be used.
-        if (null !== $ref_id) return (int) $ref_id;
+        if (null !== $ref_id) {
+            return (int) $ref_id;
+        }
 
         // if a target parameter is provided the object was
         // linked via ilLink::_getLink() and must be checked.
@@ -137,9 +124,36 @@ class ilSrToolProvider extends AbstractDynamicToolPluginProvider
             // to dodge the type-prefix when a goto-link is provided.
             preg_match('/(?<=(_)).*/', $target, $matches);
 
-            if (!empty($matches[0])) return (int) $matches[0];
+            if (!empty($matches[0])) {
+                return (int) $matches[0];
+            }
         }
 
         return null;
+    }
+
+    /**
+     * Returns the tool content wrapper closure.
+     *
+     * @return Closure
+     */
+    protected function getContentWrapper() : Closure
+    {
+        return function () : ILIAS\UI\Component\Component {
+            // although this method accepts any UI component, it's
+            // renderer can only manage legacy components. therefore,
+            // this component is misused to wrap a rendered component.
+            return $this->dic->ui()->factory()->legacy(
+                $this->dic->ui()->renderer()->render(
+                    $this->dic->ui()->factory()->button()->standard(
+                        $this->plugin->txt('take me to routines!'),
+                        ilSrLifeCycleManagerDispatcher::buildFullyQualifiedLinkTarget(
+                            ilSrRoutineGUI::class,
+                            ilSrRoutineGUI::CMD_INDEX
+                        )
+                    )
+                )
+            );
+        };
     }
 }

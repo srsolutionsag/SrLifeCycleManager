@@ -12,6 +12,7 @@ msg_rule_error#:#Could not update rule(s).
 msg_notification_success#:#Notification(s) successfully updated.
 msg_notification_error#:#Could not update notification(s).
 msg_back_to#:#Back
+msg_invalid_execution_dates#:#One of the submitted dates does not match the format DD/MM.
 
 page_title_rules#:#SrLifeCycleManager rules
 page_title_config#:#SrLifeCycleManager configuration
@@ -51,6 +52,8 @@ input_name_routine_elongation#:#Elongation possible?
 input_name_routine_elongation_possible#:#Elongation (in days)
 input_name_notification_message#:#Notification message
 input_name_notification_days#:#Sent (in days before deletion)
+input_name_execution_dates#:#Execution dates (DD/MM)
+input_name_execution_dates_info#:#After typing a date, press "enter" to add it.
 
 routine_origin_type_admin#:#Administration
 routine_origin_type_repo#:#Repository
