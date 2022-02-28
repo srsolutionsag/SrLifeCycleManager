@@ -1,6 +1,6 @@
 <?php
 
-namespace srag\Plugins\SrLifeCycleManager\Rule;
+namespace srag\Plugins\_SrLifeCycleManager\Rule;
 
 /**
  * IRoutineRuleRelation describes the relationship between

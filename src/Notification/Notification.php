@@ -3,11 +3,9 @@
 namespace srag\Plugins\SrLifeCycleManager\Notification;
 
 /**
- * Notification DTO
- *
  * @author Thibeau Fuhrer <thibeau@sr.solutions>
  */
-class Notification implements IRoutineAwareNotification
+class Notification implements INotification
 {
     /**
      * @var int|null
@@ -22,7 +20,12 @@ class Notification implements IRoutineAwareNotification
     /**
      * @var string
      */
-    protected $message;
+    protected $title;
+
+    /**
+     * @var string
+     */
+    protected $content;
 
     /**
      * @var int
@@ -30,19 +33,22 @@ class Notification implements IRoutineAwareNotification
     protected $days_before_submission;
 
     /**
-     * @param string   $message
-     * @param int      $days_before_submission
      * @param int      $routine_id
+     * @param string   $title
+     * @param string   $content
+     * @param int      $days_before_submission
      * @param int|null $notification_id
      */
     public function __construct(
-        string $message,
-        int $days_before_submission,
         int $routine_id,
+        string $title,
+        string $content,
+        int $days_before_submission,
         int $notification_id = null
     ) {
-        $this->message = $message;
         $this->routine_id = $routine_id;
+        $this->title = $title;
+        $this->content = $content;
         $this->days_before_submission = $days_before_submission;
         $this->notification_id = $notification_id;
     }
@@ -64,22 +70,6 @@ class Notification implements IRoutineAwareNotification
         return $this;
     }
 
-    /**
-     * @ineritdoc
-     */
-    public function getMessage() : string
-    {
-        return $this->message;
-    }
-
-    /**
-     * @ineritdoc
-     */
-    public function setMessage(string $message) : INotification
-    {
-        $this->message = $message;
-        return $this;
-    }
 
     /**
      * @inheritDoc
@@ -92,26 +82,44 @@ class Notification implements IRoutineAwareNotification
     /**
      * @inheritDoc
      */
-    public function getRelationId() : int
+    public function setRoutineId(int $routine_id) : INotification
     {
-        return $this->relation_id;
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function setRelationId(int $relation_id) : IRoutineAwareNotification
-    {
-        $this->relation_id = $relation_id;
+        $this->routine_id = $routine_id;
         return $this;
     }
 
     /**
-     * @inheritDoc
+     * @return string
      */
-    public function setRoutineId(int $routine_id) : IRoutineAwareNotification
+    public function getTitle() : string
     {
-        $this->routine_id = $routine_id;
+        return $this->title;
+    }
+
+    /**
+     * @param string $title
+     * @return INotification
+     */
+    public function setTitle(string $title) : INotification
+    {
+        $this->title = $title;
+        return $this;
+    }
+
+    /**
+     * @ineritdoc
+     */
+    public function getContent() : string
+    {
+        return $this->content;
+    }
+
+    /**
+     * @ineritdoc
+     */
+    public function setContent(string $content) : INotification
+    {
+        $this->content = $content;
         return $this;
     }
 
@@ -126,9 +134,9 @@ class Notification implements IRoutineAwareNotification
     /**
      * @inheritDoc
      */
-    public function setDaysBeforeSubmission(int $days) : IRoutineAwareNotification
+    public function setDaysBeforeSubmission(int $amount) : INotification
     {
-        $this->days_before_submission = $days;
+        $this->days_before_submission = $amount;
         return $this;
     }
 }

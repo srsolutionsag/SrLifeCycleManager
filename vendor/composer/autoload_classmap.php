@@ -6,10 +6,9 @@ $vendorDir = dirname(dirname(__FILE__));
 $baseDir = dirname($vendorDir);
 
 return array(
-    'ilSrAbstractCronJob' => $baseDir . '/classes/Abstract/class.ilSrAbstractCronJob.php',
-    'ilSrAbstractGUI' => $baseDir . '/classes/Abstract/class.ilSrAbstractGUI.php',
-    'ilSrAbstractTable' => $baseDir . '/classes/Abstract/class.ilSrAbstractTable.php',
-    'ilSrAccess' => $baseDir . '/classes/Access/class.ilSrAccess.php',
+    'ilSrAbstractGUI' => $baseDir . '/classes/Util/class.ilSrAbstractGUI.php',
+    'ilSrAbstractTable' => $baseDir . '/classes/Util/class.ilSrAbstractTable.php',
+    'ilSrAccessHandler' => $baseDir . '/classes/Util/class.ilSrAccessHandler.php',
     'ilSrConfig' => $baseDir . '/classes/Config/class.ilSrConfig.php',
     'ilSrConfigGUI' => $baseDir . '/classes/Config/class.ilSrConfigGUI.php',
     'ilSrConfigRepository' => $baseDir . '/classes/Config/class.ilSrConfigRepository.php',
@@ -30,12 +29,13 @@ return array(
     'ilSrRoutineRepository' => $baseDir . '/classes/Routine/class.ilSrRoutineRepository.php',
     'ilSrRoutineRule' => $baseDir . '/classes/Rule/class.ilSrRoutineRule.php',
     'ilSrRoutineTable' => $baseDir . '/classes/Routine/class.ilSrRoutineTable.php',
-    'ilSrRoutineWhitelist' => $baseDir . '/classes/Routine/class.ilSrRoutineWhitelist.php',
-    'ilSrRoutineWhitelistJob' => $baseDir . '/classes/Routine/class.ilSrRoutineWhitelistJob.php',
-    'ilSrRoutineWhitelistRepository' => $baseDir . '/classes/Routine/class.ilSrRoutineWhitelistRepository.php',
+    'ilSrRoutineWhitelist' => $baseDir . '/classes/Routine/Whitelist/class.ilSrRoutineWhitelist.php',
+    'ilSrRoutineWhitelistJob' => $baseDir . '/classes/Routine/Whitelist/class.ilSrRoutineWhitelistJob.php',
+    'ilSrRoutineWhitelistRepository' => $baseDir . '/classes/Routine/Whitelist/class.ilSrRoutineWhitelistRepository.php',
     'ilSrRule' => $baseDir . '/classes/Rule/class.ilSrRule.php',
     'ilSrRuleGUI' => $baseDir . '/classes/Rule/class.ilSrRuleGUI.php',
     'ilSrRuleRepository' => $baseDir . '/classes/Rule/class.ilSrRuleRepository.php',
     'ilSrRuleTable' => $baseDir . '/classes/Rule/class.ilSrRuleTable.php',
+    'ilSrTabManager' => $baseDir . '/classes/Util/class.ilSrTabManager.php',
     'ilSrToolProvider' => $baseDir . '/classes/Provider/class.ilSrToolProvider.php',
 );

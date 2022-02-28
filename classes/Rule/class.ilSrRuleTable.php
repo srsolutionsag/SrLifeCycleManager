@@ -1,24 +1,32 @@
 <?php declare(strict_types=1);
 
-use ILIAS\UI\Component\Dropdown\Standard as Dropdown;
-use srag\Plugins\SrLifeCycleManager\Routine\IRoutine;
-use ILIAS\DI\UIServices;
+/* Copyright (c) 2022 Thibeau Fuhrer <thibeau@sr.solutions> Extended GPL, see docs/LICENSE */
+
 use srag\Plugins\SrLifeCycleManager\Rule\Attribute\Common\CommonAttribute;
+use srag\Plugins\SrLifeCycleManager\Routine\IRoutine;
 use srag\Plugins\SrLifeCycleManager\Rule\IRule;
+use srag\Plugins\SrLifeCycleManager\ITranslator;
+use ILIAS\UI\Component\Dropdown\Dropdown;
+use ILIAS\UI\Renderer;
+use ILIAS\UI\Factory;
 
 /**
- * Class ilSrRuleTable
- *
  * @author Thibeau Fuhrer <thibeau@sr.solutions>
+ *
+ * @noinspection AutoloadingIssuesInspection
  */
 class ilSrRuleTable extends ilSrAbstractTable
 {
-    protected const COL_RULE_RHS_TYPE  = 'col_rule_rhs_type';
-    protected const COL_RULE_RHS_VALUE = 'col_rule_rhs_value';
-    protected const COL_RULE_OPERATOR  = 'col_rule_operator';
-    protected const COL_RULE_LHS_TYPE  = 'col_rule_lhs_type';
-    protected const COL_RULE_LHS_VALUE = 'col_rule_lhs_value';
-    protected const COL_ACTIONS        = 'col_actions';
+    // ilSrRuleTable table columns:
+    public const COL_RULE_RHS_TYPE  = 'col_rule_rhs_type';
+    public const COL_RULE_RHS_VALUE = 'col_rule_rhs_value';
+    public const COL_RULE_OPERATOR  = 'col_rule_operator';
+    public const COL_RULE_LHS_TYPE  = 'col_rule_lhs_type';
+    public const COL_RULE_LHS_VALUE = 'col_rule_lhs_value';
+
+    // ilSrRuleTable table actions:
+    public const ACTION_RULE_EDIT   = 'action_rule_edit';
+    public const ACTION_RULE_DELETE = 'action_rule_delete';
 
     /**
      * @var IRoutine
@@ -26,84 +34,118 @@ class ilSrRuleTable extends ilSrAbstractTable
     protected $routine;
 
     /**
-     * @var ilObjUser
-     */
-    protected $user;
-
-    /**
-     * @param UIServices                 $ui
-     * @param ilSrLifeCycleManagerPlugin $plugin
-     * @param object                     $parent_gui
-     * @param string                     $parent_cmd
-     * @param string                     $row_template
-     * @param array                      $table_data
-     * @param IRoutine                   $routine
-     * @param ilObjUser                  $user
+     * @param Factory           $ui_factory
+     * @param Renderer          $renderer
+     * @param ITranslator       $translator
+     * @param ilSrAccessHandler $access_handler
+     * @param ilCtrl            $ctrl
+     * @param IRoutine          $routine
+     * @param object            $parent_gui_object
+     * @param string            $parent_gui_cmd
+     * @param array             $table_data
      */
     public function __construct(
-        UIServices $ui,
-        ilSrLifeCycleManagerPlugin $plugin,
-        object $parent_gui,
-        string $parent_cmd,
-        string $row_template,
-        array $table_data,
+        Factory $ui_factory,
+        Renderer $renderer,
+        ITranslator $translator,
+        ilSrAccessHandler $access_handler,
+        ilCtrl $ctrl,
         IRoutine $routine,
-        ilObjUser $user
+        object $parent_gui_object,
+        string $parent_gui_cmd,
+        array $table_data
     ) {
-        parent::__construct($ui, $plugin, $parent_gui, $parent_cmd, $row_template, $table_data);
+        parent::__construct(
+            $ui_factory, $renderer, $translator, $access_handler, $ctrl, $parent_gui_object, $parent_gui_cmd, $table_data
+        );
 
         $this->routine = $routine;
-        $this->user = $user;
     }
 
     /**
      * @inheritDoc
      */
-    protected function getTableColumns() : array
+    protected function getTemplateName() : string
     {
-        return [
-            self::COL_RULE_RHS_TYPE,
+        return 'tpl.rule_table_row.html';
+    }
+
+    /**
+     * @inheritDoc
+     */
+    protected function addTableColumns() : void
+    {
+        $this->addColumn($this->translator->txt(self::COL_RULE_RHS_TYPE));
+        $this->addColumn($this->translator->txt(self::COL_RULE_RHS_VALUE));
+        $this->addColumn($this->translator->txt(self::COL_RULE_OPERATOR));
+        $this->addColumn($this->translator->txt(self::COL_RULE_LHS_TYPE));
+        $this->addColumn($this->translator->txt(self::COL_RULE_LHS_VALUE));
+        $this->addActionColumn();
+    }
+
+    /**
+     * @inheritDoc
+     */
+    protected function renderTableRow(ilTemplate $template, array $data) : void
+    {
+        $template->setVariable(self::COL_RULE_RHS_TYPE, $data[IRule::F_RHS_TYPE]);
+        $template->setVariable(
             self::COL_RULE_RHS_VALUE,
-            self::COL_RULE_OPERATOR,
-            self::COL_RULE_LHS_TYPE,
+            $this->getMaybeTranslatedValue(
+                $data[IRule::F_RHS_TYPE],
+                $data[IRule::F_RHS_VALUE]
+            )
+        );
+
+        $template->setVariable(self::COL_RULE_LHS_TYPE, $data[IRule::F_LHS_TYPE]);
+        $template->setVariable(
             self::COL_RULE_LHS_VALUE,
-            '',
-        ];
+            $this->getMaybeTranslatedValue(
+                $data[IRule::F_LHS_TYPE],
+                $data[IRule::F_LHS_VALUE]
+            )
+        );
+
+        $template->setVariable(self::COL_RULE_OPERATOR, $data[IRule::F_OPERATOR]);
+        $template->setVariable(
+            self::COL_ACTIONS,
+            $this->renderer->render(
+                $this->getActionDropdown($data[IRule::F_RULE_ID])
+            )
+        );
     }
 
-    /**
-     * @inheritDoc
-     */
-    protected function prepareRowTemplate(ilTemplate $template, array $row_data) : void
+    protected function getActionDropdown(int $rule_id) : Dropdown
     {
-        $template->setVariable(strtoupper(self::COL_RULE_OPERATOR), $this->plugin->txt($row_data[IRule::F_OPERATOR]));
-        $template->setVariable(strtoupper(self::COL_RULE_RHS_TYPE), $this->plugin->txt($row_data[IRule::F_RHS_TYPE]));
-        $template->setVariable(
-            strtoupper(self::COL_RULE_RHS_VALUE),
-            $this->getMaybeTranslatedValue(
-                $row_data[IRule::F_RHS_TYPE],
-                $row_data[IRule::F_RHS_VALUE]
-            )
+        $this->ctrl->setParameterByClass(
+            ilSrRuleGUI::class,
+            ilSrRuleGUI::PARAM_RULE_ID,
+            $rule_id
         );
 
-        $template->setVariable(strtoupper(self::COL_RULE_LHS_TYPE), $this->plugin->txt($row_data[IRule::F_LHS_TYPE]));
-        $template->setVariable(
-            strtoupper(self::COL_RULE_LHS_VALUE),
-            $this->getMaybeTranslatedValue(
-                $row_data[IRule::F_LHS_TYPE],
-                $row_data[IRule::F_LHS_VALUE]
-            )
-        );
+        $actions = [];
 
-        // only display the action dropdown if the current user owns
-        // the related routine or is administrator.
-        if ($this->user->getId() === $this->routine->getOwnerId() ||
-            ilSrAccess::isUserAdministrator($this->user->getId())
-        ) {
-            $template->setVariable(strtoupper(self::COL_ACTIONS), $this->ui->renderer()->render(
-                $this->getActionDropdown($row_data[IRule::F_RULE_ID])
-            ));
+        // these actions are only necessary if the user is administrator
+        // or the owner of the current routine.
+        if ($this->access_handler->isRoutineOwner($this->routine->getOwnerId())) {
+            $actions[] = $this->ui->factory()->button()->shy(
+                $this->translator->txt(self::ACTION_RULE_EDIT),
+                $this->ctrl->getLinkTargetByClass(
+                    ilSrRuleGUI::class,
+                    ilSrRuleGUI::CMD_RULE_EDIT
+                )
+            );
+
+            $actions[] = $this->ui->factory()->button()->shy(
+                $this->translator->txt(self::ACTION_RULE_DELETE),
+                $this->ctrl->getLinkTargetByClass(
+                    ilSrRuleGUI::class,
+                    ilSrRuleGUI::CMD_RULE_EDIT
+                )
+            );
         }
+
+        return $this->ui->factory()->dropdown()->standard($actions);
     }
 
     /**
@@ -119,31 +161,6 @@ class ilSrRuleTable extends ilSrAbstractTable
             return $attr_value;
         }
 
-        return $this->plugin->txt($attr_value);
-    }
-
-    /**
-     * returns an action dropdown for each rule row-entry.
-     *
-     * @param int $rule_id
-     * @return Dropdown
-     */
-    protected function getActionDropdown(int $rule_id) : Dropdown
-    {
-        $this->ctrl->setParameterByClass(
-            ilSrRuleGUI::class,
-            ilSrRuleGUI::QUERY_PARAM_RULE_ID,
-            $rule_id
-        );
-
-        return $this->ui->factory()->dropdown()->standard([
-            $this->ui->factory()->button()->shy(
-                $this->plugin->txt(ilSrRuleGUI::ACTION_RULE_DELETE),
-                $this->ctrl->getLinkTargetByClass(
-                    ilSrRuleGUI::class,
-                    ilSrRuleGUI::CMD_RULE_DELETE
-                )
-            ),
-        ]);
+        return $this->translator->txt($attr_value);
     }
 }

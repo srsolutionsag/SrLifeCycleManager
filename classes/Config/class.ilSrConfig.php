@@ -1,6 +1,6 @@
 <?php // strict types are not possible with ActiveRecord.
 
-use srag\Plugins\SrLifeCycleManager\Config\IConfigAr;
+use srag\Plugins\_SrLifeCycleManager\Config\IConfigAr;
 
 /**
  * Class ilSrConfig stores all general plugin configurations.

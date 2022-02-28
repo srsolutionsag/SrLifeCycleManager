@@ -1,6 +1,6 @@
 <?php // strict types are not possible with ActiveRecord.
 
-use srag\Plugins\SrLifeCycleManager\Routine\IRoutine;
+use srag\Plugins\_SrLifeCycleManager\Routine\IRoutine;
 
 /**
  * Routine DAO

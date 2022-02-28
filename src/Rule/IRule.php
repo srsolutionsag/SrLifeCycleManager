@@ -3,41 +3,28 @@
 namespace srag\Plugins\SrLifeCycleManager\Rule;
 
 /**
- * IRule describes the DAO of a rule.
- *
  * @author Thibeau Fuhrer <thibeau@sr.solutions>
  */
 interface IRule
 {
-    public const F_RULE_ID   = 'rule_id';
-    public const F_RHS_TYPE  = 'rhs_type';
-    public const F_RHS_VALUE = 'rhs_value';
-    public const F_OPERATOR  = 'operator';
-    public const F_LHS_TYPE  = 'lhs_type';
-    public const F_LHS_VALUE = 'lhs_value';
+    // IRule operators:
+    public const OPERATOR_CONTAINS      = 'operator_in_value';
+    public const OPERATOR_EQUAL         = 'operator_equal';
+    public const OPERATOR_GREATER       = 'operator_greater';
+    public const OPERATOR_GREATER_EQUAL = 'operator_greater_equal';
+    public const OPERATOR_IN_ARRAY      = 'operator_in_array';
+    public const OPERATOR_LESSER        = 'operator_lesser';
+    public const OPERATOR_LESSER_EQUAL  = 'operator_lesser_equal';
+    public const OPERATOR_NOT_EQUAL     = 'operator_not_equal';
 
-    public const OPERATOR_EQUAL            = 'operator_equal';
-    public const OPERATOR_NOT_EQUAL        = 'operator_not_equal';
-    public const OPERATOR_GREATER          = 'operator_greater';
-    public const OPERATOR_GREATER_EQUAL    = 'operator_greater_equal';
-    public const OPERATOR_LESSER           = 'operator_lesser';
-    public const OPERATOR_LESSER_EQUAL     = 'operator_lesser_equal';
-    public const OPERATOR_CONTAINS         = 'operator_in_value';
-    public const OPERATOR_IN_ARRAY         = 'operator_in_array';
-
-    /**
-     * @var string[] possible operators as string
-     */
-    public const OPERATORS = [
-        self::OPERATOR_EQUAL,
-        self::OPERATOR_NOT_EQUAL,
-        self::OPERATOR_GREATER,
-        self::OPERATOR_GREATER_EQUAL,
-        self::OPERATOR_LESSER,
-        self::OPERATOR_LESSER_EQUAL,
-        self::OPERATOR_CONTAINS,
-        self::OPERATOR_IN_ARRAY,
-    ];
+    // IRule attributes:
+    public const F_LHS_TYPE   = 'lhs_type';
+    public const F_LHS_VALUE  = 'lhs_value';
+    public const F_OPERATOR   = 'operator';
+    public const F_RHS_TYPE   = 'rhs_type';
+    public const F_RHS_VALUE  = 'rhs_value';
+    public const F_RULE_ID    = 'rule_id';
+    public const F_ROUTINE_ID = 'routine_id';
 
     /**
      * @return int|null
@@ -49,6 +36,17 @@ interface IRule
      * @return IRule
      */
     public function setRuleId(?int $rule_id) : IRule;
+
+    /**
+     * @return int
+     */
+    public function getRoutineId() : int;
+
+    /**
+     * @param int $routine_id
+     * @return IRule
+     */
+    public function setRoutineId(int $routine_id) : IRule;
 
     /**
      * @return string

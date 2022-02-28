@@ -2,63 +2,57 @@
 
 namespace srag\Plugins\SrLifeCycleManager\Notification;
 
-use DateTime;/**
- * INotificationRepository describes the CRUD operations of a
- * notification repository.
+use srag\Plugins\SrLifeCycleManager\Routine\IRoutine;
+
+/**
+ * Describes the CRUD operations of a notification.
+ *
  * @author Thibeau Fuhrer <thibeau@sr.solutions>
  */
 interface INotificationRepository
 {
     /**
-     * Returns an existing notification from the database for the given
-     * notification and routine id.
+     * Fetches an existing notification from the database for the given id.
      *
-     * @param int $routine_id
      * @param int $notification_id
-     * @return IRoutineAwareNotification|null
+     * @return INotification|null
      */
-    public function get(int $routine_id, int $notification_id) : ?IRoutineAwareNotification;
+    public function get(int $notification_id) : ?INotification;
 
     /**
-     * Returns all notifications related to the given routine id.
+     * Fetches all existing notifications from the database that are related
+     * to the given routine.
      *
-     * To retrieve routines as array-data true can be passed as an argument
+     * To retrieve routines as array-data, true can be passed as an argument
      * (usually required by ilTableGUI).
      *
-     * @param int  $routine_id
-     * @param bool $array_data
-     * @return IRoutineAwareNotification[]|array<int, array>
+     * @param IRoutine $routine
+     * @param bool     $array_data
+     * @return array
      */
-    public function getAll(int $routine_id, bool $array_data = false) : array;
+    public function getByRoutine(IRoutine $routine, bool $array_data = false) : array;
 
     /**
-     * Returns all notifications that should be executed on the given date.
+     * Creates or updates a given notification in the database.
      *
-     * @param DateTime $exec_date
-     * @return IRoutineAwareNotification[]
+     * @param INotification $notification
+     * @return INotification
      */
-    public function getAllByRoutineExecutionDate(DateTime $exec_date) : array;
+    public function store(INotification $notification) : INotification;
 
     /**
-     * @param int $routine_id
-     * @return IRoutineAwareNotification
-     */
-    public function getEmpty(int $routine_id) : IRoutineAwareNotification;
-
-    /**
-     * Creates or updates the given notification in the database.
+     * Deletes the given notification from the database.
      *
-     * @param IRoutineAwareNotification $notification
-     * @return IRoutineAwareNotification
-     */
-    public function store(IRoutineAwareNotification $notification) : IRoutineAwareNotification;
-
-    /**
-     * Deletes an existing notification and all it's relations
-     * (manually because ilias does not support constraints).
-     *
-     * @param IRoutineAwareNotification $notification
+     * @param INotification $notification
      * @return bool
      */
-    public function delete(IRoutineAwareNotification $notification) : bool;
+    public function delete(INotification $notification) : bool;
+
+    /**
+     * Initializes and returns an empty notification object.
+     *
+     * @param IRoutine $routine
+     * @return INotification
+     */
+    public function empty(IRoutine $routine) : INotification;
 }

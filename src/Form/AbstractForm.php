@@ -2,9 +2,9 @@
 
 /* Copyright (c) 2022 Thibeau Fuhrer <thibeau@sr.solutions> Extended GPL, see docs/LICENSE */
 
-namespace srag\Plugins\SrLifeCycleManager\Form;
+namespace srag\Plugins\_SrLifeCycleManager\Form;
 
-use srag\Plugins\SrLifeCycleManager\IRepository;
+use srag\Plugins\_SrLifeCycleManager\IRepository;
 
 use Psr\Http\Message\ServerRequestInterface;
 use ILIAS\UI\Component\Input\Container\Form\Form as UIForm;

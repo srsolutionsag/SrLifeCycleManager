@@ -1,131 +1,109 @@
 <?php declare(strict_types=1);
 
-use srag\Plugins\SrLifeCycleManager\Form\Config\ConfigForm;
+/* Copyright (c) 2022 Thibeau Fuhrer <thibeau@sr.solutions> Extended GPL, see docs/LICENSE */
+
+use srag\Plugins\SrLifeCycleManager\Form\IFormBuilder;
 use srag\Plugins\SrLifeCycleManager\Form\Config\ConfigFormBuilder;
-use srag\Plugins\SrLifeCycleManager\Config\IConfigAr;
+use srag\Plugins\SrLifeCycleManager\Form\Config\ConfigFormProcessor;
 
 /**
- * Class ilSrConfigGUI is responsible for the general plugin configuration.
+ * This GUI is responsible for all actions in regard to plugin configuration.
  *
  * @author Thibeau Fuhrer <thibeau@sr.solutions>
  *
- * This class is called whenever the plugin-configuration within the
- * plugin administration is requested.
- *
- * It's responsible for general configuration and displays a form on
- * the first request. Further, commands implemented in this class are
- * the change and store these configurations.
+ * @noinspection AutoloadingIssuesInspection
  */
 class ilSrConfigGUI extends ilSrAbstractGUI
 {
-    /**
-     * ilSrConfigGUI command names (methods)
-     */
+    // ilSrConfigGUI command/method names:
     public const CMD_CONFIG_SAVE  = 'save';
 
-    /**
-     * ilSrConfigGUI lang vars
-     */
+    // ilSrConfigGUI language variables:
     protected const MSG_CONFIGURATION_SUCCESS = 'msg_configuration_success';
-    protected const MSG_CONFIGURATION_ERROR   = 'msg_configuration_error';
-    protected const PAGE_TITLE                = 'page_title_config';
+    protected const MSG_CONFIGURATION_ERROR = 'msg_configuration_error';
+    protected const PAGE_TITLE = 'page_title_config';
 
     /**
-     * @var ConfigFormBuilder
+     * @var IFormBuilder
      */
     protected $form_builder;
 
     /**
-     * ilSrConfigGUI constructor
+     * Initializes the configuration form-builder.
      */
     public function __construct()
     {
-        global $DIC;
         parent::__construct();
 
         $this->form_builder = new ConfigFormBuilder(
-            $this->ui->factory()->input()->container()->form(),
-            $this->ui->factory()->input()->field(),
+            $this->translator,
+            $this->ui_factory->input()->container()->form(),
+            $this->ui_factory->input()->field(),
             $this->refinery,
-            $this->plugin,
-            $this->getFormAction(),
             $this->repository->config()->get(),
-            $this->repository->getGlobalRoleOptions(),
-            (bool) $DIC->settings()->get('enable_trash')
+            $this->repository->config()->getAvailableGlobalRoles(),
+            $this->getFormAction()
         );
     }
 
     /**
      * @inheritDoc
      */
-    protected function setupGlobalTemplate(ilGlobalTemplateInterface $template) : void
+    protected function setupGlobalTemplate(ilGlobalTemplateInterface $template, ilSrTabManager $tabs) : void
     {
-        $template->setTitle($this->plugin->txt(self::PAGE_TITLE));
+        $template->setTitle($this->translator->txt(self::PAGE_TITLE));
+        $tabs
+            ->addConfigurationTab(true)
+            ->addRoutineTab()
+        ;
     }
 
     /**
      * @inheritDoc
      */
-    protected function getCommandList() : array
+    protected function canUserExecute(ilSrAccessHandler $access_handler, string $command) : bool
     {
-        return [
-            self::CMD_INDEX,
-            self::CMD_CONFIG_SAVE,
-        ];
+        return $access_handler->isAdministrator();
     }
 
     /**
-     * @inheritDoc
-     */
-    protected function canUserExecuteCommand(int $user_id, string $command) : bool
-    {
-        // all actions implemented by this GUI require at least
-        // administrator privileges, hence $command is ignored.
-        return ilSrAccess::isUserAdministrator($user_id);
-    }
-
-    /**
-     * @inheritDoc
-     */
-    protected function beforeCommand(string $command) : void
-    {
-        // adds the configuration tabs to the current page
-        // before each command is executed.
-        $this->addConfigurationTabs(self::TAB_CONFIG_INDEX);
-    }
-
-    /**
-     * Displays the general configuration form on the current page.
+     * Displays the plugin configuration form.
      *
      * @inheritDoc
      */
     protected function index() : void
     {
-        $this->ui->mainTemplate()->setContent(
-            $this->getForm()->render()
-        );
+        $this->render($this->form_builder->getForm());
     }
 
     /**
-     * Stores the changed or added configuration to the database
-     * and redirects to the index.
+     * Processes the configuration form with the current request.
+     *
+     * If the submitted data is valid, the configuration is updated
+     * and the user is redirected to @see ilSrConfigGUI::index().
+     *
+     * If the submitted data is invalid, the user will be shown the
+     * processed form including the error-messages.
      */
     protected function save() : void
     {
-        $form = $this->getForm();
-        if ($form->handleRequest($this->http->request())) {
+        $processor = new ConfigFormProcessor(
+            $this->repository->config(),
+            $this->request,
+            $this->form_builder->getForm()
+        );
+
+        if ($processor->processForm()) {
             $this->sendSuccessMessage(self::MSG_CONFIGURATION_SUCCESS);
-            $this->repeat();
+            $this->cancel();
         }
 
         $this->sendErrorMessage(self::MSG_CONFIGURATION_ERROR);
-        $this->ui->mainTemplate()->setContent(
-            $this->getForm()->render()
-        );
+        $this->render($processor->getProcessedForm());
     }
 
     /**
-     * Returns the configuration form action.
+     * Returns the form action pointing to @see ilSrConfigGUI::CMD_CONFIG_SAVE.
      *
      * @return string
      */
@@ -134,21 +112,6 @@ class ilSrConfigGUI extends ilSrAbstractGUI
         return $this->ctrl->getFormActionByClass(
             self::class,
             self::CMD_CONFIG_SAVE
-        );
-    }
-
-    /**
-     * Helper function that initialises the configuration form and
-     * returns it.
-     *
-     * @return ConfigForm
-     */
-    protected function getForm() : ConfigForm
-    {
-        return new ConfigForm(
-            $this->repository,
-            $this->ui->renderer(),
-            $this->form_builder
         );
     }
 }

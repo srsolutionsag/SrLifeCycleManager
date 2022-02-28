@@ -2,7 +2,7 @@
 
 /* Copyright (c) 2021 Thibeau Fuhrer <thibeau@sr.solutions> Extended GPL, see docs/LICENSE */
 
-namespace srag\Plugins\SrLifeCycleManager\Rule;
+namespace srag\Plugins\_SrLifeCycleManager\Rule;
 
 /**
  * IRoutineAwareRule describes the DTO of a rule.

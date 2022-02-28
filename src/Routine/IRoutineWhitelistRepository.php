@@ -2,7 +2,7 @@
 
 /* Copyright (c) 2021 Thibeau Fuhrer <thibeau@sr.solutions> Extended GPL, see docs/LICENSE */
 
-namespace srag\Plugins\SrLifeCycleManager\Routine;
+namespace srag\Plugins\_SrLifeCycleManager\Routine;
 
 /**
  * @author Thibeau Fuhrer <thibeau@sr.solutions>

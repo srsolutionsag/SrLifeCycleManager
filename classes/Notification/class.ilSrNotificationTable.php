@@ -3,97 +3,144 @@
 /* Copyright (c) 2022 Thibeau Fuhrer <thibeau@sr.solutions> Extended GPL, see docs/LICENSE */
 
 use srag\Plugins\SrLifeCycleManager\Notification\INotification;
-use srag\Plugins\SrLifeCycleManager\Notification\IRoutineNotificationRelation;
-
+use srag\Plugins\SrLifeCycleManager\Routine\IRoutine;
+use srag\Plugins\SrLifeCycleManager\ITranslator;
 use ILIAS\UI\Component\Dropdown\Dropdown;
+use ILIAS\UI\Renderer;
+use ILIAS\UI\Factory;
 
 /**
  * @author Thibeau Fuhrer <thibeau@sr.solutions>
+ * @noinspection AutoloadingIssuesInspection
  */
 class ilSrNotificationTable extends ilSrAbstractTable
 {
-    protected const COL_NOTIFICATION_MESSAGE = 'col_notification_message';
-    protected const COL_NOTIFICATION_DAYS    = 'col_notification_days';
-    protected const COL_NOTIFICATION_ACTIONS = 'col_actions';
+    // ilSrNotificationTable table columns:
+    public const COL_NOTIFICATION_TITLE = 'col_notification_title';
+    public const COL_NOTIFICATION_CONTENT = 'col_notification_content';
+    public const COL_NOTIFICATION_DAYS_BEFORE_SUBMISSION = 'col_notification_days_before_submission';
+
+    // ilSrNotificationTable actions:
+    public const ACTION_NOTIFICATION_EDIT = 'action_notification_edit';
+    public const ACTION_NOTIFICATION_DELETE = 'action_notification_delete';
 
     /**
-     * @inheritDoc
+     * @var IRoutine
      */
-    protected function getTableColumns() : array
-    {
-        return [
-            self::COL_NOTIFICATION_DAYS,
-            self::COL_NOTIFICATION_MESSAGE,
-            '',
-        ];
+    protected $routine;
+
+    /**
+     * @param Factory           $ui_factory
+     * @param Renderer          $renderer
+     * @param ITranslator       $translator
+     * @param ilSrAccessHandler $access_handler
+     * @param ilCtrl            $ctrl
+     * @param IRoutine          $routine
+     * @param object            $parent_gui_object
+     * @param string            $parent_gui_cmd
+     * @param array             $table_data
+     */
+    public function __construct(
+        Factory $ui_factory,
+        Renderer $renderer,
+        ITranslator $translator,
+        ilSrAccessHandler $access_handler,
+        ilCtrl $ctrl,
+        IRoutine $routine,
+        object $parent_gui_object,
+        string $parent_gui_cmd,
+        array $table_data
+    ) {
+        parent::__construct(
+            $ui_factory, $renderer, $translator, $access_handler, $ctrl, $parent_gui_object, $parent_gui_cmd, $table_data
+        );
+
+        $this->routine = $routine;
     }
 
     /**
      * @inheritDoc
      */
-    protected function prepareRowTemplate(ilTemplate $template, array $row_data) : void
+    protected function getTemplateName() : string
     {
-        $template->setVariable(strtoupper(self::COL_NOTIFICATION_DAYS), $row_data[IRoutineNotificationRelation::F_DAYS_BEFORE_SUBMISSION]);
-        $template->setVariable(strtoupper(self::COL_NOTIFICATION_MESSAGE), $row_data[INotification::F_MESSAGE]);
-        $template->setVariable(strtoupper(self::COL_NOTIFICATION_ACTIONS),
-            $this->ui->renderer()->render($this->getActionDropdown(
-                (int) $row_data[IRoutineNotificationRelation::F_ROUTINE_ID],
-                (int) $row_data[IRoutineNotificationRelation::F_NOTIFICATION_ID]
-            ))
+        return 'tpl.notification_table_row.html';
+    }
+
+    /**
+     * @inheritDoc
+     */
+    protected function addTableColumns() : void
+    {
+        $this->addColumn($this->translator->txt(self::COL_NOTIFICATION_TITLE));
+        $this->addColumn($this->translator->txt(self::COL_NOTIFICATION_CONTENT));
+        $this->addColumn($this->translator->txt(self::COL_NOTIFICATION_DAYS_BEFORE_SUBMISSION));
+        $this->addActionColumn();
+    }
+
+    /**
+     * @inheritDoc
+     */
+    protected function renderTableRow(ilTemplate $template, array $data) : void
+    {
+        $template->setVariable(self::COL_NOTIFICATION_TITLE, $data[INotification::F_TITLE]);
+        $template->setVariable(self::COL_NOTIFICATION_CONTENT, $data[INotification::F_CONTENT]);
+        $template->setVariable(self::COL_NOTIFICATION_DAYS_BEFORE_SUBMISSION, $data[INotification::F_DAYS_BEFORE_SUBMISSION]);
+        $template->setVariable(
+            self::COL_ACTIONS,
+            $this->renderer->render(
+                $this->getActionDropdown($data[INotification::F_NOTIFICATION_ID])
+            )
         );
     }
 
     /**
-     * returns an action dropdown for each notification row-entry.
-     *
-     * @param int $routine_id
      * @param int $notification_id
      * @return Dropdown
      */
-    protected function getActionDropdown(int $routine_id, int $notification_id) : Dropdown
+    protected function getActionDropdown(int $notification_id) : Dropdown
     {
-        $this->setActionParameters($routine_id, $notification_id);
+        $this->setActionParameters($notification_id);
 
-        return $this->ui->factory()->dropdown()->standard([
-            $this->ui->factory()->button()->shy(
-                $this->plugin->txt(ilSrNotificationGUI::ACTION_NOTIFICATION_EDIT),
+        $actions = [];
+
+        // these actions are only necessary if the user is administrator
+        // or the owner of the current routine.
+        if ($this->access_handler->isRoutineOwner($this->routine->getOwnerId())) {
+            $actions[] = $this->ui->factory()->button()->shy(
+                $this->plugin->txt(self::ACTION_NOTIFICATION_EDIT),
                 $this->ctrl->getLinkTargetByClass(
                     ilSrNotificationGUI::class,
                     ilSrNotificationGUI::CMD_NOTIFICATION_EDIT
                 )
-            ),
+            );
 
-            $this->ui->factory()->button()->shy(
-                $this->plugin->txt(ilSrNotificationGUI::ACTION_NOTIFICATION_DELETE),
+            $actions[] = $this->ui->factory()->button()->shy(
+                $this->plugin->txt(self::ACTION_NOTIFICATION_DELETE),
                 $this->ctrl->getLinkTargetByClass(
                     ilSrNotificationGUI::class,
                     ilSrNotificationGUI::CMD_NOTIFICATION_DELETE
                 )
-            ),
-        ]);
+            );
+        }
+
+        return $this->ui->factory()->dropdown()->standard($actions);
     }
 
     /**
-     * Sets the given routine and notification id for each class a link is built
-     * to in @see ilSrNotificationTable::getActionDropdown().
-     *
-     * Note that this method MUST be called before links are
-     * generated so that the links have the correct target.
-     *
-     * @param int $routine_id
      * @param int $notification_id
+     * @return void
      */
-    protected function setActionParameters(int $routine_id, int $notification_id) : void
+    protected function setActionParameters(int $notification_id) : void
     {
         $this->ctrl->setParameterByClass(
             ilSrNotificationGUI::class,
-            ilSrNotificationGUI::QUERY_PARAM_ROUTINE_ID,
-            $routine_id
+            ilSrNotificationGUI::PARAM_ROUTINE_ID,
+            $this->routine->getRoutineId()
         );
 
         $this->ctrl->setParameterByClass(
             ilSrNotificationGUI::class,
-            ilSrNotificationGUI::QUERY_PARAM_NOTIFICATION_ID,
+            ilSrNotificationGUI::PARAM_NOTIFICATION_ID,
             $notification_id
         );
     }

@@ -2,7 +2,7 @@
 
 /* Copyright (c) 2021 Thibeau Fuhrer <thibeau@sr.solutions> Extended GPL, see docs/LICENSE */
 
-namespace srag\Plugins\SrLifeCycleManager\Form;
+namespace srag\Plugins\_SrLifeCycleManager\Form;
 
 use Psr\Http\Message\ServerRequestInterface;
 

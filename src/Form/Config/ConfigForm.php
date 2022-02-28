@@ -2,10 +2,10 @@
 
 /* Copyright (c) 2022 Thibeau Fuhrer <thibeau@sr.solutions> Extended GPL, see docs/LICENSE */
 
-namespace srag\Plugins\SrLifeCycleManager\Form\Config;
+namespace srag\Plugins\_SrLifeCycleManager\Form\Config;
 
-use srag\Plugins\SrLifeCycleManager\Form\AbstractForm;
-use srag\Plugins\SrLifeCycleManager\IRepository;
+use srag\Plugins\_SrLifeCycleManager\Form\AbstractForm;
+use srag\Plugins\_SrLifeCycleManager\IRepository;
 
 use ILIAS\UI\Renderer;
 

@@ -1,6 +1,6 @@
 <?php
 
-namespace srag\Plugins\SrLifeCycleManager\Routine;
+namespace srag\Plugins\_SrLifeCycleManager\Routine;
 
 use DateTime;
 

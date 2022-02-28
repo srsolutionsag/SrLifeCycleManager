@@ -1,96 +1,47 @@
-<?php
+<?php declare(strict_types=1);
 
-require_once __DIR__ . '/../vendor/autoload.php';
+/* Copyright (c) 2022 Thibeau Fuhrer <thibeau@sr.solutions> Extended GPL, see docs/LICENSE */
+
+// This is the first class being loaded, therefore the plugin's
+// autoloader can be included here.
+require __DIR__ . '/../vendor/autoload.php';
 
 use srag\Plugins\SrLifeCycleManager\ITranslator;
-use ILIAS\DI\Container;
 
 /**
- * Class ilSrLifeCycleManagerPlugin holds the (singleton) plugin instance.
+ * This class is the actual plugin object.
  *
  * @author Thibeau Fuhrer <thibeau@sr.solutions>
  *
- * The plugin instance is primarily used to handle I18N, because it provides a method
- * which translates language variables into the corresponding text contained in
- * '/../lang' directory.
+ * It's primary responsibility is managing the plugins cron-jobs and loading
+ * cron-job instances.
  *
- * Besides that it provides cronjob instances, that are responsible for validating
- * rule-sets registered in the administration of this plugin, and applying them -
- * deleting (old) course objects that match an active routine's rules.
+ * The plugin object is mainly used as a translator though, because it implements
+ * a translation method by default, that properly translates variables contained
+ * in .lang files located in '/lang/' relative to the plugin root.
+ *
+ * @noinspection AutoloadingIssuesInspection
  */
 class ilSrLifeCycleManagerPlugin extends ilCronHookPlugin implements ITranslator
 {
     /**
-     * @var string
+     * @var string plugin-id (MUST be the same as in plugin.php).
      */
     public const PLUGIN_ID = 'srlcm';
 
     /**
-     * @var string
+     * @var string plugin-directory relative to the ILIAS-installation path.
      */
     public const PLUGIN_DIR = './Customizing/global/plugins/Services/Cron/CronHook/SrLifeCycleManager/';
 
     /**
-     * @var string
-     */
-    public const PLUGIN_NAME = 'SrLifeCycleManager';
-
-    /**
-     * @var array<string, ilCronJob>
-     */
-    protected $cron_job_instances = [];
-
-    /**
      * @var self
      */
-    private static $instance;
+    protected static $instance;
 
     /**
-     * prevents multiple instances.
-     */
-    private function __clone() {}
-    private function __wakeup() {}
-
-    /**
-     * ilSrLifeCycleManagerPlugin constructor (protected to prevent multiple instances).
-     */
-    protected function __construct()
-    {
-        global $DIC;
-        parent::__construct();
-
-        $this->cron_job_instances = $this->safelyInitializeCronJobs($DIC);
-
-        // register global-screen providers (for tools and main-menu entries)
-        $this->provider_collection->setToolProvider(new ilSrToolProvider($DIC, $this));
-        $this->provider_collection->setMainBarProvider(new ilSrMenuProvider($DIC, $this));
-    }
-
-    /**
-     * @return string
-     */
-    public function getPluginDir() : string
-    {
-        return self::PLUGIN_DIR;
-    }
-
-    /**
-     * @return string
-     */
-    public function getPluginId() : string
-    {
-        return self::PLUGIN_ID;
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function getPluginName() : string
-    {
-        return self::PLUGIN_NAME;
-    }
-
-    /**
+     * Returns an instance of the plugin object.
+     *
      * @return self
      */
     public static function getInstance() : self
@@ -103,21 +54,11 @@ class ilSrLifeCycleManagerPlugin extends ilCronHookPlugin implements ITranslator
     }
 
     /**
-     * @param string $a_job_id
-     * @return ilCronJob
+     * @inheritDoc
      */
-    public function getCronJobInstance($a_job_id) : ilCronJob
+    public function getPluginName() : string
     {
-        switch ($a_job_id) {
-            case ilSrNotificationJob::class:
-                return $this->cron_job_instances[ilSrNotificationJob::class];
-
-            case ilSrRoutineJob::class:
-                return $this->cron_job_instances[ilSrRoutineJob::class];
-
-            default:
-                throw new LogicException("Tried loading cron job '$a_job_id' which does not exist.");
-        }
+        return 'SrLifeCycleManager';
     }
 
     /**
@@ -125,49 +66,15 @@ class ilSrLifeCycleManagerPlugin extends ilCronHookPlugin implements ITranslator
      */
     public function getCronJobInstances() : array
     {
-        return $this->cron_job_instances;
+        throw new LogicException("Not yet implemented.");
     }
 
     /**
-     * Helper function that initializes all cron-job instances of
-     * this plugin, if the required dependencies are available.
-     *
-     * @return array<string, ilCronJob>
+     * @param $a_job_id
+     * @return ilCronJob
      */
-    protected function safelyInitializeCronJobs(Container $dic) : array
+    public function getCronJobInstance($a_job_id) : ilCronJob
     {
-        if ($dic->offsetExists('ilDB') &&
-            $dic->offsetExists('ilLoggerFactory') &&
-            $dic->offsetExists('tree') &&
-            $dic->offsetExists('rbacreview') &&
-            $dic->offsetExists('ctrl') &&
-            $dic->offsetExists('mail.mime.sender.factory')
-        ) {
-            $repository = new ilSrLifeCycleManagerRepository(
-                $dic->database(),
-                $dic->rbac(),
-                $dic->repositoryTree()
-            );
-
-            $configuration = $repository->config()->get();
-
-            return [
-                ilSrNotificationJob::class => new ilSrNotificationJob(
-                    $repository,
-                    $dic->logger()->root(),
-                    $configuration,
-                    $dic['mail.mime.sender.factory']->system(),
-                    $dic->ctrl()
-                ),
-
-                ilSrRoutineJob::class => new ilSrRoutineJob(
-                    $repository,
-                    $dic->logger()->root(),
-                    $configuration
-                ),
-            ];
-        }
-
-        return [];
+        throw new LogicException("Not yet implemented.");
     }
 }

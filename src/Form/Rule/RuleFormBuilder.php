@@ -5,32 +5,33 @@
 namespace srag\Plugins\SrLifeCycleManager\Form\Rule;
 
 use srag\Plugins\SrLifeCycleManager\Form\AbstractFormBuilder;
-use srag\Plugins\SrLifeCycleManager\Rule\IRoutineAwareRule;
+use srag\Plugins\SrLifeCycleManager\Rule\IRule;
 use srag\Plugins\SrLifeCycleManager\Rule\Attribute\AttributeFactory;
 use srag\Plugins\SrLifeCycleManager\Rule\Attribute\Common\CommonAttribute;
 use srag\Plugins\SrLifeCycleManager\Rule\Attribute\Course\CourseAttribute;
 use srag\Plugins\SrLifeCycleManager\Rule\Attribute\Group\GroupAttribute;
-use srag\Plugins\SrLifeCycleManager\Rule\IRule;
 use srag\Plugins\SrLifeCycleManager\ITranslator;
-
+use ILIAS\Refinery\Factory as Refinery;
 use ILIAS\UI\Component\Input\Container\Form\Factory as FormFactory;
-use ILIAS\UI\Component\Input\Field\Factory as InputFactory;
+use ILIAS\UI\Component\Input\Container\Form\Form as UIForm;
+use ILIAS\UI\Component\Input\Field\Factory as FieldFactory;
 use ILIAS\UI\Component\Input\Field\SwitchableGroup;
 use ILIAS\UI\Component\Input\Field\Group;
 use ILIAS\UI\Component\Input\Field\Input;
-use ILIAS\Refinery\Factory as Refinery;
 
 /**
  * @author Thibeau Fuhrer <thibeau@sr.solutions>
  */
 class RuleFormBuilder extends AbstractFormBuilder
 {
+    // RuleFormBuilder input keys:
     public const KEY_LHS_VALUE  = 'lhs_value';
     public const KEY_RHS_VALUE  = 'rhs_value';
     public const KEY_OPERATOR   = 'operator';
     public const KEY_ATTR_TYPE  = 'attribute_type';
     public const KEY_ATTR_VALUE = 'attribute_value';
 
+    // RuleFormBuilder group indexes:
     public const INDEX_GROUP_TYPE  = 0;
     public const INDEX_GROUP_VALUE = 1;
 
@@ -42,52 +43,55 @@ class RuleFormBuilder extends AbstractFormBuilder
     /**
      * @var AttributeFactory
      */
-    protected $attribute_factory;
+    protected $attributes;
 
     /**
-     * @var IRoutineAwareRule|null
+     * @var IRule|null
      */
     protected $rule;
 
     /**
-     * @param FormFactory  $form_factory
-     * @param InputFactory $input_factory
-     * @param Refinery     $refinery
-     * @param ITranslator  $translator
-     * @param string       $form_action
+     * @param ITranslator      $translator
+     * @param FormFactory      $forms
+     * @param FieldFactory     $fields
+     * @param Refinery         $refinery
+     * @param AttributeFactory $attributes
+     * @param IRule            $rule
+     * @param string           $form_action
      */
     public function __construct(
-        FormFactory $form_factory,
-        InputFactory $input_factory,
-        Refinery $refinery,
         ITranslator $translator,
+        FormFactory $forms,
+        FieldFactory $fields,
+        Refinery $refinery,
+        AttributeFactory $attributes,
+        IRule $rule,
         string $form_action
     ) {
-        parent::__construct($form_factory, $input_factory, $refinery, $translator, $form_action);
-
-        $this->attribute_factory = new AttributeFactory();
-    }
-
-    /**
-     * @return IRoutineAwareRule
-     */
-    public function getRule() : IRoutineAwareRule
-    {
-        return $this->rule;
-    }
-
-    /**
-     * @param IRoutineAwareRule $rule
-     * @return $this
-     */
-    public function setRule(IRoutineAwareRule $rule) : self
-    {
+        parent::__construct($translator, $forms, $fields, $refinery, $form_action);
+        $this->attributes = $attributes;
         $this->rule = $rule;
-        return $this;
     }
 
     /**
-     * @return $this
+     * @inheritDoc
+     */
+    public function getForm() : UIForm
+    {
+        return $this->forms->standard(
+            $this->form_action,
+            [
+                self::KEY_LHS_VALUE => $this->getSwitchableAttributesInput(self::KEY_LHS_VALUE),
+                self::KEY_RHS_VALUE => $this->getSwitchableAttributesInput(self::KEY_RHS_VALUE),
+                self::KEY_OPERATOR => $this->getOperatorInput(),
+            ]
+        );
+    }
+
+    /**
+     * Adds common-attribute inputs to the current form.
+     *
+     * @return self
      */
     public function addCommonAttributes() : self
     {
@@ -96,7 +100,9 @@ class RuleFormBuilder extends AbstractFormBuilder
     }
 
     /**
-     * @return $this
+     * Adds course-attribute inputs to the current form.
+     *
+     * @return self
      */
     public function addCourseAttributes() : self
     {
@@ -105,7 +111,9 @@ class RuleFormBuilder extends AbstractFormBuilder
     }
 
     /**
-     * @return $this
+     * Adds group-attribute inputs to the current form.
+     *
+     * @return self
      */
     public function addGroupAttributes() : self
     {
@@ -114,37 +122,25 @@ class RuleFormBuilder extends AbstractFormBuilder
     }
 
     /**
-     * @inheritDoc
-     */
-    protected function getInputs() : array
-    {
-        return [
-            self::KEY_LHS_VALUE => $this->getSwitchableAttributesInput(self::KEY_LHS_VALUE),
-            self::KEY_RHS_VALUE => $this->getSwitchableAttributesInput(self::KEY_RHS_VALUE),
-            self::KEY_OPERATOR => $this->getOperatorInput(),
-        ];
-    }
-
-    /**
      * @return Input
      */
     protected function getOperatorInput() : Input
     {
-        return $this->input_factory
+        return $this->fields
             ->select(
-                $this->translate(self::KEY_OPERATOR),
+                $this->translator->txt(self::KEY_OPERATOR),
                 [
-                    IRule::OPERATOR_EQUAL           => $this->translate(IRule::OPERATOR_EQUAL),
-                    IRule::OPERATOR_NOT_EQUAL       => $this->translate(IRule::OPERATOR_NOT_EQUAL),
-                    IRule::OPERATOR_GREATER         => $this->translate(IRule::OPERATOR_GREATER),
-                    IRule::OPERATOR_GREATER_EQUAL   => $this->translate(IRule::OPERATOR_GREATER_EQUAL),
-                    IRule::OPERATOR_LESSER          => $this->translate(IRule::OPERATOR_LESSER),
-                    IRule::OPERATOR_LESSER_EQUAL    => $this->translate(IRule::OPERATOR_LESSER_EQUAL),
-                    IRule::OPERATOR_CONTAINS        => $this->translate(IRule::OPERATOR_CONTAINS),
-                    IRule::OPERATOR_IN_ARRAY        => $this->translate(IRule::OPERATOR_IN_ARRAY),
+                    IRule::OPERATOR_EQUAL           => $this->translator->txt(IRule::OPERATOR_EQUAL),
+                    IRule::OPERATOR_NOT_EQUAL       => $this->translator->txt(IRule::OPERATOR_NOT_EQUAL),
+                    IRule::OPERATOR_GREATER         => $this->translator->txt(IRule::OPERATOR_GREATER),
+                    IRule::OPERATOR_GREATER_EQUAL   => $this->translator->txt(IRule::OPERATOR_GREATER_EQUAL),
+                    IRule::OPERATOR_LESSER          => $this->translator->txt(IRule::OPERATOR_LESSER),
+                    IRule::OPERATOR_LESSER_EQUAL    => $this->translator->txt(IRule::OPERATOR_LESSER_EQUAL),
+                    IRule::OPERATOR_CONTAINS        => $this->translator->txt(IRule::OPERATOR_CONTAINS),
+                    IRule::OPERATOR_IN_ARRAY        => $this->translator->txt(IRule::OPERATOR_IN_ARRAY),
                 ]
             )->withRequired(true)
-            ;
+        ;
     }
 
     /**
@@ -152,21 +148,21 @@ class RuleFormBuilder extends AbstractFormBuilder
      */
     protected function getCommonAttributeInput() : Group
     {
-        $inputs[self::KEY_ATTR_TYPE] = $this->input_factory
+        $inputs[self::KEY_ATTR_TYPE] = $this->fields
             ->select(
-                $this->translate(CommonAttribute::class),
+                $this->translator->txt(CommonAttribute::class),
                 $this->getAttributeOptions(
-                    $this->attribute_factory->common()->getAttributeList()
+                    $this->attributes->common()->getAttributeList()
                 )
             )->withRequired(true)
         ;
 
-        $inputs[self::KEY_ATTR_VALUE] = $this->input_factory
-            ->text($this->translate('common_attribute_value'))
+        $inputs[self::KEY_ATTR_VALUE] = $this->fields
+            ->text($this->translator->txt('common_attribute_value'))
         ;
 
-        return $this->input_factory
-            ->group($inputs, $this->translate(CommonAttribute::class))
+        return $this->fields
+            ->group($inputs, $this->translator->txt(CommonAttribute::class))
         ;
     }
 
@@ -177,16 +173,16 @@ class RuleFormBuilder extends AbstractFormBuilder
     protected function getDynamicAttributeInput(string $attribute_type) : Group
     {
         $factory_method = (CourseAttribute::class === $attribute_type) ? 'course' : 'group';
-        $inputs[self::KEY_ATTR_VALUE] = $this->input_factory
+        $inputs[self::KEY_ATTR_VALUE] = $this->fields
             ->select(
-                $this->translate($attribute_type),
+                $this->translator->txt($attribute_type),
                 $this->getAttributeOptions(
-                    $this->attribute_factory->{$factory_method}()->getAttributeList()
+                    $this->attributes->{$factory_method}()->getAttributeList()
                 )
             )->withRequired(true)
         ;
 
-        return $this->input_factory
+        return $this->fields
             ->group($inputs, $this->translator->txt($attribute_type)
         );
     }
@@ -197,10 +193,10 @@ class RuleFormBuilder extends AbstractFormBuilder
      */
     protected function getSwitchableAttributesInput(string $lang_var) : SwitchableGroup
     {
-        return $this->input_factory
+        return $this->fields
             ->switchableGroup(
                 $this->attribute_inputs,
-                $this->translate($lang_var)
+                $this->translator->txt($lang_var)
             )
         ;
     }
@@ -212,7 +208,7 @@ class RuleFormBuilder extends AbstractFormBuilder
     {
         $options = [];
         foreach ($attribute_list as $attribute) {
-            $options[$attribute] = $this->translate($attribute);
+            $options[$attribute] = $this->translator->txt($attribute);
         }
 
         return $options;

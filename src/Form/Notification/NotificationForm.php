@@ -2,11 +2,11 @@
 
 /* Copyright (c) 2022 Thibeau Fuhrer <thibeau@sr.solutions> Extended GPL, see docs/LICENSE */
 
-namespace srag\Plugins\SrLifeCycleManager\Form\Notification;
+namespace srag\Plugins\_SrLifeCycleManager\Form\Notification;
 
-use srag\Plugins\SrLifeCycleManager\Notification\IRoutineAwareNotification;
-use srag\Plugins\SrLifeCycleManager\Form\AbstractForm;
-use srag\Plugins\SrLifeCycleManager\IRepository;
+use srag\Plugins\_SrLifeCycleManager\Notification\IRoutineAwareNotification;
+use srag\Plugins\_SrLifeCycleManager\Form\AbstractForm;
+use srag\Plugins\_SrLifeCycleManager\IRepository;
 
 use ILIAS\UI\Renderer;
 

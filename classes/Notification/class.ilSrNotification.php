@@ -1,6 +1,6 @@
 <?php // strict types are not possible with ActiveRecord.
 
-use srag\Plugins\SrLifeCycleManager\Notification\INotification;
+use srag\Plugins\_SrLifeCycleManager\Notification\INotification;
 
 /**
  * Notification DAO

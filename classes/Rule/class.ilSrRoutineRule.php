@@ -1,6 +1,6 @@
 <?php // strict types are not possible with ActiveRecord.
 
-use srag\Plugins\SrLifeCycleManager\Rule\IRoutineRuleRelation;
+use srag\Plugins\_SrLifeCycleManager\Rule\IRoutineRuleRelation;
 
 /**
  * Routine-Rule relationship DAO

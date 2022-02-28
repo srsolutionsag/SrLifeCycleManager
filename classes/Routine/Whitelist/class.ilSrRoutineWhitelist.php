@@ -1,6 +1,6 @@
 <?php // strict types are not possible with ActiveRecord.
 
-use srag\Plugins\SrLifeCycleManager\Routine\IRoutineWhitelist;
+use srag\Plugins\_SrLifeCycleManager\Routine\IRoutineWhitelist;
 
 /**
  * @author Thibeau Fuhrer <thibeau@sr.solutions>

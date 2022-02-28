@@ -1,9 +1,11 @@
 <?php declare(strict_types=1);
 
+/* Copyright (c) 2022 Thibeau Fuhrer <thibeau@sr.solutions> Extended GPL, see docs/LICENSE */
+
 use srag\Plugins\SrLifeCycleManager\Routine\IRoutine;
 
 /**
- * Class ilSrLifeCycleManagerDispatcher is responsible for ALL plugins requests.
+ * Handles all requests of this plugin and dispatches them to the responsible class.
  *
  * @author Thibeau Fuhrer <thibeau@sr.solutions>
  *
@@ -14,6 +16,8 @@ use srag\Plugins\SrLifeCycleManager\Routine\IRoutine;
  * @ilCtrl_Calls ilSrLifeCycleManagerDispatcher : ilSrNotificationGUI
  * @ilCtrl_Calls ilSrLifeCycleManagerDispatcher : ilSrRoutineGUI
  * @ilCtrl_Calls ilSrLifeCycleManagerDispatcher : ilSrRuleGUI
+ *
+ * @noinspection AutoloadingIssuesInspection
  */
 class ilSrLifeCycleManagerDispatcher
 {
@@ -28,12 +32,11 @@ class ilSrLifeCycleManagerDispatcher
     protected $ctrl;
 
     /**
-     * ilSrLifeCycleManagerDispatcher constructor
+     * Initializes the global template and ilCtrl.
      */
     public function __construct()
     {
         global $DIC;
-
         $this->global_template = $DIC->ui()->mainTemplate();
         $this->ctrl = $DIC->ctrl();
     }
@@ -44,54 +47,53 @@ class ilSrLifeCycleManagerDispatcher
      * Whenever a new command class is added the PHPDoc comments above
      * must be complemented by an according '@ilCtrl_Calls' statement.
      *
-     * @throws ilCtrlException if the command class could not be loaded
      * @throws LogicException if the command class could not be found
      */
     public function executeCommand() : void
     {
         switch ($this->ctrl->getNextClass()) {
             case strtolower(ilSrConfigGUI::class):
-                $this->ctrl->forwardCommand(new ilSrConfigGUI());
+                $this->safelyForward(ilSrConfigGUI::class);
                 break;
             case strtolower(ilSrNotificationGUI::class):
-                $this->ctrl->forwardCommand(new ilSrNotificationGUI());
+                $this->safelyForward(ilSrNotificationGUI::class);
                 break;
             case strtolower(ilSrRoutineGUI::class):
-                $this->ctrl->forwardCommand(new ilSrRoutineGUI());
+                $this->safelyForward(ilSrRoutineGUI::class);
                 break;
             case strtolower(ilSrRuleGUI::class):
-                $this->ctrl->forwardCommand(new ilSrRuleGUI());
+                $this->safelyForward(ilSrRuleGUI::class);
                 break;
 
             default:
-                throw new LogicException(self::class . " MUST never be executing class.");
+                throw new LogicException(self::class . " MUST never be the executing class.");
         }
 
-        $this->maybePrintGlobalTemplate();
+        // if requests have other classes than the ilAdministrationGUI as
+        // baseclass, the global template must be printed manually.
+        if (IRoutine::ORIGIN_TYPE_ADMINISTRATION !== self::getOriginType()) {
+            $this->global_template->printToStdout();
+        }
     }
 
     /**
      * Returns the origin-type of the current request.
      *
-     * The origin-type is determined by ilCtrl's call-history,
-     * whereas the base-class is the defining property.
-     * Note that this method currently DOES NOT support
-     * @see IRoutine::ORIGIN_TYPE_EXTERNAL.
+     * The origin is determined by ilCtrl's call-history, whereas the
+     * current baseclass is crucial. The plugin will currently distinguish
+     * between the administration and the repository. External origins
+     * are not considered here.
      *
-     * @return int|null
+     * @return int
      */
-    public static function getOriginTypeFromRequest() : ?int
+    public static function getOriginType() : int
     {
         global $DIC;
 
-        // fetch the first array-entry from ilCtrl's call-
-        // history. This is always the base-class.
         $call_history = $DIC->ctrl()->getCallHistory();
         $base_class   = array_shift($call_history);
         $base_class   = strtolower($base_class['class']);
 
-        // check the implementation class-name and return
-        // the according origin-type.
         switch ($base_class) {
             case strtolower(ilUIPluginRouterGUI::class):
                 return IRoutine::ORIGIN_TYPE_REPOSITORY;
@@ -100,7 +102,7 @@ class ilSrLifeCycleManagerDispatcher
                 return IRoutine::ORIGIN_TYPE_ADMINISTRATION;
 
             default:
-                return null;
+                return IRoutine::ORIGIN_TYPE_UNKNOWN;
         }
     }
 
@@ -114,7 +116,7 @@ class ilSrLifeCycleManagerDispatcher
      * @param string $cmd
      * @return string
      */
-    public static function buildFullyQualifiedLinkTarget(string $class, string $cmd) : string
+    public static function getLinkTarget(string $class, string $cmd) : string
     {
         global $DIC;
 
@@ -125,13 +127,21 @@ class ilSrLifeCycleManagerDispatcher
     }
 
     /**
-     * Helper function that prints the global template if the request comes
-     * from a baseclass that doesn't print it by default.
+     * Safely forwards the current request to the given command class.
+     *
+     * Since this plugin implements GUI classes, that aren't working if certain
+     * required GET parameters are missing, they might throw an according
+     * LogicException. This method therefore wraps the mechanism and catches
+     * possible exceptions to display an on-screen message instead.
+     *
+     * @param string $class_name
      */
-    protected function maybePrintGlobalTemplate() : void
+    protected function safelyForward(string $class_name) : void
     {
-        if (IRoutine::ORIGIN_TYPE_REPOSITORY === self::getOriginTypeFromRequest()) {
-            $this->global_template->printToStdout();
+        try {
+            $this->ctrl->forwardCommand(new $class_name());
+        } catch (LogicException|ilCtrlException $exception) {
+            $this->global_template->setOnScreenMessage('failure', $exception->getMessage());
         }
     }
 }

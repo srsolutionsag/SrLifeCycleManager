@@ -13,6 +13,9 @@ msg_notification_success#:#Notification(s) successfully updated.
 msg_notification_error#:#Could not update notification(s).
 msg_back_to#:#Back
 msg_invalid_execution_dates#:#One of the submitted dates does not match the format DD/MM.
+msg_routine_whitelist_error#:#The requested routine does not support whitelist-entries.
+msg_routine_whitelist_failure#:#Your request was not an opt-out and elongations aren't supported.
+msg_routine_whitelist_success#:#Object successfully whitelisted.
 
 page_title_rules#:#SrLifeCycleManager rules
 page_title_config#:#SrLifeCycleManager configuration
@@ -99,25 +102,25 @@ course_attribute_value#:#Dynamic Attribute
 group_attribute#:#Group attribute
 group_attribute_value#:#Dynamic Attribute
 
-srag\Plugins\SrLifeCycleManager\Rule\Attribute\Course\CourseAttribute#:#course attribute
-srag\Plugins\SrLifeCycleManager\Rule\Attribute\Course\CourseActive#:#course active
-srag\Plugins\SrLifeCycleManager\Rule\Attribute\Course\CourseEnd#:#course end
-srag\Plugins\SrLifeCycleManager\Rule\Attribute\Course\CourseStart#:#course start
-srag\Plugins\SrLifeCycleManager\Rule\Attribute\Course\CourseMember#:#course member
-srag\Plugins\SrLifeCycleManager\Rule\Attribute\Course\CourseMetadata#:#course metadata
-srag\Plugins\SrLifeCycleManager\Rule\Attribute\Course\CourseTaxonomy#:#course taxonomy
-srag\Plugins\SrLifeCycleManager\Rule\Attribute\Course\CourseTitle#:#course title
+srag\Plugins\_SrLifeCycleManager\Rule\Attribute\Course\CourseAttribute#:#course attribute
+srag\Plugins\_SrLifeCycleManager\Rule\Attribute\Course\CourseActive#:#course active
+srag\Plugins\_SrLifeCycleManager\Rule\Attribute\Course\CourseEnd#:#course end
+srag\Plugins\_SrLifeCycleManager\Rule\Attribute\Course\CourseStart#:#course start
+srag\Plugins\_SrLifeCycleManager\Rule\Attribute\Course\CourseMember#:#course member
+srag\Plugins\_SrLifeCycleManager\Rule\Attribute\Course\CourseMetadata#:#course metadata
+srag\Plugins\_SrLifeCycleManager\Rule\Attribute\Course\CourseTaxonomy#:#course taxonomy
+srag\Plugins\_SrLifeCycleManager\Rule\Attribute\Course\CourseTitle#:#course title
 
-srag\Plugins\SrLifeCycleManager\Rule\Attribute\Group\GroupAttribute#:#group attribute
-srag\Plugins\SrLifeCycleManager\Rule\Attribute\Group\GroupTitle#:#group title
-srag\Plugins\SrLifeCycleManager\Rule\Attribute\Group\GroupMember#:#group member
-srag\Plugins\SrLifeCycleManager\Rule\Attribute\Group\GroupMetadata#:#group metadata
-srag\Plugins\SrLifeCycleManager\Rule\Attribute\Group\GroupTaxonomy#:#group taxonomy
+srag\Plugins\_SrLifeCycleManager\Rule\Attribute\Group\GroupAttribute#:#group attribute
+srag\Plugins\_SrLifeCycleManager\Rule\Attribute\Group\GroupTitle#:#group title
+srag\Plugins\_SrLifeCycleManager\Rule\Attribute\Group\GroupMember#:#group member
+srag\Plugins\_SrLifeCycleManager\Rule\Attribute\Group\GroupMetadata#:#group metadata
+srag\Plugins\_SrLifeCycleManager\Rule\Attribute\Group\GroupTaxonomy#:#group taxonomy
 
-srag\Plugins\SrLifeCycleManager\Rule\Attribute\Common\CommonAttribute#:#common attribute
-srag\Plugins\SrLifeCycleManager\Rule\Attribute\Common\CommonBoolean#:#boolean
-srag\Plugins\SrLifeCycleManager\Rule\Attribute\Common\CommonDateTime#:#date (Y-m-d)
-srag\Plugins\SrLifeCycleManager\Rule\Attribute\Common\CommonInteger#:#integer
-srag\Plugins\SrLifeCycleManager\Rule\Attribute\Common\CommonList#:#list (comma-separated)
-srag\Plugins\SrLifeCycleManager\Rule\Attribute\Common\CommonNull#:#empty
-srag\Plugins\SrLifeCycleManager\Rule\Attribute\Common\CommonString#:#string
+srag\Plugins\_SrLifeCycleManager\Rule\Attribute\Common\CommonAttribute#:#common attribute
+srag\Plugins\_SrLifeCycleManager\Rule\Attribute\Common\CommonBoolean#:#boolean
+srag\Plugins\_SrLifeCycleManager\Rule\Attribute\Common\CommonDateTime#:#date (Y-m-d)
+srag\Plugins\_SrLifeCycleManager\Rule\Attribute\Common\CommonInteger#:#integer
+srag\Plugins\_SrLifeCycleManager\Rule\Attribute\Common\CommonList#:#list (comma-separated)
+srag\Plugins\_SrLifeCycleManager\Rule\Attribute\Common\CommonNull#:#empty
+srag\Plugins\_SrLifeCycleManager\Rule\Attribute\Common\CommonString#:#string

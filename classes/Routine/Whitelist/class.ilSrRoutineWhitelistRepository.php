@@ -2,10 +2,10 @@
 
 /* Copyright (c) 2022 Thibeau Fuhrer <thibeau@sr.solutions> Extended GPL, see docs/LICENSE */
 
-use srag\Plugins\SrLifeCycleManager\Routine\IRoutineWhitelistRepository;
-use srag\Plugins\SrLifeCycleManager\Routine\IRoutineWhitelist;
-use srag\Plugins\SrLifeCycleManager\Routine\IRoutine;
-use srag\Plugins\SrLifeCycleManager\Routine\RoutineWhitelist;
+use srag\Plugins\_SrLifeCycleManager\Routine\IRoutineWhitelistRepository;
+use srag\Plugins\_SrLifeCycleManager\Routine\IRoutineWhitelist;
+use srag\Plugins\_SrLifeCycleManager\Routine\IRoutine;
+use srag\Plugins\_SrLifeCycleManager\Routine\RoutineWhitelist;
 
 /**
  * @author Thibeau Fuhrer <thibeau@sr.solutions>
@@ -62,11 +62,7 @@ class ilSrRoutineWhitelistRepository implements IRoutineWhitelistRepository
     public function add(IRoutineWhitelist $entry) : IRoutineWhitelist
     {
         /** @var $ar_whitelist_entry IRoutineWhitelist */
-        $ar_whitelist_entry = (null !== $entry->getWhitelistId()) ?
-            ilSrRoutineWhitelist::find($entry->getWhitelistId()) ?? new ilSrRoutineWhitelist() :
-            new ilSrRoutineWhitelist()
-        ;
-
+        $ar_whitelist_entry = $this->get($entry->getRoutineId(), $entry->getRefId()) ?? new ilSrRoutineWhitelist();
         $ar_whitelist_entry
             ->setRoutineId($entry->getRoutineId())
             ->setActiveUntil($entry->getActiveUntil())

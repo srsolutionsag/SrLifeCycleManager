@@ -9,6 +9,8 @@ use ILIAS\GlobalScreen\Scope\MainMenu\Provider\AbstractStaticMainMenuPluginProvi
  *
  * This provider currently provides one top-item where all sub-items of this
  * plugins should be added to. This way we keep an orderly fashion to things.
+ *
+ * @noinspection AutoloadingIssuesInspection
  */
 class ilSrMenuProvider extends AbstractStaticMainMenuPluginProvider
 {

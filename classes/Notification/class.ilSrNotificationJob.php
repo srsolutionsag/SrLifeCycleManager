@@ -2,8 +2,8 @@
 
 /* Copyright (c) 2022 Thibeau Fuhrer <thibeau@sr.solutions> Extended GPL, see docs/LICENSE */
 
-use srag\Plugins\SrLifeCycleManager\Notification\IRoutineAwareNotification;
-use srag\Plugins\SrLifeCycleManager\Config\IConfig;
+use srag\Plugins\_SrLifeCycleManager\Notification\IRoutineAwareNotification;
+use srag\Plugins\_SrLifeCycleManager\Config\IConfig;
 
 /**
  * @author Thibeau Fuhrer <thibeau@sr.solutions>
@@ -110,10 +110,12 @@ class ilSrNotificationJob extends ilSrAbstractCronJob
             [
                 '[OBJECT_LINK]',
                 '[EXTENSION_LINK]',
+                '[OPT_OUT_LINK]',
             ],
             [
                 ilLink::_getLink($ref_id),
                 $this->getExtensionLink($notification->getRoutineId(), $ref_id),
+                $this->getOptOutLink($notification->getRoutineId(), $ref_id),
             ],
             $message
         );
@@ -127,15 +129,21 @@ class ilSrNotificationJob extends ilSrAbstractCronJob
     }
 
     /**
-     * Returns a temporary  (due to ilCtrl CIDs) link target to delay the
-     * deletion of the object for the given ref-id.
-     *
-     * @param int $routine_id
-     * @param int $ref_id
-     * @return string
+     * @param int  $routine_id
+     * @param int  $ref_id
+     * @param bool $opt_out
+     * @return void
      */
-    protected function getExtensionLink(int $routine_id, int $ref_id) : string
+    protected function setWhitelistParameters(int $routine_id, int $ref_id, bool $opt_out) : void
     {
+        if ($opt_out) {
+            $this->ctrl->setParameterByClass(
+                ilSrRoutineGUI::class,
+                ilSrRoutineGUI::QUERY_PARAM_WHITELIST_OPT_OUT,
+                1
+            );
+        }
+
         $this->ctrl->setParameterByClass(
             ilSrRoutineGUI::class,
             ilSrRoutineGUI::QUERY_PARAM_ROUTINE_ID,
@@ -147,7 +155,36 @@ class ilSrNotificationJob extends ilSrAbstractCronJob
             'ref_id',
             $ref_id
         );
+    }
 
+    /**
+     * Returns a temporary  (due to ilCtrl CIDs) link target to delay the
+     * deletion of the object for the given ref-id.
+     *
+     * @param int $routine_id
+     * @param int $ref_id
+     * @return string
+     */
+    protected function getExtensionLink(int $routine_id, int $ref_id) : string
+    {
+        $this->setWhitelistParameters($routine_id, $ref_id, false);
+        return ilSrLifeCycleManagerDispatcher::buildFullyQualifiedLinkTarget(
+            ilSrRoutineGUI::class,
+            ilSrRoutineGUI::CMD_WHITELIST_ADD
+        );
+    }
+
+    /**
+     * Returns a temporary  (due to ilCtrl CIDs) link target to opt-out the
+     * deletion of the object for the given ref-id.
+     *
+     * @param int $routine_id
+     * @param int $ref_id
+     * @return string
+     */
+    protected function getOptOutLink(int $routine_id, int $ref_id) : string
+    {
+        $this->setWhitelistParameters($routine_id, $ref_id, true);
         return ilSrLifeCycleManagerDispatcher::buildFullyQualifiedLinkTarget(
             ilSrRoutineGUI::class,
             ilSrRoutineGUI::CMD_WHITELIST_ADD

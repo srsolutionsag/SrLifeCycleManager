@@ -4,80 +4,83 @@
 
 namespace srag\Plugins\SrLifeCycleManager\Form\Notification;
 
-use srag\Plugins\SrLifeCycleManager\Notification\IRoutineAwareNotification;
 use srag\Plugins\SrLifeCycleManager\Form\AbstractFormBuilder;
+use srag\Plugins\SrLifeCycleManager\Notification\INotification;
 use srag\Plugins\SrLifeCycleManager\ITranslator;
-
-use ILIAS\UI\Component\Input\Field\Factory as InputFactory;
-use ILIAS\UI\Component\Input\Container\Form\Factory as FormFactory;
 use ILIAS\Refinery\Factory as Refinery;
+use ILIAS\UI\Component\Input\Container\Form\Factory as FormFactory;
+use ILIAS\UI\Component\Input\Container\Form\Form as UIForm;
+use ILIAS\UI\Component\Input\Field\Factory as FieldFactory;
 
 /**
  * @author Thibeau Fuhrer <thibeau@sr.solutions>
  */
 class NotificationFormBuilder extends AbstractFormBuilder
 {
-    public const INPUT_NOTIFICATION_MESSAGE = 'input_name_notification_message';
-    public const INPUT_NOTIFICATION_DAYS = 'input_name_notification_days';
+    // NotificationFormBuilder inputs:
+    public const INPUT_NOTIFICATION_TITLE = 'input_name_notification_title';
+    public const INPUT_NOTIFICATION_CONTENT = 'input_name_notification_message';
+    public const INPUT_NOTIFICATION_DAYS_BEFORE_SUBMISSION = 'input_name_notification_days';
 
-    protected const INPUT_NOTIFICATION_MESSAGE_INFO = 'input_name_notification_message_info';
+    // NotificationFormBuilder language variables:
+    protected const INPUT_NOTIFICATION_CONTENT_INFO = 'input_name_notification_message_info';
 
     /**
-     * @var IRoutineAwareNotification
+     * @var INotification
      */
     protected $notification;
 
     /**
-     * @param FormFactory               $form_factory
-     * @param InputFactory              $input_factory
-     * @param Refinery                  $refinery
-     * @param ITranslator               $translator
-     * @param string                    $form_action
-     * @param IRoutineAwareNotification $notification
+     * @param ITranslator   $translator
+     * @param FormFactory   $forms
+     * @param FieldFactory  $fields
+     * @param Refinery      $refinery
+     * @param INotification $notification
+     * @param string        $form_action
      */
     public function __construct(
-        FormFactory $form_factory,
-        InputFactory $input_factory,
-        Refinery $refinery,
         ITranslator $translator,
-        string $form_action,
-        IRoutineAwareNotification $notification
+        FormFactory $forms,
+        FieldFactory $fields,
+        Refinery $refinery,
+        INotification $notification,
+        string $form_action
     ) {
-        parent::__construct($form_factory, $input_factory, $refinery, $translator, $form_action);
-
+        parent::__construct($translator, $forms, $fields, $refinery, $form_action);
         $this->notification = $notification;
-    }
-
-    /**
-     * @return IRoutineAwareNotification
-     */
-    public function getNotification() : IRoutineAwareNotification
-    {
-        return $this->notification;
     }
 
     /**
      * @inheritDoc
      */
-    protected function getInputs() : array
+    public function getForm() : UIForm
     {
-        $inputs[self::INPUT_NOTIFICATION_MESSAGE] = $this->input_factory
+        $inputs[self::INPUT_NOTIFICATION_TITLE] = $this->fields
+            ->text($this->translator->txt(self::INPUT_NOTIFICATION_TITLE))
+            ->withValue($this->notification->getTitle())
+            ->withRequired(true)
+        ;
+        
+        $inputs[self::INPUT_NOTIFICATION_CONTENT] = $this->fields
             ->textarea(
-                $this->translate(self::INPUT_NOTIFICATION_MESSAGE),
-                $this->translate(self::INPUT_NOTIFICATION_MESSAGE_INFO)
+                $this->translator->txt(self::INPUT_NOTIFICATION_CONTENT),
+                $this->translator->txt(self::INPUT_NOTIFICATION_CONTENT_INFO)
             )
             ->withValue((null !== $this->notification) ?
-                $this->notification->getMessage() : ''
+                $this->notification->getContent() : ''
             )
             ->withRequired(true)
         ;
 
-        $inputs[self::INPUT_NOTIFICATION_DAYS] = $this->input_factory
-            ->numeric($this->translate(self::INPUT_NOTIFICATION_DAYS))
+        $inputs[self::INPUT_NOTIFICATION_DAYS_BEFORE_SUBMISSION] = $this->fields
+            ->numeric($this->translator->txt(self::INPUT_NOTIFICATION_DAYS_BEFORE_SUBMISSION))
             ->withRequired(true)
             ->withValue(($this->notification->getDaysBeforeSubmission()) ?: null)
         ;
 
-        return $inputs;
+        return $this->forms->standard(
+            $this->form_action,
+            $inputs
+        );
     }
 }

@@ -1,6 +1,6 @@
 <?php // strict types are not possible with ActiveRecord.
 
-use srag\Plugins\SrLifeCycleManager\Rule\IRule;
+use srag\Plugins\_SrLifeCycleManager\Rule\IRule;
 
 /**
  * Rule DAO

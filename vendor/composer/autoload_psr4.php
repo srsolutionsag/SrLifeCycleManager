@@ -6,5 +6,6 @@ $vendorDir = dirname(dirname(__FILE__));
 $baseDir = dirname($vendorDir);
 
 return array(
+    'srag\\Plugins\\SrLifeCycleManager\\Tests\\' => array($baseDir . '/tests'),
     'srag\\Plugins\\SrLifeCycleManager\\' => array($baseDir . '/src'),
 );

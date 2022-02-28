@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-use srag\Plugins\SrLifeCycleManager\Config\IConfigAr;
+use srag\Plugins\_SrLifeCycleManager\Config\IConfigAr;
 
 use ILIAS\GlobalScreen\Scope\Tool\Provider\AbstractDynamicToolPluginProvider;
 use ILIAS\GlobalScreen\ScreenContext\Stack\ContextCollection;
@@ -13,6 +13,8 @@ use ILIAS\GlobalScreen\ScreenContext\Stack\CalledContexts;
  *
  * The provider is currently only interested in the repository context, as we want
  * to allow our tools to appear just within course objects, if configured.
+ *
+ * @noinspection AutoloadingIssuesInspection
  */
 class ilSrToolProvider extends AbstractDynamicToolPluginProvider
 {
@@ -31,11 +33,11 @@ class ilSrToolProvider extends AbstractDynamicToolPluginProvider
     {
         // if the user is within a possibly new or existing scope, we
         // must provide ilSrRoutineGUI with it's ref-id.
-        if (null !== ($scope = $this->getCurrentScopeFromRequest())) {
+        if (null !== ($ref_id = $this->getRequestedObject())) {
             $this->dic->ctrl()->setParameterByClass(
                 ilSrRoutineGUI::class,
-                ilSrRoutineGUI::QUERY_PARAM_ROUTINE_SCOPE,
-                $scope
+                ilSrRoutineGUI::PARAM_ROUTINE_REF_ID,
+                $ref_id
             );
         }
 
@@ -62,10 +64,9 @@ class ilSrToolProvider extends AbstractDynamicToolPluginProvider
         return function() : bool {
             // fetch configuration and check if the necessary
             // config exists and get its value.
-            /** @var $config IConfigAr[] */
-            $config              = ilSrConfig::get();
-            $cnf_show_routines   = (isset($config[IConfigAr::CNF_SHOW_ROUTINES]) && $config[IConfigAr::CNF_SHOW_ROUTINES]->getValue());
-            $cnf_create_routines = (isset($config[IConfigAr::CNF_CREATE_ROUTINES]) && $config[IConfigAr::CNF_CREATE_ROUTINES]->getValue());
+            $config = (new ilSrConfigRepository())->get();
+            $cnf_show_routines   = $config->showRoutinesInRepository();
+            $cnf_create_routines = $config->createRoutinesInRepository();
 
             // save access checks in variables for readability.
             $user_id             = $this->dic->user()->getId();
@@ -106,7 +107,7 @@ class ilSrToolProvider extends AbstractDynamicToolPluginProvider
      *
      * @return int|null
      */
-    protected function getCurrentScopeFromRequest() : ?int
+    protected function getRequestedObject() : ?int
     {
         $target = $this->dic->http()->request()->getQueryParams()['target'] ?? null;
         $ref_id = $this->dic->http()->request()->getQueryParams()['ref_id'] ?? null;
@@ -147,7 +148,7 @@ class ilSrToolProvider extends AbstractDynamicToolPluginProvider
                 $this->dic->ui()->renderer()->render(
                     $this->dic->ui()->factory()->button()->standard(
                         $this->plugin->txt('take me to routines!'),
-                        ilSrLifeCycleManagerDispatcher::buildFullyQualifiedLinkTarget(
+                        ilSrLifeCycleManagerDispatcher::getLinkTarget(
                             ilSrRoutineGUI::class,
                             ilSrRoutineGUI::CMD_INDEX
                         )

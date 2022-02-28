@@ -1,6 +1,6 @@
 <?php
 
-namespace srag\Plugins\SrLifeCycleManager\Notification;
+namespace srag\Plugins\_SrLifeCycleManager\Notification;
 
 /**
  * IRoutineNotificationRelation describes the relationship between

@@ -1,235 +1,275 @@
 <#1>
 <?php
-$fields = array(
-    'identifier' => array(
-        'notnull' => '1',
-        'type' => 'text',
-        'length' => '250',
-    ),
-    'value' => array(
-        'notnull' => '1',
-        'type' => 'text',
-        'length' => '4000',
-    ),
-);
-/**
- * @var $ilDB ilDBInterface
- */
-if (! $ilDB->tableExists('srlcm_config')) {
-    $ilDB->createTable('srlcm_config', $fields);
-    $ilDB->addPrimaryKey('srlcm_config', array( 'identifier' ));
-}
+    /** @var $ilDB ilDBInterface */
+    $table_name = 'srlcm_configuration';
+    $columns = [
+        'identifier' => [
+            'notnull' => '1',
+            'length'  => '254',
+            'type'    => 'text',
+        ],
+        'configuration' => [
+            'notnull' => '1',
+            'length'  => '4000',
+            'type'    => 'text',
+        ],
+    ];
+
+    if (!$ilDB->tableExists($table_name)) {
+        $ilDB->createTable($table_name, $columns);
+        $ilDB->addPrimaryKey($table_name, [
+            'identifier',
+        ]);
+    }
 ?>
 <#2>
 <?php
-$fields = array(
-    'rule_id' => array(
-        'notnull' => '1',
-        'type' => 'integer',
-        'length' => '8',
-    ),
-    'lhs_type' => array(
-        'notnull' => '1',
-        'type' => 'text',
-        'length' => '255',
-    ),
-    'lhs_value' => array(
-        'notnull' => '1',
-        'type' => 'clob',
-    ),
-    'operator' => array(
-        'notnull' => '1',
-        'type' => 'text',
-        'length' => '20',
-    ),
-    'rhs_type' => array(
-        'notnull' => '1',
-        'type' => 'text',
-        'length' => '255',
-    ),
-    'rhs_value' => array(
-        'notnull' => '1',
-        'type' => 'clob',
-    ),
-);
-if (! $ilDB->tableExists('srlcm_rule')) {
-    $ilDB->createTable('srlcm_rule', $fields);
-    $ilDB->addPrimaryKey('srlcm_rule', array( 'rule_id' ));
+    /** @var $ilDB ilDBInterface */
+    $table_name = 'srlcm_routine';
+    $columns = [
+        'routine_id' => [
+            'notnull' => '1',
+            'length'  => '8',
+            'type'    => 'integer',
+        ],
+        'usr_id' => [
+            'notnull' => '1',
+            'length'  => '8',
+            'type'    => 'integer',
+        ],
+        'ref_id' => [
+            'notnull' => '1',
+            'length'  => '8',
+            'type'    => 'integer',
+        ],
+        'origin_type' => [
+            'notnull' => '1',
+            'length'  => '8',
+            'type'    => 'integer',
+        ],
+        'routine_type' => [
+            'notnull' => '1',
+            'length'  => '8',
+            'type'    => 'integer',
+        ],
+        'is_active' => [
+            'notnull' => '1',
+            'length'  => '1',
+            'type'    => 'integer',
+        ],
+        'has_opt_out' => [
+            'notnull' => '1',
+            'length'  => '1',
+            'type'    => 'integer',
+        ],
+        'title' => [
+            'notnull' => '1',
+            'length'  => '254',
+            'type'    => 'text',
+        ],
+        'elongation' => [
+            'length'  => '8',
+            'type'    => 'integer',
+        ],
+        'creation_date' => [
+            'notnull' => '1',
+            'type'    => 'date',
+        ],
+    ];
 
-    if (! $ilDB->sequenceExists('srlcm_rule')) {
-        $ilDB->createSequence('srlcm_rule');
+    if (!$ilDB->tableExists($table_name)) {
+        $ilDB->createTable($table_name, $columns);
+        $ilDB->addPrimaryKey($table_name, [
+            'routine_id',
+        ]);
     }
-}
+
+    if (!$ilDB->sequenceExists($table_name)) {
+        $ilDB->createSequence($table_name);
+    }
 ?>
 <#3>
 <?php
-$fields = array(
-    'notification_id' => array(
-        'notnull' => '1',
-        'type' => 'integer',
-        'length' => '8',
-    ),
-    'message' => array(
-        'notnull' => '1',
-        'type' => 'clob',
-    ),
-);
-if (! $ilDB->tableExists('srlcm_msg')) {
-    $ilDB->createTable('srlcm_msg', $fields);
-    $ilDB->addPrimaryKey('srlcm_msg', array( 'notification_id' ));
-    if (! $ilDB->sequenceExists('srlcm_msg')) {
-        $ilDB->createSequence('srlcm_msg');
+    /** @var $ilDB ilDBInterface */
+    $table_name = 'srlcm_notification';
+    $columns = [
+        'notification_id' => [
+            'notnull' => '1',
+            'length'  => '8',
+            'type'    => 'integer',
+        ],
+        'routine_id' => [
+            'notnull' => '1',
+            'length'  => '8',
+            'type'    => 'integer',
+        ],
+        'title' => [
+            'notnull' => '1',
+            'length'  => '254',
+            'type'    => 'text',
+        ],
+        'content' => [
+            'notnull' => '1',
+            'length'  => '4000',
+            'type'    => 'text',
+        ],
+        'days_before_submission' => [
+            'notnull' => '1',
+            'length'  => '8',
+            'type'    => 'integer',
+        ],
+    ];
+
+    if (!$ilDB->tableExists($table_name)) {
+        $ilDB->createTable($table_name, $columns);
+        $ilDB->addPrimaryKey($table_name, [
+            'notification_id',
+        ]);
     }
-}
+
+    if (!$ilDB->sequenceExists($table_name)) {
+        $ilDB->createSequence($table_name);
+    }
 ?>
 <#4>
 <?php
-$fields = array(
-	'routine_id' => array(
-		'notnull' => '1',
-		'type' => 'integer',
-		'length' => '8',
-	),
-    'name' => array(
-        'notnull' => '1',
-        'type' => 'text',
-        'length' => '4000',
-    ),
-	'ref_id' => array(
-		'notnull' => '1',
-		'type' => 'integer',
-		'length' => '8',
-	),
-	'active' => array(
-		'notnull' => '1',
-		'type' => 'integer',
-		'length' => '1',
-	),
-	'origin_type' => array(
-		'notnull' => '1',
-		'type' => 'integer',
-		'length' => '1',
-	),
-	'owner_id' => array(
-		'notnull' => '1',
-		'type' => 'integer',
-		'length' => '8',
-	),
-	'creation_date' => array(
-		'notnull' => '1',
-		'type' => 'date',
-	),
-	'opt_out_possible' => array(
-		'notnull' => '1',
-		'type' => 'integer',
-		'length' => '1',
-	),
-	'elongation_days' => array(
-		'type' => 'integer',
-		'length' => '8',
-	),
-    'execution_dates' => array(
-        'notnull' => '1',
-        'type' => 'text',
-        'length' => '4000',
-    ),
-);
-if (! $ilDB->tableExists('srlcm_routine')) {
-	$ilDB->createTable('srlcm_routine', $fields);
-	$ilDB->addPrimaryKey('srlcm_routine', array( 'routine_id' ));
-	if (! $ilDB->sequenceExists('srlcm_routine')) {
-		$ilDB->createSequence('srlcm_routine');
-	}
-}
+    /** @var $ilDB ilDBInterface */
+    $table_name = 'srlcm_rule';
+    $columns = [
+        'rule_id' => [
+            'notnull' => '1',
+            'length'  => '8',
+            'type'    => 'integer',
+        ],
+        'lhs_type' => [
+            'notnull' => '1',
+            'length'  => '254',
+            'type'    => 'text',
+        ],
+        'lhs_value' => [
+            'notnull' => '1',
+            'length'  => '4000',
+            'type'    => 'text',
+        ],
+        'rhs_type' => [
+            'notnull' => '1',
+            'length'  => '254',
+            'type'    => 'text',
+        ],
+        'rhs_value' => [
+            'notnull' => '1',
+            'length'  => '4000',
+            'type'    => 'text',
+        ],
+        'operator' => [
+            'notnull' => '1',
+            'length'  => '254',
+            'type'    => 'text',
+        ],
+    ];
+
+    if (!$ilDB->tableExists($table_name)) {
+        $ilDB->createTable($table_name, $columns);
+        $ilDB->addPrimaryKey($table_name, [
+            'rule_id',
+        ]);
+    }
+
+    if (!$ilDB->sequenceExists($table_name)) {
+        $ilDB->createSequence($table_name);
+    }
 ?>
 <#5>
 <?php
-$fields = array(
-    'relation_id' => array(
-        'notnull' => '1',
-        'type' => 'integer',
-        'length' => '8',
-    ),
-    'routine_id' => array(
-        'type' => 'integer',
-        'length' => '8',
-    ),
-    'rule_id' => array(
-        'type' => 'integer',
-        'length' => '8',
-    ),
+    /** @var $ilDB ilDBInterface */
+    $table_name = 'srlcm_routine_rule';
+    $columns = [
+        'routine_id' => [
+            'notnull' => '1',
+            'length'  => '8',
+            'type'    => 'integer',
+        ],
+        'rule_id' => [
+            'notnull' => '1',
+            'length'  => '8',
+            'type'    => 'integer',
+        ],
+    ];
 
-);
-if (! $ilDB->tableExists('srlcm_routine_rule')) {
-    $ilDB->createTable('srlcm_routine_rule', $fields);
-    $ilDB->addPrimaryKey('srlcm_routine_rule', array( 'relation_id' ));
-    if (! $ilDB->sequenceExists('srlcm_routine_rule')) {
-        $ilDB->createSequence('srlcm_routine_rule');
+    if (!$ilDB->tableExists($table_name)) {
+        $ilDB->createTable($table_name, $columns);
+        $ilDB->addPrimaryKey($table_name, [
+            'routine_id',
+            'rule_id',
+        ]);
     }
-}
 ?>
 <#6>
 <?php
-$fields = array(
-    'relation_id' => array(
-        'notnull' => '1',
-        'type' => 'integer',
-        'length' => '8',
-    ),
-    'routine_id' => array(
-        'type' => 'integer',
-        'length' => '8',
-    ),
-    'notification_id' => array(
-        'type' => 'integer',
-        'length' => '8',
-    ),
-    'days_before_submission' => array(
-        'type' => 'integer',
-        'length' => '8',
-    ),
-);
-if (! $ilDB->tableExists('srlcm_routine_msg')) {
-    $ilDB->createTable('srlcm_routine_msg', $fields);
-    $ilDB->addPrimaryKey('srlcm_routine_msg', array( 'relation_id' ));
-    if (! $ilDB->sequenceExists('srlcm_routine_msg')) {
-        $ilDB->createSequence('srlcm_routine_msg');
+    /** @var $ilDB ilDBInterface */
+    $table_name = 'srlcm_whitelist';
+    $columns = [
+        'routine_id' => [
+            'notnull' => '1',
+            'length'  => '8',
+            'type'    => 'integer',
+        ],
+        'ref_id' => [
+            'notnull' => '1',
+            'length'  => '8',
+            'type'    => 'integer',
+        ],
+        'is_opt_out' => [
+            'notnull' => '1',
+            'length'  => '1',
+            'type'    => 'integer',
+        ],
+        'elongation' => [
+            'length'  => '8',
+            'type'    => 'integer',
+        ],
+    ];
+
+    if (!$ilDB->tableExists($table_name)) {
+        $ilDB->createTable($table_name, $columns);
+        $ilDB->addPrimaryKey($table_name, [
+            'routine_id',
+            'ref_id',
+        ]);
     }
-}
 ?>
 <#7>
 <?php
-$fields = array(
-    'whitelist_id' => array(
-        'notnull' => '1',
-        'type' => 'integer',
-        'length' => '8',
-    ),
-    'whitelist_type' => array(
-        'notnull' => '1',
-        'type' => 'integer',
-        'length' => '1',
-    ),
-    'routine_id' => array(
-        'notnull' => '1',
-        'type' => 'integer',
-        'length' => '8',
-    ),
-    'ref_id' => array(
-        'notnull' => '1',
-        'type' => 'integer',
-        'length' => '8',
-    ),
-    'active_until' => array(
-        'type' => 'date',
-    ),
+    /** @var $ilDB ilDBInterface */
+    $table_name = 'srlcm_notified_objects';
+    $columns = [
+        'routine_id' => [
+            'notnull' => '1',
+            'length'  => '8',
+            'type'    => 'integer',
+        ],
+        'notification_id' => [
+            'notnull' => '1',
+            'length'  => '8',
+            'type'    => 'integer',
+        ],
+        'ref_id' => [
+            'notnull' => '1',
+            'length'  => '8',
+            'type'    => 'integer',
+        ],
+        'date' => [
+            'notnull' => '1',
+            'type'    => 'date',
+        ],
+    ];
 
-);
-if (! $ilDB->tableExists('srlcm_routine_w_list')) {
-    $ilDB->createTable('srlcm_routine_w_list', $fields);
-    $ilDB->addPrimaryKey('srlcm_routine_w_list', array( 'whitelist_id' ));
-    if (! $ilDB->sequenceExists('srlcm_routine_w_list')) {
-        $ilDB->createSequence('srlcm_routine_w_list');
+    if (!$ilDB->tableExists($table_name)) {
+        $ilDB->createTable($table_name, $columns);
+        $ilDB->addPrimaryKey($table_name, [
+            'routine_id',
+            'notification_id',
+            'ref_id',
+        ]);
     }
-}
 ?>

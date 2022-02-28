@@ -1,6 +1,6 @@
 <?php // strict types are not possible with ActiveRecord.
 
-use srag\Plugins\SrLifeCycleManager\Notification\IRoutineNotificationRelation;
+use srag\Plugins\_SrLifeCycleManager\Notification\IRoutineNotificationRelation;
 
 /**
  * Routine-Notification relationship DAO.

@@ -2,13 +2,13 @@
 
 /* Copyright (c) 2022 Thibeau Fuhrer <thibeau@sr.solutions> Extended GPL, see docs/LICENSE */
 
-namespace srag\Plugins\SrLifeCycleManager\Form\Rule;
+namespace srag\Plugins\_SrLifeCycleManager\Form\Rule;
 
-use srag\Plugins\SrLifeCycleManager\IRepository;
-use srag\Plugins\SrLifeCycleManager\Rule\IRoutineAwareRule;
-use srag\Plugins\SrLifeCycleManager\Rule\Attribute\Common\CommonAttribute;
-use srag\Plugins\SrLifeCycleManager\Rule\Attribute\Common\CommonNull;
-use srag\Plugins\SrLifeCycleManager\Form\AbstractForm;
+use srag\Plugins\_SrLifeCycleManager\IRepository;
+use srag\Plugins\_SrLifeCycleManager\Rule\IRoutineAwareRule;
+use srag\Plugins\_SrLifeCycleManager\Rule\Attribute\Common\CommonAttribute;
+use srag\Plugins\_SrLifeCycleManager\Rule\Attribute\Common\CommonNull;
+use srag\Plugins\_SrLifeCycleManager\Form\AbstractForm;
 
 use ILIAS\UI\Renderer;
 
