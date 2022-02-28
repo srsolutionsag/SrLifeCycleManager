@@ -7,33 +7,51 @@ use srag\Plugins\SrLifeCycleManager\Routine\IRoutineRepository;
 use srag\Plugins\SrLifeCycleManager\Notification\INotificationRepository;
 use srag\Plugins\SrLifeCycleManager\Rule\IRuleRepository;
 use srag\Plugins\SrLifeCycleManager\IRepository;
+use ILIAS\DI\RBACServices;
 
 /**
+ * This repository serves as a factory for all repositories.
+ *
  * @author Thibeau Fuhrer <thibeau@sr.solutions>
+ *
+ * The repository itself should not implement any operations,
+ * everything should be done in one of the implementations.
+ *
  * @noinspection AutoloadingIssuesInspection
  */
 class ilSrLifeCycleManagerRepository implements IRepository
 {
-
+    /**
+     * @var IConfigRepository
+     */
+    protected $config_repository;
 
     /**
-     * @var ilDBInterface
+     * @var IRoutineRepository
      */
-    protected $database;
+    protected $routine_repository;
 
     /**
-     * @var ilTree
+     * @var INotificationRepository
      */
-    protected $tree;
+    protected $notification_repository;
+
+    /**
+     * @var IRuleRepository
+     */
+    protected $rule_repository;
 
     /**
      * @param ilDBInterface $database
+     * @param RBACServices  $rbac
      * @param ilTree        $tree
      */
-    public function __construct(ilDBInterface $database, ilTree $tree)
+    public function __construct(ilDBInterface $database, RBACServices $rbac, ilTree $tree)
     {
-        $this->database = $database;
-        $this->tree = $tree;
+        $this->config_repository = new ilSrConfigRepository($database, $rbac);
+        $this->routine_repository = new ilSrRoutineRepository($database, $tree);
+        $this->notification_repository = new ilSrNotificationRepository($database);
+        $this->rule_repository = new ilSrRuleRepository($database);
     }
 
     /**
@@ -41,7 +59,7 @@ class ilSrLifeCycleManagerRepository implements IRepository
      */
     public function config() : IConfigRepository
     {
-        // TODO: Implement config() method.
+        return $this->config_repository;
     }
 
     /**
@@ -49,7 +67,7 @@ class ilSrLifeCycleManagerRepository implements IRepository
      */
     public function routine() : IRoutineRepository
     {
-        // TODO: Implement routine() method.
+        return $this->routine_repository;
     }
 
     /**
@@ -57,7 +75,7 @@ class ilSrLifeCycleManagerRepository implements IRepository
      */
     public function notification() : INotificationRepository
     {
-        // TODO: Implement notification() method.
+        return $this->notification_repository;
     }
 
     /**
@@ -65,6 +83,6 @@ class ilSrLifeCycleManagerRepository implements IRepository
      */
     public function rule() : IRuleRepository
     {
-        // TODO: Implement rule() method.
+        return $this->rule_repository;
     }
 }

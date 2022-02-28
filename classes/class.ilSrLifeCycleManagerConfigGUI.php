@@ -25,8 +25,19 @@ class ilSrLifeCycleManagerConfigGUI extends ilPluginConfigGUI
     {
         global $DIC;
 
-        $DIC->ctrl()->setCmd(ilSrConfigGUI::CMD_INDEX);
-        $DIC->ctrl()->setCmdClass(ilSrConfigGUI::class);
-        $DIC->ctrl()->forwardCommand(new ilSrConfigGUI());
+        if (strtolower(ilSrLifeCycleManagerDispatcher::class) === $DIC->ctrl()->getNextClass($this)) {
+            // forward the request to the plugin dispatcher if it's ilCtrl's
+            // next command class, because this means a further command class
+            // is already provided.
+            $DIC->ctrl()->forwardCommand(new ilSrLifeCycleManagerDispatcher());
+        } else {
+            // whenever ilCtrl's next class is not the plugin dispatcher the
+            // request comes from ILIAS (ilAdministrationGUI) itself, in which
+            // case the request is redirected to the plugins actual config GUI.
+            $DIC->ctrl()->redirectByClass(
+                [ilSrLifeCycleManagerDispatcher::class, ilSrConfigGUI::class],
+                ilSrConfigGUI::CMD_INDEX
+            );
+        }
     }
 }

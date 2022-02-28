@@ -273,3 +273,24 @@
         ]);
     }
 ?>
+<#8>
+<?php
+    /** @var $ilDB ilDBInterface */
+    $table_name = 'srlcm_configuration';
+    if ($ilDB->tableExists($table_name)) {
+        $ilDB->insert($table_name, [
+            'identifier'    => ['text', 'cnf_privileged_roles'],
+            'configuration' => ['text', ''],
+        ]);
+
+        $ilDB->insert($table_name, [
+            'identifier'    => ['text', 'cnf_can_tool_create_routines'],
+            'configuration' => ['text', '0'],
+        ]);
+
+        $ilDB->insert($table_name, [
+            'identifier'    => ['text', 'cnf_can_tool_show_routines'],
+            'configuration' => ['text', '0'],
+        ]);
+    }
+?>
