@@ -80,6 +80,7 @@ class ilSrRuleGUI extends ilSrAbstractGUI
         $tabs
             ->addConfigurationTab()
             ->addRoutineTab()
+            ->setActiveTab('§')
         ;
     }
 
@@ -131,6 +132,7 @@ class ilSrRuleGUI extends ilSrAbstractGUI
             $this->repository->rule()->getByRoutine($this->routine, true)
         );
 
+        $this->toolbar_manager->addRuleToolbar();
         $this->render($table->getTable());
     }
 

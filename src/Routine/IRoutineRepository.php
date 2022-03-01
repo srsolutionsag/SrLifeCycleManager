@@ -39,7 +39,7 @@ interface IRoutineRepository
     public function store(IRoutine $routine) : IRoutine;
 
     /**
-     * Deletes the given routine from the database.
+     * Deletes the given routine from the database and all related entries.
      *
      * @param IRoutine $routine
      * @return bool

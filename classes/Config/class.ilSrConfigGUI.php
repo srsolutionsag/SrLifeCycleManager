@@ -49,8 +49,7 @@ class ilSrConfigGUI extends ilSrAbstractGUI
     /**
      * @inheritDoc
      */
-    protected function setupGlobalTemplate(ilGlobalTemplateInterface $template, ilSrTabManager $tabs) : void
-    {
+    protected function setupGlobalTemplate(ilGlobalTemplateInterface $template, ilSrTabManager $tabs) : void {
         $template->setTitle($this->translator->txt(self::PAGE_TITLE));
         $tabs
             ->addConfigurationTab(true)

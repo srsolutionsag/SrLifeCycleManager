@@ -54,7 +54,7 @@ class ilSrRoutineGUI extends ilSrAbstractGUI
     {
         parent::__construct();
 
-        $this->routine_ref_id = (int) ($this->getRequestParameter(self::PARAM_ROUTINE_REF_ID) ?? 1);
+        $this->routine_ref_id = ($id = $this->getRequestParameter(self::PARAM_ROUTINE_REF_ID)) ? (int) $id : $id;
         $this->object_ref_id = ($id = $this->getRequestParameter(self::PARAM_OBJECT_REF_ID)) ? (int) $id : $id;
 
         $this->form_builder = new RoutineFormBuilder(
@@ -73,15 +73,11 @@ class ilSrRoutineGUI extends ilSrAbstractGUI
     protected function setupGlobalTemplate(ilGlobalTemplateInterface $template, ilSrTabManager $tabs) : void
     {
         $template->setTitle($this->translator->txt(self::PAGE_TITLE));
-
         if (null !== $this->routine_ref_id) {
             $tabs->setBackToTarget(ilLink::_getLink($this->routine_ref_id));
         }
 
-        $tabs
-            ->addConfigurationTab()
-            ->addRoutineTab(true)
-        ;
+        $tabs->addConfigurationTab()->addRoutineTab(true);
     }
 
     /**
@@ -121,9 +117,10 @@ class ilSrRoutineGUI extends ilSrAbstractGUI
             $this->ctrl,
             $this,
             self::CMD_INDEX,
-            $this->repository->routine()->getAllByRefId($this->routine_ref_id)
+            $this->repository->routine()->getAllByRefId($this->routine_ref_id ?? 1, true)
         );
 
+        $this->toolbar_manager->addRoutineToolbar();
         $this->render($table->getTable());
     }
 
@@ -205,7 +202,7 @@ class ilSrRoutineGUI extends ilSrAbstractGUI
      */
     protected function getFormAction() : string
     {
-        return $this->ctrl->getFormAction(
+        return $this->ctrl->getFormActionByClass(
             self::class,
             self::CMD_ROUTINE_SAVE
         );

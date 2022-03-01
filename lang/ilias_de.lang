@@ -1,4 +1,7 @@
 
+crs#:#Kurse
+grp#:#Gruppen
+
 msg_permission_denied#:#Sie haben nicht ausreichende Berechtigung.
 msg_object_not_found#:#Das angefragte Object wurde nicht gefunden.
 msg_invalid_ref_id#:#Diese Ref-id ist ungültig.
@@ -25,20 +28,18 @@ page_title_notifications#:#SrLifeCycleManager Benachrichtigungen
 tab_config_index#:#Einstellungen
 tab_routine_index#:#Routinen
 
-cnf_global_roles#:#Globale Rollen die Routinen anlegen können
-cnf_move_to_bin#:#Objekte zuerst in den Papierkorb schieben?
-cnf_create_routines_repository#:#Neue Routinen vom Magazin aus erstellen?
-cnf_show_routines_repository#:#Aktive Routinen im Magazin anzeigen?
+cnf_privileged_roles#:#Globale Rollen die Routinen anlegen können
+cnf_can_tool_create_routines#:#Neue Routinen vom Magazin aus erstellen?
+cnf_can_tool_show_routines#:#Aktive Routinen im Magazin anzeigen?
 
 col_actions#:#Aktionen
 col_routine_ref_id#:#Ref-id (Scope)
-col_routine_name#:#Name
-col_routine_active#:#Aktiv
-col_routine_origin_type#:#Herkunft
-col_routine_owner_id#:#Besitzer
-col_routine_creation_date#:#Erstellt
-col_routine_opt_out_possible#:#Opt-out
-col_routine_elongation_days#:#Verlängerung (Tage)
+col_routine_title#:#Name
+col_routine_is_active#:#Aktiv
+col_routine_type#:#Routinen Typ
+col_routine_usr_id#:#Besitzer
+col_routine_has_opt_out#:#Opt-out
+col_routine_elongation#:#Verlängerung (Tage)
 col_rule_rhs_type#:#RHS Typ
 col_rule_rhs_value#:#RHS Wert
 col_rule_operator#:#Operator
@@ -47,15 +48,14 @@ col_rule_lhs_value#:#LHS Wert
 col_notification_message#:#Benachrichtigung
 col_notification_days#:#Senden (in Tagen bevor Routine)
 
-input_name_routine_ref_id#:#Ref-id (scope)
-input_name_routine_name#:#Name
-input_name_routine_active#:#Aktiv?
-input_name_routine_opt_out#:#Opt-out möglich?
-input_name_routine_elongation#:#Verlängerung möglich?
-input_name_routine_elongation_possible#:#Verlängerung (in Tage)
-input_name_notification_message_info#:#Benutze [EXTENSION_LINK] für einen Link, mit dem Empfänger das Objekt um die definierte Zeit verlängern können. <br /> Benutze [OBJECT_LINK] für einen Link zum Objekt, dass gelöscht werden soll.
-input_name_execution_dates#:#Ausführungsdaten (DD/MM)
-input_name_execution_dates_info#:#Wenn sie ein Datum geschrieben habe, drücken Sie "Enter" um es hinzuzufügen.
+input_routine_ref_id#:#Ref-id (scope)
+input_routine_title#:#Name
+input_routine_type#:#Routinen Typ
+input_routine_is_active#:#Aktiv?
+input_routine_has_opt_out#:#Opt-out möglich?
+input_routine_elongation#:#Verlängerung (in Tage)
+input_routine_elongation_possible#:#Verlängerung möglich?
+input_notification_message_info#:#Benutze [EXTENSION_LINK] für einen Link, mit dem Empfänger das Objekt um die definierte Zeit verlängern können. <br /> Benutze [OBJECT_LINK] für einen Link zum Objekt, dass gelöscht werden soll.
 
 routine_origin_type_admin#:#Administration
 routine_origin_type_repo#:#Magazin

@@ -180,15 +180,16 @@ class ilSrRuleRepository implements IRuleRepository
     protected function insertRule(IRule $rule) : IRule
     {
         $query = "
-            INSERT INTO srlcm_rule (lhs_type, lhs_value, rhs_type, rhs_value, operator)
-                VALUES (%s, %s, %s, %s, %s)
+            INSERT INTO srlcm_rule (rule_id, lhs_type, lhs_value, rhs_type, rhs_value, operator)
+                VALUES (%s, %s, %s, %s, %s, %s)
             ;
         ";
 
         $rule_id = $this->database->manipulateF(
             $query,
-            ['text', 'text', 'text', 'text', 'text'],
+            ['integer', 'text', 'text', 'text', 'text', 'text'],
             [
+                $this->database->nextId('srlcm_rule'),
                 $rule->getLhsType(),
                 $rule->getLhsValue(),
                 $rule->getRhsType(),
@@ -197,18 +198,14 @@ class ilSrRuleRepository implements IRuleRepository
             ]
         );
 
-        $query = "
-            INSERT INTO srlcm_routine_rule (routine_id, rule_id)
-                VALUES (%s, %s)
-            ;
-        ";
+        $query = "INSERT INTO srlcm_routine_rule (routine_id, rule_id) VALUES (%s, %s);";
 
         $this->database->manipulateF(
             $query,
             ['integer', 'integer'],
             [
                 $rule->getRoutineId(),
-                $rule->getRuleId(),
+                $rule_id,
             ]
         );
 

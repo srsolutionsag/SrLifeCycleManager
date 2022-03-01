@@ -52,7 +52,7 @@ class ConfigFormProcessor extends AbstractFormProcessor
     {
         $this->repository->store(
             new Config(
-                $post_data[IConfig::CNF_PRIVILEGED_ROLES],
+                $post_data[IConfig::CNF_PRIVILEGED_ROLES] ?? [],
                 $post_data[IConfig::CNF_SHOW_ROUTINES],
                 $post_data[IConfig::CNF_CREATE_ROUTINES]
             )

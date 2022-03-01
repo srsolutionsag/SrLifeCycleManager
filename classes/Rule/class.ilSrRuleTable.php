@@ -88,7 +88,7 @@ class ilSrRuleTable extends ilSrAbstractTable
      */
     protected function renderTableRow(ilTemplate $template, array $data) : void
     {
-        $template->setVariable(self::COL_RULE_RHS_TYPE, $data[IRule::F_RHS_TYPE]);
+        $template->setVariable(self::COL_RULE_RHS_TYPE, $this->translator->txt($data[IRule::F_RHS_TYPE]));
         $template->setVariable(
             self::COL_RULE_RHS_VALUE,
             $this->getMaybeTranslatedValue(
@@ -97,7 +97,7 @@ class ilSrRuleTable extends ilSrAbstractTable
             )
         );
 
-        $template->setVariable(self::COL_RULE_LHS_TYPE, $data[IRule::F_LHS_TYPE]);
+        $template->setVariable(self::COL_RULE_LHS_TYPE, $this->translator->txt($data[IRule::F_LHS_TYPE]));
         $template->setVariable(
             self::COL_RULE_LHS_VALUE,
             $this->getMaybeTranslatedValue(
@@ -110,7 +110,7 @@ class ilSrRuleTable extends ilSrAbstractTable
         $template->setVariable(
             self::COL_ACTIONS,
             $this->renderer->render(
-                $this->getActionDropdown($data[IRule::F_RULE_ID])
+                $this->getActionDropdown((int) $data[IRule::F_RULE_ID])
             )
         );
     }
@@ -128,7 +128,7 @@ class ilSrRuleTable extends ilSrAbstractTable
         // these actions are only necessary if the user is administrator
         // or the owner of the current routine.
         if ($this->access_handler->isRoutineOwner($this->routine->getOwnerId())) {
-            $actions[] = $this->ui->factory()->button()->shy(
+            $actions[] = $this->ui_factory->button()->shy(
                 $this->translator->txt(self::ACTION_RULE_EDIT),
                 $this->ctrl->getLinkTargetByClass(
                     ilSrRuleGUI::class,
@@ -136,7 +136,7 @@ class ilSrRuleTable extends ilSrAbstractTable
                 )
             );
 
-            $actions[] = $this->ui->factory()->button()->shy(
+            $actions[] = $this->ui_factory->button()->shy(
                 $this->translator->txt(self::ACTION_RULE_DELETE),
                 $this->ctrl->getLinkTargetByClass(
                     ilSrRuleGUI::class,
@@ -145,7 +145,7 @@ class ilSrRuleTable extends ilSrAbstractTable
             );
         }
 
-        return $this->ui->factory()->dropdown()->standard($actions);
+        return $this->ui_factory->dropdown()->standard($actions);
     }
 
     /**

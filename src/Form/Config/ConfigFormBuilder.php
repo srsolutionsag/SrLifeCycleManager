@@ -57,7 +57,9 @@ class ConfigFormBuilder extends AbstractFormBuilder
     {
         $inputs[IConfig::CNF_PRIVILEGED_ROLES] = $this->fields
             ->multiSelect($this->translator->txt(IConfig::CNF_PRIVILEGED_ROLES), $this->global_roles)
-            ->withValue($this->config->getPrivilegedRoles())
+            ->withValue((!empty($this->config->getPrivilegedRoles())) ?
+                $this->config->getPrivilegedRoles() : null
+            )
         ;
 
         $inputs[IConfig::CNF_SHOW_ROUTINES] = $this->fields

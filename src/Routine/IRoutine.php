@@ -144,26 +144,4 @@ interface IRoutine
      * @return IRoutine
      */
     public function setCreationDate(DateTime $creation_date) : IRoutine;
-
-    /**
-     * @return IRule[]
-     */
-    public function getRules() : array;
-
-    /**
-     * @param IRule[] $rules
-     * @return IRoutine
-     */
-    public function setRules(array $rules) : IRoutine;
-
-    /**
-     * @return INotification[]
-     */
-    public function getNotifications() : array;
-
-    /**
-     * @param INotification[] $notifications
-     * @return IRoutine
-     */
-    public function setNotifications(array $notifications) : IRoutine;
 }

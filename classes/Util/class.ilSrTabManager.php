@@ -111,7 +111,7 @@ class ilSrTabManager
         );
 
         if ($is_active) {
-            $this->tabs->activateTab(self::TAB_CONFIG);
+            $this->tabs->activateTab(self::TAB_ROUTINES);
         }
 
         return $this;

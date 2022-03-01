@@ -46,17 +46,32 @@ class ilSrConfigRepository implements IConfigRepository
             $this->database->query($query)
         );
 
+        $config = new Config();
         if (empty($results)) {
-            return new Config();
+            return $config;
         }
 
-        return new Config(
-            (isset($results[IConfig::CNF_PRIVILEGED_ROLES])) ?
-                explode(',' ,$results[IConfig::CNF_PRIVILEGED_ROLES]) : []
-            ,
-            (bool) ($results[IConfig::CNF_SHOW_ROUTINES] ?? false),
-            (bool) ($results[IConfig::CNF_CREATE_ROUTINES] ?? false)
-        );
+        foreach ($results as $query_result) {
+            switch ($query_result[IConfig::F_IDENTIFIER]) {
+                case IConfig::CNF_PRIVILEGED_ROLES:
+                    $roles = (!empty($query_result[IConfig::F_CONFIG])) ?
+                        explode(',', $query_result[IConfig::F_CONFIG]) : []
+                    ;
+
+                    $config->setPrivilegedRoles($roles);
+                    break;
+
+                case IConfig::CNF_SHOW_ROUTINES:
+                    $config->setToolCanShowRoutines((bool) $query_result[IConfig::F_CONFIG]);
+                    break;
+
+                case IConfig::CNF_CREATE_ROUTINES:
+                    $config->setToolCanCreateRoutines((bool) $query_result[IConfig::F_CONFIG]);
+                    break;
+            }
+        }
+
+        return $config;
     }
 
     /**
@@ -78,7 +93,6 @@ class ilSrConfigRepository implements IConfigRepository
     {
         $role_options = [];
         $global_roles = $this->rbac->review()->getRolesByFilter(ilRbacReview::FILTER_ALL_GLOBAL);
-
         if (empty($global_roles)) {
             return $role_options;
         }

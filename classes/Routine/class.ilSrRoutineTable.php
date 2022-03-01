@@ -75,7 +75,7 @@ class ilSrRoutineTable extends ilSrAbstractTable
 
         // if the 'owner_id' still exists, get the login-name.
         $owner_name = (ilObjUser::_exists($data[IRoutine::F_USER_ID])) ?
-            (new ilObjUser($data[IRoutine::F_USER_ID]))->getLogin() : ''
+            (new ilObjUser((int) $data[IRoutine::F_USER_ID]))->getLogin() : ''
         ;
 
         // translate the routine type.
@@ -92,8 +92,8 @@ class ilSrRoutineTable extends ilSrAbstractTable
             self::COL_ACTIONS,
             $this->renderer->render(
                 $this->getActionDropdown(
-                    $data[IRoutine::F_ROUTINE_ID],
-                    $data[IRoutine::F_USER_ID]
+                    (int) $data[IRoutine::F_ROUTINE_ID],
+                    (int) $data[IRoutine::F_USER_ID]
                 )
             )
         );
@@ -108,7 +108,7 @@ class ilSrRoutineTable extends ilSrAbstractTable
     {
         $this->setActionParameters($routine_id);
 
-        $actions[] = $this->ui->factory()->button()->shy(
+        $actions[] = $this->ui_factory->button()->shy(
             $this->translator->txt(self::ACTION_ROUTINE_RULES),
             $this->ctrl->getLinkTargetByClass(
                 ilSrRuleGUI::class,
@@ -119,15 +119,7 @@ class ilSrRoutineTable extends ilSrAbstractTable
         // these actions are only necessary if the user is administrator
         // or the owner of the current routine.
         if ($this->access_handler->isRoutineOwner($owner_id)) {
-            $actions[] = $this->ui->factory()->button()->shy(
-                $this->translator->txt(self::ACTION_ROUTINE_EDIT),
-                $this->ctrl->getLinkTargetByClass(
-                    ilSrRoutineGUI::class,
-                    ilSrRoutineGUI::CMD_ROUTINE_EDIT
-                )
-            );
-
-            $actions[] = $this->ui->factory()->button()->shy(
+            $actions[] = $this->ui_factory->button()->shy(
                 $this->translator->txt(self::ACTION_ROUTINE_NOTIFICATIONS),
                 $this->ctrl->getLinkTargetByClass(
                     ilSrNotificationGUI::class,
@@ -135,7 +127,15 @@ class ilSrRoutineTable extends ilSrAbstractTable
                 )
             );
 
-            $actions[] = $this->ui->factory()->button()->shy(
+            $actions[] = $this->ui_factory->button()->shy(
+                $this->translator->txt(self::ACTION_ROUTINE_EDIT),
+                $this->ctrl->getLinkTargetByClass(
+                    ilSrRoutineGUI::class,
+                    ilSrRoutineGUI::CMD_ROUTINE_EDIT
+                )
+            );
+
+            $actions[] = $this->ui_factory->button()->shy(
                 $this->translator->txt(self::ACTION_ROUTINE_DELETE),
                 $this->ctrl->getLinkTargetByClass(
                     ilSrRoutineGUI::class,
@@ -144,7 +144,7 @@ class ilSrRoutineTable extends ilSrAbstractTable
             );
         }
 
-        return $this->ui->factory()->dropdown()->standard($actions);
+        return $this->ui_factory->dropdown()->standard($actions);
     }
 
     /**

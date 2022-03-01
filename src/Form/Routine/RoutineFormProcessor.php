@@ -61,7 +61,7 @@ class RoutineFormProcessor extends AbstractFormProcessor
     protected function processData(array $post_data) : void
     {
         $this->routine
-            ->setRefId($post_data[RoutineFormBuilder::INPUT_REF_ID])
+            ->setRefId((int) $post_data[RoutineFormBuilder::INPUT_REF_ID])
             ->setTitle($post_data[RoutineFormBuilder::INPUT_TITLE])
             ->setRoutineType($post_data[RoutineFormBuilder::INPUT_ROUTINE_TYPE])
             ->setActive($post_data[RoutineFormBuilder::INPUT_IS_ACTIVE])

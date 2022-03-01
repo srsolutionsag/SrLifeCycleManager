@@ -27,6 +27,10 @@ interface IConfig
      */
     public const CNF_SHOW_ROUTINES = 'cnf_can_tool_show_routines';
 
+    // IConfig attribute names:
+    public const F_IDENTIFIER = 'identifier';
+    public const F_CONFIG = 'configuration';
+
     /**
      * @return int[]
      */

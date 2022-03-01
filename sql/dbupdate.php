@@ -49,8 +49,8 @@
         ],
         'routine_type' => [
             'notnull' => '1',
-            'length'  => '8',
-            'type'    => 'integer',
+            'length'  => '20',
+            'type'    => 'text',
         ],
         'is_active' => [
             'notnull' => '1',

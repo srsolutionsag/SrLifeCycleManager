@@ -1,4 +1,7 @@
 
+crs#:#Course
+grp#:#Group
+
 msg_permission_denied#:#Permission denied.
 msg_object_not_found#:#Requested object not found.
 msg_invalid_ref_id#:#Invalid ref-id provided.
@@ -25,20 +28,18 @@ page_title_notifications#:#SrLifeCycleManager notifications
 tab_config_index#:#Configuration
 tab_routine_index#:#Routines
 
-cnf_global_roles#:#Global roles that can add Routines
-cnf_move_to_bin#:#Move objects to bin/trash first?
-cnf_create_routines_repository#:#Create new Routines from Repository?
-cnf_show_routines_repository#:#Show active Routines in Repository?
+cnf_privileged_roles#:#Global roles that can add Routines
+cnf_can_tool_create_routines#:#Create new Routines from Repository?
+cnf_can_tool_show_routines#:#Show active Routines in Repository?
 
 col_actions#:#Actions
 col_routine_ref_id#:#Ref-id (scope)
-col_routine_name#:#Name
-col_routine_active#:#Active
-col_routine_origin_type#:#Origin
-col_routine_owner_id#:#Owner
-col_routine_creation_date#:#Created
-col_routine_opt_out_possible#:#Opt-out
-col_routine_elongation_days#:#Elongaition (days)
+col_routine_title#:#Name
+col_routine_is_active#:#Active
+col_routine_type#:#Routine type
+col_routine_usr_id#:#Owner
+col_routine_has_opt_out#:#Opt-out
+col_routine_elongation#:#Elongaition (days)
 col_rule_rhs_type#:#RHS type
 col_rule_rhs_value#:#RHS value
 col_rule_operator#:#Operator
@@ -47,17 +48,16 @@ col_rule_lhs_value#:#LHS value
 col_notification_message#:#Notification message
 col_notification_days#:#Sent (in days before deletion)
 
-input_name_routine_ref_id#:#Ref-id (scope)
-input_name_routine_name#:#Name
-input_name_routine_active#:#Active?
-input_name_routine_opt_out#:#Opt-out possible?
-input_name_routine_elongation#:#Elongation possible?
-input_name_routine_elongation_possible#:#Elongation (in days)
-input_name_notification_message#:#Notification message
-input_name_notification_message_info#:#Type [EXTENSION_LINK] where recipients can postpone the deletion by your routines configured amount. <br /> Type [OBJECT_LINK] where recipients can go to the object that is about to be deleted.
-input_name_notification_days#:#Sent (in days before deletion)
-input_name_execution_dates#:#Execution dates (DD/MM)
-input_name_execution_dates_info#:#After typing a date, press "enter" to add it.
+input_routine_ref_id#:#Ref-id (scope)
+input_routine_title#:#Name
+input_routine_type#:#Routine type
+input_routine_is_active#:#Active?
+input_routine_has_opt_out#:#Opt-out possible?
+input_routine_elongation#:#Elongation (in days)
+input_routine_elongation_possible#:#Elongation possible?
+input_notification_message#:#Notification message
+input_notification_message_info#:#Type [EXTENSION_LINK] where recipients can postpone the deletion by your routines configured amount. <br /> Type [OBJECT_LINK] where recipients can go to the object that is about to be deleted.
+input_notification_days#:#Sent (in days before deletion)
 
 routine_origin_type_admin#:#Administration
 routine_origin_type_repo#:#Repository

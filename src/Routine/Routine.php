@@ -2,7 +2,6 @@
 
 namespace srag\Plugins\SrLifeCycleManager\Routine;
 
-use srag\Plugins\SrLifeCycleManager\Notification\INotification;
 use srag\Plugins\SrLifeCycleManager\Rule\IRule;
 use DateTime;
 
@@ -62,16 +61,6 @@ class Routine implements IRoutine
     protected $creation_date;
 
     /**
-     * @var IRule[]
-     */
-    protected $rules;
-
-    /**
-     * @var INotification[]
-     */
-    protected $notifications;
-
-    /**
      * @param int      $ref_id
      * @param int      $owner_id
      * @param string   $routine_type
@@ -82,8 +71,6 @@ class Routine implements IRoutine
      * @param DateTime $creation_date
      * @param int|null $elongation
      * @param int|null $routine_id
-     * @param IRule[]  $rules
-     * @param array    $notifications
      */
     public function __construct(
         int $ref_id,
@@ -95,9 +82,7 @@ class Routine implements IRoutine
         bool $has_opt_out,
         DateTime $creation_date,
         int $elongation = null,
-        int $routine_id = null,
-        array $rules = [],
-        array $notifications = []
+        int $routine_id = null
     ) {
         $this->routine_id = $routine_id;
         $this->ref_id = $ref_id;
@@ -109,8 +94,6 @@ class Routine implements IRoutine
         $this->has_opt_out = $has_opt_out;
         $this->elongation = $elongation;
         $this->creation_date = $creation_date;
-        $this->rules = $rules;
-        $this->notifications = $notifications;
     }
 
     /**
@@ -290,42 +273,6 @@ class Routine implements IRoutine
     public function setCreationDate(DateTime $creation_date) : IRoutine
     {
         $this->creation_date = $creation_date;
-        return $this;
-    }
-
-    /**
-     * @return IRule[]
-     */
-    public function getRules() : array
-    {
-        return $this->rules;
-    }
-
-    /**
-     * @param IRule[] $rules
-     * @return IRoutine
-     */
-    public function setRules(array $rules) : IRoutine
-    {
-        $this->rules = $rules;
-        return $this;
-    }
-
-    /**
-     * @return INotification[]
-     */
-    public function getNotifications() : array
-    {
-        return $this->notifications;
-    }
-
-    /**
-     * @param INotification[] $notifications
-     * @return IRoutine
-     */
-    public function setNotifications(array $notifications) : IRoutine
-    {
-        $this->notifications = $notifications;
         return $this;
     }
 }

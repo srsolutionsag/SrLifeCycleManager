@@ -72,6 +72,11 @@ abstract class ilSrAbstractGUI
     protected $access_handler;
 
     /**
+     * @var ilSrToolbarManager
+     */
+    protected $toolbar_manager;
+
+    /**
      * @var ilSrTabManager
      */
     protected $tab_manager;
@@ -133,6 +138,7 @@ abstract class ilSrAbstractGUI
         $this->origin = ilSrLifeCycleManagerDispatcher::getOriginType();
         $this->translator = ilSrLifeCycleManagerPlugin::getInstance();
         $this->global_template = $DIC->ui()->mainTemplate();
+        $this->ui_factory = $DIC->ui()->factory();
         $this->renderer = $DIC->ui()->renderer();
         $this->refinery = $DIC->refinery();
         $this->request = $DIC->http()->request();
@@ -141,6 +147,7 @@ abstract class ilSrAbstractGUI
 
         $this->repository = new ilSrLifeCycleManagerRepository(
             $DIC->database(),
+            $DIC->rbac(),
             $DIC->repositoryTree()
         );
 
@@ -148,6 +155,14 @@ abstract class ilSrAbstractGUI
             $DIC->rbac(),
             $this->repository->config()->get(),
             $DIC->user()
+        );
+
+        $this->toolbar_manager = new ilSrToolbarManager(
+            $this->access_handler,
+            $this->global_template,
+            $this->translator,
+            $DIC->toolbar(),
+            $this->ctrl
         );
 
         $this->tab_manager = new ilSrTabManager(
@@ -159,10 +174,10 @@ abstract class ilSrAbstractGUI
 
         $this->routine =
             $this->getRequestedRoutine() ??
-            $this->repository
-                ->routine()
-                ->empty($this->user->getId(), $this->origin)
+            $this->repository->routine()->empty($this->user->getId(), $this->origin)
         ;
+
+        $this->keepAlive(self::PARAM_ROUTINE_ID);
     }
 
     /**
@@ -181,7 +196,8 @@ abstract class ilSrAbstractGUI
 
         $this->setupGlobalTemplate(
             $this->global_template,
-            $this->tab_manager
+            $this->tab_manager,
+            $this->toolbar_manager
         );
 
         if (!$this->canUserExecute($this->access_handler, $command)) {
@@ -234,6 +250,25 @@ abstract class ilSrAbstractGUI
             static::class,
             self::CMD_INDEX
         );
+    }
+
+    /**
+     * Keeps a requested parameter value "alive" for the derived class, if
+     * the given parameter was delivered.
+     *
+     * @param string $parameter
+     * @return void
+     */
+    protected function keepAlive(string $parameter) : void
+    {
+        $parameter_value = $this->getRequestParameter($parameter);
+        if (null !== $parameter_value) {
+            $this->ctrl->setParameterByClass(
+                static::class,
+                $parameter,
+                $parameter_value
+            );
+        }
     }
 
     /**
