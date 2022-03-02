@@ -59,9 +59,9 @@ interface INotification
     public function setContent(string $content) : INotification;
 
     /**
-     * @return int
+     * @return int|null
      */
-    public function getDaysBeforeSubmission() : int;
+    public function getDaysBeforeSubmission() : ?int;
 
     /**
      * @param int $amount

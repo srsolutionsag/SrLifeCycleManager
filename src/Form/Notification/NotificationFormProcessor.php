@@ -63,7 +63,7 @@ class NotificationFormProcessor extends AbstractFormProcessor
         $this->notification
             ->setTitle($post_data[NotificationFormBuilder::INPUT_NOTIFICATION_TITLE])
             ->setContent($post_data[NotificationFormBuilder::INPUT_NOTIFICATION_CONTENT])
-            ->setTitle($post_data[NotificationFormBuilder::INPUT_NOTIFICATION_DAYS_BEFORE_SUBMISSION])
+            ->setDaysBeforeSubmission((int) $post_data[NotificationFormBuilder::INPUT_NOTIFICATION_DAYS_BEFORE_SUBMISSION])
         ;
 
         $this->repository->store($this->notification);

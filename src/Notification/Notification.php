@@ -28,7 +28,7 @@ class Notification implements INotification
     protected $content;
 
     /**
-     * @var int
+     * @var int|null
      */
     protected $days_before_submission;
 
@@ -36,14 +36,14 @@ class Notification implements INotification
      * @param int      $routine_id
      * @param string   $title
      * @param string   $content
-     * @param int      $days_before_submission
+     * @param int|null $days_before_submission
      * @param int|null $notification_id
      */
     public function __construct(
         int $routine_id,
         string $title,
         string $content,
-        int $days_before_submission,
+        int $days_before_submission = null,
         int $notification_id = null
     ) {
         $this->routine_id = $routine_id;
@@ -126,7 +126,7 @@ class Notification implements INotification
     /**
      * @inheritDoc
      */
-    public function getDaysBeforeSubmission() : int
+    public function getDaysBeforeSubmission() : ?int
     {
         return $this->days_before_submission;
     }

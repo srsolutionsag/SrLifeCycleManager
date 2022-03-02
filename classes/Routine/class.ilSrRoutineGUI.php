@@ -16,7 +16,6 @@ use srag\Plugins\SrLifeCycleManager\Form\Routine\RoutineFormProcessor;
 class ilSrRoutineGUI extends ilSrAbstractGUI
 {
     // ilSrRoutineGUI GET-parameter names:
-    public const PARAM_ROUTINE_REF_ID = 'routine_ref_id';
     public const PARAM_OBJECT_REF_ID = 'ref_id';
 
     // ilSrRoutineGUI command/method names:
@@ -169,7 +168,7 @@ class ilSrRoutineGUI extends ilSrAbstractGUI
      */
     protected function delete() : void
     {
-        if (null !== $this->routine) {
+        if (null !== $this->routine->getRoutineId()) {
             $this->sendSuccessMessage(self::MSG_ROUTINE_SUCCESS);
             $this->repository->routine()->delete($this->routine);
         } else {

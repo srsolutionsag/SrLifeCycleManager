@@ -32,7 +32,7 @@ class ilSrRuleRepository implements IRuleRepository
     public function get(int $rule_id) : ?IRule
     {
         $query = "
-            SELECT rule.lhs_type, rule.lhs_value, rule.rhs_type, rule.rhs_value, rule.operator, rel.routine_id 
+            SELECT rule.rule_id, rule.lhs_type, rule.lhs_value, rule.rhs_type, rule.rhs_value, rule.operator, rel.routine_id 
                 FROM srlcm_rule AS rule
                 JOIN srlcm_routine_rule AS rel ON rel.rule_id = rule.rule_id
                 WHERE rule.rule_id = %s
@@ -48,7 +48,7 @@ class ilSrRuleRepository implements IRuleRepository
         );
 
         if (!empty($result)) {
-            $this->transformToDTO($result[0]);
+            return $this->transformToDTO($result[0]);
         }
 
         return null;
@@ -60,7 +60,7 @@ class ilSrRuleRepository implements IRuleRepository
     public function getByRoutine(IRoutine $routine, bool $array_data = false) : array
     {
         $query = "
-            SELECT rule.lhs_type, rule.lhs_value, rule.rhs_type, rule.rhs_value, rule.operator, rel.routine_id 
+            SELECT rule.rule_id, rule.lhs_type, rule.lhs_value, rule.rhs_type, rule.rhs_value, rule.operator, rel.routine_id 
                 FROM srlcm_rule AS rule
                 JOIN srlcm_routine_rule AS rel ON rel.rule_id = rule.rule_id
                 WHERE rel.routine_id = %s
@@ -109,14 +109,14 @@ class ilSrRuleRepository implements IRuleRepository
         }
 
         $query = "
-            DELETE FROM rule, rel
-                FROM srlcm_rule AS rule
-                JOIN srlcm_routine_rule AS rel ON rule.rule_id = rel.rule_id
-                WHERE rule.rule_id = %s
+            DELETE rule, relation
+                FROM (SELECT %s AS rule_id) AS deletable
+                LEFT OUTER JOIN srlcm_rule AS rule ON rule.rule_id = deletable.rule_id
+                LEFT OUTER JOIN srlcm_routine_rule AS relation ON relation.rule_id = deletable.rule_id
             ;
         ";
 
-        $result = $this->database->manipulateF(
+        $this->database->manipulateF(
             $query,
             ['integer'],
             [$rule->getRuleId()]
@@ -185,11 +185,12 @@ class ilSrRuleRepository implements IRuleRepository
             ;
         ";
 
-        $rule_id = $this->database->manipulateF(
+        $rule_id = (int) $this->database->nextId('srlcm_rule');
+        $this->database->manipulateF(
             $query,
             ['integer', 'text', 'text', 'text', 'text', 'text'],
             [
-                $this->database->nextId('srlcm_rule'),
+                $rule_id,
                 $rule->getLhsType(),
                 $rule->getLhsValue(),
                 $rule->getRhsType(),
@@ -209,7 +210,7 @@ class ilSrRuleRepository implements IRuleRepository
             ]
         );
 
-        return $rule->setRuleId((int) $rule_id);
+        return $rule->setRuleId($rule_id);
     }
 
     /**
@@ -224,7 +225,8 @@ class ilSrRuleRepository implements IRuleRepository
             $query_result[IRule::F_OPERATOR],
             $query_result[IRule::F_RHS_TYPE],
             $query_result[IRule::F_RHS_VALUE],
-            $query_result[IRule::F_ROUTINE_ID]
+            (int) $query_result[IRule::F_ROUTINE_ID],
+            (int) $query_result[IRule::F_RULE_ID]
         );
     }
 }

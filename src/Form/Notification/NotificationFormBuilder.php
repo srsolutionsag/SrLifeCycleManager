@@ -19,11 +19,11 @@ class NotificationFormBuilder extends AbstractFormBuilder
 {
     // NotificationFormBuilder inputs:
     public const INPUT_NOTIFICATION_TITLE = 'input_name_notification_title';
-    public const INPUT_NOTIFICATION_CONTENT = 'input_name_notification_message';
-    public const INPUT_NOTIFICATION_DAYS_BEFORE_SUBMISSION = 'input_name_notification_days';
+    public const INPUT_NOTIFICATION_CONTENT = 'input_name_notification_content';
+    public const INPUT_NOTIFICATION_DAYS_BEFORE_SUBMISSION = 'input_name_notification_days_before_submission';
 
     // NotificationFormBuilder language variables:
-    protected const INPUT_NOTIFICATION_CONTENT_INFO = 'input_name_notification_message_info';
+    protected const INPUT_NOTIFICATION_CONTENT_INFO = 'input_name_notification_content_info';
 
     /**
      * @var INotification

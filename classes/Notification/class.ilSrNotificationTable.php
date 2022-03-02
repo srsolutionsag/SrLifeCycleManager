@@ -25,40 +25,6 @@ class ilSrNotificationTable extends ilSrAbstractTable
     public const ACTION_NOTIFICATION_DELETE = 'action_notification_delete';
 
     /**
-     * @var IRoutine
-     */
-    protected $routine;
-
-    /**
-     * @param Factory           $ui_factory
-     * @param Renderer          $renderer
-     * @param ITranslator       $translator
-     * @param ilSrAccessHandler $access_handler
-     * @param ilCtrl            $ctrl
-     * @param IRoutine          $routine
-     * @param object            $parent_gui_object
-     * @param string            $parent_gui_cmd
-     * @param array             $table_data
-     */
-    public function __construct(
-        Factory $ui_factory,
-        Renderer $renderer,
-        ITranslator $translator,
-        ilSrAccessHandler $access_handler,
-        ilCtrl $ctrl,
-        IRoutine $routine,
-        object $parent_gui_object,
-        string $parent_gui_cmd,
-        array $table_data
-    ) {
-        parent::__construct(
-            $ui_factory, $renderer, $translator, $access_handler, $ctrl, $parent_gui_object, $parent_gui_cmd, $table_data
-        );
-
-        $this->routine = $routine;
-    }
-
-    /**
      * @inheritDoc
      */
     protected function getTemplateName() : string
@@ -88,54 +54,53 @@ class ilSrNotificationTable extends ilSrAbstractTable
         $template->setVariable(
             self::COL_ACTIONS,
             $this->renderer->render(
-                $this->getActionDropdown($data[INotification::F_NOTIFICATION_ID])
+                $this->getActionDropdown(
+                    (int) $data[INotification::F_NOTIFICATION_ID],
+                    (int) $data[INotification::F_ROUTINE_ID]
+                )
             )
         );
     }
 
     /**
      * @param int $notification_id
+     * @param int $routine_id
      * @return Dropdown
      */
-    protected function getActionDropdown(int $notification_id) : Dropdown
+    protected function getActionDropdown(int $notification_id, int $routine_id) : Dropdown
     {
-        $this->setActionParameters($notification_id);
+        $this->setActionParameters($notification_id, $routine_id);
 
-        $actions = [];
+        $actions[] = $this->ui_factory->button()->shy(
+            $this->translator->txt(self::ACTION_NOTIFICATION_EDIT),
+            $this->ctrl->getLinkTargetByClass(
+                ilSrNotificationGUI::class,
+                ilSrNotificationGUI::CMD_NOTIFICATION_EDIT
+            )
+        );
 
-        // these actions are only necessary if the user is administrator
-        // or the owner of the current routine.
-        if ($this->access_handler->isRoutineOwner($this->routine->getOwnerId())) {
-            $actions[] = $this->ui->factory()->button()->shy(
-                $this->plugin->txt(self::ACTION_NOTIFICATION_EDIT),
-                $this->ctrl->getLinkTargetByClass(
-                    ilSrNotificationGUI::class,
-                    ilSrNotificationGUI::CMD_NOTIFICATION_EDIT
-                )
-            );
+        $actions[] = $this->ui_factory->button()->shy(
+            $this->translator->txt(self::ACTION_NOTIFICATION_DELETE),
+            $this->ctrl->getLinkTargetByClass(
+                ilSrNotificationGUI::class,
+                ilSrNotificationGUI::CMD_NOTIFICATION_DELETE
+            )
+        );
 
-            $actions[] = $this->ui->factory()->button()->shy(
-                $this->plugin->txt(self::ACTION_NOTIFICATION_DELETE),
-                $this->ctrl->getLinkTargetByClass(
-                    ilSrNotificationGUI::class,
-                    ilSrNotificationGUI::CMD_NOTIFICATION_DELETE
-                )
-            );
-        }
-
-        return $this->ui->factory()->dropdown()->standard($actions);
+        return $this->ui_factory->dropdown()->standard($actions);
     }
 
     /**
      * @param int $notification_id
+     * @param int $routine_id
      * @return void
      */
-    protected function setActionParameters(int $notification_id) : void
+    protected function setActionParameters(int $notification_id, int $routine_id) : void
     {
         $this->ctrl->setParameterByClass(
             ilSrNotificationGUI::class,
             ilSrNotificationGUI::PARAM_ROUTINE_ID,
-            $this->routine->getRoutineId()
+            $routine_id
         );
 
         $this->ctrl->setParameterByClass(

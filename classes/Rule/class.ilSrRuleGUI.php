@@ -80,7 +80,13 @@ class ilSrRuleGUI extends ilSrAbstractGUI
         $tabs
             ->addConfigurationTab()
             ->addRoutineTab()
-            ->setActiveTab('§')
+            ->deactivateTabs()
+            ->setBackToTarget(
+                $this->ctrl->getLinkTargetByClass(
+                    ilSrRoutineGUI::class,
+                    ilSrRoutineGUI::CMD_INDEX
+                )
+            )
         ;
     }
 
@@ -126,7 +132,6 @@ class ilSrRuleGUI extends ilSrAbstractGUI
             $this->translator,
             $this->access_handler,
             $this->ctrl,
-            $this->routine,
             $this,
             self::CMD_INDEX,
             $this->repository->rule()->getByRoutine($this->routine, true)
@@ -182,7 +187,7 @@ class ilSrRuleGUI extends ilSrAbstractGUI
      */
     protected function delete() : void
     {
-        if (null !== $this->rule) {
+        if (null !== $this->rule->getRuleId()) {
             $this->sendSuccessMessage(self::MSG_RULE_SUCCESS);
             $this->repository->rule()->delete($this->rule);
         } else {

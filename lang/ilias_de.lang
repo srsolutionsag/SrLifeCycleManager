@@ -45,17 +45,21 @@ col_rule_rhs_value#:#RHS Wert
 col_rule_operator#:#Operator
 col_rule_lhs_type#:#LHS Typ
 col_rule_lhs_value#:#LHS Wert
-col_notification_message#:#Benachrichtigung
-col_notification_days#:#Senden (in Tagen bevor Routine)
+col_notification_title#:#Titel
+col_notification_content#:#Inhalt
+col_notification_days_before_submission#:#Senden (Tage vor Löschung)
 
-input_routine_ref_id#:#Ref-id (scope)
-input_routine_title#:#Name
-input_routine_type#:#Routinen Typ
-input_routine_is_active#:#Aktiv?
-input_routine_has_opt_out#:#Opt-out möglich?
-input_routine_elongation#:#Verlängerung (in Tage)
-input_routine_elongation_possible#:#Verlängerung möglich?
-input_notification_message_info#:#Benutze [EXTENSION_LINK] für einen Link, mit dem Empfänger das Objekt um die definierte Zeit verlängern können. <br /> Benutze [OBJECT_LINK] für einen Link zum Objekt, dass gelöscht werden soll.
+input_name_routine_ref_id#:#Ref-id (scope)
+input_name_routine_title#:#Name
+input_name_routine_type#:#Routinen Typ
+input_name_routine_is_active#:#Aktiv?
+input_name_routine_has_opt_out#:#Opt-out möglich?
+input_name_routine_elongation#:#Verlängerung (in Tage)
+input_name_routine_elongation_possible#:#Verlängerung möglich?
+input_name_notification_title#:#Titel
+input_name_notification_content#:#Inhalt
+input_name_notification_content_info#:#Benutze [EXTENSION_LINK] für einen Link, mit dem Empfänger das Objekt um die definierte Zeit verlängern können. <br /> Benutze [OBJECT_LINK] für einen Link zum Objekt, dass gelöscht werden soll.
+input_name_notification_days_before_submission#:#Senden (Tage vor Löschung)
 
 routine_origin_type_admin#:#Administration
 routine_origin_type_repo#:#Magazin

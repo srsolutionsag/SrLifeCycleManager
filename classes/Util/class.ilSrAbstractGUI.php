@@ -38,9 +38,10 @@ abstract class ilSrAbstractGUI
     public const CMD_INDEX = 'index';
 
     /**
-     * @var string parameter name of a routine-id.
+     * GET-parameter names.
      */
     public const PARAM_ROUTINE_ID = 'routine_id';
+    public const PARAM_ROUTINE_REF_ID = 'routine_ref_id';
 
     /**
      * common language variables.
@@ -178,6 +179,7 @@ abstract class ilSrAbstractGUI
         ;
 
         $this->keepAlive(self::PARAM_ROUTINE_ID);
+        $this->keepAlive(self::PARAM_ROUTINE_REF_ID);
     }
 
     /**
@@ -196,8 +198,7 @@ abstract class ilSrAbstractGUI
 
         $this->setupGlobalTemplate(
             $this->global_template,
-            $this->tab_manager,
-            $this->toolbar_manager
+            $this->tab_manager
         );
 
         if (!$this->canUserExecute($this->access_handler, $command)) {

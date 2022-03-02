@@ -18,13 +18,13 @@ use ILIAS\UI\Component\Input\Field\Factory as FieldFactory;
 class RoutineFormBuilder extends AbstractFormBuilder
 {
     // RoutineFormBuilder inputs:
-    public const INPUT_ELONGATION = 'input_elongation';
-    public const INPUT_ELONGATION_POSSIBLE = 'input_elongation_possible';
-    public const INPUT_HAS_OPT_OUT = 'input_has_opt_out';
-    public const INPUT_IS_ACTIVE  = 'input_is_active';
-    public const INPUT_REF_ID = 'input_ref_id';
-    public const INPUT_ROUTINE_TYPE = 'input_routine_type';
-    public const INPUT_TITLE = 'input_title';
+    public const INPUT_ELONGATION = 'input_name_routine_elongation';
+    public const INPUT_ELONGATION_POSSIBLE = 'input_name_routine_elongation_possible';
+    public const INPUT_HAS_OPT_OUT = 'input_name_routine_has_opt_out';
+    public const INPUT_IS_ACTIVE  = 'input_name_routine_is_active';
+    public const INPUT_REF_ID = 'input_name_routine_ref_id';
+    public const INPUT_ROUTINE_TYPE = 'input_name_routine_type';
+    public const INPUT_TITLE = 'input_name_routine_title';
 
     /**
      * @var IRoutine
@@ -79,6 +79,9 @@ class RoutineFormBuilder extends AbstractFormBuilder
             ])
             ->withRequired(true)
             ->withValue($this->routine->getRoutineType())
+            // the routine type cannot be changed after creation, because
+            // rules are added considering by this attribute.
+            ->withDisabled(null !== $this->routine->getRoutineId())
         ;
 
         $inputs[self::INPUT_IS_ACTIVE] = $this->fields

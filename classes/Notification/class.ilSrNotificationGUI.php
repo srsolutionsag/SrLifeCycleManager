@@ -82,6 +82,13 @@ class ilSrNotificationGUI extends ilSrAbstractGUI
         $tabs
             ->addConfigurationTab()
             ->addRoutineTab()
+            ->deactivateTabs()
+            ->setBackToTarget(
+                $this->ctrl->getLinkTargetByClass(
+                    ilSrRoutineGUI::class,
+                    self::CMD_INDEX
+                )
+            )
         ;
     }
 
@@ -111,12 +118,12 @@ class ilSrNotificationGUI extends ilSrAbstractGUI
             $this->translator,
             $this->access_handler,
             $this->ctrl,
-            $this->routine,
             $this,
             self::CMD_INDEX,
             $this->repository->notification()->getByRoutine($this->routine, true)
         );
 
+        $this->toolbar_manager->addNotificationToolbar();
         $this->render($table->getTable());
     }
 

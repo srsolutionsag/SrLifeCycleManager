@@ -134,6 +134,17 @@ class ilSrTabManager
     }
 
     /**
+     * Deactivates all activated tabs by setting an invalid character as id.
+     *
+     * @return $this
+     */
+    public function deactivateTabs() : self
+    {
+        $this->setActiveTab('§');
+        return $this;
+    }
+
+    /**
      * Shows a given tab-id as activated (can only be one at a time).
      *
      * @param string $tab_id
@@ -142,7 +153,6 @@ class ilSrTabManager
     public function setActiveTab(string $tab_id) : self
     {
         $this->tabs->activateTab($tab_id);
-
         return $this;
     }
 }

@@ -215,11 +215,12 @@ class ilSrRoutineRepository implements IRoutineRepository
             ;
         ";
 
-        $routine_id = $this->database->manipulateF(
+        $routine_id = (int) $this->database->nextId('srlcm_routine');
+        $this->database->manipulateF(
             $query,
             ['integer', 'integer', 'integer', 'text', 'integer', 'integer', 'integer', 'integer', 'text', 'date'],
             [
-                $this->database->nextId('srlcm_routine'),
+                $routine_id,
                 $routine->getRefId(),
                 $routine->getOwnerId(),
                 $routine->getRoutineType(),
@@ -232,7 +233,7 @@ class ilSrRoutineRepository implements IRoutineRepository
             ]
         );
 
-        return $routine->setRoutineId((int) $routine_id);
+        return $routine->setRoutineId($routine_id);
     }
 
     /**

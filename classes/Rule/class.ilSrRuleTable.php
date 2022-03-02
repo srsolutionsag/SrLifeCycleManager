@@ -29,40 +29,6 @@ class ilSrRuleTable extends ilSrAbstractTable
     public const ACTION_RULE_DELETE = 'action_rule_delete';
 
     /**
-     * @var IRoutine
-     */
-    protected $routine;
-
-    /**
-     * @param Factory           $ui_factory
-     * @param Renderer          $renderer
-     * @param ITranslator       $translator
-     * @param ilSrAccessHandler $access_handler
-     * @param ilCtrl            $ctrl
-     * @param IRoutine          $routine
-     * @param object            $parent_gui_object
-     * @param string            $parent_gui_cmd
-     * @param array             $table_data
-     */
-    public function __construct(
-        Factory $ui_factory,
-        Renderer $renderer,
-        ITranslator $translator,
-        ilSrAccessHandler $access_handler,
-        ilCtrl $ctrl,
-        IRoutine $routine,
-        object $parent_gui_object,
-        string $parent_gui_cmd,
-        array $table_data
-    ) {
-        parent::__construct(
-            $ui_factory, $renderer, $translator, $access_handler, $ctrl, $parent_gui_object, $parent_gui_cmd, $table_data
-        );
-
-        $this->routine = $routine;
-    }
-
-    /**
      * @inheritDoc
      */
     protected function getTemplateName() : string
@@ -110,11 +76,17 @@ class ilSrRuleTable extends ilSrAbstractTable
         $template->setVariable(
             self::COL_ACTIONS,
             $this->renderer->render(
-                $this->getActionDropdown((int) $data[IRule::F_RULE_ID])
+                $this->getActionDropdown(
+                    (int) $data[IRule::F_RULE_ID]
+                )
             )
         );
     }
 
+    /**
+     * @param int $rule_id
+     * @return Dropdown
+     */
     protected function getActionDropdown(int $rule_id) : Dropdown
     {
         $this->ctrl->setParameterByClass(
@@ -123,27 +95,21 @@ class ilSrRuleTable extends ilSrAbstractTable
             $rule_id
         );
 
-        $actions = [];
+//        $actions[] = $this->ui_factory->button()->shy(
+//            $this->translator->txt(self::ACTION_RULE_EDIT),
+//            $this->ctrl->getLinkTargetByClass(
+//                ilSrRuleGUI::class,
+//                ilSrRuleGUI::CMD_RULE_EDIT
+//            )
+//        );
 
-        // these actions are only necessary if the user is administrator
-        // or the owner of the current routine.
-        if ($this->access_handler->isRoutineOwner($this->routine->getOwnerId())) {
-            $actions[] = $this->ui_factory->button()->shy(
-                $this->translator->txt(self::ACTION_RULE_EDIT),
-                $this->ctrl->getLinkTargetByClass(
-                    ilSrRuleGUI::class,
-                    ilSrRuleGUI::CMD_RULE_EDIT
-                )
-            );
-
-            $actions[] = $this->ui_factory->button()->shy(
-                $this->translator->txt(self::ACTION_RULE_DELETE),
-                $this->ctrl->getLinkTargetByClass(
-                    ilSrRuleGUI::class,
-                    ilSrRuleGUI::CMD_RULE_EDIT
-                )
-            );
-        }
+        $actions[] = $this->ui_factory->button()->shy(
+            $this->translator->txt(self::ACTION_RULE_DELETE),
+            $this->ctrl->getLinkTargetByClass(
+                ilSrRuleGUI::class,
+                ilSrRuleGUI::CMD_RULE_DELETE
+            )
+        );
 
         return $this->ui_factory->dropdown()->standard($actions);
     }

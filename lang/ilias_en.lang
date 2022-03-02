@@ -45,19 +45,21 @@ col_rule_rhs_value#:#RHS value
 col_rule_operator#:#Operator
 col_rule_lhs_type#:#LHS type
 col_rule_lhs_value#:#LHS value
-col_notification_message#:#Notification message
-col_notification_days#:#Sent (in days before deletion)
+col_notification_title#:#Notification title
+col_notification_content#:#Notification content
+col_notification_days_before_submission#:#Sent (days before deletion)
 
-input_routine_ref_id#:#Ref-id (scope)
-input_routine_title#:#Name
-input_routine_type#:#Routine type
-input_routine_is_active#:#Active?
-input_routine_has_opt_out#:#Opt-out possible?
-input_routine_elongation#:#Elongation (in days)
-input_routine_elongation_possible#:#Elongation possible?
-input_notification_message#:#Notification message
-input_notification_message_info#:#Type [EXTENSION_LINK] where recipients can postpone the deletion by your routines configured amount. <br /> Type [OBJECT_LINK] where recipients can go to the object that is about to be deleted.
-input_notification_days#:#Sent (in days before deletion)
+input_name_routine_ref_id#:#Ref-id (scope)
+input_name_routine_title#:#Name
+input_name_routine_type#:#Routine type
+input_name_routine_is_active#:#Active?
+input_name_routine_has_opt_out#:#Opt-out possible?
+input_name_routine_elongation#:#Elongation (in days)
+input_name_routine_elongation_possible#:#Elongation possible?
+input_name_notification_title#:#Notification title
+input_name_notification_content#:#Notification content
+input_name_notification_content_info#:#Type [EXTENSION_LINK] where recipients can postpone the deletion by your routines configured amount. <br /> Type [OBJECT_LINK] where recipients can go to the object that is about to be deleted.
+input_name_notification_days_before_submission#:#Sent (in days before deletion)
 
 routine_origin_type_admin#:#Administration
 routine_origin_type_repo#:#Repository
