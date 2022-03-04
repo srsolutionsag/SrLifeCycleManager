@@ -59,7 +59,7 @@ class Config implements IConfig
     /**
      * @inheritDoc
      */
-    public function canToolShowRoutines() : bool
+    public function showRoutinesInRepository() : bool
     {
         return $this->can_tool_show;
     }
@@ -67,7 +67,7 @@ class Config implements IConfig
     /**
      * @inheritDoc
      */
-    public function setToolCanShowRoutines(bool $can_show) : IConfig
+    public function setShowRoutinesInRepository(bool $can_show) : IConfig
     {
         $this->can_tool_show = $can_show;
         return $this;
@@ -76,7 +76,7 @@ class Config implements IConfig
     /**
      * @inheritDoc
      */
-    public function canToolCreateRoutines() : bool
+    public function createRoutinesInRepository() : bool
     {
         return $this->can_tool_create;
     }
@@ -84,7 +84,7 @@ class Config implements IConfig
     /**
      * @inheritDoc
      */
-    public function setToolCanCreateRoutines(bool $can_create) : IConfig
+    public function setCreateRoutinesInRepository(bool $can_create) : IConfig
     {
         $this->can_tool_create = $can_create;
         return $this;

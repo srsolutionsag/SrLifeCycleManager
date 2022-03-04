@@ -10,6 +10,13 @@ namespace srag\Plugins\SrLifeCycleManager\Routine;
 interface IRoutineRepository
 {
     /**
+     * Returns an instance of the whitelist repository.
+     *
+     * @return IWhitelistRepository
+     */
+    public function whitelist() : IWhitelistRepository;
+
+    /**
      * Fetches an existing routine from the database for the given id.
      *
      * @param int $routine_id
@@ -26,9 +33,19 @@ interface IRoutineRepository
      *
      * @param int  $ref_id
      * @param bool $array_data
-     * @return array
+     * @return IRoutine[]
      */
     public function getAllByRefId(int $ref_id, bool $array_data = false) : array;
+
+    /**
+     * Fetches all active routines from the database that affect the given
+     * ref-id and are of the provided routine type.
+     *
+     * @param int    $ref_id
+     * @param string $routine_type
+     * @return IRoutine[]
+     */
+    public function getByRefIdAndType(int $ref_id, string $routine_type) : array;
 
     /**
      * Creates or updates the given routine in the database.

@@ -3,6 +3,7 @@
 /* Copyright (c) 2022 Thibeau Fuhrer <thibeau@sr.solutions> Extended GPL, see docs/LICENSE */
 
 use srag\Plugins\SrLifeCycleManager\ITranslator;
+use srag\Plugins\SrLifeCycleManager\Routine\IRoutine;
 
 /**
  * This class is responsible for managing the plugin toolbars.

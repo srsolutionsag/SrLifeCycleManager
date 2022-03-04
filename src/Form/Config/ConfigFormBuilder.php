@@ -62,14 +62,14 @@ class ConfigFormBuilder extends AbstractFormBuilder
             )
         ;
 
-        $inputs[IConfig::CNF_SHOW_ROUTINES] = $this->fields
-            ->checkbox($this->translator->txt(IConfig::CNF_SHOW_ROUTINES))
-            ->withValue($this->config->canToolShowRoutines())
+        $inputs[IConfig::CNF_SHOW_ROUTINES_IN_REPOSITORY] = $this->fields
+            ->checkbox($this->translator->txt(IConfig::CNF_SHOW_ROUTINES_IN_REPOSITORY))
+            ->withValue($this->config->showRoutinesInRepository())
         ;
 
-        $inputs[IConfig::CNF_CREATE_ROUTINES] = $this->fields
-            ->checkbox($this->translator->txt(IConfig::CNF_CREATE_ROUTINES))
-            ->withValue($this->config->canToolCreateRoutines())
+        $inputs[IConfig::CNF_CREATE_ROUTINES_IN_REPOSITORY] = $this->fields
+            ->checkbox($this->translator->txt(IConfig::CNF_CREATE_ROUTINES_IN_REPOSITORY))
+            ->withValue($this->config->createRoutinesInRepository())
         ;
 
         return $this->forms->standard(

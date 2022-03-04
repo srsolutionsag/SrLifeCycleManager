@@ -5,6 +5,7 @@
 use srag\Plugins\SrLifeCycleManager\Routine\IRoutineRepository;
 use srag\Plugins\SrLifeCycleManager\Routine\IRoutine;
 use srag\Plugins\SrLifeCycleManager\Routine\Routine;
+use srag\Plugins\SrLifeCycleManager\Routine\IWhitelistRepository;
 
 /**
  * This repository is responsible for all routine CRUD operations.
@@ -15,10 +16,17 @@ use srag\Plugins\SrLifeCycleManager\Routine\Routine;
  */
 class ilSrRoutineRepository implements IRoutineRepository
 {
+    use ilSrRepositoryHelper;
+
     /**
      * @var string mysql datetime format string.
      */
     protected const MYSQL_DATETIME_FORMAT = 'Y-m-d';
+
+    /**
+     * @var IWhitelistRepository
+     */
+    protected $whitelist_repository;
 
     /**
      * @var ilDBInterface
@@ -31,13 +39,26 @@ class ilSrRoutineRepository implements IRoutineRepository
     protected $tree;
 
     /**
-     * @param ilDBInterface $database
-     * @param ilTree        $tree
+     * @param IWhitelistRepository $whitelist_repository
+     * @param ilDBInterface        $database
+     * @param ilTree               $tree
      */
-    public function __construct(ilDBInterface $database, ilTree $tree)
-    {
+    public function __construct(
+        IWhitelistRepository $whitelist_repository,
+        ilDBInterface $database,
+        ilTree $tree
+    ) {
+        $this->whitelist_repository = $whitelist_repository;
         $this->database = $database;
         $this->tree = $tree;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function whitelist() : IWhitelistRepository
+    {
+        return $this->whitelist_repository;
     }
 
     /**
@@ -74,18 +95,44 @@ class ilSrRoutineRepository implements IRoutineRepository
      */
     public function getAllByRefId(int $ref_id, bool $array_data = false) : array
     {
-        // gather all parent objects of the given ref-id and
-        // add the id itself to the array as well.
-        $parents = $this->getParentIdsRecursively($ref_id);
-        $parents[] = $ref_id;
-
-        $in_group = implode(',', $parents);
         $query = "
             SELECT 
                 routine_id, ref_id, usr_id, routine_type, origin_type, is_active, 
                 has_opt_out, elongation, title, creation_date
                 FROM srlcm_routine 
-                WHERE ref_id IN (%s)
+                WHERE ref_id IN ({$this->getParentIdsForSqlComparison($this->tree, $ref_id)})
+            ;
+        ";
+
+        $results = $this->database->fetchAll(
+            $this->database->query($query)
+        );
+
+        if ($array_data) {
+            return $results;
+        }
+
+        $routines = [];
+        foreach ($results as $result) {
+            $routines[] = $this->transformToDTO($result);
+        }
+
+        return $routines;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function getByRefIdAndType(int $ref_id, string $routine_type) : array
+    {
+        $query = "
+            SELECT 
+                routine_id, ref_id, usr_id, routine_type, origin_type, is_active, 
+                has_opt_out, elongation, title, creation_date
+                FROM srlcm_routine 
+                WHERE ref_id IN ({$this->getParentIdsForSqlComparison($this->tree, $ref_id)})
+                AND routine_type LIKE %s
+                AND is_active = 1
             ;
         ";
 
@@ -93,13 +140,9 @@ class ilSrRoutineRepository implements IRoutineRepository
             $this->database->queryF(
                 $query,
                 ['text'],
-                [$in_group]
+                [$routine_type]
             )
         );
-
-        if ($array_data) {
-            return $results;
-        }
 
         $routines = [];
         foreach ($results as $result) {
@@ -126,8 +169,6 @@ class ilSrRoutineRepository implements IRoutineRepository
      */
     public function delete(IRoutine $routine) : bool
     {
-        // @TODO: test this when routine is associated with everything.
-
         // the query is rather ugly, but since ILIAS doesn't handle
         // fk constraints we have to delete them manually, and I really
         // wanted to do this in one statement.
@@ -234,25 +275,6 @@ class ilSrRoutineRepository implements IRoutineRepository
         );
 
         return $routine->setRoutineId($routine_id);
-    }
-
-    /**
-     * @param int $ref_id
-     * @return array|null
-     */
-    protected function getParentIdsRecursively(int $ref_id) : ?array
-    {
-        static $parents;
-
-        $parent_id = $this->tree->getParentId($ref_id);
-        // type-cast is not redundant, as getParentId() returns
-        // a string (not as stated by the phpdoc).
-        if (null !== $parent_id && 0 < (int) $parent_id) {
-            $parents[] = (int) $parent_id;
-            $this->getParentIdsRecursively((int) $parent_id);
-        }
-
-        return (!empty($parents)) ? $parents : null;
     }
 
     /**

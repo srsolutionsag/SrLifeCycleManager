@@ -33,6 +33,16 @@ interface IRuleRepository
     public function getByRoutine(IRoutine $routine, bool $array_data = false) : array;
 
     /**
+     * Fetches all rules that are related to a routine which affects the given
+     * object (ref-id) and is of the given routine-type.
+     *
+     * @param int    $ref_id
+     * @param string $routine_type
+     * @return IRule[]
+     */
+    public function getByRoutineRefIdAndType(int $ref_id, string $routine_type) : array;
+
+    /**
      * Creates or updates an existing rule in the database and relates
      * it to set routine.
      *

@@ -84,7 +84,7 @@ class ilSrRuleGUI extends ilSrAbstractGUI
             ->setBackToTarget(
                 $this->ctrl->getLinkTargetByClass(
                     ilSrRoutineGUI::class,
-                    ilSrRoutineGUI::CMD_INDEX
+                    self::CMD_INDEX
                 )
             )
         ;
@@ -95,15 +95,13 @@ class ilSrRuleGUI extends ilSrAbstractGUI
      */
     protected function canUserExecute(ilSrAccessHandler $access_handler, string $command) : bool
     {
+        // rules must be visible for object administrators.
         if (self::CMD_INDEX === $command) {
-            return $access_handler->canViewRoutines();
+            return $access_handler->canViewRoutines($this->object_ref_id);
         }
 
-        if (null !== $this->routine->getRoutineId()) {
-            return $this->access_handler->isRoutineOwner($this->routine->getOwnerId());
-        }
-
-        return false;
+        // for all other commands the user must be owner of the routine.
+        return $access_handler->isCurrentUser($this->routine->getOwnerId());
     }
 
     /**

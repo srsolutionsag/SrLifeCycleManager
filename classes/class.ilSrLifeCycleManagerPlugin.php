@@ -40,6 +40,20 @@ class ilSrLifeCycleManagerPlugin extends ilCronHookPlugin implements ITranslator
     protected static $instance;
 
     /**
+     * Initializes the tool- and main-menu-provider and registers them.
+     */
+    public function __construct()
+    {
+        global $DIC;
+        parent::__construct();
+
+        $this->provider_collection
+            ->setMainBarProvider(new ilSrMenuProvider($DIC, $this))
+            ->setToolProvider(new ilSrToolProvider($DIC, $this))
+        ;
+    }
+
+    /**
      * Returns an instance of the plugin object.
      *
      * @return self

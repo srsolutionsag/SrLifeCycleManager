@@ -1,4 +1,6 @@
 
+tool_main_entry#:#Routines
+
 crs#:#Course
 grp#:#Group
 
@@ -19,6 +21,14 @@ msg_invalid_execution_dates#:#One of the submitted dates does not match the form
 msg_routine_whitelist_error#:#The requested routine does not support whitelist-entries.
 msg_routine_whitelist_failure#:#Your request was not an opt-out and elongations aren't supported.
 msg_routine_whitelist_success#:#Object successfully whitelisted.
+msg_privileged_user#:#You are allowed to manage your own routines at this position.
+msg_affected_routines#:#There are active routines that affect this object!
+msg_routine_cant_extend#:#This routine cannot be extended.
+msg_routine_extended#:#This object has been successfully whitelisted for [ELONGATION] days.
+msg_routine_extend_error#:#The object could not be whitelisted, you might already have.
+msg_routine_cant_opt_out#:#This routine cannot be opted out.
+msg_routine_opted_out#:#This object has been successfully whitelisted.
+msg_routine_opt_out_error#:#This object could not be whitelisted, you might already have.
 
 page_title_rules#:#SrLifeCycleManager rules
 page_title_config#:#SrLifeCycleManager configuration
@@ -29,8 +39,8 @@ tab_config_index#:#Configuration
 tab_routine_index#:#Routines
 
 cnf_privileged_roles#:#Global roles that can add Routines
-cnf_can_tool_create_routines#:#Create new Routines from Repository?
-cnf_can_tool_show_routines#:#Show active Routines in Repository?
+cnf_create_routines_in_repository#:#Create new Routines from Repository?
+cnf_show_routines_in_repository#:#Show active Routines in Repository?
 
 col_actions#:#Actions
 col_routine_ref_id#:#Ref-id (scope)
@@ -73,6 +83,10 @@ status_impossible#:#Impossible
 action_routine_add#:#Add routine
 action_routine_edit#:#Edit
 action_routine_delete#:#Delete
+action_routine_manage#:#Manage
+action_routine_extend#:#Extend
+action_routine_opt_out#:#Opt-out
+action_routine_view#:#View
 action_routine_rules#:#Rules
 action_routine_notifications#:#Notifications
 action_rule_add#:#Add rule

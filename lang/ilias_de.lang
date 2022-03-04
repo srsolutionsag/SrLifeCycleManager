@@ -1,4 +1,6 @@
 
+tool_main_entry#:#Routinen
+
 crs#:#Kurse
 grp#:#Gruppen
 
@@ -19,6 +21,14 @@ msg_invalid_execution_dates#:#Eines der eingegeben Daten entspricht nicht dem Fo
 msg_routine_whitelist_error#:#Die angefragte Routine unterstützt keine Whitelists.
 msg_routine_whitelist_failure#:#Die Anfrage war kein Opt-Out und Verlängerungen wird nicht unterstützt.
 msg_routine_whitelist_success#:#Objekt wurde erfolgreich auf die Whitelist gesetzt.
+msg_privileged_user#:#Sie sind berechtigt, eigene Routinen an dieser Stelle zu verwalten.
+msg_affected_routines#:#Es gibt aktive Routinen die das aktuelle Objekt betreffen!
+msg_routine_cant_extend#:#Objekte können von dieser Routine nicht verlängert werden.
+msg_routine_extended#:#Das Objekt wurde erfolgreich für [ELONGATION] Tage verlängert.
+msg_routine_extend_error#:#Das Objekt konnte nicht verlängert werden, ggf. haben Sie das bereits getan.
+msg_routine_cant_opt_out#:#Objekte können von dieser Routine nicht ignoriert werden.
+msg_routine_opted_out#:#Das Objekt wurde erfolgreich von dieser Routine ausgeschlossen.
+msg_routine_opt_out_error#:#Dieses Objekt konnte nicht von der Routine ausgeschlossen werden, ggf. haben Sie das bereits getan.
 
 page_title_rules#:#SrLifeCycleManager Regeln
 page_title_config#:#SrLifeCycleManager Einstellungen
@@ -73,6 +83,10 @@ status_impossible#:#Nicht möglich
 action_routine_add#:#Routine hinzufügen
 action_routine_edit#:#Bearbeiten
 action_routine_delete#:#Löschen
+action_routine_manage#:#Verwalten
+action_routine_extend#:#Verlängern
+action_routine_opt_out#:#Opt-out
+action_routine_view#:#Ansehen
 action_routine_rules#:#Regeln
 action_routine_notifications#:#Benachrichtigungen
 action_rule_add#:#Regel hinzufügen

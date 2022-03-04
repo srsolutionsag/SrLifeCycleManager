@@ -4,7 +4,6 @@
 
 use srag\Plugins\SrLifeCycleManager\Config\IConfig;
 use ILIAS\DI\RBACServices;
-use srag\Plugins\SrLifeCycleManager\Routine\IRoutine;
 
 /**
  * This class is responsible for all access-checks.
@@ -63,20 +62,26 @@ class ilSrAccessHandler
     }
 
     /**
-     * Checks if the current user can view routines.
+     * Checks if the current user can view routines. If no object is provided, the
+     * user must be assigned a privileged role.
      *
+     * @param int|null $ref_id
      * @return bool
      */
-    public function canViewRoutines() : bool
+    public function canViewRoutines(int $ref_id = null) : bool
     {
         if ($this->isAdministrator()) {
             return true;
         }
 
-        return (
-            $this->config->canToolShowRoutines() &&
-            $this->canManageRoutines()
-        );
+        if (null !== $ref_id) {
+            return (
+                $this->canManageRoutines() ||
+                $this->isAdministratorOf($ref_id)
+            );
+        }
+
+        return $this->canManageRoutines();
     }
 
     /**
@@ -119,13 +124,13 @@ class ilSrAccessHandler
     }
 
     /**
-     * Checks if the current user is the owner of the given routine.
+     * Checks if the given user id matches the current user id.
      *
-     * @param int $owner_id
+     * @param int $user_id
      * @return bool
      */
-    public function isRoutineOwner(int $owner_id) : bool
+    public function isCurrentUser(int $user_id) : bool
     {
-        return ($this->user->getId() === $owner_id);
+        return ($user_id === $this->user->getId());
     }
 }

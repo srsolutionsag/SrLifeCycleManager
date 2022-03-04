@@ -8,22 +8,34 @@ use srag\Plugins\SrLifeCycleManager\Rule\IRule;
 use srag\Plugins\SrLifeCycleManager\Rule\Rule;
 
 /**
+ * This repository is responsible for all rule CRUD operations.
+ *
  * @author Thibeau Fuhrer <thibeau@sr.solutions>
+ *
  * @noinspection AutoloadingIssuesInspection
  */
 class ilSrRuleRepository implements IRuleRepository
 {
+    use ilSrRepositoryHelper;
+
     /**
      * @var ilDBInterface
      */
     protected $database;
 
     /**
-     * @param ilDBInterface $database
+     * @var ilTree
      */
-    public function __construct(ilDBInterface $database)
+    protected $tree;
+
+    /**
+     * @param ilDBInterface $database
+     * @param ilTree        $tree
+     */
+    public function __construct(ilDBInterface $database, ilTree $tree)
     {
         $this->database = $database;
+        $this->tree = $tree;
     }
 
     /**
@@ -85,6 +97,40 @@ class ilSrRuleRepository implements IRuleRepository
         }
 
         return $rules;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function getByRoutineRefIdAndType(int $ref_id, string $routine_type) : array
+    {
+        $query = "
+            SELECT rule.rule_id, rule.lhs_type, rule.lhs_value, rule.rhs_type, rule.rhs_value, rule.operator, relation.routine_id 
+                FROM srlcm_rule AS rule
+                JOIN srlcm_routine_rule AS relation ON relation.rule_id = rule.rule_id
+                WHERE relation.routine_id IN (
+                    SELECT routine_id FROM srlcm_routine AS routine
+                        WHERE ref_id IN ({$this->getParentIdsForSqlComparison($this->tree, $ref_id)})
+                        AND routine_type LIKE %s
+                        AND is_active = 1
+                )
+            ;
+        ";
+
+        $results = $this->database->fetchAll(
+            $this->database->queryF(
+                $query,
+                ['text'],
+                [$routine_type]
+            )
+        );
+
+        $routines = [];
+        foreach ($results as $result) {
+            $routines[] = $this->transformToDTO($result);
+        }
+
+        return $routines;
     }
 
     /**

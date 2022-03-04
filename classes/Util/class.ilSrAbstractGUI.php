@@ -41,7 +41,7 @@ abstract class ilSrAbstractGUI
      * GET-parameter names.
      */
     public const PARAM_ROUTINE_ID = 'routine_id';
-    public const PARAM_ROUTINE_REF_ID = 'routine_ref_id';
+    public const PARAM_OBJECT_REF_ID = 'ref_id';
 
     /**
      * common language variables.
@@ -81,6 +81,11 @@ abstract class ilSrAbstractGUI
      * @var ilSrTabManager
      */
     protected $tab_manager;
+
+    /**
+     * @var int|null
+     */
+    protected $object_ref_id;
 
     /**
      * @var int
@@ -173,13 +178,21 @@ abstract class ilSrAbstractGUI
             $this->ctrl
         );
 
+        $this->object_ref_id = $this->getRequestedObject();
         $this->routine =
             $this->getRequestedRoutine() ??
             $this->repository->routine()->empty($this->user->getId(), $this->origin)
         ;
 
-        $this->keepAlive(self::PARAM_ROUTINE_ID);
-        $this->keepAlive(self::PARAM_ROUTINE_REF_ID);
+        // save current request object for all implementing classes.
+        // this cannot be done via static::class, because when building
+        // link targets to another gui the parameter must be considered.
+        $this->ctrl->saveParameterByClass(ilSrRoutineGUI::class, self::PARAM_OBJECT_REF_ID);
+        $this->ctrl->saveParameterByClass(ilSrRuleGUI::class, self::PARAM_OBJECT_REF_ID);
+        $this->ctrl->saveParameterByClass(ilSrNotificationGUI::class, self::PARAM_OBJECT_REF_ID);
+
+        // save current routine-id if provided for all derived classes.
+        $this->ctrl->saveParameterByClass(static::class, self::PARAM_ROUTINE_ID);
     }
 
     /**
@@ -254,25 +267,6 @@ abstract class ilSrAbstractGUI
     }
 
     /**
-     * Keeps a requested parameter value "alive" for the derived class, if
-     * the given parameter was delivered.
-     *
-     * @param string $parameter
-     * @return void
-     */
-    protected function keepAlive(string $parameter) : void
-    {
-        $parameter_value = $this->getRequestParameter($parameter);
-        if (null !== $parameter_value) {
-            $this->ctrl->setParameterByClass(
-                static::class,
-                $parameter,
-                $parameter_value
-            );
-        }
-    }
-
-    /**
      * Fetches the requested routine from the database, if a routine id was provided.
      *
      * @return IRoutine|null
@@ -282,6 +276,27 @@ abstract class ilSrAbstractGUI
         $routine_id = $this->getRequestParameter(self::PARAM_ROUTINE_ID);
         if (null !== $routine_id) {
             return $this->repository->routine()->get((int) $routine_id);
+        }
+
+        return null;
+    }
+
+    /**
+     * Returns the requested object ref-id from the request, if the request
+     * was made within the repository context.
+     *
+     * @return int|null
+     */
+    protected function getRequestedObject() : ?int
+    {
+        // only consider request objects from the repository.
+        if (IRoutine::ORIGIN_TYPE_REPOSITORY !== $this->origin) {
+            return null;
+        }
+
+        $requested_object = $this->getRequestParameter(self::PARAM_OBJECT_REF_ID);
+        if (null !== $requested_object) {
+            return (int) $requested_object;
         }
 
         return null;

@@ -283,12 +283,12 @@
         ]);
 
         $ilDB->insert($table_name, [
-            'identifier'    => ['text', 'cnf_can_tool_create_routines'],
+            'identifier'    => ['text', 'cnf_create_routines_in_repository'],
             'configuration' => ['text', '0'],
         ]);
 
         $ilDB->insert($table_name, [
-            'identifier'    => ['text', 'cnf_can_tool_show_routines'],
+            'identifier'    => ['text', 'cnf_show_routines_in_repository'],
             'configuration' => ['text', '0'],
         ]);
     }

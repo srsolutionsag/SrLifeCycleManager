@@ -61,12 +61,12 @@ class ilSrConfigRepository implements IConfigRepository
                     $config->setPrivilegedRoles($roles);
                     break;
 
-                case IConfig::CNF_SHOW_ROUTINES:
-                    $config->setToolCanShowRoutines((bool) $query_result[IConfig::F_CONFIG]);
+                case IConfig::CNF_SHOW_ROUTINES_IN_REPOSITORY:
+                    $config->setShowRoutinesInRepository((bool) $query_result[IConfig::F_CONFIG]);
                     break;
 
-                case IConfig::CNF_CREATE_ROUTINES:
-                    $config->setToolCanCreateRoutines((bool) $query_result[IConfig::F_CONFIG]);
+                case IConfig::CNF_CREATE_ROUTINES_IN_REPOSITORY:
+                    $config->setCreateRoutinesInRepository((bool) $query_result[IConfig::F_CONFIG]);
                     break;
             }
         }
@@ -80,8 +80,8 @@ class ilSrConfigRepository implements IConfigRepository
     public function store(IConfig $config) : IConfig
     {
         $this->updateConfig(IConfig::CNF_PRIVILEGED_ROLES, implode(',', $config->getPrivilegedRoles()));
-        $this->updateConfig(IConfig::CNF_SHOW_ROUTINES, (string) $config->canToolShowRoutines());
-        $this->updateConfig(IConfig::CNF_CREATE_ROUTINES, (string) $config->canToolCreateRoutines());
+        $this->updateConfig(IConfig::CNF_SHOW_ROUTINES_IN_REPOSITORY, (string) $config->showRoutinesInRepository());
+        $this->updateConfig(IConfig::CNF_CREATE_ROUTINES_IN_REPOSITORY, (string) $config->createRoutinesInRepository());
 
         return $config;
     }

@@ -95,6 +95,8 @@ class ilSrLifeCycleManagerDispatcher
         $base_class   = strtolower($base_class['class']);
 
         switch ($base_class) {
+            // because (somehow) this class cannot be called by ilRepositoryGUI,
+            // all requests from there will be handled via ilUIPluginRouterGUI.
             case strtolower(ilUIPluginRouterGUI::class):
                 return IRoutine::ORIGIN_TYPE_REPOSITORY;
 

@@ -36,6 +36,14 @@ interface IRoutine
     public const ROUTINE_TYPE_GROUP  = 'grp';
 
     /**
+     * @var string[] list of supported routine-types.
+     */
+    public const ROUTINE_TYPES = [
+        self::ROUTINE_TYPE_COURSE,
+        self::ROUTINE_TYPE_GROUP,
+    ];
+
+    /**
      * @return int|null
      */
     public function getRoutineId() : ?int;

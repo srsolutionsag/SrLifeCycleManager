@@ -118,7 +118,7 @@ class ilSrRoutineTable extends ilSrAbstractTable
 
         // these actions are only necessary if the user is administrator
         // or the owner of the current routine.
-        if ($this->access_handler->isRoutineOwner($owner_id)) {
+        if ($this->access_handler->isCurrentUser($owner_id)) {
             $actions[] = $this->ui_factory->button()->shy(
                 $this->translator->txt(self::ACTION_ROUTINE_NOTIFICATIONS),
                 $this->ctrl->getLinkTargetByClass(

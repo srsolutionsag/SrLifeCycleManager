@@ -5,6 +5,7 @@
 use srag\Plugins\SrLifeCycleManager\Form\IFormBuilder;
 use srag\Plugins\SrLifeCycleManager\Form\Routine\RoutineFormBuilder;
 use srag\Plugins\SrLifeCycleManager\Form\Routine\RoutineFormProcessor;
+use srag\Plugins\SrLifeCycleManager\Routine\IRoutine;
 
 /**
  * This GUI class is responsible for all actions regarding routines.
@@ -15,9 +16,6 @@ use srag\Plugins\SrLifeCycleManager\Form\Routine\RoutineFormProcessor;
  */
 class ilSrRoutineGUI extends ilSrAbstractGUI
 {
-    // ilSrRoutineGUI GET-parameter names:
-    public const PARAM_OBJECT_REF_ID = 'ref_id';
-
     // ilSrRoutineGUI command/method names:
     public const CMD_ROUTINE_EDIT    = 'edit';
     public const CMD_ROUTINE_SAVE    = 'save';
@@ -28,17 +26,13 @@ class ilSrRoutineGUI extends ilSrAbstractGUI
     // ilSrRoutineGUI language variables:
     protected const MSG_ROUTINE_SUCCESS = 'msg_routine_success';
     protected const MSG_ROUTINE_ERROR = 'msg_routine_error';
+    protected const MSG_ROUTINE_CANT_EXTEND = 'msg_routine_cant_extend';
+    protected const MSG_ROUTINE_EXTENDED = 'msg_routine_extended';
+    protected const MSG_ROUTINE_EXTEND_ERROR = 'msg_routine_extend_error';
+    protected const MSG_ROUTINE_CANT_OPT_OUT = 'msg_routine_cant_opt_out';
+    protected const MSG_ROUTINE_OPTED_OUT = 'msg_routine_opted_out';
+    protected const MSG_ROUTINE_OPT_OUT_ERROR = 'msg_routine_opt_out_error';
     protected const PAGE_TITLE = 'page_title_routine';
-
-    /**
-     * @var int|null
-     */
-    protected $object_ref_id;
-
-    /**
-     * @var int|null
-     */
-    protected $routine_ref_id;
 
     /**
      * @var IFormBuilder
@@ -52,9 +46,6 @@ class ilSrRoutineGUI extends ilSrAbstractGUI
     public function __construct()
     {
         parent::__construct();
-
-        $this->routine_ref_id = ($id = $this->getRequestParameter(self::PARAM_ROUTINE_REF_ID)) ? (int) $id : $id;
-        $this->object_ref_id = ($id = $this->getRequestParameter(self::PARAM_OBJECT_REF_ID)) ? (int) $id : $id;
 
         $this->form_builder = new RoutineFormBuilder(
             $this->translator,
@@ -72,11 +63,16 @@ class ilSrRoutineGUI extends ilSrAbstractGUI
     protected function setupGlobalTemplate(ilGlobalTemplateInterface $template, ilSrTabManager $tabs) : void
     {
         $template->setTitle($this->translator->txt(self::PAGE_TITLE));
-        if (null !== $this->routine_ref_id) {
-            $tabs->setBackToTarget(ilLink::_getLink($this->routine_ref_id));
+
+        // don't override the "back-to-plugins" target in configuration.
+        if (IRoutine::ORIGIN_TYPE_ADMINISTRATION !== $this->origin) {
+            $tabs->setBackToTarget($this->getBackToTarget());
         }
 
-        $tabs->addConfigurationTab()->addRoutineTab(true);
+        $tabs
+            ->addConfigurationTab()
+            ->addRoutineTab(true)
+        ;
     }
 
     /**
@@ -85,16 +81,20 @@ class ilSrRoutineGUI extends ilSrAbstractGUI
     protected function canUserExecute(ilSrAccessHandler $access_handler, string $command) : bool
     {
         switch ($command) {
+            // routines must be visible for object administrators.
             case self::CMD_INDEX:
-                return $access_handler->canViewRoutines();
+                return $access_handler->canViewRoutines($this->object_ref_id);
 
+            // routine extension or opt-out must only be accessible for
+            // administrators of the requested object.
             case self::CMD_ROUTINE_EXTEND:
             case self::CMD_ROUTINE_OPT_OUT:
-                if (null !== $this->object_ref_id) {
-                    return $access_handler->isAdministratorOf((int) $this->object_ref_id);
+                if (null === $this->object_ref_id) {
+                    return false;
                 }
-                return false;
+                return $access_handler->isAdministratorOf($this->object_ref_id);
 
+            // for all other commands the user must be able to manage routines.
             default:
                 return $access_handler->canManageRoutines();
         }
@@ -116,7 +116,10 @@ class ilSrRoutineGUI extends ilSrAbstractGUI
             $this->ctrl,
             $this,
             self::CMD_INDEX,
-            $this->repository->routine()->getAllByRefId($this->routine_ref_id ?? 1, true)
+            $this->repository->routine()->getAllByRefId(
+                $this->object_ref_id ?? 1,
+                true
+            )
         );
 
         $this->toolbar_manager->addRoutineToolbar();
@@ -132,6 +135,16 @@ class ilSrRoutineGUI extends ilSrAbstractGUI
      */
     protected function edit() : void
     {
+        // if the current routine has not been stored yet and
+        // an object was requested, the user wants to create
+        // a routine at this position, therefore the object is
+        // treated as routine-ref-id.
+        if (null !== $this->object_ref_id &&
+            null === $this->routine->getRoutineId()
+        ) {
+            $this->routine->setRefId($this->object_ref_id);
+        }
+
         $this->render($this->form_builder->getForm());
     }
 
@@ -179,19 +192,104 @@ class ilSrRoutineGUI extends ilSrAbstractGUI
     }
 
     /**
-     * @return void
+     * Extends the requested object for the possible amount of days
+     * from the current routine.
+     *
+     * If the request object or routine wasn't provided the page will
+     * display an error message.
+     *
+     * Otherwise, the user will be redirected back to the requested
+     * object with an according info-message.
      */
     protected function extend() : void
     {
+        // abort if the requested routine has not been stored yet or
+        // no target object was provided.
+        if (null === $this->object_ref_id ||
+            null === $this->routine->getRoutineId()
+        ) {
+            $this->displayErrorMessage(self::MSG_OBJECT_NOT_FOUND);
+            return;
+        }
 
+        // abort if the requested routine does not support elongations.
+        if (1 > $this->routine->getElongation()) {
+            $this->displayErrorMessage(self::MSG_ROUTINE_CANT_EXTEND);
+            return;
+        }
+
+        $success = $this->repository->routine()->whitelist()->extendObjectByRefId(
+            $this->routine,
+            $this->object_ref_id
+        );
+
+        if ($success) {
+            $this->sendSuccessMessage(self::MSG_ROUTINE_EXTENDED);
+        } else {
+            $this->sendErrorMessage(self::MSG_ROUTINE_EXTEND_ERROR);
+        }
+
+        // redirect back to the target object with according message.
+        $this->ctrl->redirectToURL(ilLink::_getLink($this->object_ref_id));
     }
 
     /**
-     * @return void
+     * Opts-out the requested object from the current routine.
+     *
+     * If the request object or routine wasn't provided the page will
+     * display an error message.
+     *
+     * Otherwise, the user will be redirected back to the requested
+     * object with an according info-message.
      */
     protected function optOut() : void
     {
+        // abort if the requested routine has not been stored yet or
+        // no target object was provided.
+        if (null === $this->object_ref_id ||
+            null === $this->routine->getRoutineId()
+        ) {
+            $this->displayErrorMessage(self::MSG_OBJECT_NOT_FOUND);
+            return;
+        }
 
+        // abort if the requested routine does not support elongations.
+        if (!$this->routine->hasOptOut()) {
+            $this->displayErrorMessage(self::MSG_ROUTINE_CANT_OPT_OUT);
+            return;
+        }
+
+        $success = $this->repository->routine()->whitelist()->optOutObjectByRefId(
+            $this->routine,
+            $this->object_ref_id
+        );
+
+        if ($success) {
+            $this->sendSuccessMessage(self::MSG_ROUTINE_OPTED_OUT);
+        } else {
+            $this->sendErrorMessage(self::MSG_ROUTINE_OPT_OUT_ERROR);
+        }
+
+        // redirect back to the target object with according message.
+        $this->ctrl->redirectToURL(ilLink::_getLink($this->object_ref_id));
+    }
+
+    /**
+     * Returns a back-to target to either the requested object, if provided,
+     * or the routine GUI index.
+     *
+     * @return string
+     */
+    protected function getBackToTarget() : string
+    {
+        if (null !== $this->object_ref_id) {
+            return ilLink::_getLink($this->object_ref_id);
+        }
+
+        return $this->ctrl->getLinkTargetByClass(
+            self::class,
+            self::CMD_INDEX
+        );
     }
 
     /**

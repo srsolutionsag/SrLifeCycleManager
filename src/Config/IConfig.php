@@ -16,16 +16,17 @@ interface IConfig
     public const CNF_PRIVILEGED_ROLES = 'cnf_privileged_roles';
 
     /**
-     * @var string config primary key that enables or disables the creation of routines in the
-     *             tool e.g. the repository.
+     * @var string config primary key that determines if routines can be created in the repository.
+     *             If enabled, the tool will show an entry for privileged roles.
      */
-    public const CNF_CREATE_ROUTINES = 'cnf_can_tool_create_routines';
+    public const CNF_CREATE_ROUTINES_IN_REPOSITORY = 'cnf_create_routines_in_repository';
 
     /**
-     * @var string config primary key that enables or disables the visibility of routines in the
-     *             tool e.g. the repository.
+     * @var string config primary key that determines if active routines should be displayed in the
+     *             repository. If enabled, the tool will show a table that lists all routines that
+     *             affect the current object.
      */
-    public const CNF_SHOW_ROUTINES = 'cnf_can_tool_show_routines';
+    public const CNF_SHOW_ROUTINES_IN_REPOSITORY = 'cnf_show_routines_in_repository';
 
     // IConfig attribute names:
     public const F_IDENTIFIER = 'identifier';
@@ -44,20 +45,20 @@ interface IConfig
     /**
      * @return bool
      */
-    public function canToolShowRoutines() : bool;
+    public function showRoutinesInRepository() : bool;
 
     /**
      * @param bool $can_show
      */
-    public function setToolCanShowRoutines(bool $can_show) : IConfig;
+    public function setShowRoutinesInRepository(bool $can_show) : IConfig;
 
     /**
      * @return bool
      */
-    public function canToolCreateRoutines() : bool;
+    public function createRoutinesInRepository() : bool;
 
     /**
      * @param bool $can_create
      */
-    public function setToolCanCreateRoutines(bool $can_create) : IConfig;
+    public function setCreateRoutinesInRepository(bool $can_create) : IConfig;
 }
