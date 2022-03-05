@@ -6,14 +6,12 @@ $vendorDir = dirname(dirname(__FILE__));
 $baseDir = dirname($vendorDir);
 
 return array(
-    'ilSrAbstractCronJob' => $baseDir . '/classes/Cron/Job/class.ilSrAbstractCronJob.php',
+    'ilSrAbstractCronJob' => $baseDir . '/classes/Cron/class.ilSrAbstractCronJob.php',
     'ilSrAbstractGUI' => $baseDir . '/classes/Util/class.ilSrAbstractGUI.php',
     'ilSrAbstractTable' => $baseDir . '/classes/Util/class.ilSrAbstractTable.php',
     'ilSrAccessHandler' => $baseDir . '/classes/Util/class.ilSrAccessHandler.php',
     'ilSrConfigGUI' => $baseDir . '/classes/Config/class.ilSrConfigGUI.php',
     'ilSrConfigRepository' => $baseDir . '/classes/Config/class.ilSrConfigRepository.php',
-    'ilSrCronJobResultBuilder' => $baseDir . '/classes/Cron/Result/class.ilSrCronJobResultBuilder.php',
-    'ilSrDryRoutineCronJob' => $baseDir . '/classes/Cron/Job/class.ilSrDryRoutineCronJob.php',
     'ilSrLifeCycleManagerConfigGUI' => $baseDir . '/classes/class.ilSrLifeCycleManagerConfigGUI.php',
     'ilSrLifeCycleManagerDispatcher' => $baseDir . '/classes/class.ilSrLifeCycleManagerDispatcher.php',
     'ilSrLifeCycleManagerPlugin' => $baseDir . '/classes/class.ilSrLifeCycleManagerPlugin.php',
@@ -23,7 +21,8 @@ return array(
     'ilSrNotificationRepository' => $baseDir . '/classes/Notification/class.ilSrNotificationRepository.php',
     'ilSrNotificationTable' => $baseDir . '/classes/Notification/class.ilSrNotificationTable.php',
     'ilSrRepositoryHelper' => $baseDir . '/classes/Util/trait.ilSrRepositoryHelper.php',
-    'ilSrRoutineCronJob' => $baseDir . '/classes/Cron/Job/class.ilSrRoutineCronJob.php',
+    'ilSrResultBuilder' => $baseDir . '/classes/Cron/class.ilSrResultBuilder.php',
+    'ilSrRoutineCronJob' => $baseDir . '/classes/Cron/class.ilSrRoutineCronJob.php',
     'ilSrRoutineGUI' => $baseDir . '/classes/Routine/class.ilSrRoutineGUI.php',
     'ilSrRoutineRepository' => $baseDir . '/classes/Routine/class.ilSrRoutineRepository.php',
     'ilSrRoutineTable' => $baseDir . '/classes/Routine/class.ilSrRoutineTable.php',

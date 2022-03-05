@@ -227,6 +227,10 @@
             'length'  => '8',
             'type'    => 'integer',
         ],
+        'date' => [
+            'notnull' => '1',
+            'type'    => 'date',
+        ],
     ];
 
     if (!$ilDB->tableExists($table_name)) {

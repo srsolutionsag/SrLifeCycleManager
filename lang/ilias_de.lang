@@ -68,7 +68,7 @@ input_name_routine_elongation#:#Verlängerung (in Tage)
 input_name_routine_elongation_possible#:#Verlängerung möglich?
 input_name_notification_title#:#Titel
 input_name_notification_content#:#Inhalt
-input_name_notification_content_info#:#Benutze [EXTENSION_LINK] für einen Link, mit dem Empfänger das Objekt um die definierte Zeit verlängern können. <br /> Benutze [OBJECT_LINK] für einen Link zum Objekt, dass gelöscht werden soll.
+input_name_notification_content_info#:#Benutze [EXTENSION_LINK] für einen Link, mit dem Empfänger das Objekt um die definierte Zeit verlängern können. <br /> Benutze [OPT_OUT_LINK] für einen Link, mit dem Empfänger das Objekt von der Löschung ausschliessen können. <br /> Benutze [OBJECT_LINK] für einen Link zum Objekt, dass gelöscht werden soll.
 input_name_notification_days_before_submission#:#Senden (Tage vor Löschung)
 
 routine_origin_type_admin#:#Administration

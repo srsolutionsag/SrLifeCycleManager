@@ -25,6 +25,15 @@ interface IRoutineRepository
     public function get(int $routine_id) : ?IRoutine;
 
     /**
+     * Fetches all existing routines from the database that are either
+     * active or inactive, depending on the given argument.
+     *
+     * @param bool $is_active
+     * @return array
+     */
+    public function getAllByActivity(bool $is_active) : array;
+
+    /**
      * Fetches all existing routines from the database that affect the
      * given ref-id.
      *
@@ -36,16 +45,6 @@ interface IRoutineRepository
      * @return IRoutine[]
      */
     public function getAllByRefId(int $ref_id, bool $array_data = false) : array;
-
-    /**
-     * Fetches all active routines from the database that affect the given
-     * ref-id and are of the provided routine type.
-     *
-     * @param int    $ref_id
-     * @param string $routine_type
-     * @return IRoutine[]
-     */
-    public function getByRefIdAndType(int $ref_id, string $routine_type) : array;
 
     /**
      * Creates or updates the given routine in the database.

@@ -10,6 +10,16 @@ namespace srag\Plugins\SrLifeCycleManager\Routine;
 interface IWhitelistRepository
 {
     /**
+     * Fetches an existing whitelist entry from the database for the
+     * given routine and object (ref-id).
+     *
+     * @param IRoutine $routine
+     * @param int      $ref_id
+     * @return IWhitelistEntry|null
+     */
+    public function get(IRoutine $routine, int $ref_id) : ?IWhitelistEntry;
+
+    /**
      * Extends the given object (ref-id) from the given Routine by the
      * possible elongation by creating a whitelist entry.
      *

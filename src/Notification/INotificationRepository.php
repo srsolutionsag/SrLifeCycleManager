@@ -23,14 +23,27 @@ interface INotificationRepository
      * Fetches all existing notifications from the database that are related
      * to the given routine.
      *
+     * NOTE that all notifications are sorted by the days before submission.
+     * This comes in handy when evaluating which notifications to send first.
+     *
      * To retrieve routines as array-data, true can be passed as an argument
      * (usually required by ilTableGUI).
      *
      * @param IRoutine $routine
      * @param bool     $array_data
-     * @return array
+     * @return INotification[]
      */
     public function getByRoutine(IRoutine $routine, bool $array_data = false) : array;
+
+    /**
+     * Fetches all existing notifications from the database that are related
+     * to the given routine and were already sent for the given object (ref-id).
+     *
+     * @param IRoutine $routine
+     * @param int      $ref_id
+     * @return ISentNotification[]
+     */
+    public function getSentNotifications(IRoutine $routine, int $ref_id) : array;
 
     /**
      * Creates or updates a given notification in the database.

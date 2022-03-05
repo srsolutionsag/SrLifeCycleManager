@@ -93,6 +93,38 @@ class ilSrRoutineRepository implements IRoutineRepository
     /**
      * @inheritDoc
      */
+    public function getAllByActivity(bool $is_active) : array
+    {
+        $query = "
+            SELECT 
+                routine_id, ref_id, usr_id, routine_type, origin_type, is_active, 
+                has_opt_out, elongation, title, creation_date
+                FROM srlcm_routine
+                WHERE is_active = %s
+            ;
+        ";
+
+        $results = $this->database->fetchAll(
+            $this->database->queryF(
+                $query,
+                ['integer'],
+                [
+                    (int) $is_active,
+                ]
+            )
+        );
+
+        $routines = [];
+        foreach ($results as $result) {
+            $routines[] = $this->transformToDTO($result);
+        }
+
+        return $routines;
+    }
+
+    /**
+     * @inheritDoc
+     */
     public function getAllByRefId(int $ref_id, bool $array_data = false) : array
     {
         $query = "
@@ -111,38 +143,6 @@ class ilSrRoutineRepository implements IRoutineRepository
         if ($array_data) {
             return $results;
         }
-
-        $routines = [];
-        foreach ($results as $result) {
-            $routines[] = $this->transformToDTO($result);
-        }
-
-        return $routines;
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function getByRefIdAndType(int $ref_id, string $routine_type) : array
-    {
-        $query = "
-            SELECT 
-                routine_id, ref_id, usr_id, routine_type, origin_type, is_active, 
-                has_opt_out, elongation, title, creation_date
-                FROM srlcm_routine 
-                WHERE ref_id IN ({$this->getParentIdsForSqlComparison($this->tree, $ref_id)})
-                AND routine_type LIKE %s
-                AND is_active = 1
-            ;
-        ";
-
-        $results = $this->database->fetchAll(
-            $this->database->queryF(
-                $query,
-                ['text'],
-                [$routine_type]
-            )
-        );
 
         $routines = [];
         foreach ($results as $result) {

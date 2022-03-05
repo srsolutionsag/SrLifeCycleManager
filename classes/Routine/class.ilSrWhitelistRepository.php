@@ -3,6 +3,8 @@
 /* Copyright (c) 2022 Thibeau Fuhrer <thibeau@sr.solutions> Extended GPL, see docs/LICENSE */
 
 use srag\Plugins\SrLifeCycleManager\Routine\IWhitelistRepository;
+use srag\Plugins\SrLifeCycleManager\Routine\IWhitelistEntry;
+use srag\Plugins\SrLifeCycleManager\Routine\WhitelistEntry;
 use srag\Plugins\SrLifeCycleManager\Routine\IRoutine;
 
 /**
@@ -15,6 +17,11 @@ use srag\Plugins\SrLifeCycleManager\Routine\IRoutine;
 class ilSrWhitelistRepository implements IWhitelistRepository
 {
     /**
+     * @var string mysql datetime format string.
+     */
+    protected const MYSQL_DATETIME_FORMAT = 'Y-m-d';
+
+    /**
      * @var ilDBInterface
      */
     protected $database;
@@ -25,6 +32,37 @@ class ilSrWhitelistRepository implements IWhitelistRepository
     public function __construct(ilDBInterface $database)
     {
         $this->database = $database;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function get(IRoutine $routine, int $ref_id) : ?IWhitelistEntry
+    {
+        $query = "
+            SELECT routine_id, ref_id, is_opt_out, elongation, date
+                FROM srlcm_whitelist
+                WHERE routine_id = %s
+                AND ref_id = %s
+            ;
+        ";
+
+        $result = $this->database->fetchAll(
+            $this->database->queryF(
+                $query,
+                ['integer', 'integer'],
+                [
+                    $routine->getRoutineId(),
+                    $ref_id,
+                ]
+            )
+        );
+
+        if (empty($result)) {
+            return null;
+        }
+
+        return $this->transformToDTO($result);
     }
 
     /**
@@ -134,22 +172,41 @@ class ilSrWhitelistRepository implements IWhitelistRepository
     protected function insertWhitelistEntry(IRoutine $routine, int $ref_id, bool $is_opt_out, int $elongation = null) : bool
     {
         $query = "
-            INSERT INTO srlcm_whitelist (routine_id, ref_id, is_opt_out, elongation)
-                VALUES (%s, %s, %s, %s)
+            INSERT INTO srlcm_whitelist (routine_id, ref_id, is_opt_out, elongation, date)
+                VALUES (%s, %s, %s, %s, %s)
             ;
         ";
 
         $this->database->manipulateF(
             $query,
-            ['integer', 'integer', 'integer', 'integer'],
+            ['integer', 'integer', 'integer', 'integer', 'date'],
             [
                 $routine->getRoutineId(),
                 $ref_id,
                 (int) $is_opt_out,
-                $elongation
+                $elongation,
+                (new DateTime())->format(self::MYSQL_DATETIME_FORMAT)
             ]
         );
 
         return true;
+    }
+
+    /**
+     * @param array $query_result
+     * @return IWhitelistEntry
+     */
+    protected function transformToDTO(array $query_result) : IWhitelistEntry
+    {
+        return new WhitelistEntry(
+            (int) $query_result[IWhitelistEntry::F_ROUTINE_ID],
+            (int) $query_result[IWhitelistEntry::F_REF_ID],
+            (bool) $query_result[IWhitelistEntry::F_IS_OPT_OUT],
+            DateTime::createFromFormat(
+                self::MYSQL_DATETIME_FORMAT,
+                $query_result[IWhitelistEntry::F_DATE]
+            ),
+            (null !== $query_result[IWhitelistEntry::F_ELONGATION]) ? (int) $query_result[IWhitelistEntry::F_ELONGATION] : null
+        );
     }
 }

@@ -2,10 +2,13 @@
 
 namespace srag\Plugins\SrLifeCycleManager\Notification;
 
+use LogicException;
+use DateTime;
+
 /**
  * @author Thibeau Fuhrer <thibeau@sr.solutions>
  */
-class Notification implements INotification
+class Notification implements ISentNotification
 {
     /**
      * @var int|null
@@ -33,24 +36,40 @@ class Notification implements INotification
     protected $days_before_submission;
 
     /**
-     * @param int      $routine_id
-     * @param string   $title
-     * @param string   $content
-     * @param int|null $days_before_submission
-     * @param int|null $notification_id
+     * @var int|null
+     */
+    protected $notified_ref_id;
+
+    /**
+     * @var DateTime|null
+     */
+    protected $notified_date;
+
+    /**
+     * @param int           $routine_id
+     * @param string        $title
+     * @param string        $content
+     * @param int|null      $days_before_submission
+     * @param int|null      $notification_id
+     * @param int|null      $notified_ref_id
+     * @param DateTime|null $notified_date
      */
     public function __construct(
         int $routine_id,
         string $title,
         string $content,
         int $days_before_submission = null,
-        int $notification_id = null
+        int $notification_id = null,
+        int $notified_ref_id = null,
+        DateTime $notified_date = null
     ) {
         $this->routine_id = $routine_id;
         $this->title = $title;
         $this->content = $content;
         $this->days_before_submission = $days_before_submission;
         $this->notification_id = $notification_id;
+        $this->notified_ref_id = $notified_ref_id;
+        $this->notified_date = $notified_date;
     }
 
     /**
@@ -137,6 +156,48 @@ class Notification implements INotification
     public function setDaysBeforeSubmission(int $amount) : INotification
     {
         $this->days_before_submission = $amount;
+        return $this;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function getNotifiedRefId() : int
+    {
+        if (null === $this->notified_date) {
+            throw new LogicException("Notification has not been sent yet.");
+        }
+
+        return $this->notified_ref_id;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function setNotifiedRefId(int $ref_id) : ISentNotification
+    {
+        $this->notified_ref_id = $ref_id;
+        return $this;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function getNotifiedDate() : DateTime
+    {
+        if (null === $this->notified_date) {
+            throw new LogicException("Notification has not been sent yet.");
+        }
+
+        return $this->notified_date;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function setNotifiedDate(DateTime $date) : ISentNotification
+    {
+        $this->notified_date = $date;
         return $this;
     }
 }

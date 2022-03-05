@@ -17,7 +17,7 @@ abstract class ilSrAbstractCronJob extends ilCronJob
     protected const LOGGER_PREFIX = '[SrLifeCycleManager] ';
 
     /**
-     * @var ilSrCronJobResultBuilder
+     * @var ilSrResultBuilder
      */
     protected $result_builder;
 
@@ -37,13 +37,13 @@ abstract class ilSrAbstractCronJob extends ilCronJob
     private $logger;
 
     /**
-     * @param IRepository              $repository
-     * @param ITranslator              $translator
-     * @param ilLogger                 $logger
-     * @param ilSrCronJobResultBuilder $builder
+     * @param IRepository       $repository
+     * @param ITranslator       $translator
+     * @param ilLogger          $logger
+     * @param ilSrResultBuilder $builder
      */
     public function __construct(
-        ilSrCronJobResultBuilder $builder,
+        ilSrResultBuilder $builder,
         IRepository $repository,
         ITranslator $translator,
         ilLogger $logger
@@ -97,7 +97,26 @@ abstract class ilSrAbstractCronJob extends ilCronJob
     /**
      * @inheritDoc
      */
-    abstract public function run() : ilCronJobResult;
+    public function run() : ilCronJobResult
+    {
+        $this->result_builder->request();
+
+        try {
+            $this->execute();
+        } catch (Throwable $throwable) {
+            return $this->result_builder
+                ->crash()
+                ->message($throwable->getMessage())
+                ->getResult()
+            ;
+        }
+
+        return $this->result_builder
+            ->success()
+            ->message('Successfully terminated.')
+            ->getResult()
+        ;
+    }
 
     /**
      * @param string $message
@@ -114,4 +133,12 @@ abstract class ilSrAbstractCronJob extends ilCronJob
     {
         $this->logger->error(self::LOGGER_PREFIX . $message);
     }
+
+    /**
+     * This method MUST implement the actual cron-job.
+     *
+     * The execution has been wrapped by a catch clause to manage
+     * possible crashes.
+     */
+    abstract protected function execute() : void;
 }

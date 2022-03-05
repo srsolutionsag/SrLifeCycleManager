@@ -18,7 +18,7 @@
  *
  * @noinspection AutoloadingIssuesInspection
  */
-class ilSrCronJobResultBuilder
+class ilSrResultBuilder
 {
     /**
      * @var ilCronJobResult|null

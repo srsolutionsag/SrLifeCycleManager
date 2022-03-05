@@ -68,7 +68,7 @@ input_name_routine_elongation#:#Elongation (in days)
 input_name_routine_elongation_possible#:#Elongation possible?
 input_name_notification_title#:#Notification title
 input_name_notification_content#:#Notification content
-input_name_notification_content_info#:#Type [EXTENSION_LINK] where recipients can postpone the deletion by your routines configured amount. <br /> Type [OBJECT_LINK] where recipients can go to the object that is about to be deleted.
+input_name_notification_content_info#:#Type [EXTENSION_LINK] where recipients can postpone the deletion by your routines configured amount. <br /> Type [OPT_OUT_LINK] where recipients can opt-out the deletion by your routine. <br /> Type [OBJECT_LINK] where recipients can go to the object that is about to be deleted.
 input_name_notification_days_before_submission#:#Sent (in days before deletion)
 
 routine_origin_type_admin#:#Administration
