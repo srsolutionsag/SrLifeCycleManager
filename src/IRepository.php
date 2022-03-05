@@ -9,6 +9,7 @@ use srag\Plugins\SrLifeCycleManager\Notification\INotificationRepository;
 use srag\Plugins\SrLifeCycleManager\Routine\IRoutineRepository;
 use srag\Plugins\SrLifeCycleManager\Config\IConfigRepository;
 use Generator;
+use ilObject;
 
 /**
  * @author Thibeau Fuhrer <thibeau@sr.solutions>
@@ -40,7 +41,7 @@ interface IRepository
      * starting from the given ref-id.
      *
      * @param int $ref_id
-     * @return Generator|int[]
+     * @return Generator|ilObject[]
      */
     public function getRepositoryObjects(int $ref_id) : Generator;
 }

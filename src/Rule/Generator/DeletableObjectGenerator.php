@@ -9,6 +9,7 @@ use srag\Plugins\SrLifeCycleManager\Rule\Attribute\AttributeFactory;
 use srag\Plugins\SrLifeCycleManager\Rule\Comparison\Comparison;
 use srag\Plugins\SrLifeCycleManager\Routine\IRoutine;
 use srag\Plugins\SrLifeCycleManager\IRepository;
+use Generator;
 use ilObject;
 
 /**
@@ -31,7 +32,7 @@ class DeletableObjectGenerator implements IDeletableObjectGenerator
     protected $current_object;
 
     /**
-     * @var IObjectGenerator
+     * @var Generator
      */
     protected $object_generator;
 
@@ -51,13 +52,13 @@ class DeletableObjectGenerator implements IDeletableObjectGenerator
     protected $repository;
 
     /**
-     * @param IObjectGenerator   $object_generator
+     * @param Generator          $object_generator
      * @param RequirementFactory $requirement_factory
      * @param AttributeFactory   $attribute_factory
      * @param IRepository        $repository
      */
     public function __construct(
-        IObjectGenerator $object_generator,
+        Generator $object_generator,
         RequirementFactory $requirement_factory,
         AttributeFactory $attribute_factory,
         IRepository $repository

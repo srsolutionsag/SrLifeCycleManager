@@ -104,12 +104,12 @@ class ilSrLifeCycleManagerRepository implements IRepository
     {
         $container_objects = $this->tree->getChildsByTypeFilter($ref_id, ['crs', 'cat', 'grp', 'fold']);
         if (empty($container_objects)) {
-            return new EmptyIterator();
+            yield new EmptyIterator();
         }
 
         foreach ($container_objects as $container) {
             if (in_array($container['type'], IRoutine::ROUTINE_TYPES, true)) {
-                yield (int) $container['ref_id'];
+                yield ilObjectFactory::getInstanceByRefId((int) $container['ref_id']);
             } else {
                 yield from $this->getRepositoryObjects((int) $container['ref_id']);
             }
