@@ -147,11 +147,13 @@ class ilSrRoutineCronJob extends ilSrAbstractCronJob
                     break;
                 }
 
-                // both notification arrays were ordered by days before submission,
-                // therefore the next one can be determined by the size of the sent
-                // ones, whereas the count - 1 is the next index.
-                $next_notification = $notifications[count($sent_notifications) - 1];
-                $this->notifyObject($next_notification, $object_instance);
+                if (!empty($notifications)) {
+                    // both notification arrays were ordered by days before submission,
+                    // therefore the next one can be determined by the size of the sent
+                    // ones, whereas the count - 1 is the next index.
+                    $next_notification = $notifications[count($sent_notifications) - 1];
+                    $this->notifyObject($next_notification, $object_instance);
+                }
             }
         }
     }
