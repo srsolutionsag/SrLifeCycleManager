@@ -46,6 +46,15 @@ interface INotificationRepository
     public function getSentNotifications(IRoutine $routine, int $ref_id) : array;
 
     /**
+     * Creates an entry and marks the given object (ref-id) as notified.
+     *
+     * @param INotification $notification
+     * @param int           $ref_id
+     * @return ISentNotification
+     */
+    public function notifyObject(INotification $notification, int $ref_id) : ISentNotification;
+
+    /**
      * Creates or updates a given notification in the database.
      *
      * @param INotification $notification

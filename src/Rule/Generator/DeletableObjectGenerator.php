@@ -7,8 +7,9 @@ namespace srag\Plugins\SrLifeCycleManager\Rule\Generator;
 use srag\Plugins\SrLifeCycleManager\Rule\Requirement\RequirementFactory;
 use srag\Plugins\SrLifeCycleManager\Rule\Attribute\AttributeFactory;
 use srag\Plugins\SrLifeCycleManager\Rule\Comparison\Comparison;
+use srag\Plugins\SrLifeCycleManager\Rule\IRuleRepository;
+use srag\Plugins\SrLifeCycleManager\Routine\IRoutineRepository;
 use srag\Plugins\SrLifeCycleManager\Routine\IRoutine;
-use srag\Plugins\SrLifeCycleManager\IRepository;
 use Generator;
 use ilObject;
 
@@ -27,16 +28,6 @@ use ilObject;
 class DeletableObjectGenerator implements IDeletableObjectGenerator
 {
     /**
-     * @var IDeletableObject|null
-     */
-    protected $current_object;
-
-    /**
-     * @var Generator
-     */
-    protected $object_generator;
-
-    /**
      * @var RequirementFactory
      */
     protected $requirement_factory;
@@ -47,26 +38,44 @@ class DeletableObjectGenerator implements IDeletableObjectGenerator
     protected $attribute_factory;
 
     /**
-     * @var IRepository
+     * @var IRoutineRepository
      */
-    protected $repository;
+    protected $routine_repository;
 
     /**
-     * @param Generator          $object_generator
+     * @var IRuleRepository
+     */
+    protected $rule_repository;
+
+    /**
+     * @var Generator
+     */
+    protected $object_generator;
+
+    /**
+     * @var IDeletableObject|null
+     */
+    protected $current_object;
+
+    /**
      * @param RequirementFactory $requirement_factory
      * @param AttributeFactory   $attribute_factory
-     * @param IRepository        $repository
+     * @param IRoutineRepository $routine_repository
+     * @param IRuleRepository    $rule_repository
+     * @param Generator          $object_generator
      */
     public function __construct(
-        Generator $object_generator,
         RequirementFactory $requirement_factory,
         AttributeFactory $attribute_factory,
-        IRepository $repository
+        IRoutineRepository $routine_repository,
+        IRuleRepository $rule_repository,
+        Generator $object_generator
     ) {
-        $this->object_generator = $object_generator;
         $this->requirement_factory = $requirement_factory;
         $this->attribute_factory = $attribute_factory;
-        $this->repository = $repository;
+        $this->routine_repository = $routine_repository;
+        $this->rule_repository = $rule_repository;
+        $this->object_generator = $object_generator;
     }
 
     /**
@@ -146,14 +155,14 @@ class DeletableObjectGenerator implements IDeletableObjectGenerator
     protected function getAffectedRoutines(ilObject $object) : array
     {
         $affected_by = [];
-        foreach ($this->repository->routine()->getAllByRefId($object->getRefId()) as $routine) {
+        foreach ($this->routine_repository->getAllByRefId($object->getRefId()) as $routine) {
             // skip inactive routines.
             if (!$routine->isActive()) {
                 continue;
             }
 
             $all_rules_applicable = true;
-            foreach ($this->repository->rule()->getByRoutine($routine) as $rule) {
+            foreach ($this->rule_repository->getByRoutine($routine) as $rule) {
                 $comparison = new Comparison(
                     $this->attribute_factory,
                     $this->requirement_factory->getRequirement($object),

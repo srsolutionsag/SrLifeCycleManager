@@ -58,11 +58,11 @@ class ilSrWhitelistRepository implements IWhitelistRepository
             )
         );
 
-        if (empty($result)) {
-            return null;
+        if (!empty($result)) {
+            return $this->transformToDTO($result[0]);
         }
 
-        return $this->transformToDTO($result);
+        return null;
     }
 
     /**

@@ -6,9 +6,6 @@
 // autoloader can be included here.
 require __DIR__ . '/../vendor/autoload.php';
 
-use srag\Plugins\SrLifeCycleManager\Rule\Generator\DeletableObjectGenerator;
-use srag\Plugins\SrLifeCycleManager\Rule\Requirement\RequirementFactory;
-use srag\Plugins\SrLifeCycleManager\Rule\Attribute\AttributeFactory;
 use srag\Plugins\SrLifeCycleManager\ITranslator;
 use ILIAS\DI\Container;
 
@@ -44,9 +41,9 @@ class ilSrLifeCycleManagerPlugin extends ilCronHookPlugin implements ITranslator
     protected static $instance;
 
     /**
-     * @var Container
+     * @var ilSrCronJobFactory
      */
-    protected $dic;
+    protected $cron_job_factory;
 
     /**
      * Initializes the tool- and main-menu-provider and registers them.
@@ -56,7 +53,8 @@ class ilSrLifeCycleManagerPlugin extends ilCronHookPlugin implements ITranslator
         global $DIC;
         parent::__construct();
 
-        $this->dic = $DIC;
+        $this->safelyInitjobFactory($DIC);
+
         $this->provider_collection
             ->setMainBarProvider(new ilSrMenuProvider($DIC, $this))
             ->setToolProvider(new ilSrToolProvider($DIC, $this))
@@ -91,7 +89,7 @@ class ilSrLifeCycleManagerPlugin extends ilCronHookPlugin implements ITranslator
     public function getCronJobInstances() : array
     {
         return [
-            $this->getCronJobInstance(ilSrRoutineCronJob::class),
+            $this->cron_job_factory->routine(),
         ];
     }
 
@@ -101,29 +99,34 @@ class ilSrLifeCycleManagerPlugin extends ilCronHookPlugin implements ITranslator
      */
     public function getCronJobInstance($a_job_id) : ilCronJob
     {
-        if (ilSrRoutineCronJob::class !== $a_job_id) {
-            throw new LogicException("No cron-job instance for '$a_job_id' found.");
+        return $this->cron_job_factory->getCronJob($a_job_id);
+    }
+
+    /**
+     * Wraps the initialization of the cron job factory in order to
+     * keep compatibility with new setup-features where dependencies
+     * might not be available.
+     *
+     * @param Container $dic
+     * @return void
+     */
+    protected function safelyInitJobFactory(Container $dic) : void
+    {
+        if ($dic->offsetExists('mail.mime.sender.factory') &&
+            $dic->offsetExists('ilDB') &&
+            $dic->offsetExists('tree') &&
+            $dic->offsetExists('ilLoggerFactory') &&
+            $dic->offsetExists('ilCtrl') &&
+            $dic->offsetExists('rbacreview')
+        ) {
+            $this->cron_job_factory = new ilSrCronJobFactory(
+                $dic['mail.mime.sender.factory'],
+                $dic->database(),
+                $dic->repositoryTree(),
+                $dic->logger()->root(),
+                $dic->rbac(),
+                $dic->ctrl()
+            );
         }
-
-        $repository = new ilSrLifeCycleManagerRepository(
-            $this->dic->database(),
-            $this->dic->rbac(),
-            $this->dic->repositoryTree()
-        );
-
-        return new ilSrRoutineCronJob(
-            new ilSrResultBuilder(),
-            $this->dic['mail.mime.sender.factory']->system(),
-            new DeletableObjectGenerator(
-                $repository->getRepositoryObjects(1),
-                new RequirementFactory($this->dic->database()),
-                new AttributeFactory(),
-                $repository
-            ),
-            $repository,
-            $this,
-            $this->dic->logger()->root(),
-            $this->dic->ctrl()
-        );
     }
 }

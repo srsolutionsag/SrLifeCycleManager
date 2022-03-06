@@ -132,6 +132,36 @@ class ilSrNotificationRepository implements INotificationRepository
     /**
      * @inheritDoc
      */
+    public function notifyObject(INotification $notification, int $ref_id) : ISentNotification
+    {
+        $query = "
+            INSERT INTO slrmc_notified_objects (routine_id, notification_id, ref_id, date)
+                VALUES (%s, %s, %s, %s)
+            ;
+        ";
+
+        $now = new DateTime();
+        $this->database->manipulateF(
+            $query,
+            ['integer', 'integer', 'integer', 'date'],
+            [
+                $notification->getRoutineId(),
+                $notification->getNotificationId(),
+                $ref_id,
+                $now->format(self::MYSQL_DATETIME_FORMAT),
+            ]
+        );
+
+        /** @var $notification ISentNotification */
+        return $notification
+            ->setNotifiedRefId($ref_id)
+            ->setNotifiedDate($now)
+        ;
+    }
+
+    /**
+     * @inheritDoc
+     */
     public function store(INotification $notification) : INotification
     {
         if (null !== $notification->getNotificationId()) {

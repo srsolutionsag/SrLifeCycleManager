@@ -100,7 +100,7 @@ class ilSrLifeCycleManagerRepository implements IRepository
     /**
      * @inheritDoc
      */
-    public function getRepositoryObjects(int $ref_id) : Generator
+    public function getRepositoryObjectGenerator(int $ref_id = 1) : Generator
     {
         $container_objects = $this->tree->getChildsByTypeFilter($ref_id, ['crs', 'cat', 'grp', 'fold']);
         if (empty($container_objects)) {
@@ -111,7 +111,7 @@ class ilSrLifeCycleManagerRepository implements IRepository
             if (in_array($container['type'], IRoutine::ROUTINE_TYPES, true)) {
                 yield ilObjectFactory::getInstanceByRefId((int) $container['ref_id']);
             } else {
-                yield from $this->getRepositoryObjects((int) $container['ref_id']);
+                yield from $this->getRepositoryObjectGenerator((int) $container['ref_id']);
             }
         }
     }

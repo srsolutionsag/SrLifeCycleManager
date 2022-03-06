@@ -43,5 +43,5 @@ interface IRepository
      * @param int $ref_id
      * @return Generator|ilObject[]
      */
-    public function getRepositoryObjects(int $ref_id) : Generator;
+    public function getRepositoryObjectGenerator(int $ref_id) : Generator;
 }

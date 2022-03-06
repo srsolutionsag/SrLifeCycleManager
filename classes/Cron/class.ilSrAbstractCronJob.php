@@ -2,8 +2,7 @@
 
 /* Copyright (c) 2022 Thibeau Fuhrer <thibeau@sr.solutions> Extended GPL, see docs/LICENSE */
 
-use srag\Plugins\SrLifeCycleManager\ITranslator;
-use srag\Plugins\SrLifeCycleManager\IRepository;
+use srag\Plugins\SrLifeCycleManager\Cron\ResultBuilder;
 
 /**
  * @author Thibeau Fuhrer <thibeau@sr.solutions>
@@ -17,19 +16,9 @@ abstract class ilSrAbstractCronJob extends ilCronJob
     protected const LOGGER_PREFIX = '[SrLifeCycleManager] ';
 
     /**
-     * @var ilSrResultBuilder
+     * @var ResultBuilder
      */
     protected $result_builder;
-
-    /**
-     * @var IRepository
-     */
-    protected $repository;
-
-    /**
-     * @var ITranslator
-     */
-    protected $translator;
 
     /**
      * @var ilLogger
@@ -37,21 +26,37 @@ abstract class ilSrAbstractCronJob extends ilCronJob
     private $logger;
 
     /**
-     * @param IRepository       $repository
-     * @param ITranslator       $translator
-     * @param ilLogger          $logger
-     * @param ilSrResultBuilder $builder
+     * @param ResultBuilder $builder
+     * @param ilLogger      $logger
      */
-    public function __construct(
-        ilSrResultBuilder $builder,
-        IRepository $repository,
-        ITranslator $translator,
-        ilLogger $logger
-    ) {
+    public function __construct(ResultBuilder $builder, ilLogger $logger)
+    {
         $this->result_builder = $builder;
-        $this->repository = $repository;
-        $this->translator = $translator;
         $this->logger = $logger;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function run() : ilCronJobResult
+    {
+        $this->result_builder->trackTime()->request();
+
+        try {
+            $this->execute();
+        } catch (Throwable $throwable) {
+            return $this->result_builder
+                ->crash()
+                ->message($throwable->getMessage())
+                ->getResult()
+            ;
+        }
+
+        return $this->result_builder
+            ->success()
+            ->message('Successfully terminated.')
+            ->getResult()
+        ;
     }
 
     /**
@@ -95,28 +100,12 @@ abstract class ilSrAbstractCronJob extends ilCronJob
     }
 
     /**
-     * @inheritDoc
+     * This method MUST implement the actual cron-job.
+     *
+     * The execution has been wrapped by a catch clause to manage
+     * possible crashes.
      */
-    public function run() : ilCronJobResult
-    {
-        $this->result_builder->request();
-
-        try {
-            $this->execute();
-        } catch (Throwable $throwable) {
-            return $this->result_builder
-                ->crash()
-                ->message($throwable->getMessage())
-                ->getResult()
-            ;
-        }
-
-        return $this->result_builder
-            ->success()
-            ->message('Successfully terminated.')
-            ->getResult()
-        ;
-    }
+    abstract protected function execute() : void;
 
     /**
      * @param string $message
@@ -133,12 +122,4 @@ abstract class ilSrAbstractCronJob extends ilCronJob
     {
         $this->logger->error(self::LOGGER_PREFIX . $message);
     }
-
-    /**
-     * This method MUST implement the actual cron-job.
-     *
-     * The execution has been wrapped by a catch clause to manage
-     * possible crashes.
-     */
-    abstract protected function execute() : void;
 }
