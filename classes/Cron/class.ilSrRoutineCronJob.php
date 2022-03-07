@@ -7,6 +7,7 @@ use srag\Plugins\SrLifeCycleManager\Notification\INotificationRepository;
 use srag\Plugins\SrLifeCycleManager\Notification\INotificationSender;
 use srag\Plugins\SrLifeCycleManager\Notification\INotification;
 use srag\Plugins\SrLifeCycleManager\Routine\IRoutineRepository;
+use srag\Plugins\SrLifeCycleManager\Whitelist\IWhitelistRepository;
 use srag\Plugins\SrLifeCycleManager\Cron\ResultBuilder;
 
 /**
@@ -47,6 +48,11 @@ class ilSrRoutineCronJob extends ilSrAbstractCronJob
     protected $routine_repository;
 
     /**
+     * @var IWhitelistRepository
+     */
+    protected $whitelist_repository;
+
+    /**
      * @var INotificationSender
      */
     protected $notification_sender;
@@ -62,6 +68,7 @@ class ilSrRoutineCronJob extends ilSrAbstractCronJob
      * @param ResultBuilder             $result_builder
      * @param INotificationRepository   $notification_repository
      * @param IRoutineRepository        $routine_repository
+     * @param IWhitelistRepository      $whitelist_repository
      * @param ilLogger                  $logger
      */
     public function __construct(
@@ -70,12 +77,14 @@ class ilSrRoutineCronJob extends ilSrAbstractCronJob
         ResultBuilder $result_builder,
         INotificationRepository $notification_repository,
         IRoutineRepository $routine_repository,
+        IWhitelistRepository $whitelist_repository,
         ilLogger $logger
     ) {
         parent::__construct($result_builder, $logger);
 
         $this->notification_repository = $notification_repository;
         $this->routine_repository = $routine_repository;
+        $this->whitelist_repository = $whitelist_repository;
         $this->notification_sender = $notification_sender;
         $this->deletable_objects = $deletable_objects;
     }
@@ -106,52 +115,101 @@ class ilSrRoutineCronJob extends ilSrAbstractCronJob
             $object_ref_id = $object_instance->getRefId();
 
             foreach ($object->getAffectedRoutines() as $routine) {
-                $notifications = $this->notification_repository->getByRoutine($routine);
-                $whitelist_entry = $this->routine_repository->whitelist()->get($routine, $object_ref_id);
-
-                // if no notifications are registered and the object is
-                // not whitelisted, it can be deleted immediately.
-                if (empty($notifications) &&
-                    null === $whitelist_entry
-                ) {
-                    $this->deleteObject($object_instance);
-                    break;
-                }
-
-                $sent_notifications = $this->notification_repository->getSentNotifications($routine, $object_ref_id);
-
-                $all_notifications_sent = (count($notifications) === count($sent_notifications));
+                $whitelist_entry = $this->whitelist_repository->get($routine, $object_ref_id);
                 $is_whitelisted = (null !== $whitelist_entry);
-                $is_opted_out = ($is_whitelisted && $whitelist_entry->isOptOut());
-                $is_extended = ($is_whitelisted && !$is_opted_out && null !== $whitelist_entry->getElongation());
-                $is_elapsed = (
-                    $is_extended &&
-                    (new DateTime) > $whitelist_entry->getDate()->add(
-                        new DateInterval("P{$whitelist_entry->getElongation()}D")
-                    )
-                );
 
                 // the object must neither be notified nor deleted, because
                 // it is opted-out.
-                if ($is_whitelisted && $is_opted_out) {
-                    break;
+                if ($is_whitelisted && $whitelist_entry->isOptOut()) {
+                    continue;
                 }
 
-                // if all notifications were sent, the object can be deleted if
-                //      (a) the object is not whitelisted, or
-                //      (b) the object was an extension that has been elapsed.
-                if ($all_notifications_sent &&
-                    (!$is_whitelisted || (!$is_opted_out && $is_extended && $is_elapsed))
+                $notifications = $this->notification_repository->getByRoutine($routine);
+                $notifications_available = (!empty($notifications));
+
+                // if no notifications are registered and the object is
+                // not whitelisted, it can be deleted immediately.
+                if ((!$notifications_available) &&
+                    (!$is_whitelisted || $whitelist_entry->isElapsed($this->getDate()))
                 ) {
+                    // delete the object and stop iterating the affected routines,
+                    // because the object instance does not exist anymore.
                     $this->deleteObject($object_instance);
                     break;
                 }
 
-                if (!empty($notifications)) {
-                    // both notification arrays were ordered by days before submission,
-                    // therefore the next one can be determined by the size of the sent
-                    // ones, whereas the count - 1 is the next index.
-                    $next_notification = $notifications[count($sent_notifications) - 1];
+                // if no notifications are available there's nothing more
+                // to be done for the current routine.
+                if (!$notifications_available) {
+                    continue;
+                }
+
+                $sent_notifications = $this->notification_repository->getSentNotifications($routine, $object_ref_id);
+                $sent_notification_count = count($sent_notifications);
+
+                // it might be possible that already sent notifications are deleted,
+                // therefore we must check if the count is larger-or-equal to the
+                // available ones, to check if all have been sent.
+                $all_notifications_sent = ($sent_notification_count >= count($notifications));
+
+                $last_notification = (0 < $sent_notification_count) ?
+                    $sent_notifications[$sent_notification_count - 1] : null
+                ;
+
+                // if notifications are available, the object can only be deleted
+                // if all of them have been sent and the last ones execution date
+                // is past today.
+                if ($all_notifications_sent &&
+                    $last_notification &&
+                    $last_notification->isElapsed($this->getDate())
+                ) {
+                    // delete the object and stop iterating the affected routines,
+                    // because the object instance does not exist anymore.
+                    $this->deleteObject($object_instance);
+                    break;
+                }
+
+                // if all notification have been sent at this point, there's nothing
+                // more to done for the current routine.
+                if ($all_notifications_sent) {
+                    continue;
+                }
+
+                // if $all_notifications_sent is false, the array of notifications
+                // is bigger than the array of sent ones. The next array-index of
+                // $sent_notifications can be used to determine the next one that
+                // must be sent from $notifications.
+                //
+                // NOTE that this works, due to ordering both notification arrays
+                // by their days_before_submission (ASC).
+                $next_notification = $notifications[$sent_notification_count];
+
+                // if no notifications were sent, the initial one can be sent without
+                // further calculations.
+                if (0 === $sent_notification_count) {
+                    $this->notifyObject($next_notification, $object_instance);
+                    continue;
+                }
+
+                // the gap between the last and next notification must be determined,
+                // so the notifications don't get "stacked". Notification A with X days
+                // before submission should not be appended to Notification Bs Y days,
+                // otherwise the object won't be deleted for X+Y days, since notifications
+                // are one of the determining factor for deletions.
+                $submission_gap = (
+                    $last_notification->getDaysBeforeSubmission() -
+                    $next_notification->getDaysBeforeSubmission()
+                );
+
+                // the notification date can then simply be calculated by adding the
+                // determined gap to the last ones date of submission.
+                // @todo: this line somehow changes the value returned by $this->getDate().
+                $notification_date = $last_notification->getNotifiedDate()->add(
+                    new DateInterval("P{$submission_gap}D")
+                );
+
+                // send the notification if the notification date is today.
+                if ($this->getDate()->format('Y-m-d') === $notification_date->format('Y-m-d')) {
                     $this->notifyObject($next_notification, $object_instance);
                 }
             }
@@ -184,6 +242,20 @@ class ilSrRoutineCronJob extends ilSrAbstractCronJob
      */
     protected function notifyObject(INotification $notification, ilObject $object) : void
     {
+        $this->info("Sending administrators of object {$object->getRefId()} notification {$notification->getNotificationId()}");
         $this->notification_sender->sendNotification($notification, $object);
+    }
+
+    /**
+     * Returns the current datetime object.
+     *
+     * This function had to be introduced due to PHPUnitTests, which
+     * must be able to alter the current date.
+     *
+     * @return DateTime
+     */
+    protected function getDate() : DateTime
+    {
+        return new DateTime();
     }
 }

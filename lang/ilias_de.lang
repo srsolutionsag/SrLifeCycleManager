@@ -29,11 +29,13 @@ msg_routine_extend_error#:#Das Objekt konnte nicht verlängert werden, ggf. habe
 msg_routine_cant_opt_out#:#Objekte können von dieser Routine nicht ignoriert werden.
 msg_routine_opted_out#:#Das Objekt wurde erfolgreich von dieser Routine ausgeschlossen.
 msg_routine_opt_out_error#:#Dieses Objekt konnte nicht von der Routine ausgeschlossen werden, ggf. haben Sie das bereits getan.
+msg_days_before_submission_error#:#Eine Benachrichtigung die um diese Anzahl vor der Löschung geschickt wird existiert bereits.
 
 page_title_rules#:#SrLifeCycleManager Regeln
 page_title_config#:#SrLifeCycleManager Einstellungen
 page_title_routine#:#SrLifeCycleManager Routinen
 page_title_notifications#:#SrLifeCycleManager Benachrichtigungen
+page_title_whitelist#:#SrLifeCycleManager Whitelist
 
 tab_config_index#:#Einstellungen
 tab_routine_index#:#Routinen

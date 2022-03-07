@@ -7,7 +7,7 @@ namespace srag\Plugins\SrLifeCycleManager\Tests;
 require __DIR__ . '/../vendor/autoload.php';
 
 use PHPUnit\Framework\TestSuite;
-use srag\Plugins\SrLifeCycleManager\Tests\Cron\ilSrRoutineCronJobTest;
+use srag\Plugins\SrLifeCycleManager\Tests\Cron\RoutineCronJobTest;
 
 /**
  * @author Thibeau Fuhrer <thibeau@sr.solutions>
@@ -21,8 +21,8 @@ class SrLifeCycleManagerTestSuite extends TestSuite
     {
         $suite = new self();
 
-        require_once __DIR__ . '/Cron/ilSrRoutineCronJobTest.php';
-        $suite->addTestSuite(ilSrRoutineCronJobTest::class);
+        require_once __DIR__ . '/Cron/RoutineCronJobTest.php';
+        $suite->addTestSuite(RoutineCronJobTest::class);
 
         return $suite;
     }

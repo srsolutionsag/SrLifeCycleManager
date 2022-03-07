@@ -72,7 +72,7 @@ class ilSrNotificationRepository implements INotificationRepository
                 FROM srlcm_notification
                 WHERE routine_id = %s
                 ORDER BY days_before_submission ASC
-            ; 
+            ;
         ";
 
         $results = $this->database->fetchAll(
@@ -93,6 +93,37 @@ class ilSrNotificationRepository implements INotificationRepository
         }
 
         return $notifications;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function getByRoutineAndDaysBeforeSubmission(int $routine_id, int $days_before_submission) : ?INotification
+    {
+        $query = "
+            SELECT notification_id, routine_id, title, content, days_before_submission
+                FROM srlcm_notification
+                WHERE routine_id = %s
+                AND days_before_submission = %s
+            ; 
+        ";
+
+        $result = $this->database->fetchAll(
+            $this->database->queryF(
+                $query,
+                ['integer', 'integer'],
+                [
+                    $routine_id,
+                    $days_before_submission,
+                ]
+            )
+        );
+
+        if (!empty($result)) {
+            return $this->transformToNotification($result[0]);
+        }
+
+        return null;
     }
 
     /**
@@ -195,7 +226,8 @@ class ilSrNotificationRepository implements INotificationRepository
         return new Notification(
             $routine->getRoutineId(),
             '',
-            ''
+            '',
+            0
         );
     }
 

@@ -110,7 +110,7 @@ class ilSrRuleRepository implements IRuleRepository
                 JOIN srlcm_routine_rule AS relation ON relation.rule_id = rule.rule_id
                 WHERE relation.routine_id IN (
                     SELECT routine_id FROM srlcm_routine AS routine
-                        WHERE ref_id IN ({$this->getParentIdsForSqlComparison($this->tree, $ref_id)})
+                        WHERE ref_id IN ({$this->getParentIdsForSqlComparison($ref_id)})
                         AND routine_type LIKE %s
                         AND is_active = 1
                 )

@@ -35,5 +35,6 @@ return array(
     'ilSrTabManager' => $baseDir . '/classes/Util/class.ilSrTabManager.php',
     'ilSrToolProvider' => $baseDir . '/classes/Provider/class.ilSrToolProvider.php',
     'ilSrToolbarManager' => $baseDir . '/classes/Util/class.ilSrToolbarManager.php',
-    'ilSrWhitelistRepository' => $baseDir . '/classes/Routine/class.ilSrWhitelistRepository.php',
+    'ilSrWhitelistGUI' => $baseDir . '/classes/Whitelist/class.ilSrWhitelistGUI.php',
+    'ilSrWhitelistRepository' => $baseDir . '/classes/Whitelist/class.ilSrWhitelistRepository.php',
 );

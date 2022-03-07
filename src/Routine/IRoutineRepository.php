@@ -10,13 +10,6 @@ namespace srag\Plugins\SrLifeCycleManager\Routine;
 interface IRoutineRepository
 {
     /**
-     * Returns an instance of the whitelist repository.
-     *
-     * @return IWhitelistRepository
-     */
-    public function whitelist() : IWhitelistRepository;
-
-    /**
      * Fetches an existing routine from the database for the given id.
      *
      * @param int $routine_id

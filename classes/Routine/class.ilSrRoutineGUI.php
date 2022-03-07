@@ -20,18 +20,10 @@ class ilSrRoutineGUI extends ilSrAbstractGUI
     public const CMD_ROUTINE_EDIT    = 'edit';
     public const CMD_ROUTINE_SAVE    = 'save';
     public const CMD_ROUTINE_DELETE  = 'delete';
-    public const CMD_ROUTINE_OPT_OUT = 'optOut';
-    public const CMD_ROUTINE_EXTEND  = 'extend';
 
     // ilSrRoutineGUI language variables:
     protected const MSG_ROUTINE_SUCCESS = 'msg_routine_success';
     protected const MSG_ROUTINE_ERROR = 'msg_routine_error';
-    protected const MSG_ROUTINE_CANT_EXTEND = 'msg_routine_cant_extend';
-    protected const MSG_ROUTINE_EXTENDED = 'msg_routine_extended';
-    protected const MSG_ROUTINE_EXTEND_ERROR = 'msg_routine_extend_error';
-    protected const MSG_ROUTINE_CANT_OPT_OUT = 'msg_routine_cant_opt_out';
-    protected const MSG_ROUTINE_OPTED_OUT = 'msg_routine_opted_out';
-    protected const MSG_ROUTINE_OPT_OUT_ERROR = 'msg_routine_opt_out_error';
     protected const PAGE_TITLE = 'page_title_routine';
 
     /**
@@ -84,15 +76,6 @@ class ilSrRoutineGUI extends ilSrAbstractGUI
             // routines must be visible for object administrators.
             case self::CMD_INDEX:
                 return $access_handler->canViewRoutines($this->object_ref_id);
-
-            // routine extension or opt-out must only be accessible for
-            // administrators of the requested object.
-            case self::CMD_ROUTINE_EXTEND:
-            case self::CMD_ROUTINE_OPT_OUT:
-                if (null === $this->object_ref_id) {
-                    return false;
-                }
-                return $access_handler->isAdministratorOf($this->object_ref_id);
 
             // for all other commands the user must be able to manage routines.
             default:
@@ -189,89 +172,6 @@ class ilSrRoutineGUI extends ilSrAbstractGUI
         }
 
         $this->cancel();
-    }
-
-    /**
-     * Extends the requested object for the possible amount of days
-     * from the current routine.
-     *
-     * If the request object or routine wasn't provided the page will
-     * display an error message.
-     *
-     * Otherwise, the user will be redirected back to the requested
-     * object with an according info-message.
-     */
-    protected function extend() : void
-    {
-        // abort if the requested routine has not been stored yet or
-        // no target object was provided.
-        if (null === $this->object_ref_id ||
-            null === $this->routine->getRoutineId()
-        ) {
-            $this->displayErrorMessage(self::MSG_OBJECT_NOT_FOUND);
-            return;
-        }
-
-        // abort if the requested routine does not support elongations.
-        if (1 > $this->routine->getElongation()) {
-            $this->displayErrorMessage(self::MSG_ROUTINE_CANT_EXTEND);
-            return;
-        }
-
-        $success = $this->repository->routine()->whitelist()->extendObjectByRefId(
-            $this->routine,
-            $this->object_ref_id
-        );
-
-        if ($success) {
-            $this->sendSuccessMessage(self::MSG_ROUTINE_EXTENDED);
-        } else {
-            $this->sendErrorMessage(self::MSG_ROUTINE_EXTEND_ERROR);
-        }
-
-        // redirect back to the target object with according message.
-        $this->ctrl->redirectToURL(ilLink::_getLink($this->object_ref_id));
-    }
-
-    /**
-     * Opts-out the requested object from the current routine.
-     *
-     * If the request object or routine wasn't provided the page will
-     * display an error message.
-     *
-     * Otherwise, the user will be redirected back to the requested
-     * object with an according info-message.
-     */
-    protected function optOut() : void
-    {
-        // abort if the requested routine has not been stored yet or
-        // no target object was provided.
-        if (null === $this->object_ref_id ||
-            null === $this->routine->getRoutineId()
-        ) {
-            $this->displayErrorMessage(self::MSG_OBJECT_NOT_FOUND);
-            return;
-        }
-
-        // abort if the requested routine does not support elongations.
-        if (!$this->routine->hasOptOut()) {
-            $this->displayErrorMessage(self::MSG_ROUTINE_CANT_OPT_OUT);
-            return;
-        }
-
-        $success = $this->repository->routine()->whitelist()->optOutObjectByRefId(
-            $this->routine,
-            $this->object_ref_id
-        );
-
-        if ($success) {
-            $this->sendSuccessMessage(self::MSG_ROUTINE_OPTED_OUT);
-        } else {
-            $this->sendErrorMessage(self::MSG_ROUTINE_OPT_OUT_ERROR);
-        }
-
-        // redirect back to the target object with according message.
-        $this->ctrl->redirectToURL(ilLink::_getLink($this->object_ref_id));
     }
 
     /**

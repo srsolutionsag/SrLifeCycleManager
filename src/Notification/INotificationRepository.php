@@ -36,6 +36,16 @@ interface INotificationRepository
     public function getByRoutine(IRoutine $routine, bool $array_data = false) : array;
 
     /**
+     * Fetches an existing notification for the given amount of days before submission
+     * that is related to the given routine-id.
+     *
+     * @param int $routine_id
+     * @param int $days_before_submission
+     * @return INotification|null
+     */
+    public function getByRoutineAndDaysBeforeSubmission(int $routine_id, int $days_before_submission) : ?INotification;
+
+    /**
      * Fetches all existing notifications from the database that are related
      * to the given routine and were already sent for the given object (ref-id).
      *

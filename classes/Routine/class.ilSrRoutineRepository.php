@@ -5,7 +5,6 @@
 use srag\Plugins\SrLifeCycleManager\Routine\IRoutineRepository;
 use srag\Plugins\SrLifeCycleManager\Routine\IRoutine;
 use srag\Plugins\SrLifeCycleManager\Routine\Routine;
-use srag\Plugins\SrLifeCycleManager\Routine\IWhitelistRepository;
 
 /**
  * This repository is responsible for all routine CRUD operations.
@@ -24,11 +23,6 @@ class ilSrRoutineRepository implements IRoutineRepository
     protected const MYSQL_DATETIME_FORMAT = 'Y-m-d';
 
     /**
-     * @var IWhitelistRepository
-     */
-    protected $whitelist_repository;
-
-    /**
      * @var ilDBInterface
      */
     protected $database;
@@ -39,26 +33,13 @@ class ilSrRoutineRepository implements IRoutineRepository
     protected $tree;
 
     /**
-     * @param IWhitelistRepository $whitelist_repository
      * @param ilDBInterface        $database
      * @param ilTree               $tree
      */
-    public function __construct(
-        IWhitelistRepository $whitelist_repository,
-        ilDBInterface $database,
-        ilTree $tree
-    ) {
-        $this->whitelist_repository = $whitelist_repository;
+    public function __construct(ilDBInterface $database, ilTree $tree)
+    {
         $this->database = $database;
         $this->tree = $tree;
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function whitelist() : IWhitelistRepository
-    {
-        return $this->whitelist_repository;
     }
 
     /**
@@ -132,7 +113,7 @@ class ilSrRoutineRepository implements IRoutineRepository
                 routine_id, ref_id, usr_id, routine_type, origin_type, is_active, 
                 has_opt_out, elongation, title, creation_date
                 FROM srlcm_routine 
-                WHERE ref_id IN ({$this->getParentIdsForSqlComparison($this->tree, $ref_id)})
+                WHERE ref_id IN ({$this->getParentIdsForSqlComparison($ref_id)})
             ;
         ";
 

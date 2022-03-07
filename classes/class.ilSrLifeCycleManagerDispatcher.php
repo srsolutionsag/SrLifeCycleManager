@@ -16,6 +16,7 @@ use srag\Plugins\SrLifeCycleManager\Routine\IRoutine;
  * @ilCtrl_Calls ilSrLifeCycleManagerDispatcher : ilSrNotificationGUI
  * @ilCtrl_Calls ilSrLifeCycleManagerDispatcher : ilSrRoutineGUI
  * @ilCtrl_Calls ilSrLifeCycleManagerDispatcher : ilSrRuleGUI
+ * @ilCtrl_Calls ilSrLifeCycleManagerDispatcher : ilSrWhitelistGUI
  *
  * @noinspection AutoloadingIssuesInspection
  */
@@ -63,6 +64,9 @@ class ilSrLifeCycleManagerDispatcher
                 break;
             case strtolower(ilSrRuleGUI::class):
                 $this->safelyForward(ilSrRuleGUI::class);
+                break;
+            case strtolower(ilSrWhitelistGUI::class):
+                $this->safelyForward(ilSrWhitelistGUI::class);
                 break;
 
             default:

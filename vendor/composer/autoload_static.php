@@ -55,7 +55,8 @@ class ComposerStaticInit7aa5d9bc8a6e2685daf4aef313101773
         'ilSrTabManager' => __DIR__ . '/../..' . '/classes/Util/class.ilSrTabManager.php',
         'ilSrToolProvider' => __DIR__ . '/../..' . '/classes/Provider/class.ilSrToolProvider.php',
         'ilSrToolbarManager' => __DIR__ . '/../..' . '/classes/Util/class.ilSrToolbarManager.php',
-        'ilSrWhitelistRepository' => __DIR__ . '/../..' . '/classes/Routine/class.ilSrWhitelistRepository.php',
+        'ilSrWhitelistGUI' => __DIR__ . '/../..' . '/classes/Whitelist/class.ilSrWhitelistGUI.php',
+        'ilSrWhitelistRepository' => __DIR__ . '/../..' . '/classes/Whitelist/class.ilSrWhitelistRepository.php',
     );
 
     public static function getInitializer(ClassLoader $loader)

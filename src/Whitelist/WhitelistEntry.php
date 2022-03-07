@@ -2,8 +2,9 @@
 
 /* Copyright (c) 2022 Thibeau Fuhrer <thibeau@sr.solutions> Extended GPL, see docs/LICENSE */
 
-namespace srag\Plugins\SrLifeCycleManager\Routine;
+namespace srag\Plugins\SrLifeCycleManager\Whitelist;
 
+use DateInterval;
 use DateTime;
 
 /**
@@ -140,5 +141,19 @@ class WhitelistEntry implements IWhitelistEntry
     {
         $this->date = $date;
         return $this;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function isElapsed(DateTime $when) : bool
+    {
+        if ($this->isOptOut() || null === $this->getElongation()) {
+            return false;
+        }
+
+        $elapsed_date = $this->getDate()->add(new DateInterval("P{$this->getElongation()}D"));
+
+        return ($when > $elapsed_date);
     }
 }

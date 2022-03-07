@@ -60,6 +60,7 @@ class ilSrNotificationGUI extends ilSrAbstractGUI
             $this->ui_factory->input()->container()->form(),
             $this->ui_factory->input()->field(),
             $this->refinery,
+            $this->repository->notification(),
             $this->notification,
             $this->getFormAction()
         );

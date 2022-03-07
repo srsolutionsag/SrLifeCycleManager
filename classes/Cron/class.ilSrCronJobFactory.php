@@ -117,11 +117,12 @@ class ilSrCronJobFactory
                 new AttributeFactory(),
                 $this->repository->routine(),
                 $this->repository->rule(),
-                $this->repository->getRepositoryObjectGenerator()
+                $this->repository->getRepositoryObjects()
             ),
             new ResultBuilder(new ilCronJobResult()),
             $this->repository->notification(),
             $this->repository->routine(),
+            $this->repository->whitelist(),
             $this->logger
         );
     }
@@ -142,11 +143,12 @@ class ilSrCronJobFactory
                 new AttributeFactory(),
                 $this->repository->routine(),
                 $this->repository->rule(),
-                $this->repository->getRepositoryObjectGenerator()
+                $this->repository->getRepositoryObjects()
             ),
             new ResultBuilder(new ilCronJobResult()),
             $this->repository->notification(),
             $this->repository->routine(),
+            $this->repository->whitelist(),
             $this->logger
         );
     }

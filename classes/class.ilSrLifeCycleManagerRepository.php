@@ -4,9 +4,9 @@
 
 use srag\Plugins\SrLifeCycleManager\Config\IConfigRepository;
 use srag\Plugins\SrLifeCycleManager\Routine\IRoutineRepository;
-use srag\Plugins\SrLifeCycleManager\Routine\IRoutine;
 use srag\Plugins\SrLifeCycleManager\Notification\INotificationRepository;
 use srag\Plugins\SrLifeCycleManager\Rule\IRuleRepository;
+use srag\Plugins\SrLifeCycleManager\Whitelist\IWhitelistRepository;
 use srag\Plugins\SrLifeCycleManager\IRepository;
 use ILIAS\DI\RBACServices;
 
@@ -22,10 +22,7 @@ use ILIAS\DI\RBACServices;
  */
 class ilSrLifeCycleManagerRepository implements IRepository
 {
-    /**
-     * @var ilTree
-     */
-    protected $tree;
+    use ilSrRepositoryHelper;
 
     /**
      * @var IConfigRepository
@@ -38,6 +35,11 @@ class ilSrLifeCycleManagerRepository implements IRepository
     protected $routine_repository;
 
     /**
+     * @var IWhitelistRepository
+     */
+    protected $whitelist_repository;
+
+    /**
      * @var INotificationRepository
      */
     protected $notification_repository;
@@ -48,21 +50,24 @@ class ilSrLifeCycleManagerRepository implements IRepository
     protected $rule_repository;
 
     /**
+     * @var ilTree
+     */
+    protected $tree;
+
+    /**
      * @param ilDBInterface $database
      * @param RBACServices  $rbac
      * @param ilTree        $tree
      */
     public function __construct(ilDBInterface $database, RBACServices $rbac, ilTree $tree)
     {
-        $this->tree = $tree;
-        $this->config_repository = new ilSrConfigRepository($database, $rbac);
+        $this->config_repository       = new ilSrConfigRepository($database, $rbac);
         $this->notification_repository = new ilSrNotificationRepository($database);
-        $this->rule_repository = new ilSrRuleRepository($database, $tree);
-        $this->routine_repository = new ilSrRoutineRepository(
-            new ilSrWhitelistRepository($database),
-            $database,
-            $tree
-        );
+        $this->routine_repository      = new ilSrRoutineRepository($database, $tree);
+        $this->whitelist_repository    = new ilSrWhitelistRepository($database);
+        $this->rule_repository         = new ilSrRuleRepository($database, $tree);
+
+        $this->tree = $tree;
     }
 
     /**
@@ -82,6 +87,14 @@ class ilSrLifeCycleManagerRepository implements IRepository
     }
 
     /**
+     * @inheritdoc
+     */
+    public function whitelist() : IWhitelistRepository
+    {
+        return $this->whitelist_repository;
+    }
+
+    /**
      * @inheritDoc
      */
     public function notification() : INotificationRepository
@@ -95,24 +108,5 @@ class ilSrLifeCycleManagerRepository implements IRepository
     public function rule() : IRuleRepository
     {
         return $this->rule_repository;
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function getRepositoryObjectGenerator(int $ref_id = 1) : Generator
-    {
-        $container_objects = $this->tree->getChildsByTypeFilter($ref_id, ['crs', 'cat', 'grp', 'fold']);
-        if (empty($container_objects)) {
-            yield new EmptyIterator();
-        }
-
-        foreach ($container_objects as $container) {
-            if (in_array($container['type'], IRoutine::ROUTINE_TYPES, true)) {
-                yield ilObjectFactory::getInstanceByRefId((int) $container['ref_id']);
-            } else {
-                yield from $this->getRepositoryObjectGenerator((int) $container['ref_id']);
-            }
-        }
     }
 }

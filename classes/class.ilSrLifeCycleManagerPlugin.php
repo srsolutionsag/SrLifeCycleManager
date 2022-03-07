@@ -90,6 +90,7 @@ class ilSrLifeCycleManagerPlugin extends ilCronHookPlugin implements ITranslator
     {
         return [
             $this->cron_job_factory->routine(),
+            $this->cron_job_factory->dryRoutine(),
         ];
     }
 

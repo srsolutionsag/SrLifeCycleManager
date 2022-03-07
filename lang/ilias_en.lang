@@ -25,15 +25,17 @@ msg_privileged_user#:#You are allowed to manage your own routines at this positi
 msg_affected_routines#:#There are active routines that affect this object!
 msg_routine_cant_extend#:#This routine cannot be extended.
 msg_routine_extended#:#This object has been successfully whitelisted for [ELONGATION] days.
-msg_routine_extend_error#:#The object could not be whitelisted, you might already have.
+msg_routine_already_extended#:#The deletion of this object was already postponed.
 msg_routine_cant_opt_out#:#This routine cannot be opted out.
 msg_routine_opted_out#:#This object has been successfully whitelisted.
-msg_routine_opt_out_error#:#This object could not be whitelisted, you might already have.
+msg_routine_already_opted_out#:#This object was already been whitelisted.
+msg_days_before_submission_error#:#A notification for this amount of days before submission already exists.
 
 page_title_rules#:#SrLifeCycleManager rules
 page_title_config#:#SrLifeCycleManager configuration
 page_title_routine#:#SrLifeCycleManager routines
 page_title_notifications#:#SrLifeCycleManager notifications
+page_title_whitelist#:#SrLifeCycleManager whitelist
 
 tab_config_index#:#Configuration
 tab_routine_index#:#Routines

@@ -114,6 +114,7 @@
             'type'    => 'text',
         ],
         'days_before_submission' => [
+            'notnull' => '1',
             'length'  => '8',
             'type'    => 'integer',
         ],

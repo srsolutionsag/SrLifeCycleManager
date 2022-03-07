@@ -36,4 +36,15 @@ interface ISentNotification extends INotification
      * @return ISentNotification
      */
     public function setNotifiedDate(DateTime $date) : ISentNotification;
+
+    /**
+     * Returns whether the notification is elapsed on the given date.
+     *
+     * A notification is elapsed if the notified date plus the amount of
+     * days before it's submission is past $when.
+     *
+     * @param DateTime $when
+     * @return bool
+     */
+    public function isElapsed(DateTime $when) : bool;
 }

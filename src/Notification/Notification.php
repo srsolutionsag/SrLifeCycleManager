@@ -3,6 +3,7 @@
 namespace srag\Plugins\SrLifeCycleManager\Notification;
 
 use LogicException;
+use DateInterval;
 use DateTime;
 
 /**
@@ -31,7 +32,7 @@ class Notification implements ISentNotification
     protected $content;
 
     /**
-     * @var int|null
+     * @var int
      */
     protected $days_before_submission;
 
@@ -58,7 +59,7 @@ class Notification implements ISentNotification
         int $routine_id,
         string $title,
         string $content,
-        int $days_before_submission = null,
+        int $days_before_submission,
         int $notification_id = null,
         int $notified_ref_id = null,
         DateTime $notified_date = null
@@ -145,7 +146,7 @@ class Notification implements ISentNotification
     /**
      * @inheritDoc
      */
-    public function getDaysBeforeSubmission() : ?int
+    public function getDaysBeforeSubmission() : int
     {
         return $this->days_before_submission;
     }
@@ -199,5 +200,15 @@ class Notification implements ISentNotification
     {
         $this->notified_date = $date;
         return $this;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function isElapsed(DateTime $when) : bool
+    {
+        $elapsed_date = $this->getNotifiedDate()->add(new DateInterval("P{$this->getDaysBeforeSubmission()}"));
+
+        return ($when > $elapsed_date);
     }
 }

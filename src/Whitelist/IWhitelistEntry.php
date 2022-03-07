@@ -2,7 +2,7 @@
 
 /* Copyright (c) 2021 Thibeau Fuhrer <thibeau@sr.solutions> Extended GPL, see docs/LICENSE */
 
-namespace srag\Plugins\SrLifeCycleManager\Routine;
+namespace srag\Plugins\SrLifeCycleManager\Whitelist;
 
 use DateTime;
 
@@ -72,4 +72,15 @@ interface IWhitelistEntry
      * @return IWhitelistEntry
      */
     public function setDate(DateTime $date) : IWhitelistEntry;
+
+    /**
+     * Returns whether the whitelist-entry is elapsed on the given date.
+     *
+     * A whitelist entry is elapsed, if the creation-date plus it's elongation
+     * is past $when.
+     *
+     * @param DateTime $when
+     * @return bool
+     */
+    public function isElapsed(DateTime $when) : bool;
 }

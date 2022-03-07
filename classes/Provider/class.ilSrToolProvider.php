@@ -98,11 +98,18 @@ class ilSrToolProvider extends AbstractDynamicToolPluginProvider
         $this->request_object = $this->getRequestedObject();
 
         // keep the ref-id or target of the current request alive, it
-        // will be treated as routine-ref-id to retrieve routines.
+        // will be treated as routine-ref-id to retrieve routines or
+        // as target for elongations and opt-outs.
         if (null !== $this->request_object) {
             $this->dic->ctrl()->setParameterByClass(
                 ilSrRoutineGUI::class,
                 ilSrRoutineGUI::PARAM_OBJECT_REF_ID,
+                $this->request_object
+            );
+
+            $this->dic->ctrl()->setParameterByClass(
+                ilSrWhitelistGUI::class,
+                ilSrWhitelistGUI::PARAM_OBJECT_REF_ID,
                 $this->request_object
             );
         }
@@ -191,12 +198,12 @@ class ilSrToolProvider extends AbstractDynamicToolPluginProvider
         if (!empty($affected_by)) {
             foreach ($affected_by as $routine_id) {
                 $routine = $this->repository->routine()->get($routine_id);
-                if (null === $routine ||
-                    $this->repository->routine()->whitelist()->isObjectOptedOut(
-                        $routine,
-                        $ref_id
-                    )
-                ) {
+                if (null === $routine) {
+                    continue;
+                }
+
+                $whitelist_entry = $this->repository->whitelist()->get($routine, $ref_id);
+                if (null !== $whitelist_entry && $whitelist_entry->isOptOut()) {
                     continue;
                 }
 
@@ -217,6 +224,12 @@ class ilSrToolProvider extends AbstractDynamicToolPluginProvider
                     $routine->getRoutineId()
                 );
 
+                $this->dic->ctrl()->setParameterByClass(
+                    ilSrWhitelistGUI::class,
+                    ilSrWhitelistGUI::PARAM_ROUTINE_ID,
+                    $routine->getRoutineId()
+                );
+
                 $actions = [];
 
                 $actions[] = $this->dic->ui()->factory()->button()->shy(
@@ -227,12 +240,12 @@ class ilSrToolProvider extends AbstractDynamicToolPluginProvider
                     )
                 );
 
-                if (1 < $routine->getElongation()) {
+                if (1 <= $routine->getElongation()) {
                     $actions[] = $this->dic->ui()->factory()->button()->shy(
                         $this->plugin->txt(self::ACTION_ROUTINE_EXTEND),
                         ilSrLifeCycleManagerDispatcher::getLinkTarget(
-                            ilSrRoutineGUI::class,
-                            ilSrRoutineGUI::CMD_ROUTINE_EXTEND
+                            ilSrWhitelistGUI::class,
+                            ilSrWhitelistGUI::CMD_ROUTINE_EXTEND
                         )
                     );
                 }
@@ -241,8 +254,8 @@ class ilSrToolProvider extends AbstractDynamicToolPluginProvider
                     $actions[] = $this->dic->ui()->factory()->button()->shy(
                         $this->plugin->txt(self::ACTION_ROUTINE_OPT_OUT),
                         ilSrLifeCycleManagerDispatcher::getLinkTarget(
-                            ilSrRoutineGUI::class,
-                            ilSrRoutineGUI::CMD_ROUTINE_OPT_OUT
+                            ilSrWhitelistGUI::class,
+                            ilSrWhitelistGUI::CMD_ROUTINE_OPT_OUT
                         )
                     );
                 }
