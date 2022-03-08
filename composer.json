@@ -6,12 +6,17 @@
     "authors": [
         {
             "name": "Thibeau Fuhrer",
-            "email": "thibeau@sr.solutions"
+            "email": "thibeau@sr.solutions",
+            "homepage": "https://sr.solutions"
         }
     ],
+    "support": {
+        "issues": "https://support.sr.solutions"
+    },
     "autoload": {
         "psr-4": {
-            "srag\\Plugins\\SrLifeCycleManager\\": "src/"
+            "srag\\Plugins\\SrLifeCycleManager\\": "src/",
+            "srag\\Plugins\\SrLifeCycleManager\\Tests\\": "tests/"
         },
         "classmap": [
             "classes/"

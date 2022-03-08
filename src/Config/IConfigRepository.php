@@ -5,22 +5,31 @@
 namespace srag\Plugins\SrLifeCycleManager\Config;
 
 /**
+ * Describes the CRUD operations of the configuration.
+ *
  * @author Thibeau Fuhrer <thibeau@sr.solutions>
  */
 interface IConfigRepository
 {
     /**
-     * Returns the latest configuration object.
+     * Fetches the configurations from the database.
      *
      * @return IConfig
      */
     public function get() : IConfig;
 
     /**
-     * Stores the configuration from given identifier => value pairs.
+     * Creates or updates the given configurations in the database.
      *
-     * @param array<string, mixed> $post_data
+     * @param IConfig $config
      * @return IConfig
      */
-    public function store(array $post_data) : IConfig;
+    public function store(IConfig $config) : IConfig;
+
+    /**
+     * Returns all available global roles as id => title pairs.
+     *
+     * @return array<int, string>
+     */
+    public function getAvailableGlobalRoles() : array;
 }

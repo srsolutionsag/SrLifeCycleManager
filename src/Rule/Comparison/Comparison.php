@@ -106,7 +106,7 @@ class Comparison implements IComparison
             $rhs_attribute->getComparableValueTypes()
         );
 
-        if (1 < count($similarities)) {
+        if (0 === count($similarities)) {
             return null;
         }
 

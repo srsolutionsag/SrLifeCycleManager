@@ -5,13 +5,12 @@
 namespace srag\Plugins\SrLifeCycleManager\Form\Config;
 
 use srag\Plugins\SrLifeCycleManager\Form\AbstractFormBuilder;
-use srag\Plugins\SrLifeCycleManager\Config\IConfigAr;
 use srag\Plugins\SrLifeCycleManager\Config\IConfig;
 use srag\Plugins\SrLifeCycleManager\ITranslator;
-
-use ILIAS\UI\Component\Input\Field\Factory as InputFactory;
-use ILIAS\UI\Component\Input\Container\Form\Factory as FormFactory;
 use ILIAS\Refinery\Factory as Refinery;
+use ILIAS\UI\Component\Input\Container\Form\Factory as FormFactory;
+use ILIAS\UI\Component\Input\Container\Form\Form as UIForm;
+use ILIAS\UI\Component\Input\Field\Factory as FieldFactory;
 
 /**
  * @author Thibeau Fuhrer <thibeau@sr.solutions>
@@ -19,75 +18,63 @@ use ILIAS\Refinery\Factory as Refinery;
 class ConfigFormBuilder extends AbstractFormBuilder
 {
     /**
-     * @var IConfigAr[]
-     */
-    protected $config;
-
-    /**
-     * @var array
+     * @var string[]
      */
     protected $global_roles;
 
     /**
-     * @var bool
+     * @var IConfig
      */
-    protected $bin_active;
+    protected $config;
 
     /**
-     * @param FormFactory  $form_factory
-     * @param InputFactory $input_factory
-     * @param Refinery     $refinery
      * @param ITranslator  $translator
+     * @param FormFactory  $forms
+     * @param FieldFactory $fields
+     * @param Refinery     $refinery
+     * @param IConfig      $config
+     * @param string[]     $global_roles
      * @param string       $form_action
-     * @param IConfig       $config
-     * @param array        $global_roles
-     * @param bool         $bin_active
      */
     public function __construct(
-        FormFactory $form_factory,
-        InputFactory $input_factory,
-        Refinery $refinery,
         ITranslator $translator,
-        string $form_action,
+        FormFactory $forms,
+        FieldFactory $fields,
+        Refinery $refinery,
         IConfig $config,
         array $global_roles,
-        bool $bin_active
+        string $form_action
     ) {
-        parent::__construct($form_factory, $input_factory, $refinery, $translator, $form_action);
-
-        $this->config = $config;
+        parent::__construct($translator, $forms, $fields, $refinery, $form_action);
         $this->global_roles = $global_roles;
-        $this->bin_active = $bin_active;
+        $this->config = $config;
     }
 
     /**
      * @inheritDoc
      */
-    protected function getInputs() : array
+    public function getForm() : UIForm
     {
-        $inputs[IConfigAr::CNF_GLOBAL_ROLES] = $this->input_factory
-            ->multiSelect($this->translate(IConfigAr::CNF_GLOBAL_ROLES), $this->global_roles)
-            ->withValue($this->config->getPrivilegedRoles())
+        $inputs[IConfig::CNF_PRIVILEGED_ROLES] = $this->fields
+            ->multiSelect($this->translator->txt(IConfig::CNF_PRIVILEGED_ROLES), $this->global_roles)
+            ->withValue((!empty($this->config->getPrivilegedRoles())) ?
+                $this->config->getPrivilegedRoles() : null
+            )
         ;
 
-        // add move-to-bin input only if ILIAS trash is enabled.
-        if ($this->bin_active) {
-            $inputs[IConfigAr::CNF_MOVE_TO_BIN] = $this->input_factory
-                ->checkbox($this->translate(IConfigAr::CNF_MOVE_TO_BIN))
-                ->withValue($this->config->shouldMoveToBin())
-            ;
-        }
-
-        $inputs[IConfigAr::CNF_SHOW_ROUTINES] = $this->input_factory
-            ->checkbox($this->translate(IConfigAr::CNF_SHOW_ROUTINES))
+        $inputs[IConfig::CNF_SHOW_ROUTINES_IN_REPOSITORY] = $this->fields
+            ->checkbox($this->translator->txt(IConfig::CNF_SHOW_ROUTINES_IN_REPOSITORY))
             ->withValue($this->config->showRoutinesInRepository())
         ;
 
-        $inputs[IConfigAr::CNF_CREATE_ROUTINES] = $this->input_factory
-            ->checkbox($this->translate(IConfigAr::CNF_CREATE_ROUTINES))
+        $inputs[IConfig::CNF_CREATE_ROUTINES_IN_REPOSITORY] = $this->fields
+            ->checkbox($this->translator->txt(IConfig::CNF_CREATE_ROUTINES_IN_REPOSITORY))
             ->withValue($this->config->createRoutinesInRepository())
         ;
 
-        return $inputs;
+        return $this->forms->standard(
+            $this->form_action,
+            $inputs
+        );
     }
 }

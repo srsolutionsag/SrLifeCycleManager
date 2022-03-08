@@ -4,10 +4,9 @@
 
 namespace srag\Plugins\SrLifeCycleManager\Form\Rule;
 
-use srag\Plugins\SrLifeCycleManager\Rule\IRoutineAwareRule;
-use srag\Plugins\SrLifeCycleManager\IRepository;
-
-use ILIAS\UI\Renderer;
+use srag\Plugins\SrLifeCycleManager\Routine\IRoutine;
+use ILIAS\UI\Component\Input\Container\Form\Form as UIForm;
+use LogicException;
 
 /**
  * @author Thibeau Fuhrer <thibeau@sr.solutions>
@@ -15,86 +14,64 @@ use ILIAS\UI\Renderer;
 class RuleFormDirector
 {
     /**
-     * @var Renderer
-     */
-    protected $renderer;
-
-    /**
      * @var RuleFormBuilder
      */
-    protected $builder;
+    protected $form_builder;
 
     /**
-     * @var IRepository
+     * @param RuleFormBuilder $form_builder
      */
-    protected $repository;
-
-    /**
-     * @var IRoutineAwareRule
-     */
-    protected $rule;
-
-    /**
-     * @param Renderer          $renderer
-     * @param RuleFormBuilder   $builder
-     * @param IRepository       $repository
-     * @param IRoutineAwareRule $rule
-     */
-    public function __construct(
-        Renderer $renderer,
-        RuleFormBuilder $builder,
-        IRepository $repository,
-        IRoutineAwareRule $rule
-    ) {
-        $this->renderer = $renderer;
-        $this->builder = $builder;
-        $this->repository = $repository;
-        $this->rule = $rule;
+    public function __construct(RuleFormBuilder $form_builder)
+    {
+        $this->form_builder = $form_builder;
     }
 
     /**
-     * @return RuleForm
+     * Returns the rule form that corresponds to the give routine
+     * requirement type.
+     *
+     * @param IRoutine $routine
+     * @return UIForm
      */
-    public function getStandardForm() : RuleForm
+    public function getRuleFormByRoutine(IRoutine $routine) : UIForm
     {
-        return new RuleForm(
-            $this->repository,
-            $this->renderer,
-            $this->builder
-                ->setRule($this->rule)
-                ->addCommonAttributes()
-                ->addCourseAttributes()
-                ->addGroupAttributes()
-        );
+        switch ($routine->getRoutineType()) {
+            case IRoutine::ROUTINE_TYPE_COURSE:
+                return $this->getCourseAttributeForm();
+
+            case IRoutine::ROUTINE_TYPE_GROUP:
+                return $this->getGroupAttributeForm();
+
+            default:
+                throw new LogicException(self::class . " cannot yet build form for '" . $routine->getRoutineType() . "'.");
+        }
     }
 
     /**
-     * @return RuleForm
+     * Returns a rule form for course- and common-attributes.
+     *
+     * @return UIForm
      */
-    public function getCourseAttributeForm() : RuleForm
+    public function getCourseAttributeForm() : UIForm
     {
-        return new RuleForm(
-            $this->repository,
-            $this->renderer,
-            $this->builder
-                ->setRule($this->rule)
-                ->addCommonAttributes()
-                ->addCourseAttributes()
-        );
+        return $this->form_builder
+            ->addCommonAttributes()
+            ->addCourseAttributes()
+            ->getForm()
+        ;
     }
 
     /**
-     * @return RuleForm
+     * Returns a rule form for course- and common-attributes.
+     *
+     * @return UIForm
      */
-    public function getGroupAttributeForm() : RuleForm
+    public function getGroupAttributeForm() : UIForm
     {
-        return new RuleForm(
-            $this->repository,
-            $this->renderer,
-            $this->builder
-                ->setRule($this->rule)
-                ->addCommonAttributes()
-                ->addGroupAttributes()
-        );
+        return $this->form_builder
+            ->addCommonAttributes()
+            ->addGroupAttributes()
+            ->getForm()
+        ;
     }
 }

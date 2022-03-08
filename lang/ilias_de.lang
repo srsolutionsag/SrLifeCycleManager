@@ -1,4 +1,9 @@
 
+tool_main_entry#:#Routinen
+
+crs#:#Kurse
+grp#:#Gruppen
+
 msg_permission_denied#:#Sie haben nicht ausreichende Berechtigung.
 msg_object_not_found#:#Das angefragte Object wurde nicht gefunden.
 msg_invalid_ref_id#:#Diese Ref-id ist ungültig.
@@ -13,46 +18,60 @@ msg_notification_success#:#Benachrichtigung(en) erfolgreich aktualisiert.
 msg_notification_error#:#Benachrichtigung(en) konnten nicht aktualisiert werden.
 msg_back_to#:#Zurück
 msg_invalid_execution_dates#:#Eines der eingegeben Daten entspricht nicht dem Format DD/MM.
+msg_routine_whitelist_error#:#Die angefragte Routine unterstützt keine Whitelists.
+msg_routine_whitelist_failure#:#Die Anfrage war kein Opt-Out und Verlängerungen wird nicht unterstützt.
+msg_routine_whitelist_success#:#Objekt wurde erfolgreich auf die Whitelist gesetzt.
+msg_privileged_user#:#Sie sind berechtigt, eigene Routinen an dieser Stelle zu verwalten.
+msg_affected_routines#:#Es gibt aktive Routinen die das aktuelle Objekt betreffen!
+msg_routine_cant_extend#:#Objekte können von dieser Routine nicht verlängert werden.
+msg_routine_extended#:#Das Objekt wurde erfolgreich für [ELONGATION] Tage verlängert.
+msg_routine_extend_error#:#Das Objekt konnte nicht verlängert werden, ggf. haben Sie das bereits getan.
+msg_routine_cant_opt_out#:#Objekte können von dieser Routine nicht ignoriert werden.
+msg_routine_opted_out#:#Das Objekt wurde erfolgreich von dieser Routine ausgeschlossen.
+msg_routine_opt_out_error#:#Dieses Objekt konnte nicht von der Routine ausgeschlossen werden, ggf. haben Sie das bereits getan.
+msg_days_before_submission_error#:#Eine Benachrichtigung die um diese Anzahl vor der Löschung geschickt wird existiert bereits.
 
 page_title_rules#:#SrLifeCycleManager Regeln
 page_title_config#:#SrLifeCycleManager Einstellungen
 page_title_routine#:#SrLifeCycleManager Routinen
 page_title_notifications#:#SrLifeCycleManager Benachrichtigungen
+page_title_whitelist#:#SrLifeCycleManager Whitelist
 
 tab_config_index#:#Einstellungen
 tab_routine_index#:#Routinen
 
-cnf_global_roles#:#Globale Rollen die Routinen anlegen können
-cnf_move_to_bin#:#Objekte zuerst in den Papierkorb schieben?
-cnf_create_routines_repository#:#Neue Routinen vom Magazin aus erstellen?
-cnf_show_routines_repository#:#Aktive Routinen im Magazin anzeigen?
+cnf_privileged_roles#:#Globale Rollen die Routinen anlegen können
+cnf_can_tool_create_routines#:#Neue Routinen vom Magazin aus erstellen?
+cnf_can_tool_show_routines#:#Aktive Routinen im Magazin anzeigen?
 
 col_actions#:#Aktionen
 col_routine_ref_id#:#Ref-id (Scope)
-col_routine_name#:#Name
-col_routine_active#:#Aktiv
-col_routine_origin_type#:#Herkunft
-col_routine_owner_id#:#Besitzer
-col_routine_creation_date#:#Erstellt
-col_routine_opt_out_possible#:#Opt-out
-col_routine_elongation_days#:#Verlängerung (Tage)
+col_routine_title#:#Name
+col_routine_is_active#:#Aktiv
+col_routine_type#:#Routinen Typ
+col_routine_usr_id#:#Besitzer
+col_routine_has_opt_out#:#Opt-out
+col_routine_elongation#:#Verlängerung (Tage)
 col_rule_rhs_type#:#RHS Typ
 col_rule_rhs_value#:#RHS Wert
 col_rule_operator#:#Operator
 col_rule_lhs_type#:#LHS Typ
 col_rule_lhs_value#:#LHS Wert
-col_notification_message#:#Benachrichtigung
-col_notification_days#:#Senden (in Tagen bevor Routine)
+col_notification_title#:#Titel
+col_notification_content#:#Inhalt
+col_notification_days_before_submission#:#Senden (Tage vor Löschung)
 
 input_name_routine_ref_id#:#Ref-id (scope)
-input_name_routine_name#:#Name
-input_name_routine_active#:#Aktiv?
-input_name_routine_opt_out#:#Opt-out möglich?
-input_name_routine_elongation#:#Verlängerung möglich?
-input_name_routine_elongation_possible#:#Verlängerung (in Tage)
-input_name_notification_message_info#:#Benutze [EXTENSION_LINK] für einen Link, mit dem Empfänger das Objekt um die definierte Zeit verlängern können. <br /> Benutze [OBJECT_LINK] für einen Link zum Objekt, dass gelöscht werden soll.
-input_name_execution_dates#:#Ausführungsdaten (DD/MM)
-input_name_execution_dates_info#:#Wenn sie ein Datum geschrieben habe, drücken Sie "Enter" um es hinzuzufügen.
+input_name_routine_title#:#Name
+input_name_routine_type#:#Routinen Typ
+input_name_routine_is_active#:#Aktiv?
+input_name_routine_has_opt_out#:#Opt-out möglich?
+input_name_routine_elongation#:#Verlängerung (in Tage)
+input_name_routine_elongation_possible#:#Verlängerung möglich?
+input_name_notification_title#:#Titel
+input_name_notification_content#:#Inhalt
+input_name_notification_content_info#:#Benutze [EXTENSION_LINK] für einen Link, mit dem Empfänger das Objekt um die definierte Zeit verlängern können. <br /> Benutze [OPT_OUT_LINK] für einen Link, mit dem Empfänger das Objekt von der Löschung ausschliessen können. <br /> Benutze [OBJECT_LINK] für einen Link zum Objekt, dass gelöscht werden soll.
+input_name_notification_days_before_submission#:#Senden (Tage vor Löschung)
 
 routine_origin_type_admin#:#Administration
 routine_origin_type_repo#:#Magazin
@@ -66,6 +85,10 @@ status_impossible#:#Nicht möglich
 action_routine_add#:#Routine hinzufügen
 action_routine_edit#:#Bearbeiten
 action_routine_delete#:#Löschen
+action_routine_manage#:#Verwalten
+action_routine_extend#:#Verlängern
+action_routine_opt_out#:#Opt-out
+action_routine_view#:#Ansehen
 action_routine_rules#:#Regeln
 action_routine_notifications#:#Benachrichtigungen
 action_rule_add#:#Regel hinzufügen
@@ -97,25 +120,25 @@ course_attribute_value#:#Dynamisches Attribut
 group_attribute#:#Gruppen Attribut
 group_attribute_value#:#Dynamisches Attribut
 
-srag\Plugins\SrLifeCycleManager\Rule\Attribute\Course\CourseAttribute#:#Kursattribut
-srag\Plugins\SrLifeCycleManager\Rule\Attribute\Course\CourseActive#:#Kurs aktiv
-srag\Plugins\SrLifeCycleManager\Rule\Attribute\Course\CourseEnd#:#Kursende
-srag\Plugins\SrLifeCycleManager\Rule\Attribute\Course\CourseStart#:#Kursstart
-srag\Plugins\SrLifeCycleManager\Rule\Attribute\Course\CourseMember#:#Kursmitglieder
-srag\Plugins\SrLifeCycleManager\Rule\Attribute\Course\CourseMetadata#:#Kurs Metadata
-srag\Plugins\SrLifeCycleManager\Rule\Attribute\Course\CourseTaxonomy#:#Kurs Taxonomie
-srag\Plugins\SrLifeCycleManager\Rule\Attribute\Course\CourseTitle#:#Kurstitel
+srag\Plugins\_SrLifeCycleManager\Rule\Attribute\Course\CourseAttribute#:#Kursattribut
+srag\Plugins\_SrLifeCycleManager\Rule\Attribute\Course\CourseActive#:#Kurs aktiv
+srag\Plugins\_SrLifeCycleManager\Rule\Attribute\Course\CourseEnd#:#Kursende
+srag\Plugins\_SrLifeCycleManager\Rule\Attribute\Course\CourseStart#:#Kursstart
+srag\Plugins\_SrLifeCycleManager\Rule\Attribute\Course\CourseMember#:#Kursmitglieder
+srag\Plugins\_SrLifeCycleManager\Rule\Attribute\Course\CourseMetadata#:#Kurs Metadata
+srag\Plugins\_SrLifeCycleManager\Rule\Attribute\Course\CourseTaxonomy#:#Kurs Taxonomie
+srag\Plugins\_SrLifeCycleManager\Rule\Attribute\Course\CourseTitle#:#Kurstitel
 
-srag\Plugins\SrLifeCycleManager\Rule\Attribute\Group\GroupAttribute#:#Gruppenattribut
-srag\Plugins\SrLifeCycleManager\Rule\Attribute\Group\GroupTitle#:#Gruppentitel
-srag\Plugins\SrLifeCycleManager\Rule\Attribute\Group\GroupMember#:#Gruppenmitglieder
-srag\Plugins\SrLifeCycleManager\Rule\Attribute\Group\GroupMetadata#:#Gruppen Metadata
-srag\Plugins\SrLifeCycleManager\Rule\Attribute\Group\GroupTaxonomy#:#Gruppen Taxonomie
+srag\Plugins\_SrLifeCycleManager\Rule\Attribute\Group\GroupAttribute#:#Gruppenattribut
+srag\Plugins\_SrLifeCycleManager\Rule\Attribute\Group\GroupTitle#:#Gruppentitel
+srag\Plugins\_SrLifeCycleManager\Rule\Attribute\Group\GroupMember#:#Gruppenmitglieder
+srag\Plugins\_SrLifeCycleManager\Rule\Attribute\Group\GroupMetadata#:#Gruppen Metadata
+srag\Plugins\_SrLifeCycleManager\Rule\Attribute\Group\GroupTaxonomy#:#Gruppen Taxonomie
 
-srag\Plugins\SrLifeCycleManager\Rule\Attribute\Common\CommonAttribute#:#Gewöhnliches Attribut
-srag\Plugins\SrLifeCycleManager\Rule\Attribute\Common\CommonBoolean#:#wahr/falsch
-srag\Plugins\SrLifeCycleManager\Rule\Attribute\Common\CommonDateTime#:#Datum (Y-m-d)
-srag\Plugins\SrLifeCycleManager\Rule\Attribute\Common\CommonInteger#:#Ganzzahl
-srag\Plugins\SrLifeCycleManager\Rule\Attribute\Common\CommonList#:#Liste (kommasepariert)
-srag\Plugins\SrLifeCycleManager\Rule\Attribute\Common\CommonNull#:#Leer
-srag\Plugins\SrLifeCycleManager\Rule\Attribute\Common\CommonString#:#Text
+srag\Plugins\_SrLifeCycleManager\Rule\Attribute\Common\CommonAttribute#:#Gewöhnliches Attribut
+srag\Plugins\_SrLifeCycleManager\Rule\Attribute\Common\CommonBoolean#:#wahr/falsch
+srag\Plugins\_SrLifeCycleManager\Rule\Attribute\Common\CommonDateTime#:#Datum (Y-m-d)
+srag\Plugins\_SrLifeCycleManager\Rule\Attribute\Common\CommonInteger#:#Ganzzahl
+srag\Plugins\_SrLifeCycleManager\Rule\Attribute\Common\CommonList#:#Liste (kommasepariert)
+srag\Plugins\_SrLifeCycleManager\Rule\Attribute\Common\CommonNull#:#Leer
+srag\Plugins\_SrLifeCycleManager\Rule\Attribute\Common\CommonString#:#Text

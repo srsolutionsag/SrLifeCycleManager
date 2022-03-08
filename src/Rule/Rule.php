@@ -3,11 +3,9 @@
 namespace srag\Plugins\SrLifeCycleManager\Rule;
 
 /**
- * Rule DTO
- *
  * @author Thibeau Fuhrer <thibeau@sr.solutions>
  */
-class Rule implements IRoutineAwareRule
+class Rule implements IRule
 {
     /**
      * @var int|null
@@ -86,6 +84,23 @@ class Rule implements IRoutineAwareRule
     public function setRuleId(?int $rule_id) : IRule
     {
         $this->rule_id = $rule_id;
+        return $this;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function getRoutineId() : int
+    {
+        return $this->routine_id;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function setRoutineId(int $routine_id) : IRule
+    {
+        $this->routine_id = $routine_id;
         return $this;
     }
 
@@ -176,23 +191,6 @@ class Rule implements IRoutineAwareRule
     public function setRhsValue($value) : IRule
     {
         $this->rhs_value = $value;
-        return $this;
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function getRoutineId() : int
-    {
-        return $this->routine_id;
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function setRoutineId(int $routine_id) : IRoutineAwareRule
-    {
-        $this->routine_id = $routine_id;
         return $this;
     }
 }

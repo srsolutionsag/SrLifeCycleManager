@@ -10,24 +10,34 @@ namespace srag\Plugins\SrLifeCycleManager\Config;
 class Config implements IConfig
 {
     /**
-     * @var array
+     * @var int[]
      */
     protected $privileged_roles = [];
 
     /**
      * @var bool
      */
-    protected $move_to_bin = false;
+    protected $can_tool_show = false;
 
     /**
      * @var bool
      */
-    protected $show_in_repository = false;
+    protected $can_tool_create = false;
 
     /**
-     * @var bool
+     * @param int[] $privileged_roles
+     * @param bool  $can_tool_show
+     * @param bool  $can_tool_create
      */
-    protected $create_in_repository = false;
+    public function __construct(
+        array $privileged_roles = [],
+        bool $can_tool_show = false,
+        bool $can_tool_create = false
+    ) {
+        $this->privileged_roles = $privileged_roles;
+        $this->can_tool_show = $can_tool_show;
+        $this->can_tool_create = $can_tool_create;
+    }
 
     /**
      * @return array
@@ -38,58 +48,45 @@ class Config implements IConfig
     }
 
     /**
-     * @param array $privileged_roles
+     * @inheritDoc
      */
-    public function setPrivilegedRoles(array $privileged_roles) : void
+    public function setPrivilegedRoles(array $privileged_roles) : IConfig
     {
         $this->privileged_roles = $privileged_roles;
+        return $this;
     }
 
     /**
-     * @return bool
-     */
-    public function shouldMoveToBin() : bool
-    {
-        return $this->move_to_bin;
-    }
-
-    /**
-     * @param bool $move_to_bin
-     */
-    public function setMoveToBin(bool $move_to_bin) : void
-    {
-        $this->move_to_bin = $move_to_bin;
-    }
-
-    /**
-     * @return bool
+     * @inheritDoc
      */
     public function showRoutinesInRepository() : bool
     {
-        return $this->show_in_repository;
+        return $this->can_tool_show;
     }
 
     /**
-     * @param bool $show_in_repository
+     * @inheritDoc
      */
-    public function setShowRoutinesInRepository(bool $show_in_repository) : void
+    public function setShowRoutinesInRepository(bool $can_show) : IConfig
     {
-        $this->show_in_repository = $show_in_repository;
+        $this->can_tool_show = $can_show;
+        return $this;
     }
 
     /**
-     * @return bool
+     * @inheritDoc
      */
     public function createRoutinesInRepository() : bool
     {
-        return $this->create_in_repository;
+        return $this->can_tool_create;
     }
 
     /**
-     * @param bool $create_in_repository
+     * @inheritDoc
      */
-    public function setCreateRoutinesInRepository(bool $create_in_repository) : void
+    public function setCreateRoutinesInRepository(bool $can_create) : IConfig
     {
-        $this->create_in_repository = $create_in_repository;
+        $this->can_tool_create = $can_create;
+        return $this;
     }
 }

@@ -1,23 +1,34 @@
 <?php declare(strict_types=1);
 
+/* Copyright (c) 2022 Thibeau Fuhrer <thibeau@sr.solutions> Extended GPL, see docs/LICENSE */
+
 use srag\Plugins\SrLifeCycleManager\Notification\INotificationRepository;
 use srag\Plugins\SrLifeCycleManager\Notification\INotification;
 use srag\Plugins\SrLifeCycleManager\Notification\Notification;
-use srag\Plugins\SrLifeCycleManager\Notification\IRoutineAwareNotification;
-use srag\Plugins\SrLifeCycleManager\Notification\IRoutineNotificationRelation;
+use srag\Plugins\SrLifeCycleManager\Routine\IRoutine;
+use srag\Plugins\SrLifeCycleManager\Notification\ISentNotification;
 
 /**
+ * This repository is responsible for all notification CRUD operations.
+ *
  * @author Thibeau Fuhrer <thibeau@sr.solutions>
+ *
+ * @noinspection AutoloadingIssuesInspection
  */
 class ilSrNotificationRepository implements INotificationRepository
 {
+    /**
+     * @var string mysql datetime format string.
+     */
+    protected const MYSQL_DATETIME_FORMAT = 'Y-m-d';
+
     /**
      * @var ilDBInterface
      */
     protected $database;
 
     /**
-     * @param ilDBInterface      $database
+     * @param ilDBInterface $database
      */
     public function __construct(ilDBInterface $database)
     {
@@ -27,83 +38,58 @@ class ilSrNotificationRepository implements INotificationRepository
     /**
      * @inheritDoc
      */
-    public function get(int $routine_id, int $notification_id) : ?IRoutineAwareNotification
+    public function get(int $notification_id) : ?INotification
     {
-        /** @var $ar_notification ilSrNotification|null */
-        $ar_notification = ilSrNotification::find($notification_id);
-        if (null === $ar_notification) {
-            return null;
-        }
-
-        /** @var $ar_relation ilSrRoutineNotification */
-        $ar_relation = $this->getRelationList($routine_id, $notification_id)->first();
-
-        return $this->transformToDTO($ar_notification, $ar_relation);
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function getAll(int $routine_id, bool $array_data = false) : array
-    {
-        /** @var $ar_relations ilSrRoutineNotification[] */
-        $ar_relations = ilSrRoutineNotification::where([
-            IRoutineNotificationRelation::F_ROUTINE_ID => $routine_id,
-        ], '=')->get();
-
-        $notifications = [];
-        foreach ($ar_relations as $ar_relation) {
-            /** @var $ar_notification ilSrNotification|null */
-            $ar_notification = ilSrNotification::find($ar_relation->getNotificationId());
-            if (null === $ar_notification) {
-                continue;
-            }
-
-            $notifications[] = ($array_data) ?
-                $this->transformToArray($ar_notification, $ar_relation) :
-                $this->transformToDTO($ar_notification, $ar_relation)
-            ;
-        }
-
-        return $notifications;
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function getAllByRoutineExecutionDate(DateTime $exec_date) : array
-    {
-        $exec_date_string = $exec_date->format(ilSrRoutine::MYSQL_DATE_FORMAT);
-        $notification_table = ilSrNotification::TABLE_NAME;
-        $routine_table = ilSrRoutine::TABLE_NAME;
-        $relation_table = ilSrRoutineNotification::TABLE_NAME;
-
         $query = "
-            SELECT msg.message, rel.notification_id, rel.routine_id, rel.days_before_submission 
-                FROM $notification_table AS msg
-                JOIN $relation_table AS rel ON rel.notification_id = msg.notification_id
-                JOIN $routine_table AS routine ON routine.routine_id = rel.routine_id
-                WHERE '$exec_date_string' = DATE_ADD(CURRENT_DATE(), INTERVAL (rel.days_before_submission) DAY)
-                AND routine.active = 1
+            SELECT notification_id, routine_id, title, content, days_before_submission
+                FROM srlcm_notification
+                WHERE notification_id = %s
+            ; 
+        ";
+
+        $result = $this->database->fetchAll(
+            $this->database->queryF(
+                $query,
+                ['integer'],
+                [$notification_id]
+            )
+        );
+
+        if (!empty($result)) {
+            return $this->transformToNotification($result[0]);
+        }
+
+        return null;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function getByRoutine(IRoutine $routine, bool $array_data = false) : array
+    {
+        $query = "
+            SELECT notification_id, routine_id, title, content, days_before_submission
+                FROM srlcm_notification
+                WHERE routine_id = %s
+                ORDER BY days_before_submission ASC
             ;
         ";
 
         $results = $this->database->fetchAll(
-            $this->database->query($query)
+            $this->database->queryF(
+                $query,
+                ['integer'],
+                [$routine->getRoutineId()]
+            )
         );
 
-        if (empty($results)) {
-            return [];
+        if ($array_data) {
+            return $results;
         }
 
         $notifications = [];
-        foreach ($results as $result) {
-            $notifications[] = new Notification(
-                $result[INotification::F_MESSAGE],
-                (int) $result[IRoutineNotificationRelation::F_DAYS_BEFORE_SUBMISSION],
-                (int) $result[IRoutineNotificationRelation::F_ROUTINE_ID],
-                (int) $result[IRoutineNotificationRelation::F_NOTIFICATION_ID]
-            );
+        foreach ($results as $query_result) {
+            $notifications[] = $this->transformToNotification($query_result);
         }
 
         return $notifications;
@@ -112,133 +98,228 @@ class ilSrNotificationRepository implements INotificationRepository
     /**
      * @inheritDoc
      */
-    public function getEmpty(int $routine_id) : IRoutineAwareNotification
+    public function getByRoutineAndDaysBeforeSubmission(int $routine_id, int $days_before_submission) : ?INotification
     {
-        return new Notification(
-            '',
-            0,
-            $routine_id
+        $query = "
+            SELECT notification_id, routine_id, title, content, days_before_submission
+                FROM srlcm_notification
+                WHERE routine_id = %s
+                AND days_before_submission = %s
+            ; 
+        ";
+
+        $result = $this->database->fetchAll(
+            $this->database->queryF(
+                $query,
+                ['integer', 'integer'],
+                [
+                    $routine_id,
+                    $days_before_submission,
+                ]
+            )
         );
+
+        if (!empty($result)) {
+            return $this->transformToNotification($result[0]);
+        }
+
+        return null;
     }
 
     /**
      * @inheritDoc
      */
-    public function store(IRoutineAwareNotification $notification) : IRoutineAwareNotification
+    public function getSentNotifications(IRoutine $routine, int $ref_id) : array
     {
-        $ar_notification = (null !== $notification->getNotificationId()) ?
-            (ilSrNotification::find($notification->getNotificationId()) ?? new ilSrNotification()) :
-            new ilSrNotification()
-        ;
+        $query = "
+            SELECT msg.notification_id, msg.routine_id, msg.title, msg.content, msg.days_before_submission
+                FROM srlcm_notification AS msg
+                JOIN srlcm_notified_objects AS notified_objs ON notified_objs.notification_id = msg.notification_id
+                WHERE notified_objs.routine_id = %s
+                AND notified_objs.ref_id = %s
+                ORDER BY msg.days_before_submission ASC
+            ;
+        ";
 
-        $ar_notification->setMessage($notification->getMessage());
-        $ar_notification->store();
-
-        $ar_relations = $this->getRelationList(
-            $notification->getRoutineId(),
-            $ar_notification->getNotificationId()
+        $results = $this->database->fetchAll(
+            $this->database->queryF(
+                $query,
+                ['integer', 'integer'],
+                [
+                    $routine->getRoutineId(),
+                    $ref_id
+                ]
+            )
         );
 
-        /** @var $ar_relation ilSrRoutineNotification */
-        if (empty($ar_relations->get())) {
-            $ar_relation = new ilSrRoutineNotification();
-        } else {
-            $ar_relation = $ar_relations->first();
+        $sent_notifications = [];
+        foreach ($results as $result) {
+            $sent_notifications[] = $this->transformToSentNotification($result);
         }
 
-        $ar_relation
-            ->setNotificationId($ar_notification->getNotificationId())
-            ->setRoutineId($notification->getRoutineId())
-            ->setDaysBeforeSubmission($notification->getDaysBeforeSubmission())
-            ->store()
-        ;
-
-        return $this->transformToDTO($ar_notification, $ar_relation);
+        return $sent_notifications;
     }
 
     /**
      * @inheritDoc
      */
-    public function delete(IRoutineAwareNotification $notification) : bool
+    public function notifyObject(INotification $notification, int $ref_id) : ISentNotification
     {
-        // there's nothing to do if the DTO hasn't been stored yet.
-        if (null === $notification->getNotificationId()) {
-            return true;
-        }
+        $query = "
+            INSERT INTO slrmc_notified_objects (routine_id, notification_id, ref_id, date)
+                VALUES (%s, %s, %s, %s)
+            ;
+        ";
 
-        $ar_notification = ilSrNotification::find($notification->getNotificationId());
-        if (null !== $ar_notification) {
-            $ar_relations = $this->getRelationList(
+        $now = new DateTime();
+        $this->database->manipulateF(
+            $query,
+            ['integer', 'integer', 'integer', 'date'],
+            [
                 $notification->getRoutineId(),
-                $notification->getNotificationId()
-            );
+                $notification->getNotificationId(),
+                $ref_id,
+                $now->format(self::MYSQL_DATETIME_FORMAT),
+            ]
+        );
 
-            foreach ($ar_relations->get() as $ar_relation) {
-                $ar_relation->delete();
-            }
-
-            $ar_notification->delete();
-            return true;
-        }
-
-        return false;
+        /** @var $notification ISentNotification */
+        return $notification
+            ->setNotifiedRefId($ref_id)
+            ->setNotifiedDate($now)
+        ;
     }
 
     /**
-     * Helper function that transforms the notification and relation
-     * data into a DTO.
-     *
-     * @param INotification                $ar_notification
-     * @param IRoutineNotificationRelation $ar_relation
-     * @return IRoutineAwareNotification
+     * @inheritDoc
      */
-    protected function transformToDTO(
-        INotification $ar_notification,
-        IRoutineNotificationRelation $ar_relation
-    ) : IRoutineAwareNotification
+    public function store(INotification $notification) : INotification
+    {
+        if (null !== $notification->getNotificationId()) {
+            return $this->updateNotification($notification);
+        }
+
+        return $this->insertNotification($notification);
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function delete(INotification $notification) : bool
+    {
+        $query = "DELETE FROM srlcm_notification WHERE notification_id = %s;";
+
+        $this->database->manipulateF(
+            $query,
+            ['integer'],
+            [$notification->getNotificationId()]
+        );
+
+        return true;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function empty(IRoutine $routine) : INotification
     {
         return new Notification(
-            $ar_notification->getMessage(),
-            $ar_relation->getDaysBeforeSubmission(),
-            $ar_relation->getRoutineId(),
-            $ar_notification->getNotificationId()
+            $routine->getRoutineId(),
+            '',
+            '',
+            0
         );
     }
 
     /**
-     * Helper function that returns the ar list of the routine-notification
-     * relations.
-     *
-     * @param int $routine_id
-     * @param int $notification_id
-     * @return ActiveRecordList
+     * @param INotification $notification
+     * @return INotification
      */
-    protected function getRelationList(int $routine_id, int $notification_id) : ActiveRecordList
+    protected function updateNotification(INotification $notification) : INotification
     {
-        return ilSrRoutineNotification::where([
-            IRoutineNotificationRelation::F_ROUTINE_ID => $routine_id,
-            IRoutineNotificationRelation::F_NOTIFICATION_ID => $notification_id,
-        ], '=');
+        $query = "
+            UPDATE srlcm_notification SET
+                title = %s,
+                content = %s,
+                days_before_submission = %s
+                WHERE notification_id = %s
+            ;
+        ";
+
+        $this->database->manipulateF(
+            $query,
+            ['text', 'text', 'integer', 'integer'],
+            [
+                $notification->getTitle(),
+                $notification->getContent(),
+                $notification->getDaysBeforeSubmission(),
+                $notification->getNotificationId(),
+            ]
+        );
+
+        return $notification;
     }
 
     /**
-     * Helper function that transforms the notification and relation
-     * data into array-data.
-     *
-     * @param INotification                $ar_notification
-     * @param IRoutineNotificationRelation $ar_relation
-     * @return array<string, mixed>
+     * @param INotification $notification
+     * @return INotification
      */
-    protected function transformToArray(
-        INotification $ar_notification,
-        IRoutineNotificationRelation $ar_relation
-    ) : array
+    protected function insertNotification(INotification $notification) : INotification
     {
-        return [
-            IRoutineNotificationRelation::F_NOTIFICATION_ID => $ar_notification->getNotificationId(),
-            IRoutineNotificationRelation::F_ROUTINE_ID => $ar_relation->getRoutineId(),
-            IRoutineNotificationRelation::F_DAYS_BEFORE_SUBMISSION => $ar_relation->getDaysBeforeSubmission(),
-            INotification::F_MESSAGE => $ar_notification->getMessage(),
-        ];
+        $query = "
+            INSERT INTO srlcm_notification (notification_id, routine_id, title, content, days_before_submission)
+                VALUES (%s, %s, %s, %s, %s)    
+            ;
+        ";
+
+        $notification_id = (int) $this->database->nextId('srlcm_notification');
+        $this->database->manipulateF(
+            $query,
+            ['integer', 'integer', 'text', 'text', 'integer'],
+            [
+                $notification_id,
+                $notification->getRoutineId(),
+                $notification->getTitle(),
+                $notification->getContent(),
+                $notification->getDaysBeforeSubmission(),
+            ]
+        );
+
+        return $notification->setNotificationId((int) $notification_id);
+    }
+
+    /**
+     * @param array $query_result
+     * @return INotification
+     */
+    protected function transformToNotification(array $query_result) : INotification
+    {
+        return new Notification(
+            (int) $query_result[INotification::F_ROUTINE_ID],
+            $query_result[INotification::F_TITLE],
+            $query_result[INotification::F_CONTENT],
+            (int) $query_result[INotification::F_DAYS_BEFORE_SUBMISSION],
+            (int) $query_result[INotification::F_NOTIFICATION_ID]
+        );
+    }
+
+    /**
+     * @param array $query_result
+     * @return ISentNotification
+     */
+    protected function transformToSentNotification(array $query_result) : ISentNotification
+    {
+        return new Notification(
+            (int) $query_result[INotification::F_ROUTINE_ID],
+            $query_result[INotification::F_TITLE],
+            $query_result[INotification::F_CONTENT],
+            (int) $query_result[INotification::F_DAYS_BEFORE_SUBMISSION],
+            (int) $query_result[INotification::F_NOTIFICATION_ID],
+            (int) $query_result[ISentNotification::F_NOTIFIED_REF_ID],
+            DateTime::createFromFormat(
+                self::MYSQL_DATETIME_FORMAT,
+                $query_result[ISentNotification::F_NOTIFIED_DATE]
+            )
+        );
     }
 }

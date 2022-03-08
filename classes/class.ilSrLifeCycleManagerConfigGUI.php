@@ -1,23 +1,22 @@
-<?php
+<?php declare(strict_types=1);
+
+/* Copyright (c) 2022 Thibeau Fuhrer <thibeau@sr.solutions> Extended GPL, see docs/LICENSE */
 
 /**
- * Class ilSrLifeCycleManagerConfigGUI is the plugin config entry point.
+ * This is the entry point of the plugin-configuration.
  *
  * @author Thibeau Fuhrer <thibeau@sr.solutions>
  *
- * ILIAS plugins which can be configured MUST implement this class, as it's the
- * entry point recognized by ILIAS. Neither it's location nor it's name can be
- * changed, due to the hardcoded configuration class loading in the core.
+ * The classes only purpose is, to forward requests to the configuration
+ * to the actual implementation: @see ilSrConfigGUI.
  *
- * Since the request handling of this plugin is centralized and lies within the
- * @see ilSrLifeCycleManagerDispatcher class, the only purpose of this GUI is
- * to change that entry point to another config GUI implementation.
+ * @noinspection AutoloadingIssuesInspection
  */
-final class ilSrLifeCycleManagerConfigGUI extends ilPluginConfigGUI
+class ilSrLifeCycleManagerConfigGUI extends ilPluginConfigGUI
 {
     /**
-     * This method is called whenever a request to this GUI is made and
-     * redirects/forwards it to the actual config GUI implementation.
+     * Forwards the request to @see ilSrConfigGUI and sets the
+     * corresponding command.
      *
      * @param string $cmd
      * @throws ilCtrlException

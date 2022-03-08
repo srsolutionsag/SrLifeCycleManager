@@ -1,37 +1,28 @@
 <?php declare(strict_types=1);
 
+/* Copyright (c) 2022 Thibeau Fuhrer <thibeau@sr.solutions> Extended GPL, see docs/LICENSE */
+
+use srag\Plugins\SrLifeCycleManager\Config\IConfigRepository;
 use srag\Plugins\SrLifeCycleManager\Routine\IRoutineRepository;
 use srag\Plugins\SrLifeCycleManager\Notification\INotificationRepository;
 use srag\Plugins\SrLifeCycleManager\Rule\IRuleRepository;
-use ILIAS\DI\RBACServices;
+use srag\Plugins\SrLifeCycleManager\Whitelist\IWhitelistRepository;
 use srag\Plugins\SrLifeCycleManager\IRepository;
-use srag\Plugins\SrLifeCycleManager\Rule\Comparison\Comparison;
-use srag\Plugins\SrLifeCycleManager\Rule\Requirement\Course\CourseRequirement;
-use srag\Plugins\SrLifeCycleManager\Rule\Attribute\AttributeFactory;
-use srag\Plugins\SrLifeCycleManager\Config\IConfigRepository;
+use ILIAS\DI\RBACServices;
 
 /**
- * Class ilSrLifeCycleManagerRepository is a factory for all
- * further plugin repositories.
+ * This repository serves as a factory for all repositories.
  *
  * @author Thibeau Fuhrer <thibeau@sr.solutions>
+ *
+ * The repository itself should not implement any operations,
+ * everything should be done in one of the implementations.
+ *
+ * @noinspection AutoloadingIssuesInspection
  */
 class ilSrLifeCycleManagerRepository implements IRepository
 {
-    /**
-     * @var RBACServices
-     */
-    protected $rbac;
-
-    /**
-     * @var ilTree
-     */
-    protected $tree;
-
-    /**
-     * @var ilDBInterface
-     */
-    protected $database;
+    use ilSrRepositoryHelper;
 
     /**
      * @var IConfigRepository
@@ -44,7 +35,12 @@ class ilSrLifeCycleManagerRepository implements IRepository
     protected $routine_repository;
 
     /**
-     * @var INotificationRepository;
+     * @var IWhitelistRepository
+     */
+    protected $whitelist_repository;
+
+    /**
+     * @var INotificationRepository
      */
     protected $notification_repository;
 
@@ -54,33 +50,24 @@ class ilSrLifeCycleManagerRepository implements IRepository
     protected $rule_repository;
 
     /**
-     * @var AttributeFactory
+     * @var ilTree
      */
-    protected $attribute_factory;
+    protected $tree;
 
     /**
      * @param ilDBInterface $database
      * @param RBACServices  $rbac
      * @param ilTree        $tree
      */
-    public function __construct(
-        ilDBInterface $database,
-        RBACServices $rbac,
-        ilTree $tree
-    ) {
-        $this->attribute_factory = new AttributeFactory();
-        $this->config_repository = new ilSrConfigRepository();
-        $this->rule_repository = new ilSrRuleRepository($database);
+    public function __construct(ilDBInterface $database, RBACServices $rbac, ilTree $tree)
+    {
+        $this->config_repository       = new ilSrConfigRepository($database, $rbac);
         $this->notification_repository = new ilSrNotificationRepository($database);
-        $this->routine_repository = new ilSrRoutineRepository(
-            new ilSrRoutineWhitelistRepository(),
-            $database,
-            $tree
-        );
+        $this->routine_repository      = new ilSrRoutineRepository($database, $tree);
+        $this->whitelist_repository    = new ilSrWhitelistRepository($database);
+        $this->rule_repository         = new ilSrRuleRepository($database, $tree);
 
-        $this->database = $database;
         $this->tree = $tree;
-        $this->rbac = $rbac;
     }
 
     /**
@@ -100,6 +87,14 @@ class ilSrLifeCycleManagerRepository implements IRepository
     }
 
     /**
+     * @inheritdoc
+     */
+    public function whitelist() : IWhitelistRepository
+    {
+        return $this->whitelist_repository;
+    }
+
+    /**
      * @inheritDoc
      */
     public function notification() : INotificationRepository
@@ -113,94 +108,5 @@ class ilSrLifeCycleManagerRepository implements IRepository
     public function rule() : IRuleRepository
     {
         return $this->rule_repository;
-    }
-
-    /**
-     * Returns all available global-roles as 'id' => 'title' pairs.
-     *
-     * This method is used for UI input options, therefore this array
-     * DOES NOT contain the administrator global role, as it should
-     * always be able to everything.
-     *
-     * @return array
-     */
-    public function getGlobalRoleOptions() : array
-    {
-        $role_options = [];
-        $global_roles = $this->rbac->review()->getRolesByFilter(ilRbacReview::FILTER_ALL_GLOBAL);
-
-        if (empty($global_roles)) {
-            return $role_options;
-        }
-
-        foreach ($global_roles as $role_data) {
-            $role_id = (int) $role_data['obj_id'];
-            // the administrator role can be ignored, as this
-            // role should always be able to do everything.
-            if ((int) SYSTEM_ROLE_ID !== $role_id) {
-                $role_title = ilObjRole::_getTranslation($role_data['title']);
-
-                // map the role-title to it's role id associatively.
-                $role_options[$role_id] = $role_title;
-            }
-        }
-
-        return $role_options;
-    }
-
-    /**
-     * Recursively gathers all children of the given ref-id which are
-     * either a course or group object.
-     *
-     * @TODO: might not be very performant and is rather resource greedy.
-     *
-     * @param int $ref_id
-     * @return array
-     */
-    public function getDeletableObjects(int $ref_id) : array
-    {
-        $objects = [];
-
-        $deletable_objects = $this->tree->getChildsByTypeFilter($ref_id, ['crs', 'cat', 'grp', 'fold']);
-        if (empty($deletable_objects)) {
-            return [];
-        }
-
-        foreach ($deletable_objects as $deletable_object) {
-            if (in_array($deletable_object['type'], AttributeFactory::SUPPORTED_OBJECT_TYPES, true)) {
-                $objects[] = $deletable_object;
-            } else {
-                $deletable_child_objects = $this->getDeletableObjects((int) $deletable_object['ref_id']);
-                if (!empty($deletable_child_objects)) {
-                    $this->addArrayValues($objects, $deletable_child_objects);
-                    // $objects = array_merge($objects, $deletable_child_objects);
-                }
-            }
-        }
-
-        return $objects;
-    }
-
-    /**
-     * @param int $ref_id
-     * @return array
-     */
-    public function getAdministrators(int $ref_id) : array
-    {
-        return ilParticipants::getInstance($ref_id)->getAdmins();
-    }
-
-    /**
-     * Replacement for PHP's built-in array_merge(...) function.
-     *
-     * @param $original
-     * @param $array
-     * @return void
-     */
-    protected function addArrayValues(&$original, $array) : void
-    {
-        foreach ($array as $value) {
-            $original[] = $value;
-        }
     }
 }

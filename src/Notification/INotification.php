@@ -3,14 +3,16 @@
 namespace srag\Plugins\SrLifeCycleManager\Notification;
 
 /**
- * INotification describes the DAO of a notification.
- *
  * @author Thibeau Fuhrer <thibeau@sr.solutions>
  */
 interface INotification
 {
+    // INotification attributes:
+    public const F_CONTENT = 'content';
+    public const F_DAYS_BEFORE_SUBMISSION = 'days_before_submission';
     public const F_NOTIFICATION_ID = 'notification_id';
-    public const F_MESSAGE = 'message';
+    public const F_ROUTINE_ID = 'routine_id';
+    public const F_TITLE = 'title';
 
     /**
      * @return int|null
@@ -24,13 +26,46 @@ interface INotification
     public function setNotificationId(int $notification_id) : INotification;
 
     /**
-     * @return string
+     * @return int
      */
-    public function getMessage() : string;
+    public function getRoutineId() : int;
 
     /**
-     * @param string $message
+     * @param int $routine_id
      * @return INotification
      */
-    public function setMessage(string $message) : INotification;
+    public function setRoutineId(int $routine_id) : INotification;
+
+    /**
+     * @return string
+     */
+    public function getTitle() : string;
+
+    /**
+     * @param string $title
+     * @return INotification
+     */
+    public function setTitle(string $title) : INotification;
+
+    /**
+     * @return string
+     */
+    public function getContent() : string;
+
+    /**
+     * @param string $content
+     * @return INotification
+     */
+    public function setContent(string $content) : INotification;
+
+    /**
+     * @return int
+     */
+    public function getDaysBeforeSubmission() : int;
+
+    /**
+     * @param int $amount
+     * @return INotification
+     */
+    public function setDaysBeforeSubmission(int $amount) : INotification;
 }

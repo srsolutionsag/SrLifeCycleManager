@@ -7,7 +7,10 @@ namespace srag\Plugins\SrLifeCycleManager;
 use srag\Plugins\SrLifeCycleManager\Rule\IRuleRepository;
 use srag\Plugins\SrLifeCycleManager\Notification\INotificationRepository;
 use srag\Plugins\SrLifeCycleManager\Routine\IRoutineRepository;
+use srag\Plugins\SrLifeCycleManager\Whitelist\IWhitelistRepository;
 use srag\Plugins\SrLifeCycleManager\Config\IConfigRepository;
+use Generator;
+use ilObject;
 
 /**
  * @author Thibeau Fuhrer <thibeau@sr.solutions>
@@ -25,6 +28,11 @@ interface IRepository
     public function routine() : IRoutineRepository;
 
     /**
+     * @return IWhitelistRepository
+     */
+    public function whitelist() : IWhitelistRepository;
+
+    /**
      * @return INotificationRepository
      */
     public function notification() : INotificationRepository;
@@ -33,4 +41,12 @@ interface IRepository
      * @return IRuleRepository
      */
     public function rule() : IRuleRepository;
+
+    /**
+     * Returns all repository objects that can be deleted by a routine
+     * starting from the given ref-id.
+     *
+     * @return Generator|ilObject[]
+     */
+    public function getRepositoryObjects() : Generator;
 }

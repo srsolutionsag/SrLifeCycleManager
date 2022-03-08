@@ -14,6 +14,9 @@ interface IAttribute
      */
     public const COMPARABLE_DATETIME_FORMAT = 'Y-m-d';
 
+    /**
+     * Comparable value types.
+     */
     public const COMPARABLE_VALUE_TYPE_ARRAY    = 'array';
     public const COMPARABLE_VALUE_TYPE_STRING   = 'string';
     public const COMPARABLE_VALUE_TYPE_BOOL     = 'boolean';

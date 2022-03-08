@@ -1,334 +1,210 @@
 <?php declare(strict_types=1);
 
-use srag\Plugins\SrLifeCycleManager\Routine\IRoutine;
-use srag\Plugins\SrLifeCycleManager\Rule\IRoutineAwareRule;
-use srag\Plugins\SrLifeCycleManager\Form\Rule\RuleFormBuilder;
-use srag\Plugins\SrLifeCycleManager\Form\Rule\RuleForm;
+/* Copyright (c) 2022 Thibeau Fuhrer <thibeau@sr.solutions> Extended GPL, see docs/LICENSE */
+
 use srag\Plugins\SrLifeCycleManager\Form\Rule\RuleFormDirector;
+use srag\Plugins\SrLifeCycleManager\Form\Rule\RuleFormBuilder;
+use srag\Plugins\SrLifeCycleManager\Rule\IRule;
+use srag\Plugins\SrLifeCycleManager\Rule\Attribute\AttributeFactory;
+use srag\Plugins\SrLifeCycleManager\Form\Rule\RuleFormProcessor;
 
 /**
- * Class ilSrRuleGUI
+ * This GUI class is responsible for all actions regarding rules.
  *
  * @author Thibeau Fuhrer <thibeau@sr.solutions>
+ *
+ * @noinspection AutoloadingIssuesInspection
  */
 class ilSrRuleGUI extends ilSrAbstractGUI
 {
-    public const QUERY_PARAM_RULE_ID = 'rule_id';
+    // ilSrRuleGUI GET-parameter names:
+    public const PARAM_RULE_ID = 'rule_id';
 
-    public const ACTION_RULE_ADD    = 'action_rule_add';
-    public const ACTION_RULE_DELETE = 'action_rule_delete';
+    // ilSrRuleGUI command/method names:
+    public const CMD_RULE_EDIT   = 'edit';
+    public const CMD_RULE_SAVE   = 'save';
+    public const CMD_RULE_DELETE = 'delete';
 
-    public const CMD_RULE_ADD       = 'add';
-    public const CMD_RULE_SAVE      = 'save';
-    public const CMD_RULE_DELETE    = 'delete';
-
+    // ilSrRuleGUI language variables:
     protected const MSG_ROUTINE_NOT_FOUND = 'msg_routine_not_found';
-    protected const MSG_RULE_SUCCESS      = 'msg_rule_success';
-    protected const MSG_RULE_ERROR        = 'msg_rule_error';
-    protected const PAGE_TITLE            = 'page_title_rules';
+    protected const MSG_RULE_SUCCESS = 'msg_rule_success';
+    protected const MSG_RULE_ERROR = 'msg_rule_error';
+    protected const PAGE_TITLE = 'page_title_rules';
 
     /**
-     * @var IRoutine
+     * @var RuleFormDirector
      */
-    protected $routine;
+    protected $form_director;
 
     /**
-     * @var IRoutineAwareRule|null
+     * @var IRule
      */
     protected $rule;
 
     /**
-     * @var RuleFormBuilder
-     */
-    protected $form_builder;
-
-    /**
-     * ilSrRuleGUI constructor.
+     * Initializes the form-builder director and fetches required
+     * request parameters.
+     *
+     * @inheritDoc
      */
     public function __construct()
     {
         parent::__construct();
 
-        $this->keepAlive(self::QUERY_PARAM_ROUTINE_SCOPE);
+        $this->panicOnMissingRoutine();
 
-        $this->routine = $this->getRoutineFromRequest(true);
-        $this->rule = $this->getRuleFromRequest();
+        $this->rule =
+            $this->getRequestedRule() ??
+            $this->repository->rule()->empty($this->routine)
+        ;
 
-        $this->form_builder = new RuleFormBuilder(
-            $this->ui->factory()->input()->container()->form(),
-            $this->ui->factory()->input()->field(),
-            $this->refinery,
-            $this->plugin,
-            $this->getFormAction()
+        $this->form_director = new RuleFormDirector(
+            new RuleFormBuilder(
+                $this->translator,
+                $this->ui_factory->input()->container()->form(),
+                $this->ui_factory->input()->field(),
+                $this->refinery,
+                new AttributeFactory(),
+                $this->rule,
+                $this->getFormAction()
+            )
         );
     }
 
     /**
      * @inheritDoc
      */
-    protected function setupGlobalTemplate(ilGlobalTemplateInterface $template) : void
+    protected function setupGlobalTemplate(ilGlobalTemplateInterface $template, ilSrTabManager $tabs) : void
     {
-        $template->setTitle($this->plugin->txt(self::PAGE_TITLE));
+        $template->setTitle($this->translator->txt(self::PAGE_TITLE));
+        $tabs
+            ->addConfigurationTab()
+            ->addRoutineTab()
+            ->deactivateTabs()
+            ->setBackToTarget(
+                $this->ctrl->getLinkTargetByClass(
+                    ilSrRoutineGUI::class,
+                    self::CMD_INDEX
+                )
+            )
+        ;
     }
 
     /**
      * @inheritDoc
      */
-    protected function getCommandList() : array
+    protected function canUserExecute(ilSrAccessHandler $access_handler, string $command) : bool
     {
-        return [
-            self::CMD_INDEX,
-            self::CMD_RULE_ADD,
-            self::CMD_RULE_SAVE,
-            self::CMD_RULE_DELETE
-        ];
-    }
-
-    /**
-     * @inheritDoc
-     */
-    protected function canUserExecuteCommand(int $user_id, string $command) : bool
-    {
-        // the index command can always be executed because
-        // rules must be visible to object tutors etc.
+        // rules must be visible for object administrators.
         if (self::CMD_INDEX === $command) {
-            return true;
+            return $access_handler->canViewRoutines($this->object_ref_id);
         }
 
-        // administrators should be able to execute all commands.
-        if (ilSrAccess::isUserAdministrator($user_id)) {
-            return true;
-        }
-
-        // if the current user is the owner of the related routine,
-        // he should be able to execute all commands too.
-        if (null !== $this->routine && ilSrAccess::isUserAssignedToConfiguredRole($user_id)) {
-            return ($user_id === $this->routine->getOwnerId());
-        }
-
-        return false;
+        // for all other commands the user must be owner of the routine.
+        return $access_handler->isCurrentUser($this->routine->getOwnerId());
     }
 
     /**
-     * @inheritDoc
-     */
-    protected function beforeCommand(string $command) : void
-    {
-        // add the configuration tabs to the current page
-        // and deactivate all tabs by passing an invalid
-        // character as active tab-id.
-        $this->addConfigurationTabs('§');
-
-        // abort if no routine was provided, as all actions
-        // of this GUI depend on it.
-        if (null === $this->routine) {
-            $this->displayErrorMessage(self::MSG_ROUTINE_NOT_FOUND);
-            return;
-        }
-    }
-
-    /**
-     * Displays a rule table on the current page.
+     * Fetches the requested rule from the database if an id was provided.
      *
-     * The table lists all existing rules related to the
-     * routine-id provided as a GET parameter.
-     *
-     * @inheritDoc
+     * @return IRule|null
      */
-    protected function index() : void
+    protected function getRequestedRule() : ?IRule
     {
-        // override the back-to tab with one that redirects back
-        // to the routine GUI.
-        $this->overrideBack2Target(
-            $this->ctrl->getLinkTargetByClass(
-                ilSrRoutineGUI::class,
-                self::CMD_INDEX
-            )
-        );
-
-        // only display the toolbar for routine owners or administrators.
-        if ($this->routine->getOwnerId() === $this->user->getId() ||
-            ilSrAccess::isUserAdministrator($this->user->getId())
-        ) {
-            $this->addRuleToolbar();
-        }
-
-        $this->ui->mainTemplate()->setContent(
-            $this->getTable()->getHTML()
-        );
-    }
-
-    /**
-     * Displays a form to create new rules.
-     *
-     * The method does however not process it, the form will be
-     * submitted to @see ilSrRuleGUI::save().
-     */
-    protected function add() : void
-    {
-        // override the back-to tab with one that redirects
-        // back to index.
-        $this->overrideBack2Target(
-            $this->ctrl->getLinkTargetByClass(
-                self::class,
-                self::CMD_INDEX
-            )
-        );
-
-        $this->ui->mainTemplate()->setContent(
-            $this->getForm()->render()
-        );
-    }
-
-    /**
-     * Processes the submitted form-data and creates a new rule that is
-     * related to the current routine.
-     *
-     * If the creation fails or any inputs are invalid, the form will
-     * be displayed again with an according error message.
-     */
-    protected function save() : void
-    {
-        $form = $this->getForm();
-        if ($form->handleRequest($this->http->request())) {
-            // redirect to index if submission was valid.
-            $this->sendSuccessMessage(self::MSG_RULE_SUCCESS);
-            $this->repeat();
-        }
-
-        // display the form if the submission was unsuccessful
-        // to display errors.
-        $this->displayErrorMessage(self::MSG_RULE_ERROR);
-        $this->ui->mainTemplate()->setContent(
-            $form->render()
-        );
-    }
-
-    /**
-     * Deletes the provided rule and removes the relation
-     * between it and the provided routine.
-     */
-    protected function delete() : void
-    {
-        $rule = $this->getRuleFromRequest();
-        if (null !== $this->routine && null !== $rule) {
-            $this->repository->rule()->delete($rule);
-            $this->sendSuccessMessage(self::MSG_RULE_SUCCESS);
-        } else {
-            $this->sendErrorMessage(self::MSG_RULE_ERROR);
-        }
-
-        $this->repeat();
-    }
-
-    /**
-     * Displays a rule action-toolbar on the current page.
-     *
-     * The toolbar SHOULD contain actions that cannot be implemented
-     * or added to a table-row-entry's dropdown actions (like add
-     * for example).
-     */
-    protected function addRuleToolbar() : void
-    {
-        // create a button instance to create new routines.
-        $button = ilLinkButton::getInstance();
-        $button->setPrimary(true);
-        $button->setCaption($this->plugin->txt(self::ACTION_RULE_ADD), false);
-        $button->setUrl($this->ctrl->getLinkTargetByClass(
-            self::class,
-            self::CMD_RULE_ADD
-        ));
-
-        $this->toolbar->addButtonInstance($button);
-        $this->ui->mainTemplate()->setContent($this->toolbar->getHTML());
-    }
-
-    /**
-     * Returns the provided rule of the current request.
-     *
-     * @return IRoutineAwareRule|null
-     */
-    protected function getRuleFromRequest() : ?IRoutineAwareRule
-    {
-        $rule_id = $this->getQueryParamFromRequest(self::QUERY_PARAM_RULE_ID);
+        $rule_id = $this->getRequestParameter(self::PARAM_RULE_ID);
         if (null !== $rule_id) {
-            return
-                $this->repository->rule()->get($this->routine->getRoutineId(), (int) $rule_id) ??
-                $this->repository->rule()->getEmpty($this->routine->getRoutineId())
-            ;
+            return $this->repository->rule()->get((int) $rule_id);
         }
 
         return null;
     }
 
     /**
-     * Returns the form action for rules.
+     * Displays all existing rules that are related to the requested routine.
+     */
+    protected function index() : void
+    {
+        $table = new ilSrRuleTable(
+            $this->ui_factory,
+            $this->renderer,
+            $this->translator,
+            $this->access_handler,
+            $this->ctrl,
+            $this,
+            self::CMD_INDEX,
+            $this->repository->rule()->getByRoutine($this->routine, true)
+        );
+
+        $this->toolbar_manager->addRuleToolbar();
+        $this->render($table->getTable());
+    }
+
+    /**
+     * Displays the rule form on the current page.
+     *
+     * If a rule is requested, the form-director already was initialized
+     * with the according data, therefore this method can be used for
+     * create AND update commands.
+     */
+    protected function edit() : void
+    {
+        $this->render(
+            $this->form_director->getRuleFormByRoutine($this->routine)
+        );
+    }
+
+    /**
+     * Processes the submitted rule-form data.
+     *
+     * If the data is valid, the user is redirected back to
+     * @see ilSrRuleGUI::index().
+     *
+     * If the data is invalid, the processed form including
+     * the error messages is shown.
+     */
+    protected function save() : void
+    {
+        $processor = new RuleFormProcessor(
+            $this->repository->rule(),
+            $this->request,
+            $this->form_director->getRuleFormByRoutine($this->routine),
+            $this->rule
+        );
+
+        if ($processor->processForm()) {
+            $this->sendSuccessMessage(self::MSG_RULE_SUCCESS);
+            $this->cancel();
+        }
+
+        $this->render($processor->getProcessedForm());
+    }
+
+    /**
+     * Deletes the requested routine and redirects the user back to
+     * @see ilSrRoutineGUI::index().
+     */
+    protected function delete() : void
+    {
+        if (null !== $this->rule->getRuleId()) {
+            $this->sendSuccessMessage(self::MSG_RULE_SUCCESS);
+            $this->repository->rule()->delete($this->rule);
+        } else {
+            $this->sendErrorMessage(self::MSG_RULE_ERROR);
+        }
+
+        $this->cancel();
+    }
+
+    /**
+     * Returns the rule form-action pointing to @see ilSrRuleGUI::save().
      *
      * @return string
      */
     protected function getFormAction() : string
     {
-        // the current routine must be passed along so the
-        // relationship can be created.
-        $this->ctrl->setParameterByClass(
-            self::class,
-            self::QUERY_PARAM_ROUTINE_ID,
-            $this->routine->getRoutineId()
-        );
-
         return $this->ctrl->getFormActionByClass(
             self::class,
             self::CMD_RULE_SAVE
-        );
-    }
-
-    /**
-     * Gathers all the rules for related to the current routine.
-     *
-     * @return array
-     */
-    protected function getTableData() : array
-    {
-        return $this->repository->rule()->getAll($this->routine->getRoutineId(), true);
-    }
-
-    /**
-     * Helper function that initializes the rule-form
-     * and returns it.
-     *
-     * @return RuleForm
-     */
-    protected function getForm() : RuleForm
-    {
-        $director = new RuleFormDirector(
-            $this->ui->renderer(),
-            $this->form_builder,
-            $this->repository,
-            $this->rule ?? $this->repository->rule()->getEmpty(
-                $this->routine->getRoutineId()
-            )
-        );
-
-        return $director->getCourseAttributeForm();
-    }
-
-    /**
-     * Helper function that initializes the rule-table
-     * and returns it.
-     *
-     * @return ilSrRuleTable
-     */
-    protected function getTable() : ilSrRuleTable
-    {
-        return new ilSrRuleTable(
-            $this->ui,
-            $this->plugin,
-            $this,
-            self::CMD_INDEX,
-            'tpl.rule_table_row.html',
-            $this->getTableData(),
-            $this->routine,
-            $this->user
         );
     }
 }

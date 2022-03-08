@@ -2,54 +2,70 @@
 
 namespace srag\Plugins\SrLifeCycleManager\Rule;
 
+use srag\Plugins\SrLifeCycleManager\Routine\IRoutine;
+
 /**
- * Interface IRepository
+ * Describes the CRUD operations of a rule.
  *
  * @author Thibeau Fuhrer <thibeau@sr.solutions>
  */
 interface IRuleRepository
 {
     /**
-     * Returns an existing rule for the given routine and rule id.
+     * Fetches an existing rule from the database for the given id.
      *
-     * @param int $routine_id
      * @param int $rule_id
-     * @return IRoutineAwareRule|null
+     * @return IRule|null
      */
-    public function get(int $routine_id, int $rule_id) : ?IRoutineAwareRule;
+    public function get(int $rule_id) : ?IRule;
 
     /**
-     * Returns all rules related to the given routine id.
+     * Fetches all existing rules from the database that are related
+     * to the given routine.
      *
-     * To retrieve routines as array-data true can be passed as an argument
+     * To retrieve routines as array-data, true can be passed as an argument
      * (usually required by ilTableGUI).
      *
-     * @param int  $routine_id
-     * @param bool $array_data
-     * @return array
+     * @param IRoutine $routine
+     * @param bool     $array_data
+     * @return IRule[]
      */
-    public function getAll(int $routine_id, bool $array_data = false) : array;
+    public function getByRoutine(IRoutine $routine, bool $array_data = false) : array;
 
     /**
-     * @param int $routine_id
-     * @return IRoutineAwareRule|null
-     */
-    public function getEmpty(int $routine_id) : ?IRoutineAwareRule;
-
-    /**
-     * Creates or updates a rule entry in the database.
+     * Fetches all rules that are related to a routine which affects the given
+     * object (ref-id) and is of the given routine-type.
      *
-     * @param IRoutineAwareRule $rule
-     * @return IRoutineAwareRule
+     * @param int    $ref_id
+     * @param string $routine_type
+     * @return IRule[]
      */
-    public function store(IRoutineAwareRule $rule) : IRoutineAwareRule;
+    public function getByRoutineRefIdAndType(int $ref_id, string $routine_type) : array;
 
     /**
-     * Deletes a rule entry from the database and all it's relations
-     * (manually because ilias does not support constraints).
+     * Creates or updates an existing rule in the database and relates
+     * it to set routine.
      *
-     * @param IRoutineAwareRule $rule
+     * @param IRule    $rule
+     * @return IRule
+     */
+    public function store(IRule $rule) : IRule;
+
+    /**
+     * Deletes an existing rule from the database, and it's relation
+     * to the set routine (manually because ILIAS doesn't implement
+     * constraints yet).
+     *
+     * @param IRule    $rule
      * @return bool
      */
-    public function delete(IRoutineAwareRule $rule) : bool;
+    public function delete(IRule $rule) : bool;
+
+    /**
+     * Initializes and returns an empty rule object.
+     *
+     * @param IRoutine $routine
+     * @return IRule
+     */
+    public function empty(IRoutine $routine) : IRule;
 }

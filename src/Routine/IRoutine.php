@@ -2,6 +2,8 @@
 
 namespace srag\Plugins\SrLifeCycleManager\Routine;
 
+use srag\Plugins\SrLifeCycleManager\Notification\INotification;
+use srag\Plugins\SrLifeCycleManager\Rule\IRule;
 use DateTime;
 
 /**
@@ -11,49 +13,35 @@ use DateTime;
  */
 interface IRoutine
 {
-    /**
-     * IRoutine attribute names
-     */
-    public const F_ROUTINE_ID           = 'routine_id';
-    public const F_NAME                 = 'name';
-    public const F_REF_ID               = 'ref_id';
-    public const F_ACTIVE               = 'active';
-    public const F_ORIGIN_TYPE          = 'origin_type';
-    public const F_OWNER_ID             = 'owner_id';
-    public const F_CREATION_DATE        = 'creation_date';
-    public const F_OPT_OUT_POSSIBLE     = 'opt_out_possible';
-    public const F_ELONGATION_DAYS      = 'elongation_days';
-    public const F_EXECUTIONS_DATES     = 'execution_dates';
+    // IRoutine attributes:
+    public const F_CREATION_DATE = 'creation_date';
+    public const F_ELONGATION    = 'elongation';
+    public const F_HAS_OPT_OUT   = 'has_opt_out';
+    public const F_IS_ACTIVE     = 'is_active';
+    public const F_ORIGIN_TYPE   = 'origin_type';
+    public const F_REF_ID        = 'ref_id';
+    public const F_ROUTINE_TYPE  = 'routine_type';
+    public const F_ROUTINE_ID    = 'routine_id';
+    public const F_TITLE         = 'title';
+    public const F_USER_ID       = 'usr_id';
 
-    /**
-     * IRoutine origin types
-     */
+    // IRoutine origin types:
     public const ORIGIN_TYPE_ADMINISTRATION = 1;
     public const ORIGIN_TYPE_REPOSITORY = 2;
     public const ORIGIN_TYPE_EXTERNAL = 3;
+    public const ORIGIN_TYPE_UNKNOWN = 4;
+
+    // IRoutine routine types:
+    public const ROUTINE_TYPE_COURSE = 'crs';
+    public const ROUTINE_TYPE_GROUP  = 'grp';
 
     /**
-     * @var int[] origin types (where routines were created from).
+     * @var string[] list of supported routine-types.
      */
-    public const ORIGIN_TYPES = [
-        self::ORIGIN_TYPE_ADMINISTRATION,
-        self::ORIGIN_TYPE_REPOSITORY,
-        self::ORIGIN_TYPE_EXTERNAL,
+    public const ROUTINE_TYPES = [
+        self::ROUTINE_TYPE_COURSE,
+        self::ROUTINE_TYPE_GROUP,
     ];
-
-    /**
-     * @var string[] origin types mapped to their translation.
-     */
-    public const ORIGIN_TYPE_NAMES = [
-        self::ORIGIN_TYPE_ADMINISTRATION => 'routine_origin_type_admin',
-        self::ORIGIN_TYPE_REPOSITORY     => 'routine_origin_type_repo',
-        self::ORIGIN_TYPE_EXTERNAL       => 'routine_origin_type_ext',
-    ];
-
-    /**
-     * @var string datetime format for execution dates.
-     */
-    public const EXECUTION_DATES_FORMAT = 'd/m';
 
     /**
      * @return int|null
@@ -67,17 +55,6 @@ interface IRoutine
     public function setRoutineId(int $routine_id) : IRoutine;
 
     /**
-     * @return string
-     */
-    public function getName() : string;
-
-    /**
-     * @param string $name
-     * @return IRoutine
-     */
-    public function setName(string $name) : IRoutine;
-
-    /**
      * @return int
      */
     public function getRefId() : int;
@@ -87,50 +64,6 @@ interface IRoutine
      * @return IRoutine
      */
     public function setRefId(int $ref_id) : IRoutine;
-
-    /**
-     * @return bool
-     */
-    public function isActive() : bool;
-
-    /**
-     * @param bool $is_active
-     * @return IRoutine
-     */
-    public function setActive(bool $is_active) : IRoutine;
-
-    /**
-     * @return int|null
-     */
-    public function getElongationDays() : ?int;
-
-    /**
-     * @param int|null $days
-     * @return IRoutine
-     */
-    public function setElongationDays(?int $days) : IRoutine;
-
-    /**
-     * @return bool
-     */
-    public function isOptOutPossible() : bool;
-
-    /**
-     * @param bool $is_possible
-     * @return IRoutine
-     */
-    public function setOptOutPossible(bool $is_possible) : IRoutine;
-
-    /**
-     * @return int
-     */
-    public function getOriginType() : int;
-
-    /**
-     * @param int $type
-     * @return IRoutine
-     */
-    public function setOriginType(int $type) : IRoutine;
 
     /**
      * @return int
@@ -144,24 +77,79 @@ interface IRoutine
     public function setOwnerId(int $owner_id) : IRoutine;
 
     /**
+     * @return int
+     */
+    public function getOrigin() : int;
+
+    /**
+     * @param int $origin
+     * @return IRoutine
+     */
+    public function setOrigin(int $origin) : IRoutine;
+
+    /**
+     * @return string
+     */
+    public function getRoutineType() : string;
+
+    /**
+     * @param string $routine_type
+     * @return IRoutine
+     */
+    public function setRoutineType(string $routine_type) : IRoutine;
+
+    /**
+     * @return string
+     */
+    public function getTitle() : string;
+
+    /**
+     * @param string $title
+     * @return IRoutine
+     */
+    public function setTitle(string $title) : IRoutine;
+
+    /**
+     * @return bool
+     */
+    public function isActive() : bool;
+
+    /**
+     * @param bool $is_active
+     * @return IRoutine
+     */
+    public function setActive(bool $is_active) : IRoutine;
+
+    /**
+     * @return bool
+     */
+    public function hasOptOut() : bool;
+
+    /**
+     * @param bool $has_opt_out
+     * @return IRoutine
+     */
+    public function setOptOut(bool $has_opt_out) : IRoutine;
+
+    /**
+     * @return int|null
+     */
+    public function getElongation() : ?int;
+
+    /**
+     * @param int|null $amount
+     * @return IRoutine
+     */
+    public function setElongation(?int $amount) : IRoutine;
+
+    /**
      * @return DateTime
      */
     public function getCreationDate() : DateTime;
 
     /**
-     * @param DateTime $date
+     * @param DateTime $creation_date
      * @return IRoutine
      */
-    public function setCreationDate(DateTime $date) : IRoutine;
-
-    /**
-     * @return string[]
-     */
-    public function getExecutionDates() : array;
-
-    /**
-     * @param string[] $dates (@see IRoutine::EXECUTION_DATES_FORMAT)
-     * @return IRoutine
-     */
-    public function setExecutionDates(array $dates) : IRoutine;
+    public function setCreationDate(DateTime $creation_date) : IRoutine;
 }

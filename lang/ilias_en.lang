@@ -1,4 +1,9 @@
 
+tool_main_entry#:#Routines
+
+crs#:#Course
+grp#:#Group
+
 msg_permission_denied#:#Permission denied.
 msg_object_not_found#:#Requested object not found.
 msg_invalid_ref_id#:#Invalid ref-id provided.
@@ -13,48 +18,60 @@ msg_notification_success#:#Notification(s) successfully updated.
 msg_notification_error#:#Could not update notification(s).
 msg_back_to#:#Back
 msg_invalid_execution_dates#:#One of the submitted dates does not match the format DD/MM.
+msg_routine_whitelist_error#:#The requested routine does not support whitelist-entries.
+msg_routine_whitelist_failure#:#Your request was not an opt-out and elongations aren't supported.
+msg_routine_whitelist_success#:#Object successfully whitelisted.
+msg_privileged_user#:#You are allowed to manage your own routines at this position.
+msg_affected_routines#:#There are active routines that affect this object!
+msg_routine_cant_extend#:#This routine cannot be extended.
+msg_routine_extended#:#This object has been successfully whitelisted for [ELONGATION] days.
+msg_routine_already_extended#:#The deletion of this object was already postponed.
+msg_routine_cant_opt_out#:#This routine cannot be opted out.
+msg_routine_opted_out#:#This object has been successfully whitelisted.
+msg_routine_already_opted_out#:#This object was already been whitelisted.
+msg_days_before_submission_error#:#A notification for this amount of days before submission already exists.
 
 page_title_rules#:#SrLifeCycleManager rules
 page_title_config#:#SrLifeCycleManager configuration
 page_title_routine#:#SrLifeCycleManager routines
 page_title_notifications#:#SrLifeCycleManager notifications
+page_title_whitelist#:#SrLifeCycleManager whitelist
 
 tab_config_index#:#Configuration
 tab_routine_index#:#Routines
 
-cnf_global_roles#:#Global roles that can add Routines
-cnf_move_to_bin#:#Move objects to bin/trash first?
-cnf_create_routines_repository#:#Create new Routines from Repository?
-cnf_show_routines_repository#:#Show active Routines in Repository?
+cnf_privileged_roles#:#Global roles that can add Routines
+cnf_create_routines_in_repository#:#Create new Routines from Repository?
+cnf_show_routines_in_repository#:#Show active Routines in Repository?
 
 col_actions#:#Actions
 col_routine_ref_id#:#Ref-id (scope)
-col_routine_name#:#Name
-col_routine_active#:#Active
-col_routine_origin_type#:#Origin
-col_routine_owner_id#:#Owner
-col_routine_creation_date#:#Created
-col_routine_opt_out_possible#:#Opt-out
-col_routine_elongation_days#:#Elongaition (days)
+col_routine_title#:#Name
+col_routine_is_active#:#Active
+col_routine_type#:#Routine type
+col_routine_usr_id#:#Owner
+col_routine_has_opt_out#:#Opt-out
+col_routine_elongation#:#Elongaition (days)
 col_rule_rhs_type#:#RHS type
 col_rule_rhs_value#:#RHS value
 col_rule_operator#:#Operator
 col_rule_lhs_type#:#LHS type
 col_rule_lhs_value#:#LHS value
-col_notification_message#:#Notification message
-col_notification_days#:#Sent (in days before deletion)
+col_notification_title#:#Notification title
+col_notification_content#:#Notification content
+col_notification_days_before_submission#:#Sent (days before deletion)
 
 input_name_routine_ref_id#:#Ref-id (scope)
-input_name_routine_name#:#Name
-input_name_routine_active#:#Active?
-input_name_routine_opt_out#:#Opt-out possible?
-input_name_routine_elongation#:#Elongation possible?
-input_name_routine_elongation_possible#:#Elongation (in days)
-input_name_notification_message#:#Notification message
-input_name_notification_message_info#:#Type [EXTENSION_LINK] where recipients can postpone the deletion by your routines configured amount. <br /> Type [OBJECT_LINK] where recipients can go to the object that is about to be deleted.
-input_name_notification_days#:#Sent (in days before deletion)
-input_name_execution_dates#:#Execution dates (DD/MM)
-input_name_execution_dates_info#:#After typing a date, press "enter" to add it.
+input_name_routine_title#:#Name
+input_name_routine_type#:#Routine type
+input_name_routine_is_active#:#Active?
+input_name_routine_has_opt_out#:#Opt-out possible?
+input_name_routine_elongation#:#Elongation (in days)
+input_name_routine_elongation_possible#:#Elongation possible?
+input_name_notification_title#:#Notification title
+input_name_notification_content#:#Notification content
+input_name_notification_content_info#:#Type [EXTENSION_LINK] where recipients can postpone the deletion by your routines configured amount. <br /> Type [OPT_OUT_LINK] where recipients can opt-out the deletion by your routine. <br /> Type [OBJECT_LINK] where recipients can go to the object that is about to be deleted.
+input_name_notification_days_before_submission#:#Sent (in days before deletion)
 
 routine_origin_type_admin#:#Administration
 routine_origin_type_repo#:#Repository
@@ -68,6 +85,10 @@ status_impossible#:#Impossible
 action_routine_add#:#Add routine
 action_routine_edit#:#Edit
 action_routine_delete#:#Delete
+action_routine_manage#:#Manage
+action_routine_extend#:#Extend
+action_routine_opt_out#:#Opt-out
+action_routine_view#:#View
 action_routine_rules#:#Rules
 action_routine_notifications#:#Notifications
 action_rule_add#:#Add rule
@@ -99,25 +120,25 @@ course_attribute_value#:#Dynamic Attribute
 group_attribute#:#Group attribute
 group_attribute_value#:#Dynamic Attribute
 
-srag\Plugins\SrLifeCycleManager\Rule\Attribute\Course\CourseAttribute#:#course attribute
-srag\Plugins\SrLifeCycleManager\Rule\Attribute\Course\CourseActive#:#course active
-srag\Plugins\SrLifeCycleManager\Rule\Attribute\Course\CourseEnd#:#course end
-srag\Plugins\SrLifeCycleManager\Rule\Attribute\Course\CourseStart#:#course start
-srag\Plugins\SrLifeCycleManager\Rule\Attribute\Course\CourseMember#:#course member
-srag\Plugins\SrLifeCycleManager\Rule\Attribute\Course\CourseMetadata#:#course metadata
-srag\Plugins\SrLifeCycleManager\Rule\Attribute\Course\CourseTaxonomy#:#course taxonomy
-srag\Plugins\SrLifeCycleManager\Rule\Attribute\Course\CourseTitle#:#course title
+srag\Plugins\_SrLifeCycleManager\Rule\Attribute\Course\CourseAttribute#:#course attribute
+srag\Plugins\_SrLifeCycleManager\Rule\Attribute\Course\CourseActive#:#course active
+srag\Plugins\_SrLifeCycleManager\Rule\Attribute\Course\CourseEnd#:#course end
+srag\Plugins\_SrLifeCycleManager\Rule\Attribute\Course\CourseStart#:#course start
+srag\Plugins\_SrLifeCycleManager\Rule\Attribute\Course\CourseMember#:#course member
+srag\Plugins\_SrLifeCycleManager\Rule\Attribute\Course\CourseMetadata#:#course metadata
+srag\Plugins\_SrLifeCycleManager\Rule\Attribute\Course\CourseTaxonomy#:#course taxonomy
+srag\Plugins\_SrLifeCycleManager\Rule\Attribute\Course\CourseTitle#:#course title
 
-srag\Plugins\SrLifeCycleManager\Rule\Attribute\Group\GroupAttribute#:#group attribute
-srag\Plugins\SrLifeCycleManager\Rule\Attribute\Group\GroupTitle#:#group title
-srag\Plugins\SrLifeCycleManager\Rule\Attribute\Group\GroupMember#:#group member
-srag\Plugins\SrLifeCycleManager\Rule\Attribute\Group\GroupMetadata#:#group metadata
-srag\Plugins\SrLifeCycleManager\Rule\Attribute\Group\GroupTaxonomy#:#group taxonomy
+srag\Plugins\_SrLifeCycleManager\Rule\Attribute\Group\GroupAttribute#:#group attribute
+srag\Plugins\_SrLifeCycleManager\Rule\Attribute\Group\GroupTitle#:#group title
+srag\Plugins\_SrLifeCycleManager\Rule\Attribute\Group\GroupMember#:#group member
+srag\Plugins\_SrLifeCycleManager\Rule\Attribute\Group\GroupMetadata#:#group metadata
+srag\Plugins\_SrLifeCycleManager\Rule\Attribute\Group\GroupTaxonomy#:#group taxonomy
 
-srag\Plugins\SrLifeCycleManager\Rule\Attribute\Common\CommonAttribute#:#common attribute
-srag\Plugins\SrLifeCycleManager\Rule\Attribute\Common\CommonBoolean#:#boolean
-srag\Plugins\SrLifeCycleManager\Rule\Attribute\Common\CommonDateTime#:#date (Y-m-d)
-srag\Plugins\SrLifeCycleManager\Rule\Attribute\Common\CommonInteger#:#integer
-srag\Plugins\SrLifeCycleManager\Rule\Attribute\Common\CommonList#:#list (comma-separated)
-srag\Plugins\SrLifeCycleManager\Rule\Attribute\Common\CommonNull#:#empty
-srag\Plugins\SrLifeCycleManager\Rule\Attribute\Common\CommonString#:#string
+srag\Plugins\_SrLifeCycleManager\Rule\Attribute\Common\CommonAttribute#:#common attribute
+srag\Plugins\_SrLifeCycleManager\Rule\Attribute\Common\CommonBoolean#:#boolean
+srag\Plugins\_SrLifeCycleManager\Rule\Attribute\Common\CommonDateTime#:#date (Y-m-d)
+srag\Plugins\_SrLifeCycleManager\Rule\Attribute\Common\CommonInteger#:#integer
+srag\Plugins\_SrLifeCycleManager\Rule\Attribute\Common\CommonList#:#list (comma-separated)
+srag\Plugins\_SrLifeCycleManager\Rule\Attribute\Common\CommonNull#:#empty
+srag\Plugins\_SrLifeCycleManager\Rule\Attribute\Common\CommonString#:#string
