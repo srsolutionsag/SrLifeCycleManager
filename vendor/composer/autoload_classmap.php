@@ -27,6 +27,7 @@ return array(
     'ilSrRepositoryHelper' => $baseDir . '/classes/Util/trait.ilSrRepositoryHelper.php',
     'ilSrRoutineCronJob' => $baseDir . '/classes/Cron/class.ilSrRoutineCronJob.php',
     'ilSrRoutineGUI' => $baseDir . '/classes/Routine/class.ilSrRoutineGUI.php',
+    'ilSrRoutineList' => $baseDir . '/classes/Routine/class.ilSrRoutineList.php',
     'ilSrRoutineRepository' => $baseDir . '/classes/Routine/class.ilSrRoutineRepository.php',
     'ilSrRoutineTable' => $baseDir . '/classes/Routine/class.ilSrRoutineTable.php',
     'ilSrRuleGUI' => $baseDir . '/classes/Rule/class.ilSrRuleGUI.php',

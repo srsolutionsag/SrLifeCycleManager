@@ -102,7 +102,7 @@ class ilSrRuleRepository implements IRuleRepository
     /**
      * @inheritDoc
      */
-    public function getByRoutineRefIdAndType(int $ref_id, string $routine_type) : array
+    public function getByRefIdAndRoutineType(int $ref_id, string $routine_type) : array
     {
         $query = "
             SELECT rule.rule_id, rule.lhs_type, rule.lhs_value, rule.rhs_type, rule.rhs_value, rule.operator, relation.routine_id 

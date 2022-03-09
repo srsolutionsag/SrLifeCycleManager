@@ -10,6 +10,7 @@ use srag\Plugins\SrLifeCycleManager\Rule\Requirement\RequirementFactory;
 use srag\Plugins\SrLifeCycleManager\Rule\Comparison\Comparison;
 use srag\Plugins\SrLifeCycleManager\Rule\Attribute\AttributeFactory;
 use srag\Plugins\SrLifeCycleManager\Routine\IRoutine;
+use srag\Plugins\SrLifeCycleManager\ITranslator;
 
 /**
  * Class ilSrToolProvider provides ILIAS with the plugin's tools.
@@ -27,9 +28,6 @@ class ilSrToolProvider extends AbstractDynamicToolPluginProvider
     protected const MSG_PRIVILEGED_USER = 'msg_privileged_user';
     protected const MSG_AFFECTED_ROUTINES = 'msg_affected_routines';
     protected const ACTION_ROUTINE_MANAGE = 'action_routine_manage';
-    protected const ACTION_ROUTINE_EXTEND = 'action_routine_extend';
-    protected const ACTION_ROUTINE_OPT_OUT = 'action_routine_opt_out';
-    protected const ACTION_ROUTINE_VIEW = 'action_routine_view';
 
     /**
      * @var int|null
@@ -169,111 +167,35 @@ class ilSrToolProvider extends AbstractDynamicToolPluginProvider
      */
     protected function renderActiveRoutineList(int $ref_id) : string
     {
-        $object_type = ilObject2::_lookupType($ref_id, true);
         try {
             $object = ilObjectFactory::getInstanceByRefId($ref_id);
         } catch (Throwable $t) {
             return '';
         }
 
-        $rules = $this->repository->rule()->getByRoutineRefIdAndType($ref_id, $object_type);
+        /** @var $translator ITranslator */
+        $translator = $this->plugin;
 
-        $affected_by = [];
-        foreach ($rules as $rule) {
-            $requirement = $this->requirements->getRequirement($object);
-            $comparison = new Comparison(
-                $this->attributes,
-                $requirement,
-                $rule
-            );
+        $routine_list = new ilSrRoutineList(
+            $this->dic->ui()->renderer(),
+            $this->dic->ui()->factory(),
+            $this->repository->routine(),
+            $this->repository->rule(),
+            $this->repository->whitelist(),
+            $this->attributes,
+            $this->requirements,
+            $translator,
+            $object,
+            $this->dic->ctrl()
+        );
 
-            if ($comparison->isApplicable()) {
-                // map routine-id to itself to avoid duplicates.
-                $affected_by[$rule->getRoutineId()] = $rule->getRoutineId();
-            }
-        }
-
-        $duplicate_counts = [];
-        $list_entries = [];
-        if (!empty($affected_by)) {
-            foreach ($affected_by as $routine_id) {
-                $routine = $this->repository->routine()->get($routine_id);
-                if (null === $routine) {
-                    continue;
-                }
-
-                $whitelist_entry = $this->repository->whitelist()->get($routine, $ref_id);
-                if (null !== $whitelist_entry && $whitelist_entry->isOptOut()) {
-                    continue;
-                }
-
-                $routine_title = $routine->getTitle();
-                if (isset($routine_entries[$routine_title])) {
-                    if (isset($duplicate_counts[$routine_title])) {
-                        $duplicate_counts[$routine_title]++;
-                    } else {
-                        $duplicate_counts[$routine_title] = 2;
-                    }
-
-                    $routine_title .= " ($duplicate_counts[$routine_title])";
-                }
-
-                $this->dic->ctrl()->setParameterByClass(
-                    ilSrRoutineGUI::class,
-                    ilSrRoutineGUI::PARAM_ROUTINE_ID,
-                    $routine->getRoutineId()
-                );
-
-                $this->dic->ctrl()->setParameterByClass(
-                    ilSrWhitelistGUI::class,
-                    ilSrWhitelistGUI::PARAM_ROUTINE_ID,
-                    $routine->getRoutineId()
-                );
-
-                $actions = [];
-
-                $actions[] = $this->dic->ui()->factory()->button()->shy(
-                    $this->plugin->txt(self::ACTION_ROUTINE_VIEW),
-                    ilSrLifeCycleManagerDispatcher::getLinkTarget(
-                        ilSrRoutineGUI::class,
-                        ilSrRoutineGUI::CMD_INDEX
-                    )
-                );
-
-                if (1 <= $routine->getElongation()) {
-                    $actions[] = $this->dic->ui()->factory()->button()->shy(
-                        $this->plugin->txt(self::ACTION_ROUTINE_EXTEND),
-                        ilSrLifeCycleManagerDispatcher::getLinkTarget(
-                            ilSrWhitelistGUI::class,
-                            ilSrWhitelistGUI::CMD_ROUTINE_EXTEND
-                        )
-                    );
-                }
-
-                if ($routine->hasOptOut()) {
-                    $actions[] = $this->dic->ui()->factory()->button()->shy(
-                        $this->plugin->txt(self::ACTION_ROUTINE_OPT_OUT),
-                        ilSrLifeCycleManagerDispatcher::getLinkTarget(
-                            ilSrWhitelistGUI::class,
-                            ilSrWhitelistGUI::CMD_ROUTINE_OPT_OUT
-                        )
-                    );
-                }
-
-                $list_entries[$routine_title] = $this->dic->ui()->renderer()->render($actions);
-            }
-        }
-
-        if (empty($list_entries)) {
-            return '';
-        }
-
-        return $this->dic->ui()->renderer()->render([
+        $message_box = $this->dic->ui()->renderer()->render(
             $this->dic->ui()->factory()->messageBox()->confirmation(
                 $this->plugin->txt(self::MSG_AFFECTED_ROUTINES)
-            ),
-            $this->dic->ui()->factory()->listing()->descriptive($list_entries)
-        ]);
+            )
+        );
+
+        return $message_box . $routine_list->render();
     }
 
     /**
