@@ -170,7 +170,7 @@ class ilSrWhitelistRepository implements IWhitelistRepository
             (int) $query_result[IWhitelistEntry::F_ROUTINE_ID],
             (int) $query_result[IWhitelistEntry::F_REF_ID],
             (bool) $query_result[IWhitelistEntry::F_IS_OPT_OUT],
-            DateTime::createFromFormat(
+            DateTimeImmutable::createFromFormat(
                 self::MYSQL_DATETIME_FORMAT,
                 $query_result[IWhitelistEntry::F_DATE]
             ),

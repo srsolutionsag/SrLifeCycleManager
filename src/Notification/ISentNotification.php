@@ -4,6 +4,7 @@
 
 namespace srag\Plugins\SrLifeCycleManager\Notification;
 
+use DateTimeImmutable;
 use DateTime;
 
 /**
@@ -27,15 +28,15 @@ interface ISentNotification extends INotification
     public function setNotifiedRefId(int $ref_id) : ISentNotification;
 
     /**
-     * @return DateTime
+     * @return DateTimeImmutable
      */
-    public function getNotifiedDate() : Datetime;
+    public function getNotifiedDate() : DateTimeImmutable;
 
     /**
-     * @param DateTime $date
+     * @param DateTimeImmutable $date
      * @return ISentNotification
      */
-    public function setNotifiedDate(DateTime $date) : ISentNotification;
+    public function setNotifiedDate(DateTimeImmutable $date) : ISentNotification;
 
     /**
      * Returns whether the notification is elapsed on the given date.
@@ -43,8 +44,8 @@ interface ISentNotification extends INotification
      * A notification is elapsed if the notified date plus the amount of
      * days before it's submission is past $when.
      *
-     * @param DateTime $when
+     * @param DateTimeImmutable|DateTime $when
      * @return bool
      */
-    public function isElapsed(DateTime $when) : bool;
+    public function isElapsed($when) : bool;
 }

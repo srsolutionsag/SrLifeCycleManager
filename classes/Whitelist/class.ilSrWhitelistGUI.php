@@ -123,7 +123,7 @@ class ilSrWhitelistGUI extends ilSrAbstractGUI
                 $this->routine->getRoutineId(),
                 $this->object_ref_id,
                 false,
-                new DateTime(),
+                new DateTimeImmutable(),
                 $elongation
             )
         );
@@ -176,7 +176,7 @@ class ilSrWhitelistGUI extends ilSrAbstractGUI
                 $this->routine->getRoutineId(),
                 $this->object_ref_id,
                 true,
-                new DateTime()
+                new DateTimeImmutable()
             )
         );
 

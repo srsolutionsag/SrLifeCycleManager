@@ -249,12 +249,12 @@ class Routine implements IRoutine
     }
 
     /**
-     * @param int|null $elongation
+     * @param int|null $amount
      * @return IRoutine
      */
-    public function setElongation(?int $elongation) : IRoutine
+    public function setElongation(?int $amount) : IRoutine
     {
-        $this->elongation = $elongation;
+        $this->elongation = $amount;
         return $this;
     }
 
