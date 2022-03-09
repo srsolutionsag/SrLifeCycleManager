@@ -9,6 +9,7 @@ use LogicException;
 use DateTime;
 use ilSrRoutineCronJob;
 use ilObject;
+use DateTimeImmutable;
 
 /**
  * @author Thibeau Fuhrer <thibeau@sr.solutions>
@@ -26,7 +27,7 @@ class RoutineCronJobTestObject extends ilSrRoutineCronJob
     protected $notified_objects = [];
 
     /**
-     * @var DateTime|null
+     * @var DateTimeImmutable|null
      */
     protected $current_date;
 
@@ -58,9 +59,9 @@ class RoutineCronJobTestObject extends ilSrRoutineCronJob
     }
 
     /**
-     * @param DateTime $date
+     * @param DateTimeImmutable $date
      */
-    public function setDate(DateTime $date) : void
+    public function setDate(DateTimeImmutable $date) : void
     {
         $this->current_date = $date;
     }
@@ -87,7 +88,7 @@ class RoutineCronJobTestObject extends ilSrRoutineCronJob
     /**
      * @inheritDoc
      */
-    protected function getDate() : DateTime
+    protected function getDate() : DateTimeImmutable
     {
         if (null === $this->current_date) {
             throw new LogicException("Must set current date with RoutineCronJobTestObject::setDate().");

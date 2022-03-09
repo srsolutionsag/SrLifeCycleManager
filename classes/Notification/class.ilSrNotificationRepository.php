@@ -171,7 +171,7 @@ class ilSrNotificationRepository implements INotificationRepository
             ;
         ";
 
-        $now = new DateTime();
+        $now = new DateTimeImmutable();
         $this->database->manipulateF(
             $query,
             ['integer', 'integer', 'integer', 'date'],
@@ -316,7 +316,7 @@ class ilSrNotificationRepository implements INotificationRepository
             (int) $query_result[INotification::F_DAYS_BEFORE_SUBMISSION],
             (int) $query_result[INotification::F_NOTIFICATION_ID],
             (int) $query_result[ISentNotification::F_NOTIFIED_REF_ID],
-            DateTime::createFromFormat(
+            DateTimeImmutable::createFromFormat(
                 self::MYSQL_DATETIME_FORMAT,
                 $query_result[ISentNotification::F_NOTIFIED_DATE]
             )

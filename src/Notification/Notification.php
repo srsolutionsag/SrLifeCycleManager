@@ -3,6 +3,7 @@
 namespace srag\Plugins\SrLifeCycleManager\Notification;
 
 use LogicException;
+use DateTimeImmutable;
 use DateInterval;
 use DateTime;
 
@@ -42,18 +43,18 @@ class Notification implements ISentNotification
     protected $notified_ref_id;
 
     /**
-     * @var DateTime|null
+     * @var DateTimeImmutable|null
      */
     protected $notified_date;
 
     /**
-     * @param int           $routine_id
-     * @param string        $title
-     * @param string        $content
-     * @param int|null      $days_before_submission
-     * @param int|null      $notification_id
-     * @param int|null      $notified_ref_id
-     * @param DateTime|null $notified_date
+     * @param int                    $routine_id
+     * @param string                 $title
+     * @param string                 $content
+     * @param int                    $days_before_submission
+     * @param int|null               $notification_id
+     * @param int|null               $notified_ref_id
+     * @param DateTimeImmutable|null $notified_date
      */
     public function __construct(
         int $routine_id,
@@ -62,7 +63,7 @@ class Notification implements ISentNotification
         int $days_before_submission,
         int $notification_id = null,
         int $notified_ref_id = null,
-        DateTime $notified_date = null
+        DateTimeImmutable $notified_date = null
     ) {
         $this->routine_id = $routine_id;
         $this->title = $title;
@@ -184,7 +185,7 @@ class Notification implements ISentNotification
     /**
      * @inheritDoc
      */
-    public function getNotifiedDate() : DateTime
+    public function getNotifiedDate() : DateTimeImmutable
     {
         if (null === $this->notified_date) {
             throw new LogicException("Notification has not been sent yet.");
@@ -196,7 +197,7 @@ class Notification implements ISentNotification
     /**
      * @inheritDoc
      */
-    public function setNotifiedDate(DateTime $date) : ISentNotification
+    public function setNotifiedDate(DateTimeImmutable $date) : ISentNotification
     {
         $this->notified_date = $date;
         return $this;
@@ -205,10 +206,10 @@ class Notification implements ISentNotification
     /**
      * @inheritDoc
      */
-    public function isElapsed(DateTime $when) : bool
+    public function isElapsed($when) : bool
     {
-        $elapsed_date = $this->getNotifiedDate()->add(new DateInterval("P{$this->getDaysBeforeSubmission()}"));
+        $elapsed_date = $this->getNotifiedDate()->add(new DateInterval("P{$this->getDaysBeforeSubmission()}D"));
 
-        return ($when > $elapsed_date);
+        return ($when >= $elapsed_date);
     }
 }

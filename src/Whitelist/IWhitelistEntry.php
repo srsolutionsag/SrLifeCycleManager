@@ -4,6 +4,7 @@
 
 namespace srag\Plugins\SrLifeCycleManager\Whitelist;
 
+use DateTimeImmutable;
 use DateTime;
 
 /**
@@ -63,15 +64,15 @@ interface IWhitelistEntry
     public function setElongation(int $elongation) : IWhitelistEntry;
 
     /**
-     * @return DateTime
+     * @return DateTimeImmutable
      */
-    public function getDate() : DateTime;
+    public function getDate() : DateTimeImmutable;
 
     /**
-     * @param DateTime $date
+     * @param DateTimeImmutable $date
      * @return IWhitelistEntry
      */
-    public function setDate(DateTime $date) : IWhitelistEntry;
+    public function setDate(DateTimeImmutable $date) : IWhitelistEntry;
 
     /**
      * Returns whether the whitelist-entry is elapsed on the given date.
@@ -79,8 +80,8 @@ interface IWhitelistEntry
      * A whitelist entry is elapsed, if the creation-date plus it's elongation
      * is past $when.
      *
-     * @param DateTime $when
+     * @param DateTimeImmutable|DateTime $when
      * @return bool
      */
-    public function isElapsed(DateTime $when) : bool;
+    public function isElapsed($when) : bool;
 }

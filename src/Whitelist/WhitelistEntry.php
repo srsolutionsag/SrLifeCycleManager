@@ -6,6 +6,7 @@ namespace srag\Plugins\SrLifeCycleManager\Whitelist;
 
 use DateInterval;
 use DateTime;
+use DateTimeImmutable;
 
 /**
  * @author Thibeau Fuhrer <thibeau@sr.solutions>
@@ -33,22 +34,22 @@ class WhitelistEntry implements IWhitelistEntry
     protected $elongation;
 
     /**
-     * @var DateTime
+     * @var DateTimeImmutable
      */
     protected $date;
 
     /**
-     * @param int      $routine_id
-     * @param int      $ref_id
-     * @param bool     $is_opt_out
-     * @param DateTime $date
-     * @param int|null $elongation
+     * @param int               $routine_id
+     * @param int               $ref_id
+     * @param bool              $is_opt_out
+     * @param DateTimeImmutable $date
+     * @param int|null          $elongation
      */
     public function __construct(
         int $routine_id,
         int $ref_id,
         bool $is_opt_out,
-        DateTime $date,
+        DateTimeImmutable $date,
         int $elongation = null
     ) {
         $this->routine_id = $routine_id;
@@ -129,7 +130,7 @@ class WhitelistEntry implements IWhitelistEntry
     /**
      * @inheritdoc
      */
-    public function getDate() : DateTime
+    public function getDate() : DateTimeImmutable
     {
         return $this->date;
     }
@@ -137,7 +138,7 @@ class WhitelistEntry implements IWhitelistEntry
     /**
      * @inheritdoc 
      */
-    public function setDate(DateTime $date) : IWhitelistEntry
+    public function setDate(DateTimeImmutable $date) : IWhitelistEntry
     {
         $this->date = $date;
         return $this;
@@ -146,7 +147,7 @@ class WhitelistEntry implements IWhitelistEntry
     /**
      * @inheritDoc
      */
-    public function isElapsed(DateTime $when) : bool
+    public function isElapsed($when) : bool
     {
         if ($this->isOptOut() || null === $this->getElongation()) {
             return false;
@@ -154,6 +155,6 @@ class WhitelistEntry implements IWhitelistEntry
 
         $elapsed_date = $this->getDate()->add(new DateInterval("P{$this->getElongation()}D"));
 
-        return ($when > $elapsed_date);
+        return ($when >= $elapsed_date);
     }
 }

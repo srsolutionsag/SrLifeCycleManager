@@ -203,7 +203,6 @@ class ilSrRoutineCronJob extends ilSrAbstractCronJob
 
                 // the notification date can then simply be calculated by adding the
                 // determined gap to the last ones date of submission.
-                // @todo: this line somehow changes the value returned by $this->getDate().
                 $notification_date = $last_notification->getNotifiedDate()->add(
                     new DateInterval("P{$submission_gap}D")
                 );
@@ -252,10 +251,10 @@ class ilSrRoutineCronJob extends ilSrAbstractCronJob
      * This function had to be introduced due to PHPUnitTests, which
      * must be able to alter the current date.
      *
-     * @return DateTime
+     * @return DateTimeImmutable
      */
-    protected function getDate() : DateTime
+    protected function getDate() : DateTimeImmutable
     {
-        return new DateTime();
+        return new DateTimeImmutable();
     }
 }

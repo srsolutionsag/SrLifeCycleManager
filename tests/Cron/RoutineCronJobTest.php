@@ -20,12 +20,14 @@ use srag\Plugins\SrLifeCycleManager\Whitelist\WhitelistEntry;
 use srag\Plugins\SrLifeCycleManager\Routine\IRoutineRepository;
 use srag\Plugins\SrLifeCycleManager\Routine\IRoutine;
 use srag\Plugins\SrLifeCycleManager\Cron\ResultBuilder;
+
+use DateTimeImmutable;
 use ArrayIterator;
 use DateInterval;
-use DateTime;
 use ilObjCourse;
 use ilObject;
 use ilLogger;
+use Sabre\VObject\Property\VCard\Date;
 
 /**
  * @author Thibeau Fuhrer <thibeau@sr.solutions>
@@ -85,7 +87,7 @@ class RoutineCronJobTest extends TestCase
                         1,
                         $whitelisted_ref_id,
                         false,
-                        new DateTime(),
+                        new DateTimeImmutable(),
                         10
                     );
                 }
@@ -128,7 +130,7 @@ class RoutineCronJobTest extends TestCase
                         1,
                         $whitelisted_ref_id,
                         false,
-                        (new DateTime())->sub(new DateInterval("P11D")),
+                        (new DateTimeImmutable())->sub(new DateInterval("P11D")),
                         10
                     );
                 }
@@ -175,7 +177,7 @@ class RoutineCronJobTest extends TestCase
                         1,
                         $whitelisted_ref_id,
                         true,
-                        new DateTime(),
+                        new DateTimeImmutable(),
                         10
                     );
                 }
@@ -206,7 +208,7 @@ class RoutineCronJobTest extends TestCase
     public function testNotificationSendingBehaviour() : void
     {
         $test_ref_id = 1;
-        $starting_date = DateTime::createFromFormat('Y-m-d', "2022-01-01");
+        $starting_date = DateTimeImmutable::createFromFormat('Y-m-d', "2022-01-01");
         $initial_notification = new Notification(
             $this->pseudo_routine->getRoutineId(),
             "test 1",
@@ -283,8 +285,7 @@ class RoutineCronJobTest extends TestCase
         $this->assertCount(0, $job->getNotifiedObjects());
         $this->assertCount(0, $job->getDeletedObjects());
 
-        $date_of_second_notification = $starting_date;
-        $date_of_second_notification->add(new DateInterval("P5D"));
+        $date_of_second_notification = $starting_date->add(new DateInterval("P5D"));
         $job->setDate($date_of_second_notification);
         $job->run();
 
@@ -305,8 +306,7 @@ class RoutineCronJobTest extends TestCase
             $second_notification->setNotifiedDate($date_of_second_notification),
         ];
 
-        $date_of_third_notification = $starting_date;
-        $date_of_third_notification->add(new DateInterval("P9D"));
+        $date_of_third_notification = $date_of_second_notification->add(new DateInterval("P4D"));
         $job->setDate($date_of_third_notification);
         $job->run();
 
@@ -328,8 +328,7 @@ class RoutineCronJobTest extends TestCase
             $third_notification->setNotifiedDate($date_of_third_notification)
         ];
 
-        $date_of_deletion = $starting_date;
-        $date_of_deletion->add(new DateInterval("P11D"));
+        $date_of_deletion = $date_of_third_notification->add(new DateInterval("P1D"));
         $job->setDate($date_of_deletion);
         $job->run();
 
@@ -339,7 +338,7 @@ class RoutineCronJobTest extends TestCase
         $this->assertCount(1, $job->getDeletedObjects());
         $this->assertEquals(
             $test_ref_id,
-            $job->getDeletedObjects()[0][ilObject::class]->getRefId()
+            $job->getDeletedObjects()[0]->getRefId()
         );
     }
 
