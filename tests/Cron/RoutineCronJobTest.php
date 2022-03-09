@@ -27,6 +27,7 @@ use DateInterval;
 use ilObjCourse;
 use ilObject;
 use ilLogger;
+use Sabre\VObject\Property\VCard\Date;
 
 /**
  * @author Thibeau Fuhrer <thibeau@sr.solutions>
@@ -284,8 +285,7 @@ class RoutineCronJobTest extends TestCase
         $this->assertCount(0, $job->getNotifiedObjects());
         $this->assertCount(0, $job->getDeletedObjects());
 
-        $date_of_second_notification = $starting_date;
-        $date_of_second_notification->add(new DateInterval("P5D"));
+        $date_of_second_notification = $starting_date->add(new DateInterval("P5D"));
         $job->setDate($date_of_second_notification);
         $job->run();
 
@@ -306,8 +306,7 @@ class RoutineCronJobTest extends TestCase
             $second_notification->setNotifiedDate($date_of_second_notification),
         ];
 
-        $date_of_third_notification = $starting_date;
-        $date_of_third_notification->add(new DateInterval("P9D"));
+        $date_of_third_notification = $date_of_second_notification->add(new DateInterval("P4D"));
         $job->setDate($date_of_third_notification);
         $job->run();
 
@@ -329,8 +328,7 @@ class RoutineCronJobTest extends TestCase
             $third_notification->setNotifiedDate($date_of_third_notification)
         ];
 
-        $date_of_deletion = $starting_date;
-        $date_of_deletion->add(new DateInterval("P11D"));
+        $date_of_deletion = $date_of_third_notification->add(new DateInterval("P1D"));
         $job->setDate($date_of_deletion);
         $job->run();
 
@@ -340,7 +338,7 @@ class RoutineCronJobTest extends TestCase
         $this->assertCount(1, $job->getDeletedObjects());
         $this->assertEquals(
             $test_ref_id,
-            $job->getDeletedObjects()[0][ilObject::class]->getRefId()
+            $job->getDeletedObjects()[0]->getRefId()
         );
     }
 

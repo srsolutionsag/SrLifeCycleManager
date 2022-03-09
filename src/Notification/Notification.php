@@ -208,8 +208,8 @@ class Notification implements ISentNotification
      */
     public function isElapsed($when) : bool
     {
-        $elapsed_date = $this->getNotifiedDate()->add(new DateInterval("P{$this->getDaysBeforeSubmission()}"));
+        $elapsed_date = $this->getNotifiedDate()->add(new DateInterval("P{$this->getDaysBeforeSubmission()}D"));
 
-        return ($when > $elapsed_date);
+        return ($when >= $elapsed_date);
     }
 }
