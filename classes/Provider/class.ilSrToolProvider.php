@@ -11,6 +11,7 @@ use srag\Plugins\SrLifeCycleManager\Rule\Comparison\Comparison;
 use srag\Plugins\SrLifeCycleManager\Rule\Attribute\AttributeFactory;
 use srag\Plugins\SrLifeCycleManager\Routine\IRoutine;
 use srag\Plugins\SrLifeCycleManager\ITranslator;
+use srag\Plugins\SrLifeCycleManager\Rule\Comparison\ComparisonFactory;
 
 /**
  * Class ilSrToolProvider provides ILIAS with the plugin's tools.
@@ -35,14 +36,9 @@ class ilSrToolProvider extends AbstractDynamicToolPluginProvider
     protected $request_object;
 
     /**
-     * @var RequirementFactory
+     * @var ComparisonFactory
      */
-    protected $requirements;
-
-    /**
-     * @var AttributeFactory
-     */
-    protected $attributes;
+    protected $comparisons;
 
     /**
      * @var IRepository
@@ -112,8 +108,11 @@ class ilSrToolProvider extends AbstractDynamicToolPluginProvider
             );
         }
 
-        $this->requirements = new RequirementFactory($this->dic->database());
-        $this->attributes = new AttributeFactory();
+        $this->comparisons = new ComparisonFactory(
+            new RequirementFactory($this->dic->database()),
+            new AttributeFactory()
+        );
+
         $this->repository = new ilSrLifeCycleManagerRepository(
             $this->dic->database(),
             $this->dic->rbac(),
@@ -182,8 +181,7 @@ class ilSrToolProvider extends AbstractDynamicToolPluginProvider
             $this->repository->routine(),
             $this->repository->rule(),
             $this->repository->whitelist(),
-            $this->attributes,
-            $this->requirements,
+            $this->comparisons,
             $translator,
             $object,
             $this->dic->ctrl()

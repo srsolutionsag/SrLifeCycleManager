@@ -41,11 +41,11 @@ class ilSrRuleTable extends ilSrAbstractTable
      */
     protected function addTableColumns() : void
     {
-        $this->addColumn($this->translator->txt(self::COL_RULE_RHS_TYPE));
-        $this->addColumn($this->translator->txt(self::COL_RULE_RHS_VALUE));
-        $this->addColumn($this->translator->txt(self::COL_RULE_OPERATOR));
         $this->addColumn($this->translator->txt(self::COL_RULE_LHS_TYPE));
         $this->addColumn($this->translator->txt(self::COL_RULE_LHS_VALUE));
+        $this->addColumn($this->translator->txt(self::COL_RULE_OPERATOR));
+        $this->addColumn($this->translator->txt(self::COL_RULE_RHS_TYPE));
+        $this->addColumn($this->translator->txt(self::COL_RULE_RHS_VALUE));
         $this->addActionColumn();
     }
 
@@ -54,15 +54,6 @@ class ilSrRuleTable extends ilSrAbstractTable
      */
     protected function renderTableRow(ilTemplate $template, array $data) : void
     {
-        $template->setVariable(self::COL_RULE_RHS_TYPE, $this->translator->txt($data[IRule::F_RHS_TYPE]));
-        $template->setVariable(
-            self::COL_RULE_RHS_VALUE,
-            $this->getMaybeTranslatedValue(
-                $data[IRule::F_RHS_TYPE],
-                $data[IRule::F_RHS_VALUE]
-            )
-        );
-
         $template->setVariable(self::COL_RULE_LHS_TYPE, $this->translator->txt($data[IRule::F_LHS_TYPE]));
         $template->setVariable(
             self::COL_RULE_LHS_VALUE,
@@ -72,7 +63,16 @@ class ilSrRuleTable extends ilSrAbstractTable
             )
         );
 
-        $template->setVariable(self::COL_RULE_OPERATOR, $data[IRule::F_OPERATOR]);
+        $template->setVariable(self::COL_RULE_RHS_TYPE, $this->translator->txt($data[IRule::F_RHS_TYPE]));
+        $template->setVariable(
+            self::COL_RULE_RHS_VALUE,
+            $this->getMaybeTranslatedValue(
+                $data[IRule::F_RHS_TYPE],
+                $data[IRule::F_RHS_VALUE]
+            )
+        );
+
+        $template->setVariable(self::COL_RULE_OPERATOR, $this->translator->txt($data[IRule::F_OPERATOR]));
         $template->setVariable(
             self::COL_ACTIONS,
             $this->renderer->render(

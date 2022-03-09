@@ -14,6 +14,7 @@ use ILIAS\UI\Component\Listing\Descriptive;
 use ILIAS\UI\Component\Button\Shy;
 use ILIAS\UI\Renderer;
 use ILIAS\UI\Factory;
+use srag\Plugins\SrLifeCycleManager\Rule\Comparison\ComparisonFactory;
 
 /**
  * @author Thibeau Fuhrer <thibeau@sr.solutions>
@@ -52,14 +53,9 @@ class ilSrRoutineList
     protected $whitelist_repository;
 
     /**
-     * @var AttributeFactory
+     * @var ComparisonFactory
      */
-    protected $attribute_factory;
-
-    /**
-     * @var RequirementFactory
-     */
-    protected $requirement_factory;
+    protected $comparison_factory;
 
     /**
      * @var ITranslator
@@ -87,8 +83,7 @@ class ilSrRoutineList
      * @param IRoutineRepository   $routine_repository
      * @param IRuleRepository      $rule_repository
      * @param IWhitelistRepository $whitelist_repository
-     * @param AttributeFactory     $attribute_factory
-     * @param RequirementFactory   $requirement_factory
+     * @param ComparisonFactory    $comparison_factory
      * @param ITranslator          $translator
      * @param ilObject             $object
      * @param ilCtrl               $ctrl
@@ -99,8 +94,7 @@ class ilSrRoutineList
         IRoutineRepository $routine_repository,
         IRuleRepository $rule_repository,
         IWhitelistRepository $whitelist_repository,
-        AttributeFactory $attribute_factory,
-        RequirementFactory $requirement_factory,
+        ComparisonFactory $comparison_factory,
         ITranslator $translator,
         ilObject $object,
         ilCtrl $ctrl
@@ -110,8 +104,7 @@ class ilSrRoutineList
         $this->routine_repository = $routine_repository;
         $this->rule_repository = $rule_repository;
         $this->whitelist_repository = $whitelist_repository;
-        $this->attribute_factory = $attribute_factory;
-        $this->requirement_factory = $requirement_factory;
+        $this->comparison_factory = $comparison_factory;
         $this->translator = $translator;
         $this->object = $object;
         $this->ctrl = $ctrl;
@@ -179,13 +172,7 @@ class ilSrRoutineList
             $this->object->getRefId(),
             $this->object->getType()
         ) as $rule) {
-            $requirement = $this->requirement_factory->getRequirement($this->object);
-            $comparison = new Comparison(
-                $this->attribute_factory,
-                $requirement,
-                $rule
-            );
-
+            $comparison = $this->comparison_factory->getComparison($this->object, $rule);
             if ($comparison->isApplicable()) {
                 // use routine-id as array key to prevent duplicate entries.
                 $affected_by_routines[$rule->getRoutineId()] = $this->routine_repository->get($rule->getRoutineId());

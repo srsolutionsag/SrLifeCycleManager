@@ -4,6 +4,7 @@
 
 namespace srag\Plugins\SrLifeCycleManager\Rule\Attribute\Group;
 
+use srag\Plugins\SrLifeCycleManager\Rule\Attribute\MetadataHelper;
 use ilDBInterface;
 use ilObjGroup;
 
@@ -12,10 +13,7 @@ use ilObjGroup;
  */
 class GroupMetadata extends GroupAttribute
 {
-    /**
-     * @var ilDBInterface
-     */
-    protected $database;
+    use MetadataHelper;
 
     /**
      * @var array
@@ -30,8 +28,10 @@ class GroupMetadata extends GroupAttribute
     {
         parent::__construct($group);
 
-        $this->database = $database;
-        $this->metadata = $this->getMetadata();
+        $this->metadata = $this->getMetadata(
+            $database,
+            $group->getId()
+        );
     }
 
     /**
@@ -60,23 +60,5 @@ class GroupMetadata extends GroupAttribute
             default:
                 return null;
         }
-    }
-
-    /**
-     * @return array
-     */
-    protected function getMetadata() : array
-    {
-        return $this->database->fetchAll(
-            $this->database->queryF(
-                "
-                    SELECT m.keyword AS metadata FROM object_data AS d
-                        JOIN il_meta_keyword AS m ON m.obj_id = d.obj_id
-                        WHERE d.obj_id = %s;
-                ",
-                ['integer'],
-                [$this->group->getId()]
-            )
-        );
     }
 }

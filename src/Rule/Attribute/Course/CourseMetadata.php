@@ -4,6 +4,7 @@
 
 namespace srag\Plugins\SrLifeCycleManager\Rule\Attribute\Course;
 
+use srag\Plugins\SrLifeCycleManager\Rule\Attribute\MetadataHelper;
 use ilDBInterface;
 use ilObjCourse;
 
@@ -12,13 +13,10 @@ use ilObjCourse;
  */
 class CourseMetadata extends CourseAttribute
 {
-    /**
-     * @var ilDBInterface
-     */
-    protected $database;
+    use MetadataHelper;
 
     /**
-     * @var array
+     * @var string[]
      */
     protected $metadata;
 
@@ -30,8 +28,10 @@ class CourseMetadata extends CourseAttribute
     {
         parent::__construct($course);
 
-        $this->database = $database;
-        $this->metadata = $this->getMetadata();
+        $this->metadata = $this->getMetadata(
+            $database,
+            $course->getId()
+        );
     }
 
     /**
@@ -60,23 +60,5 @@ class CourseMetadata extends CourseAttribute
             default:
                 return null;
         }
-    }
-
-    /**
-     * @return array
-     */
-    protected function getMetadata() : array
-    {
-        return $this->database->fetchAll(
-            $this->database->queryF(
-                "
-                    SELECT m.keyword AS metadata FROM object_data AS d
-                        JOIN il_meta_keyword AS m ON m.obj_id = d.obj_id
-                        WHERE d.obj_id = %s;
-                ",
-                ['integer'],
-                [$this->course->getId()]
-            )
-        );
     }
 }
