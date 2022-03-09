@@ -147,7 +147,7 @@ class WhitelistEntry implements IWhitelistEntry
     /**
      * @inheritDoc
      */
-    public function isElapsed(DateTime $when) : bool
+    public function isElapsed($when) : bool
     {
         if ($this->isOptOut() || null === $this->getElongation()) {
             return false;

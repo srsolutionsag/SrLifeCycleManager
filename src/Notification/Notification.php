@@ -206,7 +206,7 @@ class Notification implements ISentNotification
     /**
      * @inheritDoc
      */
-    public function isElapsed(DateTime $when) : bool
+    public function isElapsed($when) : bool
     {
         $elapsed_date = $this->getNotifiedDate()->add(new DateInterval("P{$this->getDaysBeforeSubmission()}"));
 
