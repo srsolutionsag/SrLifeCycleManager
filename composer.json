@@ -1,0 +1,28 @@
+{
+    "name": "srag/life-cycle-manager",
+    "description": "",
+    "type": "project",
+    "license": "GPL-3.0",
+    "authors": [
+        {
+            "name": "Thibeau Fuhrer",
+            "email": "thibeau@sr.solutions",
+            "homepage": "https://sr.solutions"
+        }
+    ],
+    "support": {
+        "issues": "https://support.sr.solutions"
+    },
+    "autoload": {
+        "psr-4": {
+            "srag\\Plugins\\SrLifeCycleManager\\": "src/",
+            "srag\\Plugins\\SrLifeCycleManager\\Tests\\": "tests/"
+        },
+        "classmap": [
+            "classes/"
+        ]
+    },
+    "require": {
+        "php": ">=7.2"
+    }
+}
