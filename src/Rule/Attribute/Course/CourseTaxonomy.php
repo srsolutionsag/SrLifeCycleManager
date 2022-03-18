@@ -4,6 +4,7 @@
 
 namespace srag\Plugins\SrLifeCycleManager\Rule\Attribute\Course;
 
+use srag\Plugins\SrLifeCycleManager\Rule\Attribute\TaxonomyHelper;
 use ilDBInterface;
 use ilObjCourse;
 
@@ -12,13 +13,10 @@ use ilObjCourse;
  */
 class CourseTaxonomy extends CourseAttribute
 {
-    /**
-     * @var ilDBInterface
-     */
-    protected $database;
+    use TaxonomyHelper;
 
     /**
-     * @var array
+     * @var string[]
      */
     protected $taxonomies;
 
@@ -30,8 +28,10 @@ class CourseTaxonomy extends CourseAttribute
     {
         parent::__construct($course);
 
-        $this->database = $database;
-        $this->taxonomies = $this->getTaxonomies();
+        $this->taxonomies = $this->getTaxonomies(
+            $database,
+            $course->getId()
+        );
     }
 
     /**
@@ -50,33 +50,15 @@ class CourseTaxonomy extends CourseAttribute
      */
     public function getComparableValue(string $type)
     {
-        if (self::COMPARABLE_VALUE_TYPE_ARRAY === $type) {
-            return $this->taxonomies;
+        switch ($type) {
+            case self::COMPARABLE_VALUE_TYPE_ARRAY:
+                return $this->taxonomies;
+
+            case self::COMPARABLE_VALUE_TYPE_STRING:
+                return implode(',', $this->taxonomies);
+
+            default:
+                return null;
         }
-
-        if (self::COMPARABLE_VALUE_TYPE_STRING === $type) {
-            return implode(',', $this->taxonomies);
-        }
-
-        return null;
-    }
-
-    /**
-     * @return array
-     */
-    protected function getTaxonomies() : array
-    {
-        return $this->database->fetchAll(
-            $this->database->queryF(
-                "
-                    SELECT tn.title AS title FROM tax_node_assignment AS ta
-                        JOIN tax_node AS tn ON tn.obj_id = ta.node_id
-                        WHERE ta.obj_id = %s;
-
-                ",
-                ['integer'],
-                [$this->course->getId()]
-            )
-        );
     }
 }

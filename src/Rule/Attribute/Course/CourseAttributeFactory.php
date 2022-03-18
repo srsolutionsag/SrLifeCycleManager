@@ -36,6 +36,9 @@ class CourseAttributeFactory
             case CourseMember::class:
                 return new CourseMember($requirement->getCourse());
 
+            case CourseCreation::class:
+                return new CourseCreation($requirement->getCourse());
+
             case CourseMetadata::class:
                 return new CourseMetadata($requirement->getDatabase(), $requirement->getCourse());
 
@@ -60,6 +63,7 @@ class CourseAttributeFactory
             CourseMember::class,
             CourseTaxonomy::class,
             CourseMetadata::class,
+            CourseCreation::class,
         ];
     }
 }

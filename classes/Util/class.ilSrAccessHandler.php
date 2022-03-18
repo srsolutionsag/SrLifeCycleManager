@@ -114,7 +114,11 @@ class ilSrAccessHandler
             return true;
         }
 
-        $participants = ilParticipants::getInstance($ref_id);
+        try {
+            $participants = ilParticipants::getInstance($ref_id);
+        } catch (InvalidArgumentException $e) {
+            return false;
+        }
 
         return in_array(
             $this->user->getId(),

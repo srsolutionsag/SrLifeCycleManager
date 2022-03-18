@@ -46,7 +46,7 @@ class ilSrLifeCycleManagerPlugin extends ilCronHookPlugin implements ITranslator
     protected $cron_job_factory;
 
     /**
-     * Initializes the tool- and main-menu-provider and registers them.
+     * Safely initializes the cron-job factory and the global screen providers.
      */
     public function __construct()
     {
@@ -54,11 +54,7 @@ class ilSrLifeCycleManagerPlugin extends ilCronHookPlugin implements ITranslator
         parent::__construct();
 
         $this->safelyInitjobFactory($DIC);
-
-        $this->provider_collection
-            ->setMainBarProvider(new ilSrMenuProvider($DIC, $this))
-            ->setToolProvider(new ilSrToolProvider($DIC, $this))
-        ;
+        $this->safelyInitProviders($DIC);
     }
 
     /**
@@ -109,7 +105,6 @@ class ilSrLifeCycleManagerPlugin extends ilCronHookPlugin implements ITranslator
      * might not be available.
      *
      * @param Container $dic
-     * @return void
      */
     protected function safelyInitJobFactory(Container $dic) : void
     {
@@ -117,8 +112,8 @@ class ilSrLifeCycleManagerPlugin extends ilCronHookPlugin implements ITranslator
             $dic->offsetExists('ilDB') &&
             $dic->offsetExists('tree') &&
             $dic->offsetExists('ilLoggerFactory') &&
-            $dic->offsetExists('ilCtrl') &&
-            $dic->offsetExists('rbacreview')
+            $dic->offsetExists('rbacreview') &&
+            $dic->offsetExists('ilCtrl')
         ) {
             $this->cron_job_factory = new ilSrCronJobFactory(
                 $dic['mail.mime.sender.factory'],
@@ -128,6 +123,23 @@ class ilSrLifeCycleManagerPlugin extends ilCronHookPlugin implements ITranslator
                 $dic->rbac(),
                 $dic->ctrl()
             );
+        }
+    }
+
+    /**
+     * Wraps the registration of the plugin providers for GS in order to
+     * keep compatibility with new setup-features where dependencies
+     * might not be available.
+     *
+     * @param Container $dic
+     */
+    protected function safelyInitProviders(Container $dic) : void
+    {
+        if ($dic->offsetExists('global_screen')) {
+            $this->provider_collection
+                ->setMainBarProvider(new ilSrMenuProvider($dic, $this))
+                ->setToolProvider(new ilSrToolProvider($dic, $this))
+            ;
         }
     }
 }

@@ -12,6 +12,7 @@ use srag\Plugins\SrLifeCycleManager\Routine\IRoutineRepository;
 use srag\Plugins\SrLifeCycleManager\Routine\IRoutine;
 use Generator;
 use ilObject;
+use srag\Plugins\SrLifeCycleManager\Rule\Comparison\ComparisonFactory;
 
 /**
  * This generator yields objects that are considered deletable.
@@ -28,14 +29,9 @@ use ilObject;
 class DeletableObjectGenerator implements IDeletableObjectGenerator
 {
     /**
-     * @var RequirementFactory
+     * @var ComparisonFactory
      */
-    protected $requirement_factory;
-
-    /**
-     * @var AttributeFactory
-     */
-    protected $attribute_factory;
+    protected $comparison_factory;
 
     /**
      * @var IRoutineRepository
@@ -58,21 +54,18 @@ class DeletableObjectGenerator implements IDeletableObjectGenerator
     protected $current_object;
 
     /**
-     * @param RequirementFactory $requirement_factory
-     * @param AttributeFactory   $attribute_factory
+     * @param ComparisonFactory  $comparison_factory
      * @param IRoutineRepository $routine_repository
      * @param IRuleRepository    $rule_repository
      * @param Generator          $object_generator
      */
     public function __construct(
-        RequirementFactory $requirement_factory,
-        AttributeFactory $attribute_factory,
+        ComparisonFactory $comparison_factory,
         IRoutineRepository $routine_repository,
         IRuleRepository $rule_repository,
         Generator $object_generator
     ) {
-        $this->requirement_factory = $requirement_factory;
-        $this->attribute_factory = $attribute_factory;
+        $this->comparison_factory = $comparison_factory;
         $this->routine_repository = $routine_repository;
         $this->rule_repository = $rule_repository;
         $this->object_generator = $object_generator;
@@ -163,14 +156,10 @@ class DeletableObjectGenerator implements IDeletableObjectGenerator
 
             $all_rules_applicable = true;
             foreach ($this->rule_repository->getByRoutine($routine) as $rule) {
-                $comparison = new Comparison(
-                    $this->attribute_factory,
-                    $this->requirement_factory->getRequirement($object),
-                    $rule
-                );
-
+                $comparison = $this->comparison_factory->getComparison($object, $rule);
                 if (!$comparison->isApplicable()) {
                     $all_rules_applicable = false;
+                    break;
                 }
             }
 

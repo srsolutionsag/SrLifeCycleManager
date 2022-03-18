@@ -11,10 +11,9 @@ use srag\Plugins\SrLifeCycleManager\Rule\Requirement\Group\GroupRequirement;
 use srag\Plugins\SrLifeCycleManager\Routine\IRoutine;
 use LogicException;
 use ilDBInterface;
-use ilObject2;
-use ilObject;
 use ilObjCourse;
 use ilObjGroup;
+use ilObject;
 
 /**
  * @author Thibeau Fuhrer <thibeau@sr.solutions>
@@ -40,8 +39,7 @@ class RequirementFactory
      */
     public function getRequirement(ilObject $object) : IRequirement
     {
-        $type = ilObject2::_lookupType($object->getRefId(), true);
-        switch ($type) {
+        switch ($object->getType()) {
             case IRoutine::ROUTINE_TYPE_COURSE:
                 /** @var $object ilObjCourse */
                 return $this->course($object);
@@ -51,7 +49,7 @@ class RequirementFactory
                 return $this->group($object);
 
             default:
-                throw new LogicException("Requirement for given object of type '$type' is not supported.");
+                throw new LogicException("Requirement for object type '{$object->getType()}' is not supported.");
         }
     }
 

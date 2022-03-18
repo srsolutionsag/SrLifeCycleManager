@@ -27,6 +27,9 @@ class GroupAttributeFactory
             case GroupMember::class:
                 return new GroupMember($requirement->getGroup());
 
+            case GroupCreation::class:
+                return new GroupCreation($requirement->getGroup());
+
             case GroupMetadata::class:
                 return new GroupMetadata($requirement->getDatabase(), $requirement->getGroup());
 
@@ -48,6 +51,7 @@ class GroupAttributeFactory
             GroupMember::class,
             GroupMetadata::class,
             GroupTaxonomy::class,
+            GroupCreation::class,
         ];
     }
 }

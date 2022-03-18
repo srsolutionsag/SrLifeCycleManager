@@ -40,7 +40,7 @@ interface IRuleRepository
      * @param string $routine_type
      * @return IRule[]
      */
-    public function getByRoutineRefIdAndType(int $ref_id, string $routine_type) : array;
+    public function getByRefIdAndRoutineType(int $ref_id, string $routine_type) : array;
 
     /**
      * Creates or updates an existing rule in the database and relates

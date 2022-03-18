@@ -8,6 +8,7 @@ use srag\Plugins\SrLifeCycleManager\Rule\Requirement\RequirementFactory;
 use srag\Plugins\SrLifeCycleManager\Rule\Attribute\AttributeFactory;
 use srag\Plugins\SrLifeCycleManager\IRepository;
 use ILIAS\DI\RBACServices;
+use srag\Plugins\SrLifeCycleManager\Rule\Comparison\ComparisonFactory;
 
 /**
  * @author Thibeau Fuhrer <thibeau@sr.solutions>
@@ -66,18 +67,13 @@ class ilSrCronJobFactory
         RBACServices $rbac,
         ilCtrl $ctrl
     ) {
+        $this->repository = new ilSrLifeCycleManagerRepository($database, $rbac, $tree);
         $this->mail_factory = $mail_factory;
         $this->database = $database;
         $this->tree = $tree;
         $this->logger = $logger;
         $this->rbac = $rbac;
         $this->ctrl = $ctrl;
-
-        $this->repository = new ilSrLifeCycleManagerRepository(
-            $database,
-            $rbac,
-            $tree
-        );
     }
 
     /**
@@ -113,8 +109,10 @@ class ilSrCronJobFactory
                 $this->ctrl
             ),
             new DeletableObjectGenerator(
-                new RequirementFactory($this->database),
-                new AttributeFactory(),
+                new ComparisonFactory(
+                    new RequirementFactory($this->database),
+                    new AttributeFactory()
+                ),
                 $this->repository->routine(),
                 $this->repository->rule(),
                 $this->repository->getRepositoryObjects()
@@ -139,8 +137,10 @@ class ilSrCronJobFactory
                 $this->ctrl
             ),
             new DeletableObjectGenerator(
-                new RequirementFactory($this->database),
-                new AttributeFactory(),
+                new ComparisonFactory(
+                    new RequirementFactory($this->database),
+                    new AttributeFactory()
+                ),
                 $this->repository->routine(),
                 $this->repository->rule(),
                 $this->repository->getRepositoryObjects()
