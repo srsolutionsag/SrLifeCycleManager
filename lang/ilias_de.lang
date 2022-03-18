@@ -128,15 +128,17 @@ srag\Plugins\SrLifeCycleManager\Rule\Attribute\Course\CourseMember#:#Kursmitglie
 srag\Plugins\SrLifeCycleManager\Rule\Attribute\Course\CourseMetadata#:#Kurs Metadata
 srag\Plugins\SrLifeCycleManager\Rule\Attribute\Course\CourseTaxonomy#:#Kurs Taxonomie
 srag\Plugins\SrLifeCycleManager\Rule\Attribute\Course\CourseTitle#:#Kurstitel
+srag\Plugins\SrLifeCycleManager\Rule\Attribute\Course\CourseCreation#:#Kurs Erstelldatum
 
 srag\Plugins\SrLifeCycleManager\Rule\Attribute\Group\GroupAttribute#:#Gruppenattribut
 srag\Plugins\SrLifeCycleManager\Rule\Attribute\Group\GroupTitle#:#Gruppentitel
 srag\Plugins\SrLifeCycleManager\Rule\Attribute\Group\GroupMember#:#Gruppenmitglieder
 srag\Plugins\SrLifeCycleManager\Rule\Attribute\Group\GroupMetadata#:#Gruppen Metadata
 srag\Plugins\SrLifeCycleManager\Rule\Attribute\Group\GroupTaxonomy#:#Gruppen Taxonomie
+srag\Plugins\SrLifeCycleManager\Rule\Attribute\Group\GroupCreation#:#Gruppe Erstelldatum
 
 srag\Plugins\SrLifeCycleManager\Rule\Attribute\Common\CommonAttribute#:#Gewöhnliches Attribut
-srag\Plugins\SrLifeCycleManager\Rule\Attribute\Common\CommonBoolean#:#wahr/falsch
+srag\Plugins\SrLifeCycleManager\Rule\Attribute\Common\CommonBoolean#:#wahr/falsch (1 oder 0)
 srag\Plugins\SrLifeCycleManager\Rule\Attribute\Common\CommonDateTime#:#Datum (Y-m-d)
 srag\Plugins\SrLifeCycleManager\Rule\Attribute\Common\CommonInteger#:#Ganzzahl
 srag\Plugins\SrLifeCycleManager\Rule\Attribute\Common\CommonList#:#Liste (kommasepariert)
