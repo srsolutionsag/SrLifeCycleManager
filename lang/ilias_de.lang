@@ -120,25 +120,25 @@ course_attribute_value#:#Dynamisches Attribut
 group_attribute#:#Gruppen Attribut
 group_attribute_value#:#Dynamisches Attribut
 
-srag\Plugins\_SrLifeCycleManager\Rule\Attribute\Course\CourseAttribute#:#Kursattribut
-srag\Plugins\_SrLifeCycleManager\Rule\Attribute\Course\CourseActive#:#Kurs aktiv
-srag\Plugins\_SrLifeCycleManager\Rule\Attribute\Course\CourseEnd#:#Kursende
-srag\Plugins\_SrLifeCycleManager\Rule\Attribute\Course\CourseStart#:#Kursstart
-srag\Plugins\_SrLifeCycleManager\Rule\Attribute\Course\CourseMember#:#Kursmitglieder
-srag\Plugins\_SrLifeCycleManager\Rule\Attribute\Course\CourseMetadata#:#Kurs Metadata
-srag\Plugins\_SrLifeCycleManager\Rule\Attribute\Course\CourseTaxonomy#:#Kurs Taxonomie
-srag\Plugins\_SrLifeCycleManager\Rule\Attribute\Course\CourseTitle#:#Kurstitel
+srag\Plugins\SrLifeCycleManager\Rule\Attribute\Course\CourseAttribute#:#Kursattribut
+srag\Plugins\SrLifeCycleManager\Rule\Attribute\Course\CourseActive#:#Kurs aktiv
+srag\Plugins\SrLifeCycleManager\Rule\Attribute\Course\CourseEnd#:#Kursende
+srag\Plugins\SrLifeCycleManager\Rule\Attribute\Course\CourseStart#:#Kursstart
+srag\Plugins\SrLifeCycleManager\Rule\Attribute\Course\CourseMember#:#Kursmitglieder
+srag\Plugins\SrLifeCycleManager\Rule\Attribute\Course\CourseMetadata#:#Kurs Metadata
+srag\Plugins\SrLifeCycleManager\Rule\Attribute\Course\CourseTaxonomy#:#Kurs Taxonomie
+srag\Plugins\SrLifeCycleManager\Rule\Attribute\Course\CourseTitle#:#Kurstitel
 
-srag\Plugins\_SrLifeCycleManager\Rule\Attribute\Group\GroupAttribute#:#Gruppenattribut
-srag\Plugins\_SrLifeCycleManager\Rule\Attribute\Group\GroupTitle#:#Gruppentitel
-srag\Plugins\_SrLifeCycleManager\Rule\Attribute\Group\GroupMember#:#Gruppenmitglieder
-srag\Plugins\_SrLifeCycleManager\Rule\Attribute\Group\GroupMetadata#:#Gruppen Metadata
-srag\Plugins\_SrLifeCycleManager\Rule\Attribute\Group\GroupTaxonomy#:#Gruppen Taxonomie
+srag\Plugins\SrLifeCycleManager\Rule\Attribute\Group\GroupAttribute#:#Gruppenattribut
+srag\Plugins\SrLifeCycleManager\Rule\Attribute\Group\GroupTitle#:#Gruppentitel
+srag\Plugins\SrLifeCycleManager\Rule\Attribute\Group\GroupMember#:#Gruppenmitglieder
+srag\Plugins\SrLifeCycleManager\Rule\Attribute\Group\GroupMetadata#:#Gruppen Metadata
+srag\Plugins\SrLifeCycleManager\Rule\Attribute\Group\GroupTaxonomy#:#Gruppen Taxonomie
 
-srag\Plugins\_SrLifeCycleManager\Rule\Attribute\Common\CommonAttribute#:#Gewöhnliches Attribut
-srag\Plugins\_SrLifeCycleManager\Rule\Attribute\Common\CommonBoolean#:#wahr/falsch
-srag\Plugins\_SrLifeCycleManager\Rule\Attribute\Common\CommonDateTime#:#Datum (Y-m-d)
-srag\Plugins\_SrLifeCycleManager\Rule\Attribute\Common\CommonInteger#:#Ganzzahl
-srag\Plugins\_SrLifeCycleManager\Rule\Attribute\Common\CommonList#:#Liste (kommasepariert)
-srag\Plugins\_SrLifeCycleManager\Rule\Attribute\Common\CommonNull#:#Leer
-srag\Plugins\_SrLifeCycleManager\Rule\Attribute\Common\CommonString#:#Text
+srag\Plugins\SrLifeCycleManager\Rule\Attribute\Common\CommonAttribute#:#Gewöhnliches Attribut
+srag\Plugins\SrLifeCycleManager\Rule\Attribute\Common\CommonBoolean#:#wahr/falsch
+srag\Plugins\SrLifeCycleManager\Rule\Attribute\Common\CommonDateTime#:#Datum (Y-m-d)
+srag\Plugins\SrLifeCycleManager\Rule\Attribute\Common\CommonInteger#:#Ganzzahl
+srag\Plugins\SrLifeCycleManager\Rule\Attribute\Common\CommonList#:#Liste (kommasepariert)
+srag\Plugins\SrLifeCycleManager\Rule\Attribute\Common\CommonNull#:#Leer
+srag\Plugins\SrLifeCycleManager\Rule\Attribute\Common\CommonString#:#Text

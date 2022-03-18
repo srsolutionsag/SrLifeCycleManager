@@ -46,8 +46,7 @@ class ilSrLifeCycleManagerPlugin extends ilCronHookPlugin implements ITranslator
     protected $cron_job_factory;
 
     /**
-     * Safely initializes the cron-job factory and registers the
-     * plugin providers (global screen).
+     * Safely initializes the cron-job factory and the global screen providers.
      */
     public function __construct()
     {
@@ -113,8 +112,8 @@ class ilSrLifeCycleManagerPlugin extends ilCronHookPlugin implements ITranslator
             $dic->offsetExists('ilDB') &&
             $dic->offsetExists('tree') &&
             $dic->offsetExists('ilLoggerFactory') &&
-            $dic->offsetExists('ilCtrl') &&
-            $dic->offsetExists('rbacreview')
+            $dic->offsetExists('rbacreview') &&
+            $dic->offsetExists('ilCtrl')
         ) {
             $this->cron_job_factory = new ilSrCronJobFactory(
                 $dic['mail.mime.sender.factory'],
