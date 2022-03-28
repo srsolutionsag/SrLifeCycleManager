@@ -113,6 +113,14 @@ class ilSrRoutineList
     }
 
     /**
+     * @return int
+     */
+    public function getAffectedRoutineCount() : int
+    {
+        return count($this->list->getItems());
+    }
+
+    /**
      * @return string
      */
     public function render() : string

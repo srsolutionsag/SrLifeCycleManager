@@ -22,7 +22,7 @@ msg_routine_whitelist_error#:#The requested routine does not support whitelist-e
 msg_routine_whitelist_failure#:#Your request was not an opt-out and elongations aren't supported.
 msg_routine_whitelist_success#:#Object successfully whitelisted.
 msg_privileged_user#:#You are allowed to manage your own routines at this position.
-msg_affected_routines#:#There are active routines that affect this object!
+msg_affected_routines#:#There are active routines that affect this object! Check the tools for more information.
 msg_routine_cant_extend#:#This routine cannot be extended.
 msg_routine_extended#:#This object has been successfully whitelisted for [ELONGATION] days.
 msg_routine_already_extended#:#The deletion of this object was already postponed.

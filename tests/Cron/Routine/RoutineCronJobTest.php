@@ -2,9 +2,7 @@
 
 /* Copyright (c) 2022 Thibeau Fuhrer <thibeau@sr.solutions> Extended GPL, see docs/LICENSE */
 
-namespace srag\Plugins\SrLifeCycleManager\Tests\Cron;
-
-require_once __DIR__ . '/../../vendor/autoload.php';
+namespace srag\Plugins\SrLifeCycleManager\Tests\Cron\Routine;
 
 use PHPUnit\Framework\TestCase;
 
@@ -27,7 +25,6 @@ use DateInterval;
 use ilObjCourse;
 use ilObject;
 use ilLogger;
-use Sabre\VObject\Property\VCard\Date;
 
 /**
  * @author Thibeau Fuhrer <thibeau@sr.solutions>

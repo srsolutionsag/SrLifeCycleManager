@@ -2,15 +2,14 @@
 
 /* Copyright (c) 2022 Thibeau Fuhrer <thibeau@sr.solutions> Extended GPL, see docs/LICENSE */
 
-namespace srag\Plugins\SrLifeCycleManager\Tests;
+namespace srag\Plugins\SrLifeCycleManager\Tests\Rule;
 
-use srag\Plugins\SrLifeCycleManager\Tests\Cron\CronTestSuite;
 use PHPUnit\Framework\TestSuite;
 
 /**
  * @author Thibeau Fuhrer <thibeau@sr.solutions>
  */
-class SrLifeCycleManagerTestSuite extends TestSuite
+class RuleTestSuite extends TestSuite
 {
     /**
      * @return self
@@ -18,8 +17,6 @@ class SrLifeCycleManagerTestSuite extends TestSuite
     public static function suite() : self
     {
         $suite = new self();
-
-        $suite->addTestSuite(CronTestSuite::class);
 
         return $suite;
     }

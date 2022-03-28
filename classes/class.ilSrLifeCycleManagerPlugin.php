@@ -46,7 +46,7 @@ class ilSrLifeCycleManagerPlugin extends ilCronHookPlugin implements ITranslator
     protected $cron_job_factory;
 
     /**
-     * Safely initializes the cron-job factory and the global screen providers.
+     * Initializes the global screen providers and cron job factory.
      */
     public function __construct()
     {
@@ -127,11 +127,12 @@ class ilSrLifeCycleManagerPlugin extends ilCronHookPlugin implements ITranslator
     }
 
     /**
-     * Wraps the registration of the plugin providers for GS in order to
+     * Wraps the initialization of the GS providers in order to
      * keep compatibility with new setup-features where dependencies
      * might not be available.
      *
      * @param Container $dic
+     * @return void
      */
     protected function safelyInitProviders(Container $dic) : void
     {
