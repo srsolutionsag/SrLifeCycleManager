@@ -17,7 +17,7 @@ trait ilSrRepositoryHelper
     /**
      * @inheritDoc
      */
-    public function getRepositoryObjects(int $ref_id = 1) : Iterator
+    public function getRepositoryObjects(int $ref_id = 1) : Generator
     {
         $container_objects = $this->tree->getChildsByTypeFilter($ref_id, ['crs', 'cat', 'grp', 'fold']);
         if (empty($container_objects)) {
