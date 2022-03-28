@@ -105,7 +105,6 @@ class ilSrLifeCycleManagerPlugin extends ilCronHookPlugin implements ITranslator
      * might not be available.
      *
      * @param Container $dic
-     * @return void
      */
     protected function safelyInitJobFactory(Container $dic) : void
     {
@@ -113,8 +112,8 @@ class ilSrLifeCycleManagerPlugin extends ilCronHookPlugin implements ITranslator
             $dic->offsetExists('ilDB') &&
             $dic->offsetExists('tree') &&
             $dic->offsetExists('ilLoggerFactory') &&
-            $dic->offsetExists('ilCtrl') &&
-            $dic->offsetExists('rbacreview')
+            $dic->offsetExists('rbacreview') &&
+            $dic->offsetExists('ilCtrl')
         ) {
             $this->cron_job_factory = new ilSrCronJobFactory(
                 $dic['mail.mime.sender.factory'],
