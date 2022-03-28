@@ -46,7 +46,7 @@ class ilSrLifeCycleManagerPlugin extends ilCronHookPlugin implements ITranslator
     protected $cron_job_factory;
 
     /**
-     * Initializes the tool- and main-menu-provider and registers them.
+     * Initializes the global screen providers and cron job factory.
      */
     public function __construct()
     {
@@ -54,11 +54,7 @@ class ilSrLifeCycleManagerPlugin extends ilCronHookPlugin implements ITranslator
         parent::__construct();
 
         $this->safelyInitjobFactory($DIC);
-
-        $this->provider_collection
-            ->setMainBarProvider(new ilSrMenuProvider($DIC, $this))
-            ->setToolProvider(new ilSrToolProvider($DIC, $this))
-        ;
+        $this->safelyInitProviders($DIC);
     }
 
     /**
@@ -128,6 +124,24 @@ class ilSrLifeCycleManagerPlugin extends ilCronHookPlugin implements ITranslator
                 $dic->rbac(),
                 $dic->ctrl()
             );
+        }
+    }
+
+    /**
+     * Wraps the initialization of the GS providers in order to
+     * keep compatibility with new setup-features where dependencies
+     * might not be available.
+     *
+     * @param Container $dic
+     * @return void
+     */
+    protected function safelyInitProviders(Container $dic) : void
+    {
+        if ($dic->offsetExists('global_screen')) {
+            $this->provider_collection
+                ->setMainBarProvider(new ilSrMenuProvider($dic, $this))
+                ->setToolProvider(new ilSrToolProvider($dic, $this))
+            ;
         }
     }
 }

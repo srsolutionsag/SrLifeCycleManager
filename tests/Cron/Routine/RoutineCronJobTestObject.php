@@ -2,14 +2,13 @@
 
 /* Copyright (c) 2022 Thibeau Fuhrer <thibeau@sr.solutions> Extended GPL, see docs/LICENSE */
 
-namespace srag\Plugins\SrLifeCycleManager\Tests\Cron;
+namespace srag\Plugins\SrLifeCycleManager\Tests\Cron\Routine;
 
 use srag\Plugins\SrLifeCycleManager\Notification\INotification;
-use LogicException;
-use DateTime;
 use ilSrRoutineCronJob;
-use ilObject;
 use DateTimeImmutable;
+use LogicException;
+use ilObject;
 
 /**
  * @author Thibeau Fuhrer <thibeau@sr.solutions>

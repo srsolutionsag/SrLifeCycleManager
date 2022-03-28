@@ -110,14 +110,10 @@ class NotificationFormBuilder extends AbstractFormBuilder
                     return false;
                 }
 
-                if (null === $this->repository->getByRoutineAndDaysBeforeSubmission(
+                return (null === $this->repository->getByRoutineAndDaysBeforeSubmission(
                     $this->notification->getRoutineId(),
-                    $days_before_submission
-                )) {
-                    return true;
-                }
-
-                return false;
+                    (int) $days_before_submission
+                ));
             },
             self::MSG_DAYS_BEFORE_SUBMISSION_ERROR
         );

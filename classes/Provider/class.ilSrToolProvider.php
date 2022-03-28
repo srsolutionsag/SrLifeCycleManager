@@ -2,16 +2,14 @@
 
 use srag\Plugins\SrLifeCycleManager\IRepository;
 use srag\Plugins\SrLifeCycleManager\Config\IConfig;
+use srag\Plugins\SrLifeCycleManager\Rule\Requirement\RequirementFactory;
+use srag\Plugins\SrLifeCycleManager\Rule\Attribute\AttributeFactory;
+use srag\Plugins\SrLifeCycleManager\Rule\Comparison\ComparisonFactory;
+use srag\Plugins\SrLifeCycleManager\ITranslator;
 use ILIAS\GlobalScreen\Scope\Tool\Provider\AbstractDynamicToolPluginProvider;
 use ILIAS\GlobalScreen\ScreenContext\Stack\ContextCollection;
 use ILIAS\GlobalScreen\ScreenContext\Stack\CalledContexts;
 use ILIAS\UI\Component\Component;
-use srag\Plugins\SrLifeCycleManager\Rule\Requirement\RequirementFactory;
-use srag\Plugins\SrLifeCycleManager\Rule\Comparison\Comparison;
-use srag\Plugins\SrLifeCycleManager\Rule\Attribute\AttributeFactory;
-use srag\Plugins\SrLifeCycleManager\Routine\IRoutine;
-use srag\Plugins\SrLifeCycleManager\ITranslator;
-use srag\Plugins\SrLifeCycleManager\Rule\Comparison\ComparisonFactory;
 
 /**
  * Class ilSrToolProvider provides ILIAS with the plugin's tools.
@@ -26,7 +24,6 @@ use srag\Plugins\SrLifeCycleManager\Rule\Comparison\ComparisonFactory;
 class ilSrToolProvider extends AbstractDynamicToolPluginProvider
 {
     // ilSrToolProvider language variables:
-    protected const MSG_PRIVILEGED_USER = 'msg_privileged_user';
     protected const MSG_AFFECTED_ROUTINES = 'msg_affected_routines';
     protected const ACTION_ROUTINE_MANAGE = 'action_routine_manage';
 
@@ -187,13 +184,11 @@ class ilSrToolProvider extends AbstractDynamicToolPluginProvider
             $this->dic->ctrl()
         );
 
-        $message_box = $this->dic->ui()->renderer()->render(
-            $this->dic->ui()->factory()->messageBox()->confirmation(
-                $this->plugin->txt(self::MSG_AFFECTED_ROUTINES)
-            )
-        );
+        if (0 < $routine_list->getAffectedRoutineCount()) {
+            ilUtil::sendQuestion($this->plugin->txt(self::MSG_AFFECTED_ROUTINES));
+        }
 
-        return $message_box . $routine_list->render();
+        return $routine_list->render();
     }
 
     /**
@@ -205,11 +200,6 @@ class ilSrToolProvider extends AbstractDynamicToolPluginProvider
     protected function renderPrivilegedRoutineControls() : string
     {
         return $this->dic->ui()->renderer()->render([
-            // info-message that current user can manage routines.
-            // $this->dic->ui()->factory()->messageBox()->info(
-            //     $this->plugin->txt(self::MSG_PRIVILEGED_USER)
-            // ),
-
             // action-button to add new routines at current position.
             $this->dic->ui()->factory()->button()->standard(
                 $this->plugin->txt(ilSrToolbarManager::ACTION_ROUTINE_ADD),
