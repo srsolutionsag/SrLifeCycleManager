@@ -21,8 +21,6 @@ class RoutineFormBuilder extends AbstractFormBuilder
     public const INPUT_ELONGATION = 'input_name_routine_elongation';
     public const INPUT_ELONGATION_POSSIBLE = 'input_name_routine_elongation_possible';
     public const INPUT_HAS_OPT_OUT = 'input_name_routine_has_opt_out';
-    public const INPUT_IS_ACTIVE  = 'input_name_routine_is_active';
-    public const INPUT_REF_ID = 'input_name_routine_ref_id';
     public const INPUT_ROUTINE_TYPE = 'input_name_routine_type';
     public const INPUT_TITLE = 'input_name_routine_title';
 
@@ -56,15 +54,6 @@ class RoutineFormBuilder extends AbstractFormBuilder
      */
     public function getForm() : UIForm
     {
-        $inputs[self::INPUT_REF_ID] = $this->fields
-            ->numeric($this->translator->txt(self::INPUT_REF_ID))
-            ->withRequired(true)
-            ->withAdditionalTransformation($this->getRefIdValidationConstraint())
-            ->withValue(
-                (0 < $this->routine->getRefId()) ? $this->routine->getRefId() : null
-            )
-        ;
-
         $inputs[self::INPUT_TITLE] = $this->fields
             ->text($this->translator->txt(self::INPUT_TITLE))
             ->withRequired(true)
@@ -82,11 +71,6 @@ class RoutineFormBuilder extends AbstractFormBuilder
             // the routine type cannot be changed after creation, because
             // rules are added considering by this attribute.
             ->withDisabled(null !== $this->routine->getRoutineId())
-        ;
-
-        $inputs[self::INPUT_IS_ACTIVE] = $this->fields
-            ->checkbox($this->translator->txt(self::INPUT_IS_ACTIVE))
-            ->withValue($this->routine->isActive())
         ;
 
         $inputs[self::INPUT_HAS_OPT_OUT] = $this->fields

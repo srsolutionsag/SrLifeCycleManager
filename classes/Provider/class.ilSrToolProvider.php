@@ -110,7 +110,7 @@ class ilSrToolProvider extends AbstractDynamicToolPluginProvider
             new AttributeFactory()
         );
 
-        $this->repository = new ilSrLifeCycleManagerRepository(
+        $this->repository = new ilSrRepositoryFactory(
             $this->dic->database(),
             $this->dic->rbac(),
             $this->dic->repositoryTree()

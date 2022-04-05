@@ -100,8 +100,8 @@ class ilSrRuleGUI extends ilSrAbstractGUI
             return $access_handler->canViewRoutines($this->object_ref_id);
         }
 
-        // for all other commands the user must be owner of the routine.
-        return $access_handler->isCurrentUser($this->routine->getOwnerId());
+        // for all other commands the user must be privileged.
+        return $access_handler->canManageRoutines();
     }
 
     /**

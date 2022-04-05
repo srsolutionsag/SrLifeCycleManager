@@ -2,9 +2,7 @@
 
 /* Copyright (c) 2022 Thibeau Fuhrer <thibeau@sr.solutions> Extended GPL, see docs/LICENSE */
 
-use srag\Plugins\SrLifeCycleManager\Rule\Requirement\RequirementFactory;
-use srag\Plugins\SrLifeCycleManager\Rule\Attribute\AttributeFactory;
-use srag\Plugins\SrLifeCycleManager\Rule\Comparison\Comparison;
+use srag\Plugins\SrLifeCycleManager\Rule\Comparison\ComparisonFactory;
 use srag\Plugins\SrLifeCycleManager\Rule\IRuleRepository;
 use srag\Plugins\SrLifeCycleManager\Routine\IRoutineRepository;
 use srag\Plugins\SrLifeCycleManager\Routine\IRoutine;
@@ -14,7 +12,6 @@ use ILIAS\UI\Component\Listing\Descriptive;
 use ILIAS\UI\Component\Button\Shy;
 use ILIAS\UI\Renderer;
 use ILIAS\UI\Factory;
-use srag\Plugins\SrLifeCycleManager\Rule\Comparison\ComparisonFactory;
 
 /**
  * @author Thibeau Fuhrer <thibeau@sr.solutions>

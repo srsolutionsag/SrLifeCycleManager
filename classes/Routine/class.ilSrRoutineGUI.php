@@ -118,16 +118,6 @@ class ilSrRoutineGUI extends ilSrAbstractGUI
      */
     protected function edit() : void
     {
-        // if the current routine has not been stored yet and
-        // an object was requested, the user wants to create
-        // a routine at this position, therefore the object is
-        // treated as routine-ref-id.
-        if (null !== $this->object_ref_id &&
-            null === $this->routine->getRoutineId()
-        ) {
-            $this->routine->setRefId($this->object_ref_id);
-        }
-
         $this->render($this->form_builder->getForm());
     }
 

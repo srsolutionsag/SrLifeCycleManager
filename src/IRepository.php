@@ -6,11 +6,10 @@ namespace srag\Plugins\SrLifeCycleManager;
 
 use srag\Plugins\SrLifeCycleManager\Rule\IRuleRepository;
 use srag\Plugins\SrLifeCycleManager\Notification\INotificationRepository;
+use srag\Plugins\SrLifeCycleManager\Assignment\IRoutineAssignmentRepository;
 use srag\Plugins\SrLifeCycleManager\Routine\IRoutineRepository;
 use srag\Plugins\SrLifeCycleManager\Whitelist\IWhitelistRepository;
 use srag\Plugins\SrLifeCycleManager\Config\IConfigRepository;
-use Generator;
-use ilObject;
 
 /**
  * @author Thibeau Fuhrer <thibeau@sr.solutions>
@@ -21,6 +20,16 @@ interface IRepository
      * @return IConfigRepository
      */
     public function config() : IConfigRepository;
+
+    /**
+     * @return ILIASRepository
+     */
+    public function ilias() : ILIASRepository;
+
+    /**
+     * @return IRoutineAssignmentRepository
+     */
+    public function assignment() : IRoutineAssignmentRepository;
 
     /**
      * @return IRoutineRepository
@@ -41,12 +50,4 @@ interface IRepository
      * @return IRuleRepository
      */
     public function rule() : IRuleRepository;
-
-    /**
-     * Returns all repository objects that can be deleted by a routine
-     * starting from the given ref-id.
-     *
-     * @return Generator|ilObject[]
-     */
-    public function getRepositoryObjects() : Generator;
 }

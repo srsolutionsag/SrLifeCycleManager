@@ -151,7 +151,7 @@ abstract class ilSrAbstractGUI
         $this->ctrl = $DIC->ctrl();
         $this->user = $DIC->user();
 
-        $this->repository = new ilSrLifeCycleManagerRepository(
+        $this->repository = new ilSrRepositoryFactory(
             $DIC->database(),
             $DIC->rbac(),
             $DIC->repositoryTree()

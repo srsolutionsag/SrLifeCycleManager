@@ -3,15 +3,15 @@
 /* Copyright (c) 2022 Thibeau Fuhrer <thibeau@sr.solutions> Extended GPL, see docs/LICENSE */
 
 use srag\Plugins\SrLifeCycleManager\Cron\ResultBuilder;
+use srag\Plugins\SrLifeCycleManager\Rule\Comparison\ComparisonFactory;
 use srag\Plugins\SrLifeCycleManager\Rule\Generator\DeletableObjectGenerator;
 use srag\Plugins\SrLifeCycleManager\Rule\Requirement\RequirementFactory;
 use srag\Plugins\SrLifeCycleManager\Rule\Attribute\AttributeFactory;
 use srag\Plugins\SrLifeCycleManager\IRepository;
 use ILIAS\DI\RBACServices;
-use srag\Plugins\SrLifeCycleManager\Rule\Comparison\ComparisonFactory;
 
 /**
- * @author Thibeau Fuhrer <thibeau@sr.solutions>
+ * @author       Thibeau Fuhrer <thibeau@sr.solutions>
  * @noinspection AutoloadingIssuesInspection
  */
 class ilSrCronJobFactory
@@ -67,7 +67,7 @@ class ilSrCronJobFactory
         RBACServices $rbac,
         ilCtrl $ctrl
     ) {
-        $this->repository = new ilSrLifeCycleManagerRepository($database, $rbac, $tree);
+        $this->repository = new ilSrRepositoryFactory($database, $rbac, $tree);
         $this->mail_factory = $mail_factory;
         $this->database = $database;
         $this->tree = $tree;
@@ -115,7 +115,7 @@ class ilSrCronJobFactory
                 ),
                 $this->repository->routine(),
                 $this->repository->rule(),
-                $this->repository->getRepositoryObjects()
+                $this->repository->ilias()->getRepositoryObjects()
             ),
             new ResultBuilder(new ilCronJobResult()),
             $this->repository->notification(),
@@ -143,7 +143,7 @@ class ilSrCronJobFactory
                 ),
                 $this->repository->routine(),
                 $this->repository->rule(),
-                $this->repository->getRepositoryObjects()
+                $this->repository->ilias()->getRepositoryObjects()
             ),
             new ResultBuilder(new ilCronJobResult()),
             $this->repository->notification(),

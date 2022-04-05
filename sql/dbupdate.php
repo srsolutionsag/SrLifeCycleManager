@@ -37,11 +37,6 @@
             'length'  => '8',
             'type'    => 'integer',
         ],
-        'ref_id' => [
-            'notnull' => '1',
-            'length'  => '8',
-            'type'    => 'integer',
-        ],
         'origin_type' => [
             'notnull' => '1',
             'length'  => '8',
@@ -51,11 +46,6 @@
             'notnull' => '1',
             'length'  => '20',
             'type'    => 'text',
-        ],
-        'is_active' => [
-            'notnull' => '1',
-            'length'  => '1',
-            'type'    => 'integer',
         ],
         'has_opt_out' => [
             'notnull' => '1',
@@ -297,4 +287,39 @@
             'configuration' => ['text', '0'],
         ]);
     }
+?>
+<#9>
+<?php
+/** @var $ilDB ilDBInterface */
+$table_name = 'srlcm_assigned_routine';
+if (!$ilDB->tableExists($table_name)) {
+    $columns = [
+        'routine_id' => [
+            'notnull' => '1',
+            'length'  => '8',
+            'type'    => 'integer',
+        ],
+        'is_active' => [
+            'notnull' => '1',
+            'length'  => '8',
+            'type'    => 'integer',
+        ],
+        'is_recursive' => [
+            'notnull' => '1',
+            'length'  => '1',
+            'type'    => 'integer',
+        ],
+        'ref_id' => [
+            'notnull' => '1',
+            'length'  => '8',
+            'type'    => 'integer',
+        ],
+    ];
+
+    $ilDB->createTable($table_name, $columns);
+    $ilDB->addPrimaryKey($table_name, [
+        'routine_id',
+        'ref_id',
+    ]);
+}
 ?>

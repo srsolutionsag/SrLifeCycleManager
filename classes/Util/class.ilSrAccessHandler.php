@@ -103,6 +103,20 @@ class ilSrAccessHandler
     }
 
     /**
+     * Checks if the current use is privileged to manage assignments between
+     * routines and objects.
+     *
+     * @todo: this is currently just an adapter for canManageRoutines(), but
+     *        we might introduce a separate configuration for this.
+     *
+     * @return bool
+     */
+    public function canManageAssignments() : bool
+    {
+        return $this->canManageRoutines();
+    }
+
+    /**
      * Checks if the current user is administrator of the given object (ref-id).
      *
      * @param int $ref_id

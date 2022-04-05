@@ -18,15 +18,6 @@ interface IRoutineRepository
     public function get(int $routine_id) : ?IRoutine;
 
     /**
-     * Fetches all existing routines from the database that are either
-     * active or inactive, depending on the given argument.
-     *
-     * @param bool $is_active
-     * @return array
-     */
-    public function getAllByActivity(bool $is_active) : array;
-
-    /**
      * Fetches all existing routines from the database that affect the
      * given ref-id.
      *

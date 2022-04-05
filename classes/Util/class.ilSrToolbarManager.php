@@ -20,6 +20,7 @@ use srag\Plugins\SrLifeCycleManager\Routine\IRoutine;
 class ilSrToolbarManager
 {
     // ilSrToolbarManager toolbar actions:
+    public const ACTION_ASSIGNMENT_ADD = 'action_routine_assignment_add';
     public const ACTION_ROUTINE_ADD = 'action_routine_add';
     public const ACTION_NOTIFICATION_ADD = 'action_notification_add';
     public const ACTION_RULE_ADD = 'action_rule_add';
@@ -68,6 +69,31 @@ class ilSrToolbarManager
         $this->translator = $translator;
         $this->toolbar = $toolbar;
         $this->ctrl = $ctrl;
+    }
+
+    /**
+     * Renders the toolbar for routine assignments to the current page.
+     *
+     * The toolbar is only added if the current user can manage assignments.
+     */
+    public function addAssignmentToolbar() : void
+    {
+        if (!$this->access_handler->canManageAssignments()) {
+            return;
+        }
+
+        $button = ilLinkButton::getInstance();
+        $button->setPrimary(true);
+        $button->setCaption($this->translator->txt(self::ACTION_ASSIGNMENT_ADD), false);
+        $button->setUrl($this->ctrl->getLinkTargetByClass(
+            ilSrRoutineAssignmentGUI::class,
+            ilSrRoutineAssignmentGUI::CMD_ASSIGNMENT_EDIT
+        ));
+
+        $this->toolbar->addButtonInstance($button);
+        $this->global_template->setContent(
+            $this->toolbar->getHTML()
+        );
     }
 
     /**
