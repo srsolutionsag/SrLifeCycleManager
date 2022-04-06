@@ -283,30 +283,6 @@ abstract class ilSrAbstractGUI
     }
 
     /**
-     * Fetches an assignment from the database for the requested routine
-     * and object (ref-id) if it exists.
-     * Otherwise, an empty instance will be returned.
-     *
-     * @return IRoutineAssignment
-     */
-    protected function getRequestedAssignment() : ?IRoutineAssignment
-    {
-        $routine_id = $this->routine->getRoutineId();
-        $ref_id = $this->object_ref_id;
-
-        if (null !== $routine_id && null !== $ref_id) {
-            return $this->repository->assignment()->get($routine_id, $ref_id);
-        }
-
-        return $this->repository
-            ->assignment()
-            ->empty()
-            ->setRoutineId($routine_id)
-            ->setRefId($ref_id)
-        ;
-    }
-
-    /**
      * Returns the requested object ref-id from the request, if the request
      * was made within the repository context.
      *

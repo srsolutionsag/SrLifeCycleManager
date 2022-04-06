@@ -2,8 +2,6 @@
 
 namespace srag\Plugins\SrLifeCycleManager\Assignment;
 
-use srag\Plugins\SrLifeCycleManager\Routine\IRoutine;
-
 /**
  * @author Thibeau Fuhrer <thibeau@sr.solutions>
  */
@@ -113,5 +111,25 @@ class RoutineAssignment implements IRoutineAssignment
     {
         $this->is_recursive = $is_recursive;
         return $this;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function getIntention() : int
+    {
+        if (null === $this->routine_id && null !== $this->ref_id) {
+            return self::ROUTINE_ASSIGNMENT;
+        }
+
+        if (null !== $this->routine_id && null === $this->ref_id) {
+            return self::OBJECT_ASSIGNMENT;
+        }
+
+        if (null !== $this->routine_id && null !== $this->ref_id) {
+            return self::EDIT_ASSIGNMENT;
+        }
+
+        return self::UNKNOWN_ASSIGNMENT;
     }
 }

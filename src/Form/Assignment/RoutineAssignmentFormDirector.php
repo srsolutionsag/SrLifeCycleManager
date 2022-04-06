@@ -2,7 +2,7 @@
 
 namespace srag\Plugins\SrLifeCycleManager\Form\Assignment;
 
-use srag\Plugins\SrLifeCycleManager\Assignment\IRoutineAssignment;
+use srag\Plugins\SrLifeCycleManager\Assignment\IRoutineAssignmentIntention;
 use ILIAS\UI\Component\Input\Container\Form\Form as UIForm;
 use LogicException;
 
@@ -25,31 +25,26 @@ class RoutineAssignmentFormDirector
     }
 
     /**
-     * Returns the corresponding form depending on the state of the given assignment.
+     * Returns the corresponding assignment form for the given intention.
      *
-     * @param IRoutineAssignment $assignment
+     * @param IRoutineAssignmentIntention $intention
      * @return UIForm
      */
-    public function getFormByAssignment(IRoutineAssignment $assignment) : UIForm
+    public function getFormByIntention(IRoutineAssignmentIntention $intention) : UIForm
     {
-        $routine_id = $assignment->getRoutineId();
-        $ref_id = $assignment->getRefId();
+        switch ($intention->getIntention()) {
+            case IRoutineAssignmentIntention::EDIT_ASSIGNMENT:
+                return $this->getStandardAssignmentForm();
 
-        if ((null !== $routine_id && null !== $ref_id) ||
-            (null === $routine_id && null === $ref_id)
-        ) {
-            return $this->getStandardAssignmentForm();
+            case IRoutineAssignmentIntention::ROUTINE_ASSIGNMENT:
+                return $this->getRoutineAssignmentForm();
+
+            case IRoutineAssignmentIntention::OBJECT_ASSIGNMENT:
+                return $this->getObjectAssignmentForm();
+
+            default:
+                throw new LogicException("The given assignment is in an unknown state.");
         }
-
-        if (null !== $routine_id) {
-            return $this->getObjectAssignmentForm();
-        }
-
-        if (null !== $ref_id) {
-            return $this->getRoutineAssignmentForm();
-        }
-
-        throw new LogicException("The given assignment is in an unknown state.");
     }
 
     /**

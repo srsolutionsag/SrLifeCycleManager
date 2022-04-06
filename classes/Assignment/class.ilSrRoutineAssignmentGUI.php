@@ -4,12 +4,16 @@ use srag\Plugins\SrLifeCycleManager\Form\Assignment\RoutineAssignmentFormBuilder
 use srag\Plugins\SrLifeCycleManager\Form\Assignment\RoutineAssignmentFormProcessor;
 use srag\Plugins\SrLifeCycleManager\Form\Assignment\RoutineAssignmentFormDirector;
 use srag\Plugins\SrLifeCycleManager\Form\AbstractFormBuilder;
+use srag\Plugins\SrLifeCycleManager\Assignment\IRoutineAssignmentIntention;
 use srag\Plugins\SrLifeCycleManager\Assignment\IRoutineAssignment;
-use ILIAS\DI\HTTPServices;
 use ILIAS\Filesystem\Stream\Streams;
+use ILIAS\DI\HTTPServices;
 
 /**
- * @author       Thibeau Fuhrer <thibeau@sr.solutions>
+ * This class is responsible for assigning routines to objects and vise-versa.
+ *
+ * @author Thibeau Fuhrer <thibeau@sr.solutions>
+ *
  * @noinspection AutoloadingIssuesInspection
  */
 class ilSrRoutineAssignmentGUI extends ilSrAbstractGUI
@@ -17,12 +21,11 @@ class ilSrRoutineAssignmentGUI extends ilSrAbstractGUI
     // ilSrRoutineAssignmentGUI command/method names:
     public const CMD_ASSIGNMENT_EDIT = 'edit';
     public const CMD_ASSIGNMENT_SAVE = 'save';
-    public const CMD_OBJECT_SEARCH = 'searchObjects';
     public const CMD_ASSIGNMENT_DELETE = 'delete';
+    public const CMD_OBJECT_SEARCH = 'searchObjects';
 
     // ilSrRoutineAssignmentGUI language variables:
     protected const MSG_ASSIGNMENT_SUCCESS = 'msg_assignment_success';
-    protected const MSG_ASSIGNMENT_ERROR = 'msg_assignment_error';
     protected const PAGE_TITLE = 'page_title_routine_assignment';
 
     /**
@@ -52,7 +55,12 @@ class ilSrRoutineAssignmentGUI extends ilSrAbstractGUI
         parent::__construct();
 
         $this->http = $DIC->http();
-        $this->assignment = $this->getRequestedAssignment();
+
+        $this->assignment =
+            ($this->getRequestedAssignment() ?? $this->repository->assignment()->empty())
+                ->setRoutineId($this->routine->getRoutineId())
+                ->setRefId($this->object_ref_id)
+        ;
 
         $this->form_director = new RoutineAssignmentFormDirector(
             new RoutineAssignmentFormBuilder(
@@ -112,7 +120,7 @@ class ilSrRoutineAssignmentGUI extends ilSrAbstractGUI
             $this->ctrl,
             $this,
             self::CMD_INDEX,
-            $this->repository->assignment()->getByRoutine($this->routine, true)
+            $this->getTableData()
         );
 
         $this->toolbar_manager->addAssignmentToolbar();
@@ -131,14 +139,13 @@ class ilSrRoutineAssignmentGUI extends ilSrAbstractGUI
      *      (c) the user wants to adjust an existing assignment, in this
      *          case the routine_id AND ref_id will be provided.
      *
-     * This is why the method itself doesn't need to set the appropriate
-     * assignment-ids, this already happens when retrieving it.
+     * The method itself does not need to execute any checks, since the
+     * form director will generate the form according to the assignment's
+     * properties (e.g. the intention).
      */
     protected function edit() : void
     {
-        $this->render(
-            $this->form_director->getFormByAssignment($this->assignment)
-        );
+        $this->render($this->form_director->getFormByIntention($this->assignment));
     }
 
     /**
@@ -156,7 +163,7 @@ class ilSrRoutineAssignmentGUI extends ilSrAbstractGUI
             $this->repository->assignment(),
             $this->assignment,
             $this->request,
-            $this->form_director->getFormByAssignment($this->assignment)
+            $this->form_director->getFormByIntention($this->assignment)
         );
 
         if ($processor->processForm()) {
@@ -192,7 +199,50 @@ class ilSrRoutineAssignmentGUI extends ilSrAbstractGUI
     }
 
     /**
-     * Returns the ajax-source for @see AbstractFormBuilder::getTagInputAutoCompleteBinder().
+     * Fetches an assignment from the database for the requested routine
+     * and object (ref-id) if it exists.
+     *
+     * @return IRoutineAssignment|null
+     */
+    protected function getRequestedAssignment() : ?IRoutineAssignment
+    {
+        $routine_id = $this->routine->getRoutineId();
+        $ref_id = $this->object_ref_id;
+
+        if (null !== $routine_id && null !== $ref_id) {
+            return $this->repository->assignment()->get($routine_id, $ref_id);
+        }
+
+        return null;
+    }
+
+    /**
+     * Returns the assignment table data according to the current assignment's intention.
+     *
+     * @return array
+     */
+    protected function getTableData() : array
+    {
+        switch ($this->assignment->getIntention()) {
+            case IRoutineAssignmentIntention::OBJECT_ASSIGNMENT:
+                return $this->repository->assignment()->getByRoutineId(
+                    $this->assignment->getRoutineId(),
+                    true
+                );
+
+            case IRoutineAssignmentIntention::ROUTINE_ASSIGNMENT:
+                return $this->repository->assignment()->getByRefId(
+                        $this->assignment->getRefId(),
+                        true
+                );
+
+            default:
+                return [];
+        }
+    }
+
+    /**
+     * Returns the ajax-action for @see AbstractFormBuilder::getTagInputAutoCompleteBinder().
      *
      * @return string
      */

@@ -5,7 +5,7 @@ namespace srag\Plugins\SrLifeCycleManager\Assignment;
 /**
  * @author Thibeau Fuhrer <thibeau@sr.solutions>
  */
-interface IRoutineAssignment
+interface IRoutineAssignment extends IRoutineAssignmentIntention
 {
     // IAssignedRoutine attributes:
     public const F_ROUTINE_ID = 'routine_id';

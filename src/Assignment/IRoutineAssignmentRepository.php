@@ -25,11 +25,11 @@ interface IRoutineAssignmentRepository
      * To retrieve routines as array-data, true can be passed as an argument
      * (usually required by ilTableGUI).
      *
-     * @param IRoutine $routine
+     * @param int  $routine_id
      * @param bool $array_data
      * @return IRoutineAssignment[]
      */
-    public function getByRoutine(IRoutine $routine, bool $array_data = false) : array;
+    public function getByRoutineId(int $routine_id, bool $array_data = false) : array;
 
     /**
      * Fetches all existing assignments of a given object (ref-id).

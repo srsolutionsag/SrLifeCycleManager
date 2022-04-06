@@ -4,6 +4,7 @@ use srag\Plugins\SrLifeCycleManager\Assignment\IRoutineAssignmentRepository;
 use srag\Plugins\SrLifeCycleManager\Assignment\IRoutineAssignment;
 use srag\Plugins\SrLifeCycleManager\Assignment\RoutineAssignment;
 use srag\Plugins\SrLifeCycleManager\Routine\IRoutine;
+use srag\Plugins\SrLifeCycleManager\Assignment\IRoutineAssignmentIntention;
 
 /**
  * @author       Thibeau Fuhrer <thibeau@sr.solutions>
@@ -57,7 +58,7 @@ class ilSrRoutineAssignmentRepository implements IRoutineAssignmentRepository
     /**
      * @inheritDoc
      */
-    public function getByRoutine(IRoutine $routine, bool $array_data = false) : array
+    public function getByRoutineId(int $routine_id, bool $array_data = false) : array
     {
         $query = "
             SELECT routine_id, ref_id, is_recursive, is_active FROM srlcm_assigned_routine
@@ -70,7 +71,7 @@ class ilSrRoutineAssignmentRepository implements IRoutineAssignmentRepository
                 $query,
                 ['integer'],
                 [
-                    $routine->getRoutineId(),
+                    $routine_id,
                 ]
             )
         );

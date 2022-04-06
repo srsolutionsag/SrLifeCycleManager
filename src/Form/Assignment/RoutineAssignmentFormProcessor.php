@@ -57,13 +57,77 @@ class RoutineAssignmentFormProcessor extends AbstractFormProcessor
      */
     protected function processData(array $post_data) : void
     {
+        if (is_array($post_data[RoutineAssignmentFormBuilder::INPUT_ROUTINE]) &&
+            null === $this->assignment->getRoutineId()
+        ) {
+            $this->processMultipleRoutines($post_data);
+            return;
+        }
+
+        if (is_array($post_data[RoutineAssignmentFormBuilder::INPUT_REF_ID]) &&
+            null === $this->assignment->getRefId()
+        ) {
+            $this->processMultipleRefIds($post_data);
+            return;
+        }
+
+        $this->processStandardAssignment($post_data);
+    }
+
+    /**
+     * Creates or updates multiple routine assignments for the submitted ref-id.
+     *
+     * @param array $post_data
+     * @return void
+     */
+    protected function processMultipleRoutines(array $post_data) : void
+    {
         $this->assignment
-            ->setRoutineId($post_data[RoutineAssignmentFormBuilder::INPUT_ROUTINE])
-            ->setRefId($post_data[RoutineAssignmentFormBuilder::INPUT_REF_ID])
             ->setRecursive($post_data[RoutineAssignmentFormBuilder::INPUT_IS_RECURSIVE])
             ->setActive($post_data[RoutineAssignmentFormBuilder::INPUT_IS_ACTIVE])
         ;
 
-        $this->repository->store($this->assignment);
+        // all data except $routine_id stays persistent, therefore we store the
+        // same assignment for different routines.
+        foreach ($post_data[RoutineAssignmentFormBuilder::INPUT_ROUTINE] as $routine_id) {
+            $this->repository->store($this->assignment->setRoutineId((int) $routine_id));
+        }
+    }
+
+    /**
+     * Creates or updates multiple routine assignments for the submitted routine_id.
+     *
+     * @param array $post_data
+     * @return void
+     */
+    protected function processMultipleRefIds(array $post_data) : void
+    {
+        $this->assignment
+            ->setRecursive($post_data[RoutineAssignmentFormBuilder::INPUT_IS_RECURSIVE])
+            ->setActive($post_data[RoutineAssignmentFormBuilder::INPUT_IS_ACTIVE])
+        ;
+
+        // all data except $ref_id stays persistent, therefore we store the
+        // same assignment for different objects.
+        foreach ($post_data[RoutineAssignmentFormBuilder::INPUT_REF_ID] as $ref_id) {
+            $this->repository->store($this->assignment->setRefId((int) $ref_id));
+        }
+    }
+
+    /**
+     * Creates or updates an existing assignment for the submitted data.
+     *
+     * @param array $post_data
+     * @return void
+     */
+    protected function processStandardAssignment(array $post_data) : void
+    {
+        $this->repository->store(
+            $this->assignment
+                ->setRoutineId((int) $post_data[RoutineAssignmentFormBuilder::INPUT_ROUTINE])
+                ->setRefId((int) $post_data[RoutineAssignmentFormBuilder::INPUT_REF_ID])
+                ->setRecursive($post_data[RoutineAssignmentFormBuilder::INPUT_IS_RECURSIVE])
+                ->setActive($post_data[RoutineAssignmentFormBuilder::INPUT_IS_ACTIVE])
+        );
     }
 }

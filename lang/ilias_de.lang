@@ -51,6 +51,10 @@ col_routine_type#:#Routinen Typ
 col_routine_usr_id#:#Besitzer
 col_routine_has_opt_out#:#Opt-out
 col_routine_elongation#:#Verlängerung (Tage)
+col_routine_assignment_ref_id#:#Ref-ID
+col_routine_assignment_obj_title#:#Objekttitel
+col_routine_assignment_recursive#:#Rekursiv
+col_routine_assignment_active#:#Aktiv
 col_rule_rhs_type#:#RHS Typ
 col_rule_rhs_value#:#RHS Wert
 col_rule_operator#:#Operator
@@ -80,6 +84,8 @@ routine_origin_type_ext#:#Extern
 
 status_active#:#Aktiv
 status_inactive#:#Inaktiv
+status_recursive#:#Ja
+status_not_recursive#:#Nein
 status_possible#:#Möglich
 status_impossible#:#Nicht möglich
 
@@ -92,6 +98,10 @@ action_routine_opt_out#:#Opt-out
 action_routine_view#:#Ansehen
 action_routine_rules#:#Regeln
 action_routine_notifications#:#Benachrichtigungen
+action_routine_assignments#:#Zuweisungen
+action_routine_assignment_add#:#Zuweisung hinzufügen
+action_routine_assignment_edit#:#Bearbeiten
+action_routine_assignment_delete#:#Löschen
 action_rule_add#:#Regel hinzufügen
 action_rule_delete#:#Enfernen
 action_notification_add#:#Benachrichtigung hinzufügen
