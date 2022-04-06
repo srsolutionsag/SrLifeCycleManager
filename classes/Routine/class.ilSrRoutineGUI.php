@@ -6,6 +6,7 @@ use srag\Plugins\SrLifeCycleManager\Form\IFormBuilder;
 use srag\Plugins\SrLifeCycleManager\Form\Routine\RoutineFormBuilder;
 use srag\Plugins\SrLifeCycleManager\Form\Routine\RoutineFormProcessor;
 use srag\Plugins\SrLifeCycleManager\Routine\IRoutine;
+use srag\Plugins\SrLifeCycleManager\Form\Assignment\RoutineAssignmentFormBuilder;
 
 /**
  * This GUI class is responsible for all actions regarding routines.
@@ -29,7 +30,7 @@ class ilSrRoutineGUI extends ilSrAbstractGUI
     /**
      * @var IFormBuilder
      */
-    protected $form_builder;
+    protected $routine_form_builder;
 
     /**
      * Initializes the routine form-builder and fetches the required request
@@ -39,7 +40,7 @@ class ilSrRoutineGUI extends ilSrAbstractGUI
     {
         parent::__construct();
 
-        $this->form_builder = new RoutineFormBuilder(
+        $this->routine_form_builder = new RoutineFormBuilder(
             $this->translator,
             $this->ui_factory->input()->container()->form(),
             $this->ui_factory->input()->field(),
@@ -84,10 +85,7 @@ class ilSrRoutineGUI extends ilSrAbstractGUI
     }
 
     /**
-     * Displays all routines that affect the requested routine-ref-id.
-     *
-     * Affected means, that the id itself belongs to a routine or one
-     * of its parents does.
+     * Displays a table with all existing routines on the current page.
      */
     protected function index() : void
     {
@@ -99,10 +97,7 @@ class ilSrRoutineGUI extends ilSrAbstractGUI
             $this->ctrl,
             $this,
             self::CMD_INDEX,
-            $this->repository->routine()->getAllByRefId(
-                $this->object_ref_id ?? 1,
-                true
-            )
+            $this->repository->routine()->getAll(true)
         );
 
         $this->toolbar_manager->addRoutineToolbar();
@@ -118,7 +113,7 @@ class ilSrRoutineGUI extends ilSrAbstractGUI
      */
     protected function edit() : void
     {
-        $this->render($this->form_builder->getForm());
+        $this->render($this->routine_form_builder->getForm());
     }
 
     /**
@@ -135,7 +130,7 @@ class ilSrRoutineGUI extends ilSrAbstractGUI
         $processor = new RoutineFormProcessor(
             $this->repository->routine(),
             $this->request,
-            $this->form_builder->getForm(),
+            $this->routine_form_builder->getForm(),
             $this->routine
         );
 

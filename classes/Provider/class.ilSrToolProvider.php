@@ -17,7 +17,7 @@ use ILIAS\UI\Component\Component;
  * @author Thibeau Fuhrer <thibeau@sr.solutions>
  *
  * The provider is currently only interested in the repository context, as we want
- * to allow our tools to appear just within course objects, if configured.
+ * to allow our tools to appear just within repository objects, if configured.
  *
  * @noinspection AutoloadingIssuesInspection
  */
@@ -87,22 +87,8 @@ class ilSrToolProvider extends AbstractDynamicToolPluginProvider
     protected function initDependencies() : void
     {
         $this->request_object = $this->getRequestedObject();
-
-        // keep the ref-id or target of the current request alive, it
-        // will be treated as routine-ref-id to retrieve routines or
-        // as target for elongations and opt-outs.
         if (null !== $this->request_object) {
-            $this->dic->ctrl()->setParameterByClass(
-                ilSrRoutineGUI::class,
-                ilSrRoutineGUI::PARAM_OBJECT_REF_ID,
-                $this->request_object
-            );
-
-            $this->dic->ctrl()->setParameterByClass(
-                ilSrWhitelistGUI::class,
-                ilSrWhitelistGUI::PARAM_OBJECT_REF_ID,
-                $this->request_object
-            );
+            $this->keepObjectAlive($this->request_object);
         }
 
         $this->comparisons = new ComparisonFactory(
@@ -204,8 +190,8 @@ class ilSrToolProvider extends AbstractDynamicToolPluginProvider
             $this->dic->ui()->factory()->button()->standard(
                 $this->plugin->txt(ilSrToolbarManager::ACTION_ROUTINE_ADD),
                 ilSrLifeCycleManagerDispatcher::getLinkTarget(
-                    ilSrRoutineGUI::class,
-                    ilSrRoutineGUI::CMD_ROUTINE_EDIT
+                    ilSrRoutineAssignmentGUI::class,
+                    ilSrRoutineAssignmentGUI::CMD_ASSIGNMENT_EDIT
                 )
             ),
             // action-button to see routines at current position.
@@ -247,6 +233,34 @@ class ilSrToolProvider extends AbstractDynamicToolPluginProvider
         }
 
         return null;
+    }
+
+    /**
+     * Keeps the given object (ref-id) alive for potential redirects to
+     * GUI classes of this plugin.
+     *
+     * @param int $ref_id
+     * @return void
+     */
+    protected function keepObjectAlive(int $ref_id) : void
+    {
+        $this->dic->ctrl()->setParameterByClass(
+            ilSrRoutineAssignmentGUI::class,
+            ilSrRoutineAssignmentGUI::PARAM_OBJECT_REF_ID,
+            $ref_id
+        );
+
+        $this->dic->ctrl()->setParameterByClass(
+            ilSrRoutineGUI::class,
+            ilSrRoutineGUI::PARAM_OBJECT_REF_ID,
+            $ref_id
+        );
+
+        $this->dic->ctrl()->setParameterByClass(
+            ilSrWhitelistGUI::class,
+            ilSrWhitelistGUI::PARAM_OBJECT_REF_ID,
+            $ref_id
+        );
     }
 
     /**

@@ -18,6 +18,17 @@ interface IRoutineRepository
     public function get(int $routine_id) : ?IRoutine;
 
     /**
+     * Fetches all existing routines from the database.
+     *
+     * To retrieve routines as array-data, true can be passed as an argument
+     * (usually required by ilTableGUI).
+     *
+     * @param bool $array_data
+     * @return IRoutine[]
+     */
+    public function getAll(bool $array_data = false) : array;
+
+    /**
      * Fetches all existing routines from the database that affect the
      * given ref-id.
      *

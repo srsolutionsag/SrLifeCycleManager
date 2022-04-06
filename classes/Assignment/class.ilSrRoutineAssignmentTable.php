@@ -8,11 +8,13 @@ use srag\Plugins\SrLifeCycleManager\Assignment\IRoutineAssignment;
  */
 class ilSrRoutineAssignmentTable extends ilSrAbstractTable
 {
+    // ilSrRoutineAssignmentTable table columns:
     protected const COL_ASSIGNED_REF_ID = 'col_routine_assignment_ref_id';
     protected const COL_OBJECT_TITLE = 'col_routine_assignment_obj_title';
     protected const COL_IS_RECURSIVE = 'col_routine_assignment_recursive';
     protected const COL_IS_ACTIVE = 'col_routine_assignment_active';
 
+    // ilSrRoutineAssignmentTable language variables:
     protected const STATUS_ACTIVE = 'status_active';
     protected const STATUS_INACTIVE = 'status_inactive';
 

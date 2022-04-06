@@ -10,6 +10,7 @@ use ILIAS\Refinery\Factory as Refinery;
 use ILIAS\UI\Component\Component;
 use ILIAS\UI\Renderer;
 use ILIAS\UI\Factory;
+use srag\Plugins\SrLifeCycleManager\Assignment\IRoutineAssignment;
 
 /**
  * This is an abstraction for ILIAS command-class implementations.
@@ -179,14 +180,13 @@ abstract class ilSrAbstractGUI
         );
 
         $this->object_ref_id = $this->getRequestedObject();
-        $this->routine =
-            $this->getRequestedRoutine() ??
-            $this->repository->routine()->empty($this->user->getId(), $this->origin)
-        ;
+        $this->routine = $this->getRequestedRoutine();
 
         // save current request object for all implementing classes.
         // this cannot be done via static::class, because when building
         // link targets to another gui the parameter must be considered.
+        $this->ctrl->saveParameterByClass(ilSrRoutineGUI::class, self::PARAM_OBJECT_REF_ID);
+        $this->ctrl->saveParameterByClass(ilSrRoutineAssignmentGUI::class, self::PARAM_OBJECT_REF_ID);
         $this->ctrl->saveParameterByClass(ilSrRoutineGUI::class, self::PARAM_OBJECT_REF_ID);
         $this->ctrl->saveParameterByClass(ilSrRuleGUI::class, self::PARAM_OBJECT_REF_ID);
         $this->ctrl->saveParameterByClass(ilSrNotificationGUI::class, self::PARAM_OBJECT_REF_ID);
@@ -268,17 +268,42 @@ abstract class ilSrAbstractGUI
 
     /**
      * Fetches the requested routine from the database, if a routine id was provided.
+     * Otherwise, an empty instance will be returned.
      *
-     * @return IRoutine|null
+     * @return IRoutine
      */
-    protected function getRequestedRoutine() : ?IRoutine
+    protected function getRequestedRoutine() : IRoutine
     {
         $routine_id = $this->getRequestParameter(self::PARAM_ROUTINE_ID);
         if (null !== $routine_id) {
             return $this->repository->routine()->get((int) $routine_id);
         }
 
-        return null;
+        return $this->repository->routine()->empty($this->user->getId(), $this->origin);
+    }
+
+    /**
+     * Fetches an assignment from the database for the requested routine
+     * and object (ref-id) if it exists.
+     * Otherwise, an empty instance will be returned.
+     *
+     * @return IRoutineAssignment
+     */
+    protected function getRequestedAssignment() : ?IRoutineAssignment
+    {
+        $routine_id = $this->routine->getRoutineId();
+        $ref_id = $this->object_ref_id;
+
+        if (null !== $routine_id && null !== $ref_id) {
+            return $this->repository->assignment()->get($routine_id, $ref_id);
+        }
+
+        return $this->repository
+            ->assignment()
+            ->empty()
+            ->setRoutineId($routine_id)
+            ->setRefId($ref_id)
+        ;
     }
 
     /**
@@ -289,7 +314,9 @@ abstract class ilSrAbstractGUI
      */
     protected function getRequestedObject() : ?int
     {
-        // only consider request objects from the repository.
+        // only consider request objects from the repository. for example
+        // the configuration context also provides a ref-id, which doesn't
+        // belong to a repository object.
         if (IRoutine::ORIGIN_TYPE_REPOSITORY !== $this->origin) {
             return null;
         }

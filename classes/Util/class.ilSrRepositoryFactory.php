@@ -72,12 +72,12 @@ class ilSrRepositoryFactory implements IRepository
     public function __construct(ilDBInterface $database, RBACServices $rbac, ilTree $tree)
     {
         $this->config_repository       = new ilSrConfigRepository($database, $rbac);
-        $this->ilias_repository        = new ilSrLifeCycleManagerRepository($tree);
-        $this->notification_repository = new ilSrNotificationRepository($database);
+        $this->ilias_repository        = new ilSrLifeCycleManagerRepository($database, $tree);
         $this->routine_repository      = new ilSrRoutineRepository($database, $tree);
-        $this->assignment_repository   = new ilSrRoutineAssignmentRepository($this->routine_repository, $database);
-        $this->whitelist_repository    = new ilSrWhitelistRepository($database);
         $this->rule_repository         = new ilSrRuleRepository($database, $tree);
+        $this->assignment_repository   = new ilSrRoutineAssignmentRepository($database);
+        $this->notification_repository = new ilSrNotificationRepository($database);
+        $this->whitelist_repository    = new ilSrWhitelistRepository($database);
     }
 
     /**

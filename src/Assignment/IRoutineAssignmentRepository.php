@@ -13,11 +13,11 @@ interface IRoutineAssignmentRepository
      * Fetches an existing assignment from the database for the given
      * routine and object (ref-id).
      *
-     * @param IRoutine $routine
-     * @param int      $ref_id
+     * @param int $routine_id
+     * @param int $ref_id
      * @return IRoutineAssignment|null
      */
-    public function get(IRoutine $routine, int $ref_id) : ?IRoutineAssignment;
+    public function get(int $routine_id, int $ref_id) : ?IRoutineAssignment;
 
     /**
      * Fetches all existing assignments of a given routine.
@@ -52,8 +52,9 @@ interface IRoutineAssignmentRepository
     public function store(IRoutineAssignment $assignment) : IRoutineAssignment;
 
     /**
-     * @param IRoutine $routine
+     * Returns an empty instance of the an assignment.
+     *
      * @return IRoutineAssignment
      */
-    public function empty(IRoutine $routine) : IRoutineAssignment;
+    public function empty() : IRoutineAssignment;
 }

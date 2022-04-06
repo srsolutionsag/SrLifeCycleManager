@@ -75,15 +75,44 @@ class ilSrRoutineRepository implements IRoutineRepository
     /**
      * @inheritDoc
      */
-    public function getAllByRefId(int $ref_id, bool $array_data = false) : array
+    public function getAll(bool $array_data = false) : array
     {
-        // @TODO: this won't work anymore!
         $query = "
             SELECT 
                 routine_id, usr_id, routine_type, origin_type, 
                 has_opt_out, elongation, title, creation_date
-                FROM srlcm_routine 
-                WHERE ref_id IN ({$this->getParentIdsForSqlComparison($ref_id)})
+                FROM srlcm_routine
+            ;
+        ";
+
+        $results = $this->database->fetchAll(
+            $this->database->query($query)
+        );
+
+        if (empty($results) || $array_data) {
+            return $results;
+        }
+
+        $routines = [];
+        foreach ($results as $query_result) {
+            $routines[] = $this->transformToDTO($query_result);
+        }
+
+        return $routines;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function getAllByRefId(int $ref_id, bool $array_data = false) : array
+    {
+        $query = "
+            SELECT 
+                routine.routine_id, routine.usr_id, routine.routine_type, routine.origin_type, 
+                routine.has_opt_out, routine.elongation, routine.title, routine.creation_date
+                FROM srlcm_assigned_routine AS assignment    
+                JOIN srlcm_routine AS routine ON `routine`.routine_id = assignment.routine_id
+                WHERE assignment.ref_id IN ({$this->getParentIdsForSqlComparison($ref_id)})
             ;
         ";
 

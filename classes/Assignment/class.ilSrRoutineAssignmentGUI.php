@@ -1,9 +1,12 @@
 <?php declare(strict_types=1);
 
 use srag\Plugins\SrLifeCycleManager\Form\Assignment\RoutineAssignmentFormBuilder;
-use srag\Plugins\SrLifeCycleManager\Form\IFormBuilder;
-use srag\Plugins\SrLifeCycleManager\Assignment\IRoutineAssignment;
 use srag\Plugins\SrLifeCycleManager\Form\Assignment\RoutineAssignmentFormProcessor;
+use srag\Plugins\SrLifeCycleManager\Form\Assignment\RoutineAssignmentFormDirector;
+use srag\Plugins\SrLifeCycleManager\Form\AbstractFormBuilder;
+use srag\Plugins\SrLifeCycleManager\Assignment\IRoutineAssignment;
+use ILIAS\DI\HTTPServices;
+use ILIAS\Filesystem\Stream\Streams;
 
 /**
  * @author       Thibeau Fuhrer <thibeau@sr.solutions>
@@ -14,6 +17,7 @@ class ilSrRoutineAssignmentGUI extends ilSrAbstractGUI
     // ilSrRoutineAssignmentGUI command/method names:
     public const CMD_ASSIGNMENT_EDIT = 'edit';
     public const CMD_ASSIGNMENT_SAVE = 'save';
+    public const CMD_OBJECT_SEARCH = 'searchObjects';
     public const CMD_ASSIGNMENT_DELETE = 'delete';
 
     // ilSrRoutineAssignmentGUI language variables:
@@ -27,9 +31,14 @@ class ilSrRoutineAssignmentGUI extends ilSrAbstractGUI
     protected $assignment;
 
     /**
-     * @var IFormBuilder
+     * @var RoutineAssignmentFormDirector
      */
-    protected $form_builder;
+    protected $form_director;
+
+    /**
+     * @var HTTPServices
+     */
+    protected $http;
 
     /**
      * Initializes the assignment form-builder and fetches an active
@@ -39,23 +48,23 @@ class ilSrRoutineAssignmentGUI extends ilSrAbstractGUI
      */
     public function __construct()
     {
+        global $DIC;
         parent::__construct();
 
-        $this->panicOnMissingRoutine();
+        $this->http = $DIC->http();
+        $this->assignment = $this->getRequestedAssignment();
 
-        $this->assignment =
-            $this->getRequestedAssignment() ??
-            $this->repository->assignment()->empty($this->routine)
-        ;
-
-        $this->form_builder = new RoutineAssignmentFormBuilder(
-            $this->translator,
-            $this->ui_factory->input()->container()->form(),
-            $this->ui_factory->input()->field(),
-            $this->refinery,
-            $this->repository->assignment()->empty($this->routine),
-            $this->repository->routine(),
-            $this->getFormAction()
+        $this->form_director = new RoutineAssignmentFormDirector(
+            new RoutineAssignmentFormBuilder(
+                $this->translator,
+                $this->ui_factory->input()->container()->form(),
+                $this->ui_factory->input()->field(),
+                $this->refinery,
+                $this->assignment,
+                $this->repository->routine()->getAll(),
+                $this->getFormAction(),
+                $this->getAjaxAction()
+            )
         );
     }
 
@@ -111,15 +120,25 @@ class ilSrRoutineAssignmentGUI extends ilSrAbstractGUI
     }
 
     /**
-     * Displays a form for assigning objects to the requested routine.
+     * Displays a form to assign object(s) to routine(s).
      *
-     * If an assignment exists already, the form-builder already was initialized
-     * with the according data, therefore this method can be used for
-     * both create AND update commands.
+     * This method can be called in three different scenarios:
+     *
+     *      (a) the user want's to assign routines to an object, in this
+     *          case the ref_id will be provided.
+     *      (b) the user want's to assign objects to a routine, in this
+     *          case the routine_id will be provided.
+     *      (c) the user wants to adjust an existing assignment, in this
+     *          case the routine_id AND ref_id will be provided.
+     *
+     * This is why the method itself doesn't need to set the appropriate
+     * assignment-ids, this already happens when retrieving it.
      */
     protected function edit() : void
     {
-        $this->render($this->form_builder->getForm());
+        $this->render(
+            $this->form_director->getFormByAssignment($this->assignment)
+        );
     }
 
     /**
@@ -137,7 +156,7 @@ class ilSrRoutineAssignmentGUI extends ilSrAbstractGUI
             $this->repository->assignment(),
             $this->assignment,
             $this->request,
-            $this->form_builder->getForm()
+            $this->form_director->getFormByAssignment($this->assignment)
         );
 
         if ($processor->processForm()) {
@@ -149,21 +168,42 @@ class ilSrRoutineAssignmentGUI extends ilSrAbstractGUI
     }
 
     /**
-     * Fetches an assignment from the database for the requested routine
-     * and object (ref-id) if it exists.
+     * This method searches objects by the requested term and returns
+     * them asynchronously (json-response).
      *
-     * @return IRoutineAssignment|null
+     * @see AbstractFormBuilder::getTagInputAutoCompleteBinder()
      */
-    protected function getRequestedAssignment() : ?IRoutineAssignment
+    protected function searchObjects() : void
     {
-        $routine_id = $this->routine->getRoutineId();
-        $ref_id = $this->object_ref_id;
+        $body = $this->request->getQueryParams();
+        $term = $body['term'] ?? '';
 
-        if (null !== $routine_id && null !== $ref_id) {
-            return $this->repository->assignment()->get($this->routine, $ref_id);
-        }
+        $this->http->saveResponse(
+            $this->http
+                ->response()
+                ->withBody(Streams::ofString(json_encode(
+                    $this->repository->ilias()->getObjectsByTerm($term)
+                )))
+                ->withHeader('Content-Type', 'application/json; charset=utf-8')
+        );
 
-        return null;
+        $this->http->sendResponse();
+        $this->http->close();
+    }
+
+    /**
+     * Returns the ajax-source for @see AbstractFormBuilder::getTagInputAutoCompleteBinder().
+     *
+     * @return string
+     */
+    protected function getAjaxAction() : string
+    {
+        return $this->ctrl->getLinkTargetByClass(
+            self::class,
+            self::CMD_OBJECT_SEARCH,
+            '',
+            true
+        );
     }
 
     /**

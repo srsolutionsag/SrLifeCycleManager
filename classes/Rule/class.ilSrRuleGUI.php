@@ -149,7 +149,7 @@ class ilSrRuleGUI extends ilSrAbstractGUI
     protected function edit() : void
     {
         $this->render(
-            $this->form_director->getRuleFormByRoutine($this->routine)
+            $this->form_director->getFormByRoutine($this->routine)
         );
     }
 
@@ -167,7 +167,7 @@ class ilSrRuleGUI extends ilSrAbstractGUI
         $processor = new RuleFormProcessor(
             $this->repository->rule(),
             $this->request,
-            $this->form_director->getRuleFormByRoutine($this->routine),
+            $this->form_director->getFormByRoutine($this->routine),
             $this->rule
         );
 

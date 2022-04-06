@@ -2,11 +2,11 @@
 
 namespace srag\Plugins\SrLifeCycleManager\Form\Assignment;
 
+use srag\Plugins\SrLifeCycleManager\Assignment\IRoutineAssignmentRepository;
+use srag\Plugins\SrLifeCycleManager\Assignment\IRoutineAssignment;
 use srag\Plugins\SrLifeCycleManager\Form\AbstractFormProcessor;
 use Psr\Http\Message\ServerRequestInterface;
 use ILIAS\UI\Component\Input\Container\Form\Form as UIForm;
-use srag\Plugins\SrLifeCycleManager\Assignment\IRoutineAssignment;
-use srag\Plugins\SrLifeCycleManager\Assignment\IRoutineAssignmentRepository;
 
 /**
  * @author Thibeau Fuhrer <thibeau@sr.solutions>
@@ -45,7 +45,11 @@ class RoutineAssignmentFormProcessor extends AbstractFormProcessor
      */
     protected function isValid(array $post_data) : bool
     {
-        // TODO: Implement isValid() method.
+        // ensure that required fields were submitted.
+        return (
+            !empty($post_data[RoutineAssignmentFormBuilder::INPUT_ROUTINE]) &&
+            !empty($post_data[RoutineAssignmentFormBuilder::INPUT_REF_ID])
+        );
     }
 
     /**
@@ -53,6 +57,13 @@ class RoutineAssignmentFormProcessor extends AbstractFormProcessor
      */
     protected function processData(array $post_data) : void
     {
-        // TODO: Implement processData() method.
+        $this->assignment
+            ->setRoutineId($post_data[RoutineAssignmentFormBuilder::INPUT_ROUTINE])
+            ->setRefId($post_data[RoutineAssignmentFormBuilder::INPUT_REF_ID])
+            ->setRecursive($post_data[RoutineAssignmentFormBuilder::INPUT_IS_RECURSIVE])
+            ->setActive($post_data[RoutineAssignmentFormBuilder::INPUT_IS_ACTIVE])
+        ;
+
+        $this->repository->store($this->assignment);
     }
 }

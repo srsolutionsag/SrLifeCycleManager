@@ -75,4 +75,18 @@ trait ilSrRepositoryHelper
 
         return implode(',', $parents);
     }
+
+    /**
+     * Returns the parent id of the given object (ref-id).
+     *
+     * If the parent id cannot be located, 0 is returned so that the
+     * comparison will not deliver any results.
+     *
+     * @param int $ref_id
+     * @return string
+     */
+    protected function getParentIdForSqlComparison(int $ref_id) : string
+    {
+        return (string) ($this->tree->getParentId($ref_id) ?? 0);
+    }
 }

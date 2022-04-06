@@ -34,6 +34,7 @@ msg_days_before_submission_error#:#A notification for this amount of days before
 page_title_rules#:#SrLifeCycleManager rules
 page_title_config#:#SrLifeCycleManager configuration
 page_title_routine#:#SrLifeCycleManager routines
+page_title_routine_assignment#:#SrLifeCycleManager routine assignments
 page_title_notifications#:#SrLifeCycleManager notifications
 page_title_whitelist#:#SrLifeCycleManager whitelist
 
@@ -45,9 +46,7 @@ cnf_create_routines_in_repository#:#Create new Routines from Repository?
 cnf_show_routines_in_repository#:#Show active Routines in Repository?
 
 col_actions#:#Actions
-col_routine_ref_id#:#Ref-id (scope)
 col_routine_title#:#Name
-col_routine_is_active#:#Active
 col_routine_type#:#Routine type
 col_routine_usr_id#:#Owner
 col_routine_has_opt_out#:#Opt-out
@@ -61,13 +60,15 @@ col_notification_title#:#Notification title
 col_notification_content#:#Notification content
 col_notification_days_before_submission#:#Sent (days before deletion)
 
-input_name_routine_ref_id#:#Ref-id (scope)
 input_name_routine_title#:#Name
 input_name_routine_type#:#Routine type
-input_name_routine_is_active#:#Active?
 input_name_routine_has_opt_out#:#Opt-out possible?
 input_name_routine_elongation#:#Elongation (in days)
 input_name_routine_elongation_possible#:#Elongation possible?
+input_name_routine_assignment_routine#:#Routine
+input_name_routine_assignment_ref_id#:#Object (ref-id)
+input_name_routine_assignment_recursive#:#Recursive?
+input_name_routine_assignment_active#:#Active?
 input_name_notification_title#:#Notification title
 input_name_notification_content#:#Notification content
 input_name_notification_content_info#:#Type [EXTENSION_LINK] where recipients can postpone the deletion by your routines configured amount. <br /> Type [OPT_OUT_LINK] where recipients can opt-out the deletion by your routine. <br /> Type [OBJECT_LINK] where recipients can go to the object that is about to be deleted.
