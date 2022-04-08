@@ -18,6 +18,9 @@ use ILIAS\DI\HTTPServices;
  */
 class ilSrRoutineAssignmentGUI extends ilSrAbstractGUI
 {
+    // ilSrRoutineAssignmentGUI GET-parameter names:
+    public const PARAM_ASSIGNED_REF_ID = 'assigned_ref_id';
+
     // ilSrRoutineAssignmentGUI command/method names:
     public const CMD_ASSIGNMENT_EDIT = 'edit';
     public const CMD_ASSIGNMENT_SAVE = 'save';
@@ -26,7 +29,13 @@ class ilSrRoutineAssignmentGUI extends ilSrAbstractGUI
 
     // ilSrRoutineAssignmentGUI language variables:
     protected const MSG_ASSIGNMENT_SUCCESS = 'msg_assignment_success';
+    protected const MSG_ASSIGNMENT_FAILURE = 'msg_assignment_failure';
     protected const PAGE_TITLE = 'page_title_routine_assignment';
+
+    /**
+     * @var int|null
+     */
+    protected $assigned_ref_id;
 
     /**
      * @var IRoutineAssignment
@@ -55,11 +64,11 @@ class ilSrRoutineAssignmentGUI extends ilSrAbstractGUI
         parent::__construct();
 
         $this->http = $DIC->http();
-
+        $this->assigned_ref_id = $this->getRequestedAssignmentRefId();
         $this->assignment =
             ($this->getRequestedAssignment() ?? $this->repository->assignment()->empty())
                 ->setRoutineId($this->routine->getRoutineId())
-                ->setRefId($this->object_ref_id)
+                ->setRefId($this->assigned_ref_id)
         ;
 
         $this->form_director = new RoutineAssignmentFormDirector(
@@ -87,10 +96,7 @@ class ilSrRoutineAssignmentGUI extends ilSrAbstractGUI
             ->addRoutineTab()
             ->deactivateTabs()
             ->setBackToTarget(
-                $this->ctrl->getLinkTargetByClass(
-                    ilSrRoutineGUI::class,
-                    self::CMD_INDEX
-                )
+                $this->getBackToTarget()
             )
         ;
     }
@@ -100,8 +106,11 @@ class ilSrRoutineAssignmentGUI extends ilSrAbstractGUI
      */
     protected function canUserExecute(ilSrAccessHandler $access_handler, string $command) : bool
     {
-        // user must be privileged for all actions concerning assignments.
-        return $access_handler->canManageAssignments();
+        // all actions are available for routine- or assignment-managers.
+        return (
+            $access_handler->canManageRoutines() ||
+            $access_handler->canManageAssignments()
+        );
     }
 
     /**
@@ -145,6 +154,15 @@ class ilSrRoutineAssignmentGUI extends ilSrAbstractGUI
      */
     protected function edit() : void
     {
+        // overrides the back-to target while in form context to
+        // get back to the overview.
+        $this->tab_manager->setBackToTarget(
+            $this->ctrl->getLinkTargetByClass(
+                self::class,
+                self::CMD_INDEX
+            )
+        );
+
         $this->render($this->form_director->getFormByIntention($this->assignment));
     }
 
@@ -172,6 +190,27 @@ class ilSrRoutineAssignmentGUI extends ilSrAbstractGUI
         }
 
         $this->render($processor->getProcessedForm());
+    }
+
+    /**
+     * Deletes the requested routine and redirects the user back to
+     * @see ilSrRoutineGUI::index().
+     */
+    protected function delete() : void
+    {
+        // only delete assignments that are directly assigned to a routine,
+        // otherwise whitelist entries must be made.
+        if (IRoutineAssignmentIntention::EDIT_ASSIGNMENT !== $this->assignment->getIntention() ||
+            $this->assignment->getRefId() !== $this->assigned_ref_id
+        ) {
+            $this->sendErrorMessage(self::MSG_ASSIGNMENT_FAILURE);
+            $this->cancel();
+        }
+
+        $this->repository->assignment()->delete($this->assignment);
+
+        $this->sendSuccessMessage(self::MSG_ASSIGNMENT_SUCCESS);
+        $this->cancel();
     }
 
     /**
@@ -207,10 +246,23 @@ class ilSrRoutineAssignmentGUI extends ilSrAbstractGUI
     protected function getRequestedAssignment() : ?IRoutineAssignment
     {
         $routine_id = $this->routine->getRoutineId();
-        $ref_id = $this->object_ref_id;
+        if (null !== $routine_id && null !== $this->assigned_ref_id) {
+            return $this->repository->assignment()->get($routine_id, $this->assigned_ref_id);
+        }
 
-        if (null !== $routine_id && null !== $ref_id) {
-            return $this->repository->assignment()->get($routine_id, $ref_id);
+        return null;
+    }
+
+    /**
+     * Returns the requested assignment object ref-id if it was provided.
+     *
+     * @return int|null
+     */
+    protected function getRequestedAssignmentRefId() : ?int
+    {
+        $assigned_ref_id = $this->getRequestParameter(self::PARAM_ASSIGNED_REF_ID);
+        if (null !== $assigned_ref_id) {
+            return (int) $assigned_ref_id;
         }
 
         return null;
@@ -242,6 +294,55 @@ class ilSrRoutineAssignmentGUI extends ilSrAbstractGUI
     }
 
     /**
+     * Overrides the cancel-method, to redirect back to the requested object
+     * if one was provided instead of the overview.
+     *
+     * @inheritDoc
+     */
+    protected function cancel() : void
+    {
+//        if (null !== $this->assigned_ref_id) {
+//            $this->ctrl->redirectToURL(
+//                ilLink::_getLink($this->assigned_ref_id)
+//            );
+//        }
+
+        parent::cancel();
+    }
+
+    /**
+     * Returns the assignment form-action pointing to @see ilSrRoutineAssignmentGUI::save().
+     *
+     * @return string
+     */
+    protected function getFormAction() : string
+    {
+        // note that when the ref-id is null, ilCtrl won't append
+        // the parameter string to tue generated link targets.
+        $this->ctrl->setParameterByClass(
+            self::class,
+            self::PARAM_ASSIGNED_REF_ID,
+            $this->assigned_ref_id
+        );
+
+        $action = $this->ctrl->getFormActionByClass(
+            self::class,
+            self::CMD_ASSIGNMENT_SAVE
+        );
+
+        // remove the ref-id parameter, so that $this->cancel() will
+        // not remember the assignment and mistake the intention.
+        if (IRoutineAssignmentIntention::ROUTINE_ASSIGNMENT !== $this->assignment->getIntention()) {
+            $this->ctrl->clearParameterByClass(
+                self::class,
+                self::PARAM_ASSIGNED_REF_ID
+            );
+        }
+
+        return $action;
+    }
+
+    /**
      * Returns the ajax-action for @see AbstractFormBuilder::getTagInputAutoCompleteBinder().
      *
      * @return string
@@ -257,15 +358,19 @@ class ilSrRoutineAssignmentGUI extends ilSrAbstractGUI
     }
 
     /**
-     * Returns the assignment form-action pointing to @see ilSrRoutineAssignmentGUI::save().
+     * Returns the tabs back-to target according to the current intention.
      *
      * @return string
      */
-    protected function getFormAction() : string
+    protected function getBackToTarget() : string
     {
-        return $this->ctrl->getFormActionByClass(
-            self::class,
-            self::CMD_ASSIGNMENT_SAVE
+        if (IRoutineAssignmentIntention::ROUTINE_ASSIGNMENT === $this->assignment->getIntention()) {
+            return ilLink::_getLink($this->assigned_ref_id);
+        }
+
+        return $this->ctrl->getLinkTargetByClass(
+            ilSrRoutineGUI::class,
+            self::CMD_INDEX
         );
     }
 }

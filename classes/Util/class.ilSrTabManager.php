@@ -73,19 +73,21 @@ class ilSrTabManager
     public function addConfigurationTab(bool $is_active = false) : self
     {
         // add plugin-configuration tab only for administrator
-        if ($this->access_handler->isAdministrator()) {
-            $this->tabs->addTab(
-                self::TAB_CONFIG,
-                $this->translator->txt(self::TAB_CONFIG),
-                $this->ctrl->getLinkTargetByClass(
-                    ilSrConfigGUI::class,
-                    ilSrConfigGUI::CMD_INDEX
-                )
-            );
+        if (!$this->access_handler->isAdministrator()) {
+            return $this;
+        }
 
-            if ($is_active) {
-                $this->tabs->activateTab(self::TAB_CONFIG);
-            }
+        $this->tabs->addTab(
+            self::TAB_CONFIG,
+            $this->translator->txt(self::TAB_CONFIG),
+            $this->ctrl->getLinkTargetByClass(
+                ilSrConfigGUI::class,
+                ilSrConfigGUI::CMD_INDEX
+            )
+        );
+
+        if ($is_active) {
+            $this->setActiveTab(self::TAB_CONFIG);
         }
 
         return $this;
@@ -101,6 +103,11 @@ class ilSrTabManager
      */
     public function addRoutineTab(bool $is_active = false) : self
     {
+        // add routine-tab only for routine managers.
+        if (!$this->access_handler->canManageRoutines()) {
+            return $this;
+        }
+
         $this->tabs->addTab(
             self::TAB_ROUTINES,
             $this->translator->txt(self::TAB_ROUTINES),
@@ -111,7 +118,7 @@ class ilSrTabManager
         );
 
         if ($is_active) {
-            $this->tabs->activateTab(self::TAB_ROUTINES);
+            $this->setActiveTab(self::TAB_ROUTINES);
         }
 
         return $this;
@@ -134,17 +141,6 @@ class ilSrTabManager
     }
 
     /**
-     * Deactivates all activated tabs by setting an invalid character as id.
-     *
-     * @return $this
-     */
-    public function deactivateTabs() : self
-    {
-        $this->setActiveTab('§');
-        return $this;
-    }
-
-    /**
      * Shows a given tab-id as activated (can only be one at a time).
      *
      * @param string $tab_id
@@ -153,6 +149,17 @@ class ilSrTabManager
     public function setActiveTab(string $tab_id) : self
     {
         $this->tabs->activateTab($tab_id);
+        return $this;
+    }
+
+    /**
+     * Deactivates all activated tabs by setting an invalid character as id.
+     *
+     * @return $this
+     */
+    public function deactivateTabs() : self
+    {
+        $this->setActiveTab('§');
         return $this;
     }
 }

@@ -107,7 +107,7 @@ class RoutineAssignmentFormBuilder extends AbstractFormBuilder
         )->withAdditionalOnLoadCode(
             $this->getTagInputAutoCompleteBinder($this->ajax_action)
         )->withAdditionalTransformation(
-            $this->getRefIdArrayValidationConstraint()
+            $this->getRefIdArrayValidationConstraint(true)
         )->withRequired(true);
 
         return $this;

@@ -55,22 +55,37 @@ class ConfigFormBuilder extends AbstractFormBuilder
      */
     public function getForm() : UIForm
     {
-        $inputs[IConfig::CNF_PRIVILEGED_ROLES] = $this->fields
-            ->multiSelect($this->translator->txt(IConfig::CNF_PRIVILEGED_ROLES), $this->global_roles)
-            ->withValue((!empty($this->config->getPrivilegedRoles())) ?
-                $this->config->getPrivilegedRoles() : null
+        $inputs[IConfig::CNF_ROLE_MANAGE_ROUTINES] = $this->fields
+            ->multiSelect($this->translator->txt(IConfig::CNF_ROLE_MANAGE_ROUTINES), $this->global_roles)
+            ->withValue((!empty($this->config->getManageRoutineRoles())) ?
+                $this->config->getManageRoutineRoles() : null
             )
         ;
 
-        $inputs[IConfig::CNF_SHOW_ROUTINES_IN_REPOSITORY] = $this->fields
-            ->checkbox($this->translator->txt(IConfig::CNF_SHOW_ROUTINES_IN_REPOSITORY))
-            ->withValue($this->config->showRoutinesInRepository())
+        $inputs[IConfig::CNF_ROLE_MANAGE_ASSIGNMENTS] = $this->fields
+            ->multiSelect($this->translator->txt(IConfig::CNF_ROLE_MANAGE_ASSIGNMENTS), $this->global_roles)
+            ->withValue((!empty($this->config->getManageAssignmentRoles())) ?
+                $this->config->getManageAssignmentRoles() : null
+            )
         ;
 
-        $inputs[IConfig::CNF_CREATE_ROUTINES_IN_REPOSITORY] = $this->fields
-            ->checkbox($this->translator->txt(IConfig::CNF_CREATE_ROUTINES_IN_REPOSITORY))
-            ->withValue($this->config->createRoutinesInRepository())
-        ;
+        $inputs[IConfig::CNF_TOOL_IS_ENABLED] = $this->fields->optionalGroup([
+
+            IConfig::CNF_TOOL_SHOW_ROUTINES => $this->fields
+                ->checkbox($this->translator->txt(IConfig::CNF_TOOL_SHOW_ROUTINES))
+                ->withValue($this->config->shouldToolShowRoutines())
+            ,
+
+            IConfig::CNF_TOOL_SHOW_CONTROLS => $this->fields
+                ->checkbox($this->translator->txt(IConfig::CNF_TOOL_SHOW_CONTROLS))
+                ->withValue($this->config->shouldToolShowControls())
+            ,
+
+        ], $this->translator->txt(IConfig::CNF_TOOL_IS_ENABLED));
+
+        if (!$this->config->isToolEnabled()) {
+            $inputs[IConfig::CNF_TOOL_IS_ENABLED] = $inputs[IConfig::CNF_TOOL_IS_ENABLED]->withValue(null);
+        }
 
         return $this->forms->standard(
             $this->form_action,

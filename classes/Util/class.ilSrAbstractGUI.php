@@ -186,7 +186,6 @@ abstract class ilSrAbstractGUI
         // this cannot be done via static::class, because when building
         // link targets to another gui the parameter must be considered.
         $this->ctrl->saveParameterByClass(ilSrRoutineGUI::class, self::PARAM_OBJECT_REF_ID);
-        $this->ctrl->saveParameterByClass(ilSrRoutineAssignmentGUI::class, self::PARAM_OBJECT_REF_ID);
         $this->ctrl->saveParameterByClass(ilSrRoutineGUI::class, self::PARAM_OBJECT_REF_ID);
         $this->ctrl->saveParameterByClass(ilSrRuleGUI::class, self::PARAM_OBJECT_REF_ID);
         $this->ctrl->saveParameterByClass(ilSrNotificationGUI::class, self::PARAM_OBJECT_REF_ID);
@@ -232,6 +231,7 @@ abstract class ilSrAbstractGUI
 
     /**
      * This method MUST check if the given user can execute the command.
+     * Note that all actions should be accessible for administrators.
      *
      * The command is passed as an argument in case the permissions
      * differ between the derived classes commands.

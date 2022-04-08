@@ -15,6 +15,7 @@ interface IWhitelistEntry
     // IWhitelistEntry attribute names:
     public const F_ROUTINE_ID = 'routine_id';
     public const F_REF_ID = 'ref_id';
+    public const F_USER_ID = 'usr_id';
     public const F_IS_OPT_OUT = 'is_opt_out';
     public const F_ELONGATION = 'elongation';
     public const F_DATE = 'date';
@@ -40,6 +41,17 @@ interface IWhitelistEntry
      * @return IWhitelistEntry
      */
     public function setRefId(int $ref_id) : IWhitelistEntry;
+
+    /**
+     * @return int
+     */
+    public function getUserId() : int;
+
+    /**
+     * @param int $user_id
+     * @return IWhitelistEntry
+     */
+    public function setUserId(int $user_id) : IWhitelistEntry;
 
     /**
      * @return bool

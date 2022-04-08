@@ -95,13 +95,8 @@ class ilSrRuleGUI extends ilSrAbstractGUI
      */
     protected function canUserExecute(ilSrAccessHandler $access_handler, string $command) : bool
     {
-        // rules must be visible for object administrators.
-        if (self::CMD_INDEX === $command) {
-            return $access_handler->canViewRoutines($this->object_ref_id);
-        }
-
-        // for all other commands the user must be privileged.
-        return $access_handler->canManageRoutines();
+        // only routine-managers can execute commands in this gui.
+        return $this->access_handler->canManageRoutines();
     }
 
     /**
@@ -148,6 +143,15 @@ class ilSrRuleGUI extends ilSrAbstractGUI
      */
     protected function edit() : void
     {
+        // overrides the back-to target while in form context to
+        // get back to the overview.
+        $this->tab_manager->setBackToTarget(
+            $this->ctrl->getLinkTargetByClass(
+                self::class,
+                self::CMD_INDEX
+            )
+        );
+
         $this->render(
             $this->form_director->getFormByRoutine($this->routine)
         );

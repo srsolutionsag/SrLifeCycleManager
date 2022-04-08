@@ -77,7 +77,7 @@ abstract class AbstractFormBuilder implements IFormBuilder
     {
         return $this->refinery->custom()->constraint(
             static function(int $ref_id) : bool {
-                return ilObject2::_exists($ref_id, true);
+                return (ilObject2::_exists($ref_id, true));
             },
             $this->translator->txt(self::MSG_INVALID_REF_ID)
         );

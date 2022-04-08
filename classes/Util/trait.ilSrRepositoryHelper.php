@@ -15,6 +15,14 @@ use srag\Plugins\SrLifeCycleManager\Routine\IRoutine;
 trait ilSrRepositoryHelper
 {
     /**
+     * @inheritdoc
+     */
+    public function getParentId(int $ref_id) : int
+    {
+        return (int) $this->tree->getParentId($ref_id);
+    }
+
+    /**
      * @inheritDoc
      */
     public function getRepositoryObjects(int $ref_id = 1) : Generator

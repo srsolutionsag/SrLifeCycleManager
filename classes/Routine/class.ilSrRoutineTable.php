@@ -24,6 +24,7 @@ class ilSrRoutineTable extends ilSrAbstractTable
     public const ACTION_ROUTINE_ASSIGNMENTS = 'action_routine_assignments';
     public const ACTION_ROUTINE_EDIT = 'action_routine_edit';
     public const ACTION_ROUTINE_NOTIFICATIONS = 'action_routine_notifications';
+    public const ACTION_ROUTINE_WHITELIST = 'action_routine_whitelist';
     public const ACTION_ROUTINE_DELETE = 'action_routine_delete';
 
     // ilSrRoutineTable language variables:
@@ -121,6 +122,14 @@ class ilSrRoutineTable extends ilSrAbstractTable
             );
 
             $actions[] = $this->ui_factory->button()->shy(
+                $this->translator->txt(self::ACTION_ROUTINE_WHITELIST),
+                $this->ctrl->getLinkTargetByClass(
+                    ilSrWhitelistGUI::class,
+                    ilSrWhitelistGUI::CMD_INDEX
+                )
+            );
+
+            $actions[] = $this->ui_factory->button()->shy(
                 $this->translator->txt(self::ACTION_ROUTINE_EDIT),
                 $this->ctrl->getLinkTargetByClass(
                     ilSrRoutineGUI::class,
@@ -145,6 +154,12 @@ class ilSrRoutineTable extends ilSrAbstractTable
      */
     protected function setActionParameters(int $routine_id) : void
     {
+        $this->ctrl->setParameterByClass(
+            ilSrWhitelistGUI::class,
+            ilSrWhitelistGUI::PARAM_ROUTINE_ID,
+            $routine_id
+        );
+
         $this->ctrl->setParameterByClass(
             ilSrRoutineAssignmentGUI::class,
             ilSrRoutineAssignmentGUI::PARAM_ROUTINE_ID,

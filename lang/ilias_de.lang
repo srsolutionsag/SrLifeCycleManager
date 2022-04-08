@@ -30,6 +30,7 @@ msg_routine_cant_opt_out#:#Objekte können von dieser Routine nicht ignoriert we
 msg_routine_opted_out#:#Das Objekt wurde erfolgreich von dieser Routine ausgeschlossen.
 msg_routine_opt_out_error#:#Dieses Objekt konnte nicht von der Routine ausgeschlossen werden, ggf. haben Sie das bereits getan.
 msg_days_before_submission_error#:#Eine Benachrichtigung die um diese Anzahl vor der Löschung geschickt wird existiert bereits.
+msg_assignment_success#:#Zusweisung(en) erfolgreich aktualisiert.
 
 page_title_rules#:#SrLifeCycleManager Regeln
 page_title_config#:#SrLifeCycleManager Einstellungen
@@ -41,9 +42,11 @@ page_title_whitelist#:#SrLifeCycleManager Whitelist
 tab_config_index#:#Einstellungen
 tab_routine_index#:#Routinen
 
-cnf_privileged_roles#:#Globale Rollen die Routinen anlegen können
-cnf_create_routines_in_repository#:#Neue Routinen vom Magazin aus erstellen?
-cnf_show_routines_in_repository#:#Aktive Routinen im Magazin anzeigen?
+cnf_role_manage_routines#:#Routinen verwalten
+cnf_role_manage_assignments#:#Zuweisungen verwalten
+cnf_tool_is_enabled#:#Tool anzeigen
+cnf_tool_show_routines#:#Aktive routinen anzeigen
+cnf_tool_show_controls#:#Verwaltung anzeigen
 
 col_actions#:#Aktionen
 col_routine_title#:#Name
@@ -63,6 +66,11 @@ col_rule_lhs_value#:#LHS Wert
 col_notification_title#:#Titel
 col_notification_content#:#Inhalt
 col_notification_days_before_submission#:#Senden (Tage vor Löschung)
+col_whitelist_ref_id#:#Ref-ID
+col_whitelist_user_name#:#Benutzer
+col_whitelist_opt_out#:#Opt-out
+col_whitelist_elongation#:#Verlängerung
+col_whitelist_date#:#Datum
 
 input_name_routine_title#:#Name
 input_name_routine_type#:#Routinen Typ
@@ -88,6 +96,8 @@ status_recursive#:#Ja
 status_not_recursive#:#Nein
 status_possible#:#Möglich
 status_impossible#:#Nicht möglich
+status_is_opt_out#:#Ja
+status_is_not_opt_out#:#Nein
 
 action_routine_add#:#Routine hinzufügen
 action_routine_edit#:#Bearbeiten
@@ -98,6 +108,7 @@ action_routine_opt_out#:#Opt-out
 action_routine_view#:#Ansehen
 action_routine_rules#:#Regeln
 action_routine_notifications#:#Benachrichtigungen
+action_routine_whitelist#:#Whitelist
 action_routine_assignments#:#Zuweisungen
 action_routine_assignment_add#:#Zuweisung hinzufügen
 action_routine_assignment_edit#:#Bearbeiten
@@ -107,6 +118,7 @@ action_rule_delete#:#Enfernen
 action_notification_add#:#Benachrichtigung hinzufügen
 action_notification_edit#:#Bearbeiten
 action_notification_delete#:#Löschen
+action_view_object#:#Objekt anzeigen
 
 lhs_value#:#LHS Wert
 rhs_value#:#RHS Wert

@@ -3,8 +3,6 @@
 use srag\Plugins\SrLifeCycleManager\Assignment\IRoutineAssignmentRepository;
 use srag\Plugins\SrLifeCycleManager\Assignment\IRoutineAssignment;
 use srag\Plugins\SrLifeCycleManager\Assignment\RoutineAssignment;
-use srag\Plugins\SrLifeCycleManager\Routine\IRoutine;
-use srag\Plugins\SrLifeCycleManager\Assignment\IRoutineAssignmentIntention;
 
 /**
  * @author       Thibeau Fuhrer <thibeau@sr.solutions>
@@ -137,6 +135,30 @@ class ilSrRoutineAssignmentRepository implements IRoutineAssignmentRepository
         }
 
         return $this->insertAssignment($assignment);
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function delete(IRoutineAssignment $assignment) : bool
+    {
+        // the assignment cannot be stored yet if there aren't both
+        // routine- and ref-id assigned.
+        if (null === $assignment->getRoutineId() || null === $assignment->getRefId()) {
+            return true;
+        }
+
+        $query = "DELETE FROM srlcm_assigned_routine WHERE routine_id = %s AND ref_id = %s";
+        $this->database->manipulateF(
+            $query,
+            ['integer', 'integer'],
+            [
+                $assignment->getRoutineId(),
+                $assignment->getRefId(),
+            ]
+        );
+
+        return true;
     }
 
     /**

@@ -52,6 +52,14 @@ interface IRoutineAssignmentRepository
     public function store(IRoutineAssignment $assignment) : IRoutineAssignment;
 
     /**
+     * Deletes an existing routine assignment from the database.
+     *
+     * @param IRoutineAssignment $assignment
+     * @return bool
+     */
+    public function delete(IRoutineAssignment $assignment) : bool;
+
+    /**
      * Returns an empty instance of the an assignment.
      *
      * @return IRoutineAssignment

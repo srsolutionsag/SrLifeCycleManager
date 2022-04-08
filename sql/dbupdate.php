@@ -209,6 +209,11 @@
             'length'  => '8',
             'type'    => 'integer',
         ],
+        'usr_id' => [
+            'notnull' => '1',
+            'length'  => '8',
+            'type'    => 'integer',
+        ],
         'is_opt_out' => [
             'notnull' => '1',
             'length'  => '1',
@@ -273,17 +278,27 @@
     $table_name = 'srlcm_configuration';
     if ($ilDB->tableExists($table_name)) {
         $ilDB->insert($table_name, [
-            'identifier'    => ['text', 'cnf_privileged_roles'],
+            'identifier'    => ['text', 'cnf_role_manage_routines'],
             'configuration' => ['text', ''],
         ]);
 
         $ilDB->insert($table_name, [
-            'identifier'    => ['text', 'cnf_create_routines_in_repository'],
+            'identifier'    => ['text', 'cnf_role_manage_assignments'],
+            'configuration' => ['text', ''],
+        ]);
+
+        $ilDB->insert($table_name, [
+            'identifier'    => ['text', 'cnf_tool_is_enabled'],
             'configuration' => ['text', '0'],
         ]);
 
         $ilDB->insert($table_name, [
-            'identifier'    => ['text', 'cnf_show_routines_in_repository'],
+            'identifier'    => ['text', 'cnf_tool_show_routines'],
+            'configuration' => ['text', '0'],
+        ]);
+
+        $ilDB->insert($table_name, [
+            'identifier'    => ['text', 'cnf_tool_show_controls'],
             'configuration' => ['text', '0'],
         ]);
     }

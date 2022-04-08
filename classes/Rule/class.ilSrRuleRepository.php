@@ -83,7 +83,9 @@ class ilSrRuleRepository implements IRuleRepository
             $this->database->queryF(
                 $query,
                 ['integer'],
-                [$routine->getRoutineId()]
+                [
+                    $routine->getRoutineId() ?? 0,
+                ]
             )
         );
 
@@ -105,18 +107,17 @@ class ilSrRuleRepository implements IRuleRepository
     public function getByRefIdAndRoutineType(int $ref_id, string $routine_type) : array
     {
         $query = "
-            SELECT rule.*, relation.routine_id FROM  srlcm_rule AS rule
+            SELECT rule.rule_id, rule.lhs_type, rule.lhs_value, rule.rhs_type, rule.rhs_value, rule.operator, relation.routine_id 
+                FROM  srlcm_rule AS rule
                 JOIN srlcm_routine_rule AS relation ON relation.rule_id = rule.rule_id
                 JOIN srlcm_routine AS routine ON routine.routine_id = relation.routine_id
                 JOIN srlcm_assigned_routine AS assignment ON assignment.routine_id = routine.routine_id
                 WHERE routine.routine_type = %s
                 AND assignment.is_active = 1
-                AND assignment.ref_id IN (
-                    IF(
-                        (assignment.is_recursive = 1), 
-                        ({$this->getParentIdsForSqlComparison($ref_id)}), 
-                        ({$this->getParentIdForSqlComparison($ref_id)})
-                    )
+                AND IF(
+                    (assignment.is_recursive = 1),
+                    (assignment.ref_id IN ({$this->getParentIdsForSqlComparison($ref_id)})), 
+                    (assignment.ref_id = {$this->getParentIdForSqlComparison($ref_id)})
                 )
             ;
         ";
@@ -180,6 +181,10 @@ class ilSrRuleRepository implements IRuleRepository
      */
     public function empty(IRoutine $routine) : IRule
     {
+        if (null === $routine->getRoutineId()) {
+            throw new LogicException("Cannot relate rule to routine that has not been stored yet.");
+        }
+
         return new Rule(
             '',
             '',

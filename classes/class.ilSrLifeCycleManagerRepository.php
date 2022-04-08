@@ -1,6 +1,7 @@
 <?php declare(strict_types=1);
 
 use srag\Plugins\SrLifeCycleManager\ILIASRepository;
+use ILIAS\DI\RBACServices;
 
 /**
  * @author       Thibeau Fuhrer <thibeau@sr.solutions>
@@ -21,13 +22,20 @@ class ilSrLifeCycleManagerRepository implements ILIASRepository
     protected $tree;
 
     /**
+     * @var RBACServices
+     */
+    protected $rbac;
+
+    /**
      * @param ilDBInterface $database
      * @param ilTree        $tree
+     * @param RBACServices  $rbac
      */
-    public function __construct(ilDBInterface $database, ilTree $tree)
+    public function __construct(ilDBInterface $database, ilTree $tree, RBACServices $rbac)
     {
         $this->database = $database;
         $this->tree = $tree;
+        $this->rbac = $rbac;
     }
 
     /**
@@ -49,5 +57,31 @@ class ilSrLifeCycleManagerRepository implements ILIASRepository
         return $this->database->fetchAll(
             $this->database->query($query)
         );
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function getAvailableGlobalRoles() : array
+    {
+        $role_options = [];
+        $global_roles = $this->rbac->review()->getRolesByFilter(ilRbacReview::FILTER_ALL_GLOBAL);
+        if (empty($global_roles)) {
+            return $role_options;
+        }
+
+        foreach ($global_roles as $role_data) {
+            $role_id = (int) $role_data['obj_id'];
+            // the administrator role can be ignored, as this
+            // role should always be able to do everything.
+            if ((int) SYSTEM_ROLE_ID !== $role_id) {
+                $role_title = ilObjRole::_getTranslation($role_data['title']);
+
+                // map the role-title to its role id associatively.
+                $role_options[$role_id] = $role_title;
+            }
+        }
+
+        return $role_options;
     }
 }

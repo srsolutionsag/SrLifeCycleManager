@@ -73,15 +73,8 @@ class ilSrRoutineGUI extends ilSrAbstractGUI
      */
     protected function canUserExecute(ilSrAccessHandler $access_handler, string $command) : bool
     {
-        switch ($command) {
-            // routines must be visible for object administrators.
-            case self::CMD_INDEX:
-                return $access_handler->canViewRoutines($this->object_ref_id);
-
-            // for all other commands the user must be able to manage routines.
-            default:
-                return $access_handler->canManageRoutines();
-        }
+        // only routine-managers can execute commands in this gui.
+        return $this->access_handler->canManageRoutines();
     }
 
     /**

@@ -149,11 +149,6 @@ class DeletableObjectGenerator implements IDeletableObjectGenerator
     {
         $affected_by = [];
         foreach ($this->routine_repository->getAllByRefId($object->getRefId()) as $routine) {
-            // skip inactive routines.
-            if (!$routine->isActive()) {
-                continue;
-            }
-
             $all_rules_applicable = true;
             foreach ($this->rule_repository->getByRoutine($routine) as $rule) {
                 $comparison = $this->comparison_factory->getComparison($object, $rule);

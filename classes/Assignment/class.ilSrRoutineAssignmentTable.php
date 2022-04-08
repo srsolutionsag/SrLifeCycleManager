@@ -115,6 +115,18 @@ class ilSrRoutineAssignmentTable extends ilSrAbstractTable
     protected function setActionParameters(int $routine_id, int $ref_id) : void
     {
         $this->ctrl->setParameterByClass(
+            ilSrWhitelistGUI::class,
+            ilSrWhitelistGUI::PARAM_ROUTINE_ID,
+            $routine_id
+        );
+
+        $this->ctrl->setParameterByClass(
+            ilSrWhitelistGUI::class,
+            ilSrWhitelistGUI::PARAM_OBJECT_REF_ID,
+            $ref_id
+        );
+
+        $this->ctrl->setParameterByClass(
             ilSrRoutineAssignmentGUI::class,
             ilSrRoutineAssignmentGUI::PARAM_ROUTINE_ID,
             $routine_id
@@ -122,7 +134,7 @@ class ilSrRoutineAssignmentTable extends ilSrAbstractTable
 
         $this->ctrl->setParameterByClass(
             ilSrRoutineAssignmentGUI::class,
-            ilSrRoutineAssignmentGUI::PARAM_OBJECT_REF_ID,
+            ilSrRoutineAssignmentGUI::PARAM_ASSIGNED_REF_ID,
             $ref_id
         );
     }

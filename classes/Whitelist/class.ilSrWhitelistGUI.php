@@ -29,15 +29,28 @@ class ilSrWhitelistGUI extends ilSrAbstractGUI
     protected const PAGE_TITLE = 'page_title_whitelist';
 
     /**
+     * Panics if the request is missing an existing routine.
+     */
+    public function __construct()
+    {
+        parent::__construct();
+        $this->panicOnMissingRoutine();
+    }
+
+    /**
      * @inheritDoc
      */
     protected function setupGlobalTemplate(ilGlobalTemplateInterface $template, ilSrTabManager $tabs) : void
     {
         $template->setTitle($this->translator->txt(self::PAGE_TITLE));
-
-        if (null !== $this->object_ref_id) {
-            $tabs->setBackToTarget(ilLink::_getLink($this->object_ref_id));
-        }
+        $tabs
+            ->addConfigurationTab()
+            ->addRoutineTab()
+            ->deactivateTabs()
+            ->setBackToTarget(
+                $this->getBackToTarget()
+            )
+        ;
     }
 
     /**
@@ -45,13 +58,14 @@ class ilSrWhitelistGUI extends ilSrAbstractGUI
      */
     protected function canUserExecute(ilSrAccessHandler $access_handler, string $command) : bool
     {
-        // whitelist overview must be available for routine owners.
+        // index method is accessible for routine managers to see
+        // which objects are currently whitelisted.
         if (self::CMD_INDEX === $command) {
-            return $access_handler->isCurrentUser($this->routine->getOwnerId());
+            return $access_handler->canManageRoutines();
         }
 
-        // routine extension or opt-out must only be accessible for
-        // administrators of the requested object.
+        // all other actions (opt-out, postpone) are only accessible
+        // for object-administrators.
         if (null !== $this->object_ref_id) {
             return $access_handler->isAdministratorOf($this->object_ref_id);
         }
@@ -60,11 +74,25 @@ class ilSrWhitelistGUI extends ilSrAbstractGUI
     }
 
     /**
+     * Displays a table with all whitelist entries for the currently
+     * requested routine.
+     *
      * @inheritDoc
      */
     protected function index() : void
     {
-        throw new LogicException("Not yet implemented.");
+        $table = new ilSrWhitelistTable(
+            $this->ui_factory,
+            $this->renderer,
+            $this->translator,
+            $this->access_handler,
+            $this->ctrl,
+            $this,
+            self::CMD_INDEX,
+            $this->repository->whitelist()->getByRoutine($this->routine, true)
+        );
+
+        $this->render($table->getTable());
     }
 
     /**
@@ -213,6 +241,24 @@ class ilSrWhitelistGUI extends ilSrAbstractGUI
             ->diff($elongation_until)
             ->format("%r%a")
         ;
+    }
+
+    /**
+     * Returns the back-to target that points to the requested object
+     * if one was provided.
+     *
+     * @return string
+     */
+    protected function getBackToTarget() : string
+    {
+        if (null !== $this->object_ref_id) {
+            return ilLink::_getLink($this->object_ref_id);
+        }
+
+        return $this->ctrl->getLinkTargetByClass(
+            ilSrRoutineGUI::class,
+            ilSrRoutineGUI::CMD_INDEX
+        );
     }
 
     /**

@@ -112,7 +112,12 @@ class ilSrRoutineRepository implements IRoutineRepository
                 routine.has_opt_out, routine.elongation, routine.title, routine.creation_date
                 FROM srlcm_assigned_routine AS assignment    
                 JOIN srlcm_routine AS routine ON `routine`.routine_id = assignment.routine_id
-                WHERE assignment.ref_id IN ({$this->getParentIdsForSqlComparison($ref_id)})
+                WHERE assignment.is_active = 1
+                AND IF(
+                    (assignment.is_recursive = 1),
+                    (assignment.ref_id IN ({$this->getParentIdsForSqlComparison($ref_id)})), 
+                    (assignment.ref_id = {$this->getParentIdForSqlComparison($ref_id)})
+                )
             ;
         ";
 

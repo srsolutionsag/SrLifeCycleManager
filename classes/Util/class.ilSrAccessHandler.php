@@ -62,29 +62,6 @@ class ilSrAccessHandler
     }
 
     /**
-     * Checks if the current user can view routines. If no object is provided, the
-     * user must be assigned a privileged role.
-     *
-     * @param int|null $ref_id
-     * @return bool
-     */
-    public function canViewRoutines(int $ref_id = null) : bool
-    {
-        if ($this->isAdministrator()) {
-            return true;
-        }
-
-        if (null !== $ref_id) {
-            return (
-                $this->canManageRoutines() ||
-                $this->isAdministratorOf($ref_id)
-            );
-        }
-
-        return $this->canManageRoutines();
-    }
-
-    /**
      * Checks if the current user is assigned one of the configured roles that
      * are privileged to manage routines.
      *
@@ -98,7 +75,7 @@ class ilSrAccessHandler
 
         return $this->access->review()->isAssignedToAtLeastOneGivenRole(
             $this->user->getId(),
-            $this->config->getPrivilegedRoles()
+            $this->config->getManageRoutineRoles()
         );
     }
 
@@ -106,14 +83,18 @@ class ilSrAccessHandler
      * Checks if the current use is privileged to manage assignments between
      * routines and objects.
      *
-     * @todo: this is currently just an adapter for canManageRoutines(), but
-     *        we might introduce a separate configuration for this.
-     *
      * @return bool
      */
     public function canManageAssignments() : bool
     {
-        return $this->canManageRoutines();
+        if ($this->isAdministrator()) {
+            return true;
+        }
+
+        return $this->access->review()->isAssignedToAtLeastOneGivenRole(
+            $this->user->getId(),
+            $this->config->getManageAssignmentRoles()
+        );
     }
 
     /**

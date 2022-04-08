@@ -119,11 +119,6 @@ class ilSrToolProvider extends AbstractDynamicToolPluginProvider
     {
         return function () : Component {
             $html = '';
-            // abort if the requested object is not available.
-            if (null === $this->request_object) {
-                return $this->dic->ui()->factory()->legacy($html);
-            }
-
             if ($this->shouldRenderRoutineList()) {
                 $html .= $this->wrapHtml(
                     $this->renderActiveRoutineList($this->request_object)
@@ -132,7 +127,7 @@ class ilSrToolProvider extends AbstractDynamicToolPluginProvider
 
             if ($this->shouldRenderRoutineControls()) {
                 $html .= $this->wrapHtml(
-                    $this->renderPrivilegedRoutineControls()
+                    $this->renderRoutineControls()
                 );
             }
 
@@ -183,7 +178,7 @@ class ilSrToolProvider extends AbstractDynamicToolPluginProvider
      *
      * @return string
      */
-    protected function renderPrivilegedRoutineControls() : string
+    protected function renderRoutineControls() : string
     {
         return $this->dic->ui()->renderer()->render([
             // action-button to add new routines at current position.
@@ -194,6 +189,7 @@ class ilSrToolProvider extends AbstractDynamicToolPluginProvider
                     ilSrRoutineAssignmentGUI::CMD_ASSIGNMENT_EDIT
                 )
             ),
+
             // action-button to see routines at current position.
             $this->dic->ui()->factory()->button()->standard(
                 $this->plugin->txt(self::ACTION_ROUTINE_MANAGE),
@@ -246,7 +242,7 @@ class ilSrToolProvider extends AbstractDynamicToolPluginProvider
     {
         $this->dic->ctrl()->setParameterByClass(
             ilSrRoutineAssignmentGUI::class,
-            ilSrRoutineAssignmentGUI::PARAM_OBJECT_REF_ID,
+            ilSrRoutineAssignmentGUI::PARAM_ASSIGNED_REF_ID,
             $ref_id
         );
 
@@ -304,8 +300,11 @@ class ilSrToolProvider extends AbstractDynamicToolPluginProvider
     protected function shouldRenderRoutineControls() : bool
     {
         return (
-            $this->config->createRoutinesInRepository() &&
-            $this->access_handler->canManageRoutines()
+            $this->config->shouldToolShowControls() &&
+            (
+                $this->access_handler->canManageRoutines() ||
+                $this->access_handler->canManageAssignments()
+            )
         );
     }
 
@@ -317,8 +316,12 @@ class ilSrToolProvider extends AbstractDynamicToolPluginProvider
     protected function shouldRenderRoutineList() : bool
     {
         return (
-            $this->config->showRoutinesInRepository() &&
-            $this->access_handler->canViewRoutines($this->request_object)
+            null !== $this->request_object &&
+            $this->config->shouldToolShowRoutines() &&
+            (
+                $this->access_handler->canManageRoutines() ||
+                $this->access_handler->isAdministratorOf($this->request_object)
+            )
         );
     }
 

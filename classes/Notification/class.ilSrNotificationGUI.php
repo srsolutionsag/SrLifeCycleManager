@@ -71,9 +71,8 @@ class ilSrNotificationGUI extends ilSrAbstractGUI
      */
     protected function canUserExecute(ilSrAccessHandler $access_handler, string $command) : bool
     {
-        // notifications can only be managed if the current user is
-        // also the owner of the requested routine.
-        return $access_handler->isCurrentUser($this->routine->getOwnerId());
+        // only routine-managers can execute commands in this gui.
+        return $this->access_handler->canManageRoutines();
     }
 
     /**

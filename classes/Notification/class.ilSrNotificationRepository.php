@@ -79,7 +79,9 @@ class ilSrNotificationRepository implements INotificationRepository
             $this->database->queryF(
                 $query,
                 ['integer'],
-                [$routine->getRoutineId()]
+                [
+                    $routine->getRoutineId() ?? 0,
+                ]
             )
         );
 
@@ -146,7 +148,7 @@ class ilSrNotificationRepository implements INotificationRepository
                 $query,
                 ['integer', 'integer'],
                 [
-                    $routine->getRoutineId(),
+                    $routine->getRoutineId() ?? 0,
                     $ref_id
                 ]
             )

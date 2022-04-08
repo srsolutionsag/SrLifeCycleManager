@@ -50,11 +50,17 @@ class ConfigFormProcessor extends AbstractFormProcessor
      */
     protected function processData(array $post_data) : void
     {
+        $is_tool_enabled = (null !== $post_data[IConfig::CNF_TOOL_IS_ENABLED]);
+        $show_routines = ($is_tool_enabled) ? $post_data[IConfig::CNF_TOOL_IS_ENABLED][IConfig::CNF_TOOL_SHOW_ROUTINES] : false;
+        $show_controls = ($is_tool_enabled) ? $post_data[IConfig::CNF_TOOL_IS_ENABLED][IConfig::CNF_TOOL_SHOW_CONTROLS] : false;
+
         $this->repository->store(
             new Config(
-                $post_data[IConfig::CNF_PRIVILEGED_ROLES] ?? [],
-                $post_data[IConfig::CNF_SHOW_ROUTINES_IN_REPOSITORY],
-                $post_data[IConfig::CNF_CREATE_ROUTINES_IN_REPOSITORY]
+                $post_data[IConfig::CNF_TOOL_SHOW_ROUTINES] ?? [],
+                $post_data[IConfig::CNF_ROLE_MANAGE_ASSIGNMENTS] ?? [],
+                $is_tool_enabled,
+                $show_routines,
+                $show_controls
             )
         );
     }

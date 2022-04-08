@@ -42,4 +42,5 @@ return array(
     'ilSrToolbarManager' => $baseDir . '/classes/Util/class.ilSrToolbarManager.php',
     'ilSrWhitelistGUI' => $baseDir . '/classes/Whitelist/class.ilSrWhitelistGUI.php',
     'ilSrWhitelistRepository' => $baseDir . '/classes/Whitelist/class.ilSrWhitelistRepository.php',
+    'ilSrWhitelistTable' => $baseDir . '/classes/Whitelist/class.ilSrWhitelistTable.php',
 );
