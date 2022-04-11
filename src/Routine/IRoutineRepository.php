@@ -42,6 +42,19 @@ interface IRoutineRepository
     public function getAllByRefId(int $ref_id, bool $array_data = false) : array;
 
     /**
+     * Fetches all existing routines from the database that affect the
+     * given ref-id AND are active.
+     *
+     * To retrieve routines as array-data, true can be passed as an argument
+     * (usually required by ilTableGUI).
+     *
+     * @param int  $ref_id
+     * @param bool $array_data
+     * @return array
+     */
+    public function getAllActiveByRefId(int $ref_id, bool $array_data = false) : array;
+
+    /**
      * Creates or updates the given routine in the database.
      *
      * @param IRoutine $routine

@@ -1,25 +1,21 @@
 <?php declare(strict_types=1);
 
-use srag\Plugins\SrLifeCycleManager\ILIASRepository;
+use srag\Plugins\SrLifeCycleManager\Repository\IGeneralRepository;
 use ILIAS\DI\RBACServices;
+use srag\Plugins\SrLifeCycleManager\Repository\ObjectHelper;
 
 /**
  * @author       Thibeau Fuhrer <thibeau@sr.solutions>
  * @noinspection AutoloadingIssuesInspection
  */
-class ilSrLifeCycleManagerRepository implements ILIASRepository
+class ilSrGeneralRepository implements IGeneralRepository
 {
-    use ilSrRepositoryHelper;
+    use ObjectHelper;
 
     /**
      * @var ilDBInterface
      */
     protected $database;
-
-    /**
-     * @var ilTree
-     */
-    protected $tree;
 
     /**
      * @var RBACServices

@@ -1,10 +1,10 @@
 <?php declare(strict_types=1);
 
-use srag\Plugins\SrLifeCycleManager\IRepository;
-use srag\Plugins\SrLifeCycleManager\Config\IConfig;
+use srag\Plugins\SrLifeCycleManager\Repository\RepositoryFactory;
 use srag\Plugins\SrLifeCycleManager\Rule\Requirement\RequirementFactory;
 use srag\Plugins\SrLifeCycleManager\Rule\Attribute\AttributeFactory;
 use srag\Plugins\SrLifeCycleManager\Rule\Comparison\ComparisonFactory;
+use srag\Plugins\SrLifeCycleManager\Config\IConfig;
 use srag\Plugins\SrLifeCycleManager\ITranslator;
 use ILIAS\GlobalScreen\Scope\Tool\Provider\AbstractDynamicToolPluginProvider;
 use ILIAS\GlobalScreen\ScreenContext\Stack\ContextCollection;
@@ -38,7 +38,7 @@ class ilSrToolProvider extends AbstractDynamicToolPluginProvider
     protected $comparisons;
 
     /**
-     * @var IRepository
+     * @var RepositoryFactory
      */
     protected $repository;
 
@@ -96,10 +96,14 @@ class ilSrToolProvider extends AbstractDynamicToolPluginProvider
             new AttributeFactory()
         );
 
-        $this->repository = new ilSrRepositoryFactory(
-            $this->dic->database(),
-            $this->dic->rbac(),
-            $this->dic->repositoryTree()
+        $this->repository = new RepositoryFactory(
+            new ilSrGeneralRepository($this->dic->database(), $this->dic->repositoryTree(), $this->dic->rbac()),
+            new ilSrConfigRepository($this->dic->database(), $this->dic->rbac()),
+            new ilSrRoutineRepository($this->dic->database(), $this->dic->repositoryTree()),
+            new ilSrRoutineAssignmentRepository($this->dic->database()),
+            new ilSrRuleRepository($this->dic->database(), $this->dic->repositoryTree()),
+            new ilSrNotificationRepository($this->dic->database()),
+            new ilSrWhitelistRepository($this->dic->database())
         );
 
         $this->config = $this->repository->config()->get();
@@ -180,25 +184,30 @@ class ilSrToolProvider extends AbstractDynamicToolPluginProvider
      */
     protected function renderRoutineControls() : string
     {
-        return $this->dic->ui()->renderer()->render([
+        $controls = [];
+        if ($this->access_handler->canManageAssignments()) {
             // action-button to add new routines at current position.
-            $this->dic->ui()->factory()->button()->standard(
-                $this->plugin->txt(ilSrToolbarManager::ACTION_ROUTINE_ADD),
+            $controls[] = $this->dic->ui()->factory()->button()->standard(
+                $this->plugin->txt(ilSrToolbarManager::ACTION_ASSIGNMENT_ADD),
                 ilSrLifeCycleManagerDispatcher::getLinkTarget(
                     ilSrRoutineAssignmentGUI::class,
                     ilSrRoutineAssignmentGUI::CMD_ASSIGNMENT_EDIT
                 )
-            ),
+            );
+        }
 
-            // action-button to see routines at current position.
-            $this->dic->ui()->factory()->button()->standard(
+        // action-button to see routines at current position.
+        if ($this->access_handler->canManageRoutines()) {
+            $controls[] = $this->dic->ui()->factory()->button()->standard(
                 $this->plugin->txt(self::ACTION_ROUTINE_MANAGE),
                 ilSrLifeCycleManagerDispatcher::getLinkTarget(
                     ilSrRoutineGUI::class,
                     ilSrRoutineGUI::CMD_INDEX
                 )
-            ),
-        ]);
+            );
+        }
+
+        return $this->dic->ui()->renderer()->render($controls);
     }
 
     /**

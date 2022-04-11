@@ -5,6 +5,8 @@
 use srag\Plugins\SrLifeCycleManager\Routine\IRoutineRepository;
 use srag\Plugins\SrLifeCycleManager\Routine\IRoutine;
 use srag\Plugins\SrLifeCycleManager\Routine\Routine;
+use srag\Plugins\SrLifeCycleManager\Repository\DTOHelper;
+use srag\Plugins\SrLifeCycleManager\Repository\ObjectHelper;
 
 /**
  * This repository is responsible for all routine CRUD operations.
@@ -15,21 +17,18 @@ use srag\Plugins\SrLifeCycleManager\Routine\Routine;
  */
 class ilSrRoutineRepository implements IRoutineRepository
 {
-    use ilSrRepositoryHelper;
+    use ObjectHelper;
+    use DTOHelper;
 
     /**
      * @var string mysql datetime format string.
      */
     protected const MYSQL_DATETIME_FORMAT = 'Y-m-d';
+
     /**
      * @var ilDBInterface
      */
     protected $database;
-
-    /**
-     * @var ilTree
-     */
-    protected $tree;
 
     /**
      * @param ilDBInterface                $database
@@ -57,19 +56,15 @@ class ilSrRoutineRepository implements IRoutineRepository
             ;
         ";
 
-        $result = $this->database->fetchAll(
-            $this->database->queryF(
-                $query,
-                ['integer'],
-                [$routine_id]
+        return $this->returnSingleQueryResult(
+            $this->database->fetchAll(
+                $this->database->queryF(
+                    $query,
+                    ['integer'],
+                    [$routine_id]
+                )
             )
         );
-
-        if (!empty($result)) {
-            return $this->transformToDTO($result[0]);
-        }
-
-        return null;
     }
 
     /**
@@ -85,26 +80,43 @@ class ilSrRoutineRepository implements IRoutineRepository
             ;
         ";
 
-        $results = $this->database->fetchAll(
-            $this->database->query($query)
+        return $this->returnAllQueryResults(
+            $this->database->fetchAll(
+                $this->database->query($query)
+            ), $array_data
         );
-
-        if (empty($results) || $array_data) {
-            return $results;
-        }
-
-        $routines = [];
-        foreach ($results as $query_result) {
-            $routines[] = $this->transformToDTO($query_result);
-        }
-
-        return $routines;
     }
 
     /**
      * @inheritDoc
      */
     public function getAllByRefId(int $ref_id, bool $array_data = false) : array
+    {
+        $query = "
+            SELECT 
+                routine.routine_id, routine.usr_id, routine.routine_type, routine.origin_type, 
+                routine.has_opt_out, routine.elongation, routine.title, routine.creation_date
+                FROM srlcm_assigned_routine AS assignment    
+                JOIN srlcm_routine AS routine ON `routine`.routine_id = assignment.routine_id
+                WHERE IF(
+                    (assignment.is_recursive = 1),
+                    (assignment.ref_id IN ({$this->getParentIdsForSqlComparison($ref_id)})), 
+                    (assignment.ref_id = {$this->getParentIdForSqlComparison($ref_id)})
+                )
+            ;
+        ";
+
+        return $this->returnAllQueryResults(
+            $this->database->fetchAll(
+                $this->database->query($query)
+            ), $array_data
+        );
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function getAllActiveByRefId(int $ref_id, bool $array_data = false) : array
     {
         $query = "
             SELECT 
@@ -121,20 +133,11 @@ class ilSrRoutineRepository implements IRoutineRepository
             ;
         ";
 
-        $results = $this->database->fetchAll(
-            $this->database->query($query)
+        return $this->returnAllQueryResults(
+            $this->database->fetchAll(
+                $this->database->query($query)
+            ), $array_data
         );
-
-        if ($array_data) {
-            return $results;
-        }
-
-        $routines = [];
-        foreach ($results as $result) {
-            $routines[] = $this->transformToDTO($result);
-        }
-
-        return $routines;
     }
 
     /**

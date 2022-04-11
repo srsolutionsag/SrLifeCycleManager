@@ -6,6 +6,7 @@ use srag\Plugins\SrLifeCycleManager\Whitelist\IWhitelistRepository;
 use srag\Plugins\SrLifeCycleManager\Whitelist\IWhitelistEntry;
 use srag\Plugins\SrLifeCycleManager\Whitelist\WhitelistEntry;
 use srag\Plugins\SrLifeCycleManager\Routine\IRoutine;
+use srag\Plugins\SrLifeCycleManager\Repository\DTOHelper;
 
 /**
  * This repository is responsible for all whitelist CRUD operations.
@@ -16,6 +17,8 @@ use srag\Plugins\SrLifeCycleManager\Routine\IRoutine;
  */
 class ilSrWhitelistRepository implements IWhitelistRepository
 {
+    use DTOHelper;
+
     /**
      * @var string mysql datetime format string.
      */
@@ -56,26 +59,17 @@ class ilSrWhitelistRepository implements IWhitelistRepository
             ;
         ";
 
-        $results = $this->database->fetchAll(
-            $this->database->queryF(
-                $query,
-                ['integer'],
-                [
-                    $routine->getRoutineId() ?? 0,
-                ]
-            )
+        return $this->returnAllQueryResults(
+            $this->database->fetchAll(
+                $this->database->queryF(
+                    $query,
+                    ['integer'],
+                    [
+                        $routine->getRoutineId() ?? 0,
+                    ]
+                )
+            ), $array_data
         );
-
-        if (empty($results) || $array_data) {
-            return $results;
-        }
-
-        $whitelist_entries = [];
-        foreach ($results as $query_result) {
-            $whitelist_entries[] = $this->transformToDTO($query_result);
-        }
-
-        return $whitelist_entries;
     }
 
     /**
@@ -181,22 +175,18 @@ class ilSrWhitelistRepository implements IWhitelistRepository
             ;
         ";
 
-        $result = $this->database->fetchAll(
-            $this->database->queryF(
-                $query,
-                ['integer', 'integer'],
-                [
-                    $routine_id,
-                    $ref_id,
-                ]
+        return $this->returnSingleQueryResult(
+            $this->database->fetchAll(
+                $this->database->queryF(
+                    $query,
+                    ['integer', 'integer'],
+                    [
+                        $routine_id,
+                        $ref_id,
+                    ]
+                )
             )
         );
-
-        if (!empty($result)) {
-            return $this->transformToDTO($result[0]);
-        }
-
-        return null;
     }
 
     /**

@@ -3,6 +3,7 @@
 use srag\Plugins\SrLifeCycleManager\Assignment\IRoutineAssignmentRepository;
 use srag\Plugins\SrLifeCycleManager\Assignment\IRoutineAssignment;
 use srag\Plugins\SrLifeCycleManager\Assignment\RoutineAssignment;
+use srag\Plugins\SrLifeCycleManager\Repository\DTOHelper;
 
 /**
  * @author       Thibeau Fuhrer <thibeau@sr.solutions>
@@ -10,6 +11,8 @@ use srag\Plugins\SrLifeCycleManager\Assignment\RoutineAssignment;
  */
 class ilSrRoutineAssignmentRepository implements IRoutineAssignmentRepository
 {
+    use DTOHelper;
+
     /**
      * @var ilDBInterface
      */
@@ -35,22 +38,18 @@ class ilSrRoutineAssignmentRepository implements IRoutineAssignmentRepository
             ;
         ";
 
-        $result = $this->database->fetchAll(
-            $this->database->queryF(
-                $query,
-                ['integer', 'integer'],
-                [
-                    $routine_id,
-                    $ref_id
-                ]
+        return $this->returnSingleQueryResult(
+            $this->database->fetchAll(
+                $this->database->queryF(
+                    $query,
+                    ['integer', 'integer'],
+                    [
+                        $routine_id,
+                        $ref_id
+                    ]
+                )
             )
         );
-
-        if (!empty($result)) {
-            return $this->transformToDTO($result[0]);
-        }
-
-        return null;
     }
 
     /**
@@ -64,26 +63,17 @@ class ilSrRoutineAssignmentRepository implements IRoutineAssignmentRepository
             ;
         ";
 
-        $results = $this->database->fetchAll(
-            $this->database->queryF(
-                $query,
-                ['integer'],
-                [
-                    $routine_id,
-                ]
-            )
+        return $this->returnAllQueryResults(
+            $this->database->fetchAll(
+                $this->database->queryF(
+                    $query,
+                    ['integer'],
+                    [
+                        $routine_id,
+                    ]
+                )
+            ), $array_data
         );
-
-        if (empty($results) || $array_data) {
-            return $results;
-        }
-
-        $assignments = [];
-        foreach ($results as $query_result) {
-            $assignments[] = $this->transformToDTO($query_result);
-        }
-
-        return $assignments;
     }
 
     /**
@@ -97,26 +87,17 @@ class ilSrRoutineAssignmentRepository implements IRoutineAssignmentRepository
             ;
         ";
 
-        $results = $this->database->fetchAll(
-            $this->database->queryF(
-                $query,
-                ['integer'],
-                [
-                    $ref_id,
-                ]
-            )
+        return $this->returnAllQueryResults(
+            $this->database->fetchAll(
+                $this->database->queryF(
+                    $query,
+                    ['integer'],
+                    [
+                        $ref_id,
+                    ]
+                )
+            ), $array_data
         );
-
-        if (empty($results) || $array_data) {
-            return $results;
-        }
-
-        $assignments = [];
-        foreach ($results as $query_result) {
-            $assignments[] = $this->transformToDTO($query_result);
-        }
-
-        return $assignments;
     }
 
     /**

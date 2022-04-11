@@ -2,15 +2,14 @@
 
 /* Copyright (c) 2022 Thibeau Fuhrer <thibeau@sr.solutions> Extended GPL, see docs/LICENSE */
 
+use srag\Plugins\SrLifeCycleManager\Repository\RepositoryFactory;
 use srag\Plugins\SrLifeCycleManager\Routine\IRoutine;
-use srag\Plugins\SrLifeCycleManager\IRepository;
 use srag\Plugins\SrLifeCycleManager\ITranslator;
 use Psr\Http\Message\ServerRequestInterface;
 use ILIAS\Refinery\Factory as Refinery;
 use ILIAS\UI\Component\Component;
 use ILIAS\UI\Renderer;
 use ILIAS\UI\Factory;
-use srag\Plugins\SrLifeCycleManager\Assignment\IRoutineAssignment;
 
 /**
  * This is an abstraction for ILIAS command-class implementations.
@@ -59,7 +58,7 @@ abstract class ilSrAbstractGUI
     protected $routine;
 
     /**
-     * @var IRepository
+     * @var RepositoryFactory
      */
     protected $repository;
 
@@ -152,10 +151,14 @@ abstract class ilSrAbstractGUI
         $this->ctrl = $DIC->ctrl();
         $this->user = $DIC->user();
 
-        $this->repository = new ilSrRepositoryFactory(
-            $DIC->database(),
-            $DIC->rbac(),
-            $DIC->repositoryTree()
+        $this->repository = new RepositoryFactory(
+            new ilSrGeneralRepository($DIC->database(), $DIC->repositoryTree(), $DIC->rbac()),
+            new ilSrConfigRepository($DIC->database(), $DIC->rbac()),
+            new ilSrRoutineRepository($DIC->database(), $DIC->repositoryTree()),
+            new ilSrRoutineAssignmentRepository($DIC->database()),
+            new ilSrRuleRepository($DIC->database(), $DIC->repositoryTree()),
+            new ilSrNotificationRepository($DIC->database()),
+            new ilSrWhitelistRepository($DIC->database())
         );
 
         $this->access_handler = new ilSrAccessHandler(

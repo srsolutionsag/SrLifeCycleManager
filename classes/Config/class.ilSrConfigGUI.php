@@ -41,7 +41,7 @@ class ilSrConfigGUI extends ilSrAbstractGUI
             $this->ui_factory->input()->field(),
             $this->refinery,
             $this->repository->config()->get(),
-            $this->repository->ilias()->getAvailableGlobalRoles(),
+            $this->repository->general()->getAvailableGlobalRoles(),
             $this->getFormAction()
         );
     }

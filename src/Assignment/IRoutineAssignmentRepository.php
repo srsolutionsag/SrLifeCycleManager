@@ -2,8 +2,6 @@
 
 namespace srag\Plugins\SrLifeCycleManager\Assignment;
 
-use srag\Plugins\SrLifeCycleManager\Routine\IRoutine;
-
 /**
  * @author Thibeau Fuhrer <thibeau@sr.solutions>
  */

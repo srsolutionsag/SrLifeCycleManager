@@ -7,6 +7,7 @@ use srag\Plugins\SrLifeCycleManager\Form\Routine\RoutineFormBuilder;
 use srag\Plugins\SrLifeCycleManager\Form\Routine\RoutineFormProcessor;
 use srag\Plugins\SrLifeCycleManager\Routine\IRoutine;
 use srag\Plugins\SrLifeCycleManager\Form\Assignment\RoutineAssignmentFormBuilder;
+use srag\Plugins\SrLifeCycleManager\Assignment\RoutineAssignment;
 
 /**
  * This GUI class is responsible for all actions regarding routines.
@@ -45,7 +46,7 @@ class ilSrRoutineGUI extends ilSrAbstractGUI
             $this->ui_factory->input()->container()->form(),
             $this->ui_factory->input()->field(),
             $this->refinery,
-            $this->routine ?? $this->repository->routine()->empty($this->user->getId(), $this->origin),
+            $this->routine,
             $this->getFormAction()
         );
     }
@@ -90,7 +91,7 @@ class ilSrRoutineGUI extends ilSrAbstractGUI
             $this->ctrl,
             $this,
             self::CMD_INDEX,
-            $this->repository->routine()->getAll(true)
+            $this->getTableData()
         );
 
         $this->toolbar_manager->addRoutineToolbar();
@@ -128,6 +129,17 @@ class ilSrRoutineGUI extends ilSrAbstractGUI
         );
 
         if ($processor->processForm()) {
+            // if the user requested an object, assign the newly added
+            // routine to the object (inactive though).
+            if (null !== $this->object_ref_id) {
+                $this->repository->assignment()->store(
+                    new RoutineAssignment(
+                        $this->routine->getRoutineId(),
+                        $this->object_ref_id
+                    )
+                );
+            }
+
             $this->sendSuccessMessage(self::MSG_ROUTINE_SUCCESS);
             $this->cancel();
         }
@@ -150,6 +162,23 @@ class ilSrRoutineGUI extends ilSrAbstractGUI
         }
 
         $this->cancel();
+    }
+
+    /**
+     * Returns the table-data for @see ilSrRoutineGUI::index().
+     *
+     * If an object (ref-id) is requested, the method will only consider
+     * routines that affect it.
+     *
+     * @return array
+     */
+    protected function getTableData() : array
+    {
+        if (null !== $this->object_ref_id) {
+            return $this->repository->routine()->getAllByRefId($this->object_ref_id, true);
+        }
+
+        return $this->repository->routine()->getAll(true);
     }
 
     /**

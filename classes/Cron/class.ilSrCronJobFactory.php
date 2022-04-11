@@ -2,12 +2,12 @@
 
 /* Copyright (c) 2022 Thibeau Fuhrer <thibeau@sr.solutions> Extended GPL, see docs/LICENSE */
 
-use srag\Plugins\SrLifeCycleManager\Cron\ResultBuilder;
+use srag\Plugins\SrLifeCycleManager\Repository\RepositoryFactory;
 use srag\Plugins\SrLifeCycleManager\Rule\Comparison\ComparisonFactory;
 use srag\Plugins\SrLifeCycleManager\Rule\Generator\DeletableObjectGenerator;
 use srag\Plugins\SrLifeCycleManager\Rule\Requirement\RequirementFactory;
 use srag\Plugins\SrLifeCycleManager\Rule\Attribute\AttributeFactory;
-use srag\Plugins\SrLifeCycleManager\IRepository;
+use srag\Plugins\SrLifeCycleManager\Cron\ResultBuilder;
 use ILIAS\DI\RBACServices;
 
 /**
@@ -17,7 +17,7 @@ use ILIAS\DI\RBACServices;
 class ilSrCronJobFactory
 {
     /**
-     * @var IRepository
+     * @var RepositoryFactory
      */
     protected $repository;
 
@@ -67,7 +67,16 @@ class ilSrCronJobFactory
         RBACServices $rbac,
         ilCtrl $ctrl
     ) {
-        $this->repository = new ilSrRepositoryFactory($database, $rbac, $tree);
+        $this->repository = new RepositoryFactory(
+            new ilSrGeneralRepository($database, $tree, $rbac),
+            new ilSrConfigRepository($database, $rbac),
+            new ilSrRoutineRepository($database, $tree),
+            new ilSrRoutineAssignmentRepository($database),
+            new ilSrRuleRepository($database, $tree),
+            new ilSrNotificationRepository($database),
+            new ilSrWhitelistRepository($database)
+        );
+
         $this->mail_factory = $mail_factory;
         $this->database = $database;
         $this->tree = $tree;
@@ -115,7 +124,7 @@ class ilSrCronJobFactory
                 ),
                 $this->repository->routine(),
                 $this->repository->rule(),
-                $this->repository->ilias()->getRepositoryObjects()
+                $this->repository->general()->getRepositoryObjects()
             ),
             new ResultBuilder(new ilCronJobResult()),
             $this->repository->notification(),
@@ -143,7 +152,7 @@ class ilSrCronJobFactory
                 ),
                 $this->repository->routine(),
                 $this->repository->rule(),
-                $this->repository->ilias()->getRepositoryObjects()
+                $this->repository->general()->getRepositoryObjects()
             ),
             new ResultBuilder(new ilCronJobResult()),
             $this->repository->notification(),

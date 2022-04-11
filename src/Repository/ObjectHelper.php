@@ -1,26 +1,22 @@
 <?php declare(strict_types=1);
 
-/* Copyright (c) 2022 Thibeau Fuhrer <thibeau@sr.solutions> Extended GPL, see docs/LICENSE */
+namespace srag\Plugins\SrLifeCycleManager\Repository;
 
 use srag\Plugins\SrLifeCycleManager\Routine\IRoutine;
+use Generator;
+use Exception;
+use ilObjectFactory;
+use ilTree;
 
 /**
- * This trait contains a set of helper functions that are used
- * within multiple repositories.
- *
  * @author Thibeau Fuhrer <thibeau@sr.solutions>
- *
- * @noinspection AutoloadingIssuesInspection
  */
-trait ilSrRepositoryHelper
+trait ObjectHelper
 {
     /**
-     * @inheritdoc
+     * @var ilTree
      */
-    public function getParentId(int $ref_id) : int
-    {
-        return (int) $this->tree->getParentId($ref_id);
-    }
+    protected $tree;
 
     /**
      * @inheritDoc
@@ -43,6 +39,14 @@ trait ilSrRepositoryHelper
                 yield from $this->getRepositoryObjects((int) $container['ref_id']);
             }
         }
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getParentId(int $ref_id) : int
+    {
+        return (int) $this->tree->getParentId($ref_id);
     }
 
     /**

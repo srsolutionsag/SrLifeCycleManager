@@ -148,7 +148,7 @@ class DeletableObjectGenerator implements IDeletableObjectGenerator
     protected function getAffectedRoutines(ilObject $object) : array
     {
         $affected_by = [];
-        foreach ($this->routine_repository->getAllByRefId($object->getRefId()) as $routine) {
+        foreach ($this->routine_repository->getAllActiveByRefId($object->getRefId()) as $routine) {
             $all_rules_applicable = true;
             foreach ($this->rule_repository->getByRoutine($routine) as $rule) {
                 $comparison = $this->comparison_factory->getComparison($object, $rule);

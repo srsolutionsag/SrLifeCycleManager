@@ -1,6 +1,6 @@
 <?php
 
-namespace srag\Plugins\SrLifeCycleManager;
+namespace srag\Plugins\SrLifeCycleManager\Repository;
 
 use Generator;
 use ilObject;
@@ -8,7 +8,7 @@ use ilObject;
 /**
  * @author Thibeau Fuhrer <thibeau@sr.solutions>
  */
-interface ILIASRepository
+interface IGeneralRepository
 {
     /**
      * Returns the parent id of the given object (ref-id) in the repository tree.
