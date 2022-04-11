@@ -30,6 +30,8 @@ class ilSrWhitelistGUI extends ilSrAbstractGUI
 
     /**
      * Panics if the request is missing an existing routine.
+     *
+     * @inheritdoc
      */
     public function __construct()
     {
@@ -47,9 +49,6 @@ class ilSrWhitelistGUI extends ilSrAbstractGUI
             ->addConfigurationTab()
             ->addRoutineTab()
             ->deactivateTabs()
-            ->setBackToTarget(
-                $this->getBackToTarget()
-            )
         ;
     }
 
@@ -92,6 +91,7 @@ class ilSrWhitelistGUI extends ilSrAbstractGUI
             $this->repository->whitelist()->getByRoutine($this->routine, true)
         );
 
+        $this->tab_manager->addBackToRoutines();
         $this->render($table->getTable());
     }
 
@@ -150,6 +150,7 @@ class ilSrWhitelistGUI extends ilSrAbstractGUI
             new WhitelistEntry(
                 $this->routine->getRoutineId(),
                 $this->object_ref_id,
+                $this->user->getId(),
                 false,
                 new DateTimeImmutable(),
                 $elongation
@@ -203,6 +204,7 @@ class ilSrWhitelistGUI extends ilSrAbstractGUI
             new WhitelistEntry(
                 $this->routine->getRoutineId(),
                 $this->object_ref_id,
+                $this->user->getId(),
                 true,
                 new DateTimeImmutable()
             )
@@ -241,24 +243,6 @@ class ilSrWhitelistGUI extends ilSrAbstractGUI
             ->diff($elongation_until)
             ->format("%r%a")
         ;
-    }
-
-    /**
-     * Returns the back-to target that points to the requested object
-     * if one was provided.
-     *
-     * @return string
-     */
-    protected function getBackToTarget() : string
-    {
-        if (null !== $this->object_ref_id) {
-            return ilLink::_getLink($this->object_ref_id);
-        }
-
-        return $this->ctrl->getLinkTargetByClass(
-            ilSrRoutineGUI::class,
-            ilSrRoutineGUI::CMD_INDEX
-        );
     }
 
     /**

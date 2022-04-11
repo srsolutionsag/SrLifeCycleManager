@@ -55,6 +55,19 @@ interface IRoutineRepository
     public function getAllActiveByRefId(int $ref_id, bool $array_data = false) : array;
 
     /**
+     * Fetches all existing assignments that are not assigned or already
+     * affecting the given object (ref-id).
+     *
+     * To retrieve routines as array-data, true can be passed as an argument
+     * (usually required by ilTableGUI).
+     *
+     * @param int  $ref_id
+     * @param bool $array_data
+     * @return IRoutine[]
+     */
+    public function getAllUnassignedByRefId(int $ref_id, bool $array_data = false) : array;
+
+    /**
      * Creates or updates the given routine in the database.
      *
      * @param IRoutine $routine

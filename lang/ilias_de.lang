@@ -110,6 +110,7 @@ action_routine_rules#:#Regeln
 action_routine_notifications#:#Benachrichtigungen
 action_routine_whitelist#:#Whitelist
 action_routine_assignments#:#Zuweisungen
+action_routine_assignment_manage#:#Zuweisungen verwalten
 action_routine_assignment_add#:#Zuweisung hinzufügen
 action_routine_assignment_edit#:#Bearbeiten
 action_routine_assignment_delete#:#Löschen

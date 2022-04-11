@@ -55,7 +55,7 @@ class ilSrRoutineAssignmentRepository implements IRoutineAssignmentRepository
     /**
      * @inheritDoc
      */
-    public function getByRoutineId(int $routine_id, bool $array_data = false) : array
+    public function getAllByRoutineId(int $routine_id, bool $array_data = false) : array
     {
         $query = "
             SELECT routine_id, ref_id, is_recursive, is_active FROM srlcm_assigned_routine
@@ -79,7 +79,7 @@ class ilSrRoutineAssignmentRepository implements IRoutineAssignmentRepository
     /**
      * @inheritDoc
      */
-    public function getByRefId(int $ref_id, bool $array_data = false) : array
+    public function getAllByRefId(int $ref_id, bool $array_data = false) : array
     {
         $query = "
             SELECT routine_id, ref_id, is_recursive, is_active FROM srlcm_assigned_routine
@@ -97,6 +97,47 @@ class ilSrRoutineAssignmentRepository implements IRoutineAssignmentRepository
                     ]
                 )
             ), $array_data
+        );
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function getUnassignedByRefId(int $ref_id, bool $array_data = false) : array
+    {
+        $query = "
+            SELECT routine_id, ref_id, is_recursive, is_active FROM srlcm_assigned_routine
+                WHERE ref_id = %s
+            ;
+        ";
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function getAllWithJoinedDataByRefId(int $ref_id) : array
+    {
+        $query = "
+            SELECT 
+                routine.routine_id, routine.usr_id, routine.routine_type, routine.origin_type, 
+                routine.has_opt_out, routine.elongation, routine.title, routine.creation_date,
+                assignment.routine_id, assignment.ref_id, assignment.is_recursive, assignment.is_active 
+                FROM srlcm_assigned_routine AS assignment
+                JOIN srlcm_routine AS routine ON `routine`.routine_id = assignment.routine_id
+                WHERE ref_id = %s
+            ;
+        ";
+
+        return $this->returnAllQueryResults(
+            $this->database->fetchAll(
+                $this->database->queryF(
+                    $query,
+                    ['integer'],
+                    [
+                        $ref_id
+                    ]
+                )
+            ), true
         );
     }
 

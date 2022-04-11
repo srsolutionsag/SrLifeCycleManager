@@ -53,9 +53,13 @@ class ilSrRoutineTable extends ilSrAbstractTable
     }
 
     /**
+     * Pass false as third argument to skip rendering the action column.
+     * This parameter was introduced so @see ilSrRoutineAssignmentTable
+     * could extend this class and share the rendering of routine data.
+     * @param bool $add_actions
      * @inheritDoc
      */
-    protected function renderTableRow(ilTemplate $template, array $data) : void
+    protected function renderTableRow(ilTemplate $template, array $data, bool $add_actions = true) : void
     {
         // translate the status of 'opt_out_possible'.
         $status_opt_out = ($data[IRoutine::F_HAS_OPT_OUT]) ?
@@ -76,12 +80,15 @@ class ilSrRoutineTable extends ilSrAbstractTable
         $template->setVariable(self::COL_ROUTINE_TYPE, $routine_type);
         $template->setVariable(self::COL_ROUTINE_ELONGATION, $data[IRoutine::F_ELONGATION]);
         $template->setVariable(self::COL_ROUTINE_HAS_OPT_OUT, $status_opt_out);
-        $template->setVariable(
-            self::COL_ACTIONS,
-            $this->renderer->render(
-                $this->getActionDropdown((int) $data[IRoutine::F_ROUTINE_ID])
-            )
-        );
+
+        if ($add_actions) {
+            $template->setVariable(
+                self::COL_ACTIONS,
+                $this->renderer->render(
+                    $this->getActionDropdown((int) $data[IRoutine::F_ROUTINE_ID])
+                )
+            );
+        }
     }
 
     /**
@@ -92,13 +99,7 @@ class ilSrRoutineTable extends ilSrAbstractTable
     {
         $this->setActionParameters($routine_id);
 
-        $actions[] = $this->ui_factory->button()->shy(
-            $this->translator->txt(self::ACTION_ROUTINE_RULES),
-            $this->ctrl->getLinkTargetByClass(
-                ilSrRuleGUI::class,
-                ilSrRuleGUI::CMD_INDEX
-            )
-        );
+        $actions = [];
 
         // this action is only necessary if the user can manage assignments.
         if ($this->access_handler->canManageAssignments()) {
@@ -113,6 +114,14 @@ class ilSrRoutineTable extends ilSrAbstractTable
 
         // these actions are only necessary if the user can manage routines.
         if ($this->access_handler->canManageRoutines()) {
+            $actions[] = $this->ui_factory->button()->shy(
+                $this->translator->txt(self::ACTION_ROUTINE_RULES),
+                $this->ctrl->getLinkTargetByClass(
+                    ilSrRuleGUI::class,
+                    ilSrRuleGUI::CMD_INDEX
+                )
+            );
+
             $actions[] = $this->ui_factory->button()->shy(
                 $this->translator->txt(self::ACTION_ROUTINE_NOTIFICATIONS),
                 $this->ctrl->getLinkTargetByClass(

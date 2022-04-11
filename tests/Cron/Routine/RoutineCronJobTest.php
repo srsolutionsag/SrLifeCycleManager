@@ -1,11 +1,10 @@
 <?php declare(strict_types=1);
 
-/* Copyright (c) 2022 Thibeau Fuhrer <thibeau@sr.solutions> Extended GPL, see docs/LICENSE */
-
 namespace srag\Plugins\SrLifeCycleManager\Tests\Cron\Routine;
 
-use PHPUnit\Framework\TestCase;
+require_once __DIR__ . '/../../../vendor/autoload.php';
 
+use PHPUnit\Framework\TestCase;
 use srag\Plugins\SrLifeCycleManager\Rule\Generator\IDeletableObjectGenerator;
 use srag\Plugins\SrLifeCycleManager\Rule\Generator\DeletableObject;
 use srag\Plugins\SrLifeCycleManager\Rule\Generator\IDeletableObject;
@@ -18,7 +17,6 @@ use srag\Plugins\SrLifeCycleManager\Whitelist\WhitelistEntry;
 use srag\Plugins\SrLifeCycleManager\Routine\IRoutineRepository;
 use srag\Plugins\SrLifeCycleManager\Routine\IRoutine;
 use srag\Plugins\SrLifeCycleManager\Cron\ResultBuilder;
-
 use DateTimeImmutable;
 use ArrayIterator;
 use DateInterval;
@@ -35,6 +33,11 @@ class RoutineCronJobTest extends TestCase
      * @var IRoutine
      */
     protected $pseudo_routine;
+
+    /**
+     * @var ResultBuilder
+     */
+    protected $result_builder;
 
     /**
      * @var IRoutineRepository
@@ -61,6 +64,8 @@ class RoutineCronJobTest extends TestCase
      */
     protected function setUp() : void
     {
+        $this->result_builder = $this->createMock(ResultBuilder::class);
+        $this->result_builder->method('request')->willReturn($this->result_builder);
         $this->pseudo_routine = $this->createMock(IRoutine::class);
         $this->pseudo_routine->method('getRoutineId')->willReturn(1);
         $this->notification_repository = $this->createMock(INotificationRepository::class);
@@ -83,6 +88,7 @@ class RoutineCronJobTest extends TestCase
                     return new WhitelistEntry(
                         1,
                         $whitelisted_ref_id,
+                        1,
                         false,
                         new DateTimeImmutable(),
                         10
@@ -393,7 +399,7 @@ class RoutineCronJobTest extends TestCase
         return new RoutineCronJobTestObject(
             $this->createMock(INotificationSender::class),
             $this->getGeneratorMock($objects),
-            $this->createMock(ResultBuilder::class),
+            $this->result_builder,
             $notifications,
             $routines,
             $whitelist,

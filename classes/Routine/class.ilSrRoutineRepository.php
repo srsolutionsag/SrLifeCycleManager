@@ -98,17 +98,23 @@ class ilSrRoutineRepository implements IRoutineRepository
                 routine.has_opt_out, routine.elongation, routine.title, routine.creation_date
                 FROM srlcm_assigned_routine AS assignment    
                 JOIN srlcm_routine AS routine ON `routine`.routine_id = assignment.routine_id
-                WHERE IF(
-                    (assignment.is_recursive = 1),
-                    (assignment.ref_id IN ({$this->getParentIdsForSqlComparison($ref_id)})), 
-                    (assignment.ref_id = {$this->getParentIdForSqlComparison($ref_id)})
+                WHERE (
+                    (assignment.is_recursive = 1 AND assignment.ref_id IN ({$this->getParentIdsForSqlComparison($ref_id)})) OR
+                    (assignment.is_recursive = 0 AND assignment.ref_id IN (%s, %s))
                 )
             ;
         ";
 
         return $this->returnAllQueryResults(
             $this->database->fetchAll(
-                $this->database->query($query)
+                $this->database->queryF(
+                    $query,
+                    ['integer', 'integer'],
+                    [
+                        $this->getParentId($ref_id),
+                        $ref_id,
+                    ]
+                )
             ), $array_data
         );
     }
@@ -125,17 +131,55 @@ class ilSrRoutineRepository implements IRoutineRepository
                 FROM srlcm_assigned_routine AS assignment    
                 JOIN srlcm_routine AS routine ON `routine`.routine_id = assignment.routine_id
                 WHERE assignment.is_active = 1
-                AND IF(
-                    (assignment.is_recursive = 1),
-                    (assignment.ref_id IN ({$this->getParentIdsForSqlComparison($ref_id)})), 
-                    (assignment.ref_id = {$this->getParentIdForSqlComparison($ref_id)})
+                AND (
+                    (assignment.is_recursive = 1 AND assignment.ref_id IN ({$this->getParentIdsForSqlComparison($ref_id)})) OR
+                    (assignment.is_recursive = 0 AND assignment.ref_id IN (%s, %s))
                 )
             ;
         ";
 
         return $this->returnAllQueryResults(
             $this->database->fetchAll(
-                $this->database->query($query)
+                $this->database->queryF(
+                    $query,
+                    ['integer', 'integer'],
+                    [
+                        $this->getParentId($ref_id),
+                        $ref_id,
+                    ]
+                )
+            ), $array_data
+        );
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function getAllUnassignedByRefId(int $ref_id, bool $array_data = false) : array
+    {
+        $query = "
+            SELECT 
+                routine.routine_id, routine.usr_id, routine.routine_type, routine.origin_type, 
+                routine.has_opt_out, routine.elongation, routine.title, routine.creation_date
+                FROM srlcm_assigned_routine AS assignment    
+                JOIN srlcm_routine AS routine ON `routine`.routine_id = assignment.routine_id
+                WHERE NOT (
+                    (assignment.is_recursive = 1 AND assignment.ref_id IN ({$this->getParentIdsForSqlComparison($ref_id)})) OR
+                    (assignment.is_recursive = 0 AND assignment.ref_id IN (%s, %s))
+                )
+            ;
+        ";
+
+        return $this->returnAllQueryResults(
+            $this->database->fetchAll(
+                $this->database->queryF(
+                    $query,
+                    ['integer', 'integer'],
+                    [
+                        $this->getParentId($ref_id),
+                        $ref_id,
+                    ]
+                )
             ), $array_data
         );
     }
@@ -161,7 +205,7 @@ class ilSrRoutineRepository implements IRoutineRepository
         // fk constraints we have to delete them manually, and I really
         // wanted to do this in one statement.
         $query = "
-            DELETE `routine`, rule, relation, notification, whitelist
+            DELETE `routine`, rule, relation, notification, whitelist, assignment
                 FROM (SELECT %s AS routine_id) AS deletable
                 LEFT OUTER JOIN srlcm_routine AS `routine` ON `routine`.routine_id = deletable.routine_id
                 LEFT OUTER JOIN srlcm_routine_rule AS relation ON relation.routine_id = deletable.routine_id

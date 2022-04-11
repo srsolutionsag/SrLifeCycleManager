@@ -87,7 +87,7 @@ class ilSrNotificationGUI extends ilSrAbstractGUI
             ->deactivateTabs()
             ->setBackToTarget(
                 $this->ctrl->getLinkTargetByClass(
-                    ilSrRoutineGUI::class,
+                    self::class,
                     self::CMD_INDEX
                 )
             )
@@ -125,6 +125,7 @@ class ilSrNotificationGUI extends ilSrAbstractGUI
             $this->repository->notification()->getByRoutine($this->routine, true)
         );
 
+        $this->tab_manager->addBackToRoutines();
         $this->toolbar_manager->addNotificationToolbar();
         $this->render($table->getTable());
     }

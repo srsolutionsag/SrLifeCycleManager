@@ -24,8 +24,9 @@ use ILIAS\UI\Component\Component;
 class ilSrToolProvider extends AbstractDynamicToolPluginProvider
 {
     // ilSrToolProvider language variables:
-    protected const MSG_AFFECTED_ROUTINES = 'msg_affected_routines';
+    protected const ACTION_ASSIGNMENTS_MANAGE = 'action_routine_assignment_manage';
     protected const ACTION_ROUTINE_MANAGE = 'action_routine_manage';
+    protected const MSG_AFFECTED_ROUTINES = 'msg_affected_routines';
 
     /**
      * @var int|null
@@ -188,10 +189,10 @@ class ilSrToolProvider extends AbstractDynamicToolPluginProvider
         if ($this->access_handler->canManageAssignments()) {
             // action-button to add new routines at current position.
             $controls[] = $this->dic->ui()->factory()->button()->standard(
-                $this->plugin->txt(ilSrToolbarManager::ACTION_ASSIGNMENT_ADD),
+                $this->plugin->txt(self::ACTION_ASSIGNMENTS_MANAGE),
                 ilSrLifeCycleManagerDispatcher::getLinkTarget(
                     ilSrRoutineAssignmentGUI::class,
-                    ilSrRoutineAssignmentGUI::CMD_ASSIGNMENT_EDIT
+                    ilSrRoutineAssignmentGUI::CMD_INDEX
                 )
             );
         }
@@ -252,6 +253,12 @@ class ilSrToolProvider extends AbstractDynamicToolPluginProvider
         $this->dic->ctrl()->setParameterByClass(
             ilSrRoutineAssignmentGUI::class,
             ilSrRoutineAssignmentGUI::PARAM_ASSIGNED_REF_ID,
+            $ref_id
+        );
+
+        $this->dic->ctrl()->setParameterByClass(
+            ilSrRoutineAssignmentGUI::class,
+            ilSrRoutineAssignmentGUI::PARAM_OBJECT_REF_ID,
             $ref_id
         );
 

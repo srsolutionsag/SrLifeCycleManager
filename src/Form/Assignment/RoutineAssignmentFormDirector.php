@@ -3,6 +3,7 @@
 namespace srag\Plugins\SrLifeCycleManager\Form\Assignment;
 
 use srag\Plugins\SrLifeCycleManager\Assignment\IRoutineAssignmentIntention;
+use srag\Plugins\SrLifeCycleManager\Routine\IRoutine;
 use ILIAS\UI\Component\Input\Container\Form\Form as UIForm;
 use LogicException;
 
@@ -12,15 +13,22 @@ use LogicException;
 class RoutineAssignmentFormDirector
 {
     /**
+     * @var IRoutine[]
+     */
+    protected $unassigned_routines;
+
+    /**
      * @var RoutineAssignmentFormBuilder
      */
     protected $form_builder;
 
     /**
      * @param RoutineAssignmentFormBuilder $form_builder
+     * @param array                        $unassigned_routines
      */
-    public function __construct(RoutineAssignmentFormBuilder $form_builder)
+    public function __construct(RoutineAssignmentFormBuilder $form_builder, array $unassigned_routines)
     {
+        $this->unassigned_routines = $unassigned_routines;
         $this->form_builder = $form_builder;
     }
 
@@ -69,6 +77,7 @@ class RoutineAssignmentFormDirector
     public function getObjectAssignmentForm() : UIForm
     {
         return $this->form_builder
+
             ->addObjectAssignmentInput()
             ->addStandardRoutineInput()
             ->getForm()

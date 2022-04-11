@@ -189,9 +189,10 @@ abstract class ilSrAbstractGUI
         // this cannot be done via static::class, because when building
         // link targets to another gui the parameter must be considered.
         $this->ctrl->saveParameterByClass(ilSrRoutineGUI::class, self::PARAM_OBJECT_REF_ID);
-        $this->ctrl->saveParameterByClass(ilSrRoutineGUI::class, self::PARAM_OBJECT_REF_ID);
+        $this->ctrl->saveParameterByClass(ilSrRoutineAssignmentGUI::class, self::PARAM_OBJECT_REF_ID);
         $this->ctrl->saveParameterByClass(ilSrRuleGUI::class, self::PARAM_OBJECT_REF_ID);
         $this->ctrl->saveParameterByClass(ilSrNotificationGUI::class, self::PARAM_OBJECT_REF_ID);
+        $this->ctrl->saveParameterByClass(ilSrWhitelistGUI::class, self::PARAM_OBJECT_REF_ID);
 
         // save current routine-id if provided for all derived classes.
         $this->ctrl->saveParameterByClass(static::class, self::PARAM_ROUTINE_ID);
@@ -278,11 +279,13 @@ abstract class ilSrAbstractGUI
     protected function getRequestedRoutine() : IRoutine
     {
         $routine_id = $this->getRequestParameter(self::PARAM_ROUTINE_ID);
+        $routine = null;
+
         if (null !== $routine_id) {
-            return $this->repository->routine()->get((int) $routine_id);
+            $routine = $this->repository->routine()->get((int) $routine_id);
         }
 
-        return $this->repository->routine()->empty($this->user->getId(), $this->origin);
+        return $routine ?? $this->repository->routine()->empty($this->user->getId(), $this->origin);
     }
 
     /**

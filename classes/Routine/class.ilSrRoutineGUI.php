@@ -107,6 +107,7 @@ class ilSrRoutineGUI extends ilSrAbstractGUI
      */
     protected function edit() : void
     {
+        $this->tab_manager->addBackToRoutines();
         $this->render($this->routine_form_builder->getForm());
     }
 
@@ -129,8 +130,10 @@ class ilSrRoutineGUI extends ilSrAbstractGUI
         );
 
         if ($processor->processForm()) {
-            // if the user requested an object, assign the newly added
-            // routine to the object (inactive though).
+            // if the user requested an object, assign the newly added routine
+            // to the object (inactive though). Without automatically assigning
+            // the routine, the user might be shown an empty routine table
+            // because the user's requested object is not linked.
             if (null !== $this->object_ref_id) {
                 $this->repository->assignment()->store(
                     new RoutineAssignment(

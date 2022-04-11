@@ -110,6 +110,7 @@ action_routine_rules#:#Rules
 action_routine_notifications#:#Notifications
 action_routine_whitelist#:#Whitelist
 action_routine_assignments#:#Assignments
+action_routine_assignment_manage#:#Manage assignments
 action_routine_assignment_add#:#Add assignment
 action_routine_assignment_edit#:#Edit
 action_routine_assignment_delete#:#Delete

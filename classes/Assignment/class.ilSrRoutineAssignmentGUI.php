@@ -7,6 +7,7 @@ use srag\Plugins\SrLifeCycleManager\Form\AbstractFormBuilder;
 use srag\Plugins\SrLifeCycleManager\Assignment\IRoutineAssignmentIntention;
 use srag\Plugins\SrLifeCycleManager\Assignment\IRoutineAssignment;
 use ILIAS\Filesystem\Stream\Streams;
+use ILIAS\UI\Component\Component;
 use ILIAS\DI\HTTPServices;
 
 /**
@@ -65,10 +66,13 @@ class ilSrRoutineAssignmentGUI extends ilSrAbstractGUI
 
         $this->http = $DIC->http();
         $this->assigned_ref_id = $this->getRequestedAssignmentRefId();
-        $this->assignment =
-            ($this->getRequestedAssignment() ?? $this->repository->assignment()->empty())
-                ->setRoutineId($this->routine->getRoutineId())
-                ->setRefId($this->assigned_ref_id)
+
+        // try to fetch the assignment from the database or create an empty one.
+        $this->assignment = $this->getRequestedAssignment() ?? $this->repository->assignment()->empty();
+        // set the assignment properties that might have been submitted.
+        $this->assignment
+            ->setRoutineId($this->routine->getRoutineId())
+            ->setRefId($this->assigned_ref_id)
         ;
 
         $this->form_director = new RoutineAssignmentFormDirector(
@@ -81,7 +85,8 @@ class ilSrRoutineAssignmentGUI extends ilSrAbstractGUI
                 $this->repository->routine()->getAll(),
                 $this->getFormAction(),
                 $this->getAjaxAction()
-            )
+            ),
+            $this->repository->routine()->getAllUnassignedByRefId($this->assigned_ref_id ?? 1)
         );
     }
 
@@ -96,7 +101,10 @@ class ilSrRoutineAssignmentGUI extends ilSrAbstractGUI
             ->addRoutineTab()
             ->deactivateTabs()
             ->setBackToTarget(
-                $this->getBackToTarget()
+                $this->ctrl->getLinkTargetByClass(
+                    self::class,
+                    self::CMD_INDEX
+                )
             )
         ;
     }
@@ -121,19 +129,9 @@ class ilSrRoutineAssignmentGUI extends ilSrAbstractGUI
      */
     protected function index() : void
     {
-        $table = new ilSrRoutineAssignmentTable(
-            $this->ui_factory,
-            $this->renderer,
-            $this->translator,
-            $this->access_handler,
-            $this->ctrl,
-            $this,
-            self::CMD_INDEX,
-            $this->getTableData()
-        );
-
+        $this->tab_manager->setBackToTarget($this->getBackToTarget());
         $this->toolbar_manager->addAssignmentToolbar();
-        $this->render($table->getTable());
+        $this->render($this->getTable());
     }
 
     /**
@@ -228,7 +226,7 @@ class ilSrRoutineAssignmentGUI extends ilSrAbstractGUI
             $this->http
                 ->response()
                 ->withBody(Streams::ofString(json_encode(
-                    $this->repository->ilias()->getObjectsByTerm($term)
+                    $this->repository->general()->getObjectsByTerm($term)
                 )))
                 ->withHeader('Content-Type', 'application/json; charset=utf-8')
         );
@@ -269,45 +267,43 @@ class ilSrRoutineAssignmentGUI extends ilSrAbstractGUI
     }
 
     /**
-     * Returns the assignment table data according to the current assignment's intention.
-     *
-     * @return array
+     * @return Component
      */
-    protected function getTableData() : array
+    protected function getTable() : Component
     {
         switch ($this->assignment->getIntention()) {
             case IRoutineAssignmentIntention::OBJECT_ASSIGNMENT:
-                return $this->repository->assignment()->getByRoutineId(
-                    $this->assignment->getRoutineId(),
-                    true
-                );
+                return (new ilSrRoutineAssignmentObjectTable(
+                    $this->ui_factory,
+                    $this->renderer,
+                    $this->translator,
+                    $this->access_handler,
+                    $this->ctrl,
+                    $this,
+                    self::CMD_INDEX,
+                    $this->repository->assignment()->getAllByRoutineId(
+                        $this->assignment->getRoutineId(),
+                        true
+                    )
+                ))->getTable();
 
             case IRoutineAssignmentIntention::ROUTINE_ASSIGNMENT:
-                return $this->repository->assignment()->getByRefId(
-                        $this->assignment->getRefId(),
-                        true
-                );
+                return (new ilSrRoutineAssignmentTable(
+                    $this->ui_factory,
+                    $this->renderer,
+                    $this->translator,
+                    $this->access_handler,
+                    $this->ctrl,
+                    $this,
+                    self::CMD_INDEX,
+                    $this->repository->assignment()->getAllWithJoinedDataByRefId(
+                        $this->assignment->getRefId()
+                    )
+                ))->getTable();
 
             default:
-                return [];
+                throw new LogicException("Cannot gather assignments without routine or object (ref-id).");
         }
-    }
-
-    /**
-     * Overrides the cancel-method, to redirect back to the requested object
-     * if one was provided instead of the overview.
-     *
-     * @inheritDoc
-     */
-    protected function cancel() : void
-    {
-//        if (null !== $this->assigned_ref_id) {
-//            $this->ctrl->redirectToURL(
-//                ilLink::_getLink($this->assigned_ref_id)
-//            );
-//        }
-
-        parent::cancel();
     }
 
     /**
@@ -318,7 +314,7 @@ class ilSrRoutineAssignmentGUI extends ilSrAbstractGUI
     protected function getFormAction() : string
     {
         // note that when the ref-id is null, ilCtrl won't append
-        // the parameter string to tue generated link targets.
+        // the parameter string to the generated link targets.
         $this->ctrl->setParameterByClass(
             self::class,
             self::PARAM_ASSIGNED_REF_ID,

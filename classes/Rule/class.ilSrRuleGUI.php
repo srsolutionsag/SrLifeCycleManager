@@ -83,7 +83,7 @@ class ilSrRuleGUI extends ilSrAbstractGUI
             ->deactivateTabs()
             ->setBackToTarget(
                 $this->ctrl->getLinkTargetByClass(
-                    ilSrRoutineGUI::class,
+                    self::class,
                     self::CMD_INDEX
                 )
             )
@@ -130,6 +130,7 @@ class ilSrRuleGUI extends ilSrAbstractGUI
             $this->repository->rule()->getByRoutine($this->routine, true)
         );
 
+        $this->tab_manager->addBackToRoutines();
         $this->toolbar_manager->addRuleToolbar();
         $this->render($table->getTable());
     }

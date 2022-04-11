@@ -125,6 +125,23 @@ class ilSrTabManager
     }
 
     /**
+     * Sets the current back-to target to point to @see ilSrRoutineGUI::index().
+     *
+     * @return self
+     */
+    public function addBackToRoutines() : self
+    {
+        $this->setBackToTarget(
+            $this->ctrl->getLinkTargetByClass(
+                ilSrRoutineGUI::class,
+                ilSrRoutineGUI::CMD_INDEX
+            )
+        );
+
+        return $this;
+    }
+
+    /**
      * Adds or overrides the back-to link shown in front of the tabs.
      *
      * @param string $target

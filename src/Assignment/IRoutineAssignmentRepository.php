@@ -27,7 +27,7 @@ interface IRoutineAssignmentRepository
      * @param bool $array_data
      * @return IRoutineAssignment[]
      */
-    public function getByRoutineId(int $routine_id, bool $array_data = false) : array;
+    public function getAllByRoutineId(int $routine_id, bool $array_data = false) : array;
 
     /**
      * Fetches all existing assignments of a given object (ref-id).
@@ -39,7 +39,15 @@ interface IRoutineAssignmentRepository
      * @param bool $array_data
      * @return IRoutineAssignment[]
      */
-    public function getByRefId(int $ref_id, bool $array_data = false) : array;
+    public function getAllByRefId(int $ref_id, bool $array_data = false) : array;
+
+    /**
+     * Fetches all existing assignments of a given object (ref-id) and
+     * the routines joined data.
+     *
+     * @return array<int, array<string, mixed>>
+     */
+    public function getAllWithJoinedDataByRefId(int $ref_id) : array;
 
     /**
      * Creates or updates the given routine assignment in the database.
