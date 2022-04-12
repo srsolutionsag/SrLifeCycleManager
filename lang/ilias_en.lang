@@ -31,6 +31,7 @@ msg_routine_opted_out#:#This object has been successfully whitelisted.
 msg_routine_already_opted_out#:#This object was already been whitelisted.
 msg_days_before_submission_error#:#A notification for this amount of days before submission already exists.
 msg_assignment_success#:#Assignment(s) successfully updated.
+msg_no_unassigned_routines#:#There are no routines available that don't already affect this object.
 
 page_title_rules#:#SrLifeCycleManager rules
 page_title_config#:#SrLifeCycleManager configuration
@@ -54,10 +55,11 @@ col_routine_type#:#Routine type
 col_routine_usr_id#:#Owner
 col_routine_has_opt_out#:#Opt-out
 col_routine_elongation#:#Elongaition (days)
-col_routine_assignment_ref_id#:#Ref-ID
-col_routine_assignment_obj_title#:#Object title
-col_routine_assignment_recursive#:#Recursive
-col_routine_assignment_active#:#Active
+col_object_assignment_ref_id#:#Ref-ID
+col_object_assignment_title#:#Object title
+col_assignment_recursive#:#Recursive
+col_assignment_active#:#Active
+col_assignment_user_id#:#Assigned by
 col_rule_rhs_type#:#RHS type
 col_rule_rhs_value#:#RHS value
 col_rule_operator#:#Operator
@@ -119,7 +121,7 @@ action_rule_delete#:#Remove
 action_notification_add#:#Add notification
 action_notification_edit#:#Edit
 action_notification_delete#:#Remove
-action_view_object#:#View object
+action_object_view#:#View object
 
 lhs_value#:#LHS Value
 rhs_value#:#RHS Value

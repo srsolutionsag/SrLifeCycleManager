@@ -85,12 +85,7 @@ class ilSrNotificationGUI extends ilSrAbstractGUI
             ->addConfigurationTab()
             ->addRoutineTab()
             ->deactivateTabs()
-            ->setBackToTarget(
-                $this->ctrl->getLinkTargetByClass(
-                    self::class,
-                    self::CMD_INDEX
-                )
-            )
+            ->addBackToIndex(static::class)
         ;
     }
 

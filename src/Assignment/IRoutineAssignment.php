@@ -5,13 +5,14 @@ namespace srag\Plugins\SrLifeCycleManager\Assignment;
 /**
  * @author Thibeau Fuhrer <thibeau@sr.solutions>
  */
-interface IRoutineAssignment extends IRoutineAssignmentIntention
+interface IRoutineAssignment
 {
     // IAssignedRoutine attributes:
     public const F_ROUTINE_ID = 'routine_id';
+    public const F_REF_ID = 'ref_id';
+    public const F_USER_ID = 'usr_id';
     public const F_IS_ACTIVE = 'is_active';
     public const F_RECURSIVE = 'is_recursive';
-    public const F_REF_ID = 'ref_id';
 
     /**
      * @return int|null
@@ -34,6 +35,17 @@ interface IRoutineAssignment extends IRoutineAssignmentIntention
      * @return IRoutineAssignment
      */
     public function setRefId(?int $ref_id) : IRoutineAssignment;
+
+    /**
+     * @return int
+     */
+    public function getUserId() : int;
+
+    /**
+     * @param int $user_id
+     * @return IRoutineAssignment
+     */
+    public function setUserId(int $user_id) : IRoutineAssignment;
 
     /**
      * @return bool

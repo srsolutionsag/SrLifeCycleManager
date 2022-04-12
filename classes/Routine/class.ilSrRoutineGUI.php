@@ -58,15 +58,13 @@ class ilSrRoutineGUI extends ilSrAbstractGUI
     {
         $template->setTitle($this->translator->txt(self::PAGE_TITLE));
 
-        // don't override the "back-to-plugins" target in configuration.
-        if (IRoutine::ORIGIN_TYPE_ADMINISTRATION !== $this->origin) {
-            $tabs->setBackToTarget($this->getBackToTarget());
+        // only show tabs in the administration context.
+        if (IRoutine::ORIGIN_TYPE_ADMINISTRATION === $this->origin) {
+            $tabs
+                ->addConfigurationTab()
+                ->addRoutineTab(true)
+            ;
         }
-
-        $tabs
-            ->addConfigurationTab()
-            ->addRoutineTab(true)
-        ;
     }
 
     /**
@@ -91,8 +89,13 @@ class ilSrRoutineGUI extends ilSrAbstractGUI
             $this->ctrl,
             $this,
             self::CMD_INDEX,
-            $this->getTableData()
+            $this->repository->routine()->getAll(true)
         );
+
+        // set back-to object target in repository context.
+        if (IRoutine::ORIGIN_TYPE_REPOSITORY === $this->origin) {
+            $this->tab_manager->addBackToObject($this->object_ref_id);
+        }
 
         $this->toolbar_manager->addRoutineToolbar();
         $this->render($table->getTable());
@@ -130,19 +133,6 @@ class ilSrRoutineGUI extends ilSrAbstractGUI
         );
 
         if ($processor->processForm()) {
-            // if the user requested an object, assign the newly added routine
-            // to the object (inactive though). Without automatically assigning
-            // the routine, the user might be shown an empty routine table
-            // because the user's requested object is not linked.
-            if (null !== $this->object_ref_id) {
-                $this->repository->assignment()->store(
-                    new RoutineAssignment(
-                        $this->routine->getRoutineId(),
-                        $this->object_ref_id
-                    )
-                );
-            }
-
             $this->sendSuccessMessage(self::MSG_ROUTINE_SUCCESS);
             $this->cancel();
         }
@@ -165,41 +155,6 @@ class ilSrRoutineGUI extends ilSrAbstractGUI
         }
 
         $this->cancel();
-    }
-
-    /**
-     * Returns the table-data for @see ilSrRoutineGUI::index().
-     *
-     * If an object (ref-id) is requested, the method will only consider
-     * routines that affect it.
-     *
-     * @return array
-     */
-    protected function getTableData() : array
-    {
-        if (null !== $this->object_ref_id) {
-            return $this->repository->routine()->getAllByRefId($this->object_ref_id, true);
-        }
-
-        return $this->repository->routine()->getAll(true);
-    }
-
-    /**
-     * Returns a back-to target to either the requested object, if provided,
-     * or the routine GUI index.
-     *
-     * @return string
-     */
-    protected function getBackToTarget() : string
-    {
-        if (null !== $this->object_ref_id) {
-            return ilLink::_getLink($this->object_ref_id);
-        }
-
-        return $this->ctrl->getLinkTargetByClass(
-            self::class,
-            self::CMD_INDEX
-        );
     }
 
     /**

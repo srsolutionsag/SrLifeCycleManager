@@ -3,7 +3,6 @@
 namespace srag\Plugins\SrLifeCycleManager\Form\Assignment;
 
 use srag\Plugins\SrLifeCycleManager\Assignment\IRoutineAssignment;
-use srag\Plugins\SrLifeCycleManager\Routine\IRoutine;
 use srag\Plugins\SrLifeCycleManager\ITranslator;
 use ILIAS\UI\Component\Input\Container\Form\Factory as FormFactory;
 use ILIAS\UI\Component\Input\Field\Factory as FieldFactory;
@@ -13,15 +12,15 @@ use ILIAS\Refinery\Factory as Refinery;
 /**
  * @author Thibeau Fuhrer <thibeau@sr.solutions>
  */
-class RoutineAssignmentFormBuilder extends AbstractAssignmentFormBuilder
+class ObjectAssignmentFormBuilder extends AbstractAssignmentFormBuilder
 {
     /**
-     * @var IRoutine[]
+     * @var string
      */
-    protected $unassigned_routines;
+    protected $ajax_source;
 
     /**
-     * @param IRoutine[] $unassigned_routines
+     * @param string $ajax_source
      * @inheritDoc
      */
     public function __construct(
@@ -31,11 +30,11 @@ class RoutineAssignmentFormBuilder extends AbstractAssignmentFormBuilder
         Refinery $refinery,
         IRoutineAssignment $assignment,
         array $all_routines,
-        array $unassigned_routines,
-        string $form_action
+        string $form_action,
+        string $ajax_source
     ) {
         parent::__construct($translator, $forms, $fields, $refinery, $assignment, $all_routines, $form_action);
-        $this->unassigned_routines = $unassigned_routines;
+        $this->ajax_source = $ajax_source;
     }
 
     /**
@@ -43,10 +42,7 @@ class RoutineAssignmentFormBuilder extends AbstractAssignmentFormBuilder
      */
     protected function getRoutineInput() : Input
     {
-        return $this->fields->multiSelect(
-            $this->translator->txt(self::INPUT_ROUTINE),
-            $this->getRoutineOptions($this->unassigned_routines)
-        )->withRequired(true);
+        return $this->getImmutableRoutineInput();
     }
 
     /**
@@ -54,6 +50,11 @@ class RoutineAssignmentFormBuilder extends AbstractAssignmentFormBuilder
      */
     protected function getObjectInput() : Input
     {
-        return $this->getImmutableObjectInput();
+        return $this->fields->tag(
+            $this->translator->txt(self::INPUT_REF_ID),
+            [] // all inputs are user-generated.
+        )->withAdditionalOnLoadCode(
+            $this->getTagInputAutoCompleteBinder($this->ajax_source)
+        )->withRequired(true);
     }
 }

@@ -9,7 +9,7 @@ use srag\Plugins\SrLifeCycleManager\Repository\DTOHelper;
  * @author       Thibeau Fuhrer <thibeau@sr.solutions>
  * @noinspection AutoloadingIssuesInspection
  */
-class ilSrRoutineAssignmentRepository implements IRoutineAssignmentRepository
+class ilSrAssignmentRepository implements IRoutineAssignmentRepository
 {
     use DTOHelper;
 
@@ -32,7 +32,7 @@ class ilSrRoutineAssignmentRepository implements IRoutineAssignmentRepository
     public function get(int $routine_id, int $ref_id) : ?IRoutineAssignment
     {
         $query = "
-            SELECT routine_id, ref_id, is_recursive, is_active FROM srlcm_assigned_routine
+            SELECT routine_id, ref_id, usr_id, is_recursive, is_active FROM srlcm_assigned_routine
                 WHERE routine_id = %s
                 AND ref_id = %s
             ;
@@ -58,7 +58,7 @@ class ilSrRoutineAssignmentRepository implements IRoutineAssignmentRepository
     public function getAllByRoutineId(int $routine_id, bool $array_data = false) : array
     {
         $query = "
-            SELECT routine_id, ref_id, is_recursive, is_active FROM srlcm_assigned_routine
+            SELECT routine_id, ref_id, usr_id, is_recursive, is_active FROM srlcm_assigned_routine
                 WHERE routine_id = %s
             ;
         ";
@@ -82,7 +82,7 @@ class ilSrRoutineAssignmentRepository implements IRoutineAssignmentRepository
     public function getAllByRefId(int $ref_id, bool $array_data = false) : array
     {
         $query = "
-            SELECT routine_id, ref_id, is_recursive, is_active FROM srlcm_assigned_routine
+            SELECT routine_id, ref_id, usr_id, is_recursive, is_active FROM srlcm_assigned_routine
                 WHERE ref_id = %s
             ;
         ";
@@ -103,25 +103,13 @@ class ilSrRoutineAssignmentRepository implements IRoutineAssignmentRepository
     /**
      * @inheritDoc
      */
-    public function getUnassignedByRefId(int $ref_id, bool $array_data = false) : array
-    {
-        $query = "
-            SELECT routine_id, ref_id, is_recursive, is_active FROM srlcm_assigned_routine
-                WHERE ref_id = %s
-            ;
-        ";
-    }
-
-    /**
-     * @inheritDoc
-     */
     public function getAllWithJoinedDataByRefId(int $ref_id) : array
     {
         $query = "
             SELECT 
                 routine.routine_id, routine.usr_id, routine.routine_type, routine.origin_type, 
                 routine.has_opt_out, routine.elongation, routine.title, routine.creation_date,
-                assignment.routine_id, assignment.ref_id, assignment.is_recursive, assignment.is_active 
+                assignment.routine_id, assignment.ref_id, assignment.usr_id, assignment.is_recursive, assignment.is_active 
                 FROM srlcm_assigned_routine AS assignment
                 JOIN srlcm_routine AS routine ON `routine`.routine_id = assignment.routine_id
                 WHERE ref_id = %s
@@ -186,9 +174,9 @@ class ilSrRoutineAssignmentRepository implements IRoutineAssignmentRepository
     /**
      * @inheritDoc
      */
-    public function empty() : IRoutineAssignment
+    public function empty(int $user_id) : IRoutineAssignment
     {
-        return new RoutineAssignment();
+        return new RoutineAssignment($user_id);
     }
 
     /**
@@ -202,17 +190,18 @@ class ilSrRoutineAssignmentRepository implements IRoutineAssignmentRepository
         }
 
         $query = "
-            INSERT INTO srlcm_assigned_routine (routine_id, ref_id, is_recursive, is_active)
-                VALUES (%s, %s, %s, %s)
+            INSERT INTO srlcm_assigned_routine (routine_id, ref_id, usr_id, is_recursive, is_active)
+                VALUES (%s, %s, %s, %s, %s)
             ;
         ";
 
         $this->database->manipulateF(
             $query,
-            ['integer', 'integer', 'integer', 'integer'],
+            ['integer', 'integer', 'integer', 'integer', 'integer'],
             [
                 $assignment->getRoutineId(),
                 $assignment->getRefId(),
+                $assignment->getUserId(),
                 (int) $assignment->isRecursive(),
                 (int) $assignment->isActive(),
             ]
@@ -259,6 +248,7 @@ class ilSrRoutineAssignmentRepository implements IRoutineAssignmentRepository
     protected function transformToDTO(array $query_result) : IRoutineAssignment
     {
         return new RoutineAssignment(
+            (int) $query_result[IRoutineAssignment::F_USER_ID],
             (int) $query_result[IRoutineAssignment::F_ROUTINE_ID],
             (int) $query_result[IRoutineAssignment::F_REF_ID],
             (bool) $query_result[IRoutineAssignment::F_IS_ACTIVE],

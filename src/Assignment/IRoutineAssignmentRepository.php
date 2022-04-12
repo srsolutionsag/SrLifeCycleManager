@@ -66,9 +66,10 @@ interface IRoutineAssignmentRepository
     public function delete(IRoutineAssignment $assignment) : bool;
 
     /**
-     * Returns an empty instance of the an assignment.
+     * Returns an empty instance of an assignment.
      *
+     * @param int $user_id
      * @return IRoutineAssignment
      */
-    public function empty() : IRoutineAssignment;
+    public function empty(int $user_id) : IRoutineAssignment;
 }

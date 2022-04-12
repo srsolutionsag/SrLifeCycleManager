@@ -18,6 +18,11 @@ class RoutineAssignment implements IRoutineAssignment
     protected $ref_id;
 
     /**
+     * @var int
+     */
+    protected $user_id;
+
+    /**
      * @var bool
      */
     protected $is_active;
@@ -28,17 +33,20 @@ class RoutineAssignment implements IRoutineAssignment
     protected $is_recursive;
 
     /**
+     * @param int      $user_id
      * @param int|null $routine
      * @param int|null $ref_id
      * @param bool     $is_active
      * @param bool     $is_recursive
      */
     public function __construct(
+        int $user_id,
         int $routine = null,
         int $ref_id = null,
         bool $is_active = false,
         bool $is_recursive = false
     ) {
+        $this->user_id = $user_id;
         $this->routine_id = $routine;
         $this->is_active = $is_active;
         $this->is_recursive = $is_recursive;
@@ -82,6 +90,23 @@ class RoutineAssignment implements IRoutineAssignment
     /**
      * @inheritDoc
      */
+    public function getUserId() : int
+    {
+        return $this->user_id;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function setUserId(int $user_id) : IRoutineAssignment
+    {
+        $this->user_id = $user_id;
+        return $this;
+    }
+
+    /**
+     * @inheritDoc
+     */
     public function isActive() : bool
     {
         return $this->is_active;
@@ -111,25 +136,5 @@ class RoutineAssignment implements IRoutineAssignment
     {
         $this->is_recursive = $is_recursive;
         return $this;
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function getIntention() : int
-    {
-        if (null === $this->routine_id && null !== $this->ref_id) {
-            return self::ROUTINE_ASSIGNMENT;
-        }
-
-        if (null !== $this->routine_id && null === $this->ref_id) {
-            return self::OBJECT_ASSIGNMENT;
-        }
-
-        if (null !== $this->routine_id && null !== $this->ref_id) {
-            return self::EDIT_ASSIGNMENT;
-        }
-
-        return self::UNKNOWN_ASSIGNMENT;
     }
 }

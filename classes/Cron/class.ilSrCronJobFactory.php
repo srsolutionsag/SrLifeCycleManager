@@ -71,7 +71,7 @@ class ilSrCronJobFactory
             new ilSrGeneralRepository($database, $tree, $rbac),
             new ilSrConfigRepository($database, $rbac),
             new ilSrRoutineRepository($database, $tree),
-            new ilSrRoutineAssignmentRepository($database),
+            new ilSrAssignmentRepository($database),
             new ilSrRuleRepository($database, $tree),
             new ilSrNotificationRepository($database),
             new ilSrWhitelistRepository($database)

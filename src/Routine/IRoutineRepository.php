@@ -55,8 +55,11 @@ interface IRoutineRepository
     public function getAllActiveByRefId(int $ref_id, bool $array_data = false) : array;
 
     /**
-     * Fetches all existing assignments that are not assigned or already
+     * Fetches all existing routines from the database that ARE NOT already
      * affecting the given object (ref-id).
+     *
+     * Affecting means, the object is either assigned directly, or the routine
+     * of a parent is recursive.
      *
      * To retrieve routines as array-data, true can be passed as an argument
      * (usually required by ilTableGUI).

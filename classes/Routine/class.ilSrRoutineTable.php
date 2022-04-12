@@ -28,8 +28,8 @@ class ilSrRoutineTable extends ilSrAbstractTable
     public const ACTION_ROUTINE_DELETE = 'action_routine_delete';
 
     // ilSrRoutineTable language variables:
-    protected const STATUS_POSSIBLE = 'status_possible';
-    protected const STATUS_IMPOSSIBLE = 'status_impossible';
+    public const STATUS_POSSIBLE = 'status_possible';
+    public const STATUS_IMPOSSIBLE = 'status_impossible';
 
     /**
      * @inheritDoc
@@ -53,13 +53,9 @@ class ilSrRoutineTable extends ilSrAbstractTable
     }
 
     /**
-     * Pass false as third argument to skip rendering the action column.
-     * This parameter was introduced so @see ilSrRoutineAssignmentTable
-     * could extend this class and share the rendering of routine data.
-     * @param bool $add_actions
      * @inheritDoc
      */
-    protected function renderTableRow(ilTemplate $template, array $data, bool $add_actions = true) : void
+    protected function renderTableRow(ilTemplate $template, array $data) : void
     {
         // translate the status of 'opt_out_possible'.
         $status_opt_out = ($data[IRoutine::F_HAS_OPT_OUT]) ?
@@ -81,14 +77,12 @@ class ilSrRoutineTable extends ilSrAbstractTable
         $template->setVariable(self::COL_ROUTINE_ELONGATION, $data[IRoutine::F_ELONGATION]);
         $template->setVariable(self::COL_ROUTINE_HAS_OPT_OUT, $status_opt_out);
 
-        if ($add_actions) {
-            $template->setVariable(
-                self::COL_ACTIONS,
-                $this->renderer->render(
-                    $this->getActionDropdown((int) $data[IRoutine::F_ROUTINE_ID])
-                )
-            );
-        }
+        $template->setVariable(
+            self::COL_ACTIONS,
+            $this->renderer->render(
+                $this->getActionDropdown((int) $data[IRoutine::F_ROUTINE_ID])
+            )
+        );
     }
 
     /**
@@ -106,8 +100,8 @@ class ilSrRoutineTable extends ilSrAbstractTable
             $actions[] = $this->ui_factory->button()->shy(
                 $this->translator->txt(self::ACTION_ROUTINE_ASSIGNMENTS),
                 $this->ctrl->getLinkTargetByClass(
-                    ilSrRoutineAssignmentGUI::class,
-                    ilSrRoutineAssignmentGUI::CMD_INDEX
+                    ilSrObjectAssignmentGUI::class,
+                    ilSrObjectAssignmentGUI::CMD_INDEX
                 )
             );
         }
@@ -170,8 +164,8 @@ class ilSrRoutineTable extends ilSrAbstractTable
         );
 
         $this->ctrl->setParameterByClass(
-            ilSrRoutineAssignmentGUI::class,
-            ilSrRoutineAssignmentGUI::PARAM_ROUTINE_ID,
+            ilSrObjectAssignmentGUI::class,
+            ilSrObjectAssignmentGUI::PARAM_ROUTINE_ID,
             $routine_id
         );
 

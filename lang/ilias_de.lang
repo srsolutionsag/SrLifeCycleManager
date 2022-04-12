@@ -31,6 +31,7 @@ msg_routine_opted_out#:#Das Objekt wurde erfolgreich von dieser Routine ausgesch
 msg_routine_opt_out_error#:#Dieses Objekt konnte nicht von der Routine ausgeschlossen werden, ggf. haben Sie das bereits getan.
 msg_days_before_submission_error#:#Eine Benachrichtigung die um diese Anzahl vor der Löschung geschickt wird existiert bereits.
 msg_assignment_success#:#Zusweisung(en) erfolgreich aktualisiert.
+msg_no_unassigned_routines#:#Es gibt keine Routinen mehr die diesem Objekt zugewiesen werden können.
 
 page_title_rules#:#SrLifeCycleManager Regeln
 page_title_config#:#SrLifeCycleManager Einstellungen
@@ -54,10 +55,11 @@ col_routine_type#:#Routinen Typ
 col_routine_usr_id#:#Besitzer
 col_routine_has_opt_out#:#Opt-out
 col_routine_elongation#:#Verlängerung (Tage)
-col_routine_assignment_ref_id#:#Ref-ID
-col_routine_assignment_obj_title#:#Objekttitel
-col_routine_assignment_recursive#:#Rekursiv
-col_routine_assignment_active#:#Aktiv
+col_object_assignment_ref_id#:#Ref-ID
+col_object_assignment_title#:#Objekttitel
+col_assignment_recursive#:#Rekursiv
+col_assignment_active#:#Aktiv
+col_assignment_user_id#:#Zuweisung von
 col_rule_rhs_type#:#RHS Typ
 col_rule_rhs_value#:#RHS Wert
 col_rule_operator#:#Operator
@@ -102,7 +104,7 @@ status_is_not_opt_out#:#Nein
 action_routine_add#:#Routine hinzufügen
 action_routine_edit#:#Bearbeiten
 action_routine_delete#:#Löschen
-action_routine_manage#:#Routinen Verwalten
+action_routine_manage#:#Routinen verwalten
 action_routine_extend#:#Verlängern
 action_routine_opt_out#:#Opt-out
 action_routine_view#:#Ansehen

@@ -153,6 +153,9 @@ class ilSrRoutineRepository implements IRoutineRepository
     }
 
     /**
+     * @todo: the query could most likely be optimized with joins instead
+     *        of the current sub-query.
+     *
      * @inheritDoc
      */
     public function getAllUnassignedByRefId(int $ref_id, bool $array_data = false) : array
@@ -161,11 +164,15 @@ class ilSrRoutineRepository implements IRoutineRepository
             SELECT 
                 routine.routine_id, routine.usr_id, routine.routine_type, routine.origin_type, 
                 routine.has_opt_out, routine.elongation, routine.title, routine.creation_date
-                FROM srlcm_assigned_routine AS assignment    
-                JOIN srlcm_routine AS routine ON `routine`.routine_id = assignment.routine_id
-                WHERE NOT (
-                    (assignment.is_recursive = 1 AND assignment.ref_id IN ({$this->getParentIdsForSqlComparison($ref_id)})) OR
-                    (assignment.is_recursive = 0 AND assignment.ref_id IN (%s, %s))
+                FROM srlcm_routine AS routine
+                WHERE routine.routine_id NOT IN (
+                    SELECT routine.routine_id 
+                        FROM srlcm_assigned_routine AS assignment 
+                        JOIN srlcm_routine AS routine ON routine.routine_id = assignment.routine_id
+                        WHERE (
+                            (assignment.is_recursive = 1 AND assignment.ref_id IN ({$this->getParentIdsForSqlComparison($ref_id)})) OR
+                            (assignment.is_recursive = 0 AND assignment.ref_id IN (%s, %s))
+                        )
                 )
             ;
         ";

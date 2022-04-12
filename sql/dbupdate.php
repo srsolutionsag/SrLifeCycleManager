@@ -314,6 +314,16 @@ if (!$ilDB->tableExists($table_name)) {
             'length'  => '8',
             'type'    => 'integer',
         ],
+        'ref_id' => [
+            'notnull' => '1',
+            'length'  => '8',
+            'type'    => 'integer',
+        ],
+        'usr_id' => [
+            'notnull' => '1',
+            'length'  => '8',
+            'type'    => 'integer',
+        ],
         'is_active' => [
             'notnull' => '1',
             'length'  => '8',
@@ -322,11 +332,6 @@ if (!$ilDB->tableExists($table_name)) {
         'is_recursive' => [
             'notnull' => '1',
             'length'  => '1',
-            'type'    => 'integer',
-        ],
-        'ref_id' => [
-            'notnull' => '1',
-            'length'  => '8',
             'type'    => 'integer',
         ],
     ];

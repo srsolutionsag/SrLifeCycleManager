@@ -101,7 +101,7 @@ class ilSrToolProvider extends AbstractDynamicToolPluginProvider
             new ilSrGeneralRepository($this->dic->database(), $this->dic->repositoryTree(), $this->dic->rbac()),
             new ilSrConfigRepository($this->dic->database(), $this->dic->rbac()),
             new ilSrRoutineRepository($this->dic->database(), $this->dic->repositoryTree()),
-            new ilSrRoutineAssignmentRepository($this->dic->database()),
+            new ilSrAssignmentRepository($this->dic->database()),
             new ilSrRuleRepository($this->dic->database(), $this->dic->repositoryTree()),
             new ilSrNotificationRepository($this->dic->database()),
             new ilSrWhitelistRepository($this->dic->database())
@@ -252,7 +252,7 @@ class ilSrToolProvider extends AbstractDynamicToolPluginProvider
     {
         $this->dic->ctrl()->setParameterByClass(
             ilSrRoutineAssignmentGUI::class,
-            ilSrRoutineAssignmentGUI::PARAM_ASSIGNED_REF_ID,
+            ilSrRoutineAssignmentGUI::PARAM_OBJECT_REF_ID,
             $ref_id
         );
 

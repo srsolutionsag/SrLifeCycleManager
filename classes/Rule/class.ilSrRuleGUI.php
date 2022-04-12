@@ -81,12 +81,7 @@ class ilSrRuleGUI extends ilSrAbstractGUI
             ->addConfigurationTab()
             ->addRoutineTab()
             ->deactivateTabs()
-            ->setBackToTarget(
-                $this->ctrl->getLinkTargetByClass(
-                    self::class,
-                    self::CMD_INDEX
-                )
-            )
+            ->addBackToIndex(self::class)
         ;
     }
 
@@ -144,18 +139,7 @@ class ilSrRuleGUI extends ilSrAbstractGUI
      */
     protected function edit() : void
     {
-        // overrides the back-to target while in form context to
-        // get back to the overview.
-        $this->tab_manager->setBackToTarget(
-            $this->ctrl->getLinkTargetByClass(
-                self::class,
-                self::CMD_INDEX
-            )
-        );
-
-        $this->render(
-            $this->form_director->getFormByRoutine($this->routine)
-        );
+        $this->render($this->form_director->getFormByRoutine($this->routine));
     }
 
     /**

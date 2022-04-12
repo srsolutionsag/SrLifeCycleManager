@@ -155,7 +155,7 @@ abstract class ilSrAbstractGUI
             new ilSrGeneralRepository($DIC->database(), $DIC->repositoryTree(), $DIC->rbac()),
             new ilSrConfigRepository($DIC->database(), $DIC->rbac()),
             new ilSrRoutineRepository($DIC->database(), $DIC->repositoryTree()),
-            new ilSrRoutineAssignmentRepository($DIC->database()),
+            new ilSrAssignmentRepository($DIC->database()),
             new ilSrRuleRepository($DIC->database(), $DIC->repositoryTree()),
             new ilSrNotificationRepository($DIC->database()),
             new ilSrWhitelistRepository($DIC->database())
@@ -179,23 +179,14 @@ abstract class ilSrAbstractGUI
             $this->access_handler,
             $this->translator,
             $DIC->tabs(),
-            $this->ctrl
+            $this->ctrl,
+            $this->origin
         );
 
         $this->object_ref_id = $this->getRequestedObject();
         $this->routine = $this->getRequestedRoutine();
 
-        // save current request object for all implementing classes.
-        // this cannot be done via static::class, because when building
-        // link targets to another gui the parameter must be considered.
-        $this->ctrl->saveParameterByClass(ilSrRoutineGUI::class, self::PARAM_OBJECT_REF_ID);
-        $this->ctrl->saveParameterByClass(ilSrRoutineAssignmentGUI::class, self::PARAM_OBJECT_REF_ID);
-        $this->ctrl->saveParameterByClass(ilSrRuleGUI::class, self::PARAM_OBJECT_REF_ID);
-        $this->ctrl->saveParameterByClass(ilSrNotificationGUI::class, self::PARAM_OBJECT_REF_ID);
-        $this->ctrl->saveParameterByClass(ilSrWhitelistGUI::class, self::PARAM_OBJECT_REF_ID);
-
-        // save current routine-id if provided for all derived classes.
-        $this->ctrl->saveParameterByClass(static::class, self::PARAM_ROUTINE_ID);
+        $this->keepNecessaryParametersAlive();
     }
 
     /**
@@ -406,6 +397,32 @@ abstract class ilSrAbstractGUI
     protected function displayInfoMessage(string $lang_var) : void
     {
         $this->displayMessageToast($lang_var, 'info');
+    }
+
+    /**
+     * This method keeps all query-parameters alive that are required
+     * throughout the derived classes.
+     */
+    private function keepNecessaryParametersAlive() : void
+    {
+        // the request object must be saved individually for each derived class
+        // and cannot be saved via 'static::class', because then ilCtrl would only
+        // consider the parameter for the instantiated object.
+        // this has to be done in order to generate links to different GUI classes
+        // and keeping alive the ref_id parameter, once provided.
+        $this->ctrl->saveParameterByClass(ilSrRoutineGUI::class, self::PARAM_OBJECT_REF_ID);
+        $this->ctrl->saveParameterByClass(ilSrRoutineAssignmentGUI::class, self::PARAM_OBJECT_REF_ID);
+        $this->ctrl->saveParameterByClass(ilSrObjectAssignmentGUI::class, self::PARAM_OBJECT_REF_ID);
+        $this->ctrl->saveParameterByClass(ilSrRuleGUI::class, self::PARAM_OBJECT_REF_ID);
+        $this->ctrl->saveParameterByClass(ilSrNotificationGUI::class, self::PARAM_OBJECT_REF_ID);
+        $this->ctrl->saveParameterByClass(ilSrWhitelistGUI::class, self::PARAM_OBJECT_REF_ID);
+
+        // DON'T save the parameter for routine-assignments, otherwise some links
+        // might misbehave because the routine-id must only be provided for edits.
+        if (ilSrRoutineAssignmentGUI::class !== static::class) {
+            // save current routine-id if provided for all other derived classes.
+            $this->ctrl->saveParameterByClass(static::class, self::PARAM_ROUTINE_ID);
+        }
     }
 
     /**
