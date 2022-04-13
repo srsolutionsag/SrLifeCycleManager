@@ -5,9 +5,9 @@ namespace srag\Plugins\SrLifeCycleManager\Tests\Cron\Routine;
 require_once __DIR__ . '/../../../vendor/autoload.php';
 
 use PHPUnit\Framework\TestCase;
-use srag\Plugins\SrLifeCycleManager\Rule\Generator\IDeletableObjectGenerator;
-use srag\Plugins\SrLifeCycleManager\Rule\Generator\DeletableObject;
-use srag\Plugins\SrLifeCycleManager\Rule\Generator\IDeletableObject;
+use srag\Plugins\SrLifeCycleManager\Routine\Provider\IDeletableObjectProvider;
+use srag\Plugins\SrLifeCycleManager\Routine\Provider\DeletableObject;
+use srag\Plugins\SrLifeCycleManager\Routine\Provider\IDeletableObject;
 use srag\Plugins\SrLifeCycleManager\Notification\INotificationSender;
 use srag\Plugins\SrLifeCycleManager\Notification\INotificationRepository;
 use srag\Plugins\SrLifeCycleManager\Notification\INotification;
@@ -347,11 +347,11 @@ class RoutineCronJobTest extends TestCase
 
     /**
      * @param ilObject[] $objects
-     * @return IDeletableObjectGenerator
+     * @return IDeletableObjectProvider
      */
-    protected function getGeneratorMock(array $objects) : IDeletableObjectGenerator
+    protected function getGeneratorMock(array $objects) : IDeletableObjectProvider
     {
-        return new class($this->pseudo_routine, $objects) extends ArrayIterator implements IDeletableObjectGenerator {
+        return new class($this->pseudo_routine, $objects) extends ArrayIterator implements IDeletableObjectProvider {
             /** @var IRoutine */
             protected $routine;
 

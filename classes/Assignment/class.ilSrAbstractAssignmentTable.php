@@ -1,7 +1,9 @@
 <?php declare(strict_types=1);
 
 use srag\Plugins\SrLifeCycleManager\Assignment\IRoutineAssignment;
+use srag\Plugins\SrLifeCycleManager\Routine\IRoutine;
 use ILIAS\UI\Component\Dropdown\Dropdown;
+use ILIAS\UI\Component\Button\Button;
 
 /**
  * @author       Thibeau Fuhrer <thibeau@sr.solutions>
@@ -17,6 +19,8 @@ abstract class ilSrAbstractAssignmentTable extends ilSrAbstractTable
     // ilSrAbstractAssignmentTable action names:
     protected const ACTION_ASSIGNMENT_EDIT = 'action_routine_assignment_edit';
     protected const ACTION_ASSIGNMENT_DELETE = 'action_routine_assignment_delete';
+    protected const ACTION_WHITELIST_POSTPONE = 'action_whitelist_postpone';
+    protected const ACTION_WHITELIST_OPT_OUT = 'action_whitelist_opt_out';
 
     // ilSrRoutineAssignmentTable language variables:
     protected const STATUS_RECURSIVE = 'status_recursive';
@@ -61,26 +65,24 @@ abstract class ilSrAbstractAssignmentTable extends ilSrAbstractTable
         $template->setVariable(self::COL_ASSIGNMENT_RECURSIVE, $status_recursive);
         $template->setVariable(self::COL_ASSIGNMENT_ACTIVE, $status_active);
 
+        $this->setActionParameters(
+            (int) $data[IRoutineAssignment::F_ROUTINE_ID],
+            (int) $data[IRoutineAssignment::F_REF_ID]
+        );
+
         $template->setVariable(
             self::COL_ACTIONS,
             $this->renderer->render(
-                $this->getActionDropdown(
-                    (int) $data[IRoutineAssignment::F_ROUTINE_ID],
-                    (int) $data[IRoutineAssignment::F_REF_ID]
-                )
+                $this->ui_factory->dropdown()->standard($this->getDropdownActions($data))
             )
         );
     }
 
     /**
-     * @param int $routine_id
-     * @param int $ref_id
-     * @return Dropdown
+     * @return Button[]
      */
-    protected function getActionDropdown(int $routine_id, int $ref_id) : Dropdown
+    protected function getDefaultActions() : array
     {
-        $this->setActionParameters($routine_id, $ref_id);
-
         $actions[] = $this->ui_factory->button()->shy(
             $this->translator->txt(self::ACTION_ASSIGNMENT_EDIT),
             $this->ctrl->getLinkTargetByClass(
@@ -89,15 +91,7 @@ abstract class ilSrAbstractAssignmentTable extends ilSrAbstractTable
             )
         );
 
-        $actions[] = $this->ui_factory->button()->shy(
-            $this->translator->txt(self::ACTION_ASSIGNMENT_DELETE),
-            $this->ctrl->getLinkTargetByClass(
-                get_class($this->parent_obj),
-                ilSrAbstractAssignmentGUI::CMD_ASSIGNMENT_DELETE
-            )
-        );
-
-        return $this->ui_factory->dropdown()->standard($actions);
+        return $actions;
     }
 
     /**
@@ -106,18 +100,6 @@ abstract class ilSrAbstractAssignmentTable extends ilSrAbstractTable
      */
     protected function setActionParameters(int $routine_id, int $ref_id) : void
     {
-        $this->ctrl->setParameterByClass(
-            ilSrWhitelistGUI::class,
-            ilSrWhitelistGUI::PARAM_ROUTINE_ID,
-            $routine_id
-        );
-
-        $this->ctrl->setParameterByClass(
-            ilSrWhitelistGUI::class,
-            ilSrWhitelistGUI::PARAM_OBJECT_REF_ID,
-            $ref_id
-        );
-
         $this->ctrl->setParameterByClass(
             get_class($this->parent_obj),
             ilSrAbstractAssignmentGUI::PARAM_ROUTINE_ID,
@@ -130,4 +112,10 @@ abstract class ilSrAbstractAssignmentTable extends ilSrAbstractTable
             $ref_id
         );
     }
+
+    /**
+     * @param array $data
+     * @return Button[]
+     */
+    abstract protected function getDropdownActions(array $data) : array;
 }

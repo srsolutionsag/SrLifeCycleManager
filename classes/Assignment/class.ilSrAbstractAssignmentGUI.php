@@ -2,11 +2,23 @@
 
 use srag\Plugins\SrLifeCycleManager\Form\Assignment\AssignmentFormProcessor;
 use srag\Plugins\SrLifeCycleManager\Assignment\IRoutineAssignment;
-use ILIAS\UI\Component\Input\Container\Form\Form;
 use srag\Plugins\SrLifeCycleManager\Routine\IRoutine;
+use ILIAS\UI\Component\Input\Container\Form\Form;
 
 /**
- * @author       Thibeau Fuhrer <thibeau@sr.solutions>
+ * This class holds the similarities of both, routine and object assignment
+ * GUIs and is used as an abstract base class for them.
+ *
+ * @author Thibeau Fuhrer <thibeau@sr.solutions>
+ *
+ * The wording might be kind of confusing (I have to admit), but I figured once
+ * I write this down it seems relatable.
+ *
+ * The derived class @see ilSrRoutineAssignmentGUI and everything other which
+ * is named in that fashion, is used for assigning multiple ROUTINES to one object.
+ * The derived class @see ilSrObjectAssignmentGUI on the other hand is used to
+ * assign multiple OBJECTS to one routine.
+ *
  * @noinspection AutoloadingIssuesInspection
  */
 abstract class ilSrAbstractAssignmentGUI extends ilSrAbstractGUI
@@ -54,6 +66,16 @@ abstract class ilSrAbstractAssignmentGUI extends ilSrAbstractGUI
             ->setRoutineId($this->routine->getRoutineId())
             ->setRefId($this->assignment_ref_id)
         ;
+    }
+
+    /**
+     * Public getter is due to actions in @see ilSrAbstractAssignmentTable::getActionDropdown().
+     *
+     * @return int|null
+     */
+    public function getAssignmentRefId() : ?int
+    {
+        return $this->assignment_ref_id;
     }
 
     /**

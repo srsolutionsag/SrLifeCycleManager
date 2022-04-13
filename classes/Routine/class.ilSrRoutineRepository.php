@@ -93,7 +93,7 @@ class ilSrRoutineRepository implements IRoutineRepository
     public function getAllByRefId(int $ref_id, bool $array_data = false) : array
     {
         $query = "
-            SELECT 
+            SELECT
                 routine.routine_id, routine.usr_id, routine.routine_type, routine.origin_type, 
                 routine.has_opt_out, routine.elongation, routine.title, routine.creation_date
                 FROM srlcm_assigned_routine AS assignment    
@@ -120,7 +120,15 @@ class ilSrRoutineRepository implements IRoutineRepository
     }
 
     /**
-     * @inheritDoc
+     * Fetches all existing routines from the database that affect the
+     * given ref-id AND are active.
+     *
+     * To retrieve routines as array-data, true can be passed as an argument
+     * (usually required by ilTableGUI).
+     *
+     * @param int  $ref_id
+     * @param bool $array_data
+     * @return IRoutine[]
      */
     public function getAllActiveByRefId(int $ref_id, bool $array_data = false) : array
     {
@@ -153,12 +161,51 @@ class ilSrRoutineRepository implements IRoutineRepository
     }
 
     /**
-     * @todo: the query could most likely be optimized with joins instead
-     *        of the current sub-query.
-     *
      * @inheritDoc
      */
-    public function getAllUnassignedByRefId(int $ref_id, bool $array_data = false) : array
+    public function getAllForComparison(int $ref_id, string $type) : array
+    {
+        $query = "
+            SELECT 
+                routine.routine_id, routine.usr_id, routine.routine_type, routine.origin_type, 
+                routine.has_opt_out, routine.elongation, routine.title, routine.creation_date
+                FROM srlcm_assigned_routine AS assignment
+                JOIN srlcm_routine AS routine ON routine.routine_id = assignment.routine_id
+                WHERE assignment.is_active = 1
+                AND routine.routine_type = %s
+                AND (
+                    (assignment.is_recursive = 1 AND assignment.ref_id IN ({$this->getParentIdsForSqlComparison($ref_id)})) OR
+                    (assignment.is_recursive = 0 AND assignment.ref_id IN (%s, %s))
+                ) 
+                AND routine.routine_id NOT IN (
+                    SELECT whitelist.routine_id FROM srlcm_whitelist AS whitelist
+                        WHERE whitelist.routine_id = assignment.routine_id
+                        AND whitelist.ref_id = %s
+                        AND whitelist.is_opt_out = 1
+                )
+            ;
+        ";
+
+        return $this->returnAllQueryResults(
+            $this->database->fetchAll(
+                $this->database->queryF(
+                    $query,
+                    ['text', 'integer', 'integer', 'integer'],
+                    [
+                        $type,
+                        $this->getParentId($ref_id),
+                        $ref_id,
+                        $ref_id,
+                    ]
+                )
+            )
+        );
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function getAllUnassigned(int $ref_id, bool $array_data = false) : array
     {
         $query = "
             SELECT 

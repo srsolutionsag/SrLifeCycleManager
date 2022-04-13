@@ -1,7 +1,6 @@
 <?php declare(strict_types=1);
 
 use srag\Plugins\SrLifeCycleManager\Assignment\IRoutineAssignment;
-use srag\Plugins\SrLifeCycleManager\Routine\IRoutine;
 use ILIAS\UI\Component\Dropdown\Dropdown;
 
 /**
@@ -52,20 +51,27 @@ class ilSrObjectAssignmentTable extends ilSrAbstractAssignmentTable
     }
 
     /**
-     * Override parent dropdown to add 'view object' action as well.
-     *
      * @inheritDoc
      */
-    protected function getActionDropdown(int $routine_id, int $ref_id) : Dropdown
+    protected function getDropdownActions(array $data) : array
     {
-        $dropdown = parent::getActionDropdown($routine_id, $ref_id);
-        $actions  = $dropdown->getItems();
+        $actions = $this->getDefaultActions();
+
+        // the delete action can always be shown, since the table will be
+        // displayed for routine managers.
+        $actions[] = $this->ui_factory->button()->shy(
+            $this->translator->txt(self::ACTION_ASSIGNMENT_DELETE),
+            $this->ctrl->getLinkTargetByClass(
+                get_class($this->parent_obj),
+                ilSrAbstractAssignmentGUI::CMD_ASSIGNMENT_DELETE
+            )
+        );
 
         $actions[] = $this->ui_factory->button()->shy(
             $this->translator->txt(self::ACTION_OBJECT_VIEW),
-            ilLink::_getLink($ref_id)
+            ilLink::_getLink((int) $data[IRoutineAssignment::F_REF_ID])
         );
 
-        return $this->ui_factory->dropdown()->standard($actions);
+        return $actions;
     }
 }

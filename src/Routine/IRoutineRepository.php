@@ -42,17 +42,16 @@ interface IRoutineRepository
     public function getAllByRefId(int $ref_id, bool $array_data = false) : array;
 
     /**
-     * Fetches all existing routines from the database that affect the
-     * given ref-id AND are active.
+     * Returns all existing routines from the database that are affecting
+     * the given object (ref-id and type).
      *
-     * To retrieve routines as array-data, true can be passed as an argument
-     * (usually required by ilTableGUI).
+     * If the routine has an opt-out whitelist entry it will not be considered.
      *
-     * @param int  $ref_id
-     * @param bool $array_data
-     * @return array
+     * @param int    $ref_id
+     * @param string $type
+     * @return IRoutine[]
      */
-    public function getAllActiveByRefId(int $ref_id, bool $array_data = false) : array;
+    public function getAllForComparison(int $ref_id, string $type) : array;
 
     /**
      * Fetches all existing routines from the database that ARE NOT already
@@ -68,7 +67,7 @@ interface IRoutineRepository
      * @param bool $array_data
      * @return IRoutine[]
      */
-    public function getAllUnassignedByRefId(int $ref_id, bool $array_data = false) : array;
+    public function getAllUnassigned(int $ref_id, bool $array_data = false) : array;
 
     /**
      * Creates or updates the given routine in the database.

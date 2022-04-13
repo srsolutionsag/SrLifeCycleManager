@@ -57,14 +57,10 @@ class ilSrRoutineGUI extends ilSrAbstractGUI
     protected function setupGlobalTemplate(ilGlobalTemplateInterface $template, ilSrTabManager $tabs) : void
     {
         $template->setTitle($this->translator->txt(self::PAGE_TITLE));
-
-        // only show tabs in the administration context.
-        if (IRoutine::ORIGIN_TYPE_ADMINISTRATION === $this->origin) {
-            $tabs
-                ->addConfigurationTab()
-                ->addRoutineTab(true)
-            ;
-        }
+        $tabs
+            ->addConfigurationTab()
+            ->addRoutineTab(true)
+        ;
     }
 
     /**

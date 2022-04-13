@@ -3,7 +3,7 @@
 namespace srag\Plugins\SrLifeCycleManager\Repository;
 
 use srag\Plugins\SrLifeCycleManager\Routine\IRoutine;
-use Generator;
+use Iterator;
 use Exception;
 use ilObjectFactory;
 use ilTree;
@@ -21,7 +21,7 @@ trait ObjectHelper
     /**
      * @inheritDoc
      */
-    public function getRepositoryObjects(int $ref_id = 1) : Generator
+    public function getRepositoryObjects(int $ref_id = 1) : Iterator
     {
         $container_objects = $this->tree->getChildsByTypeFilter($ref_id, ['crs', 'cat', 'grp', 'fold']);
         if (empty($container_objects)) {

@@ -104,10 +104,9 @@ class ilSrRuleRepository implements IRuleRepository
                 JOIN srlcm_assigned_routine AS assignment ON assignment.routine_id = routine.routine_id
                 WHERE routine.routine_type = %s
                 AND assignment.is_active = 1
-                AND IF(
-                    (assignment.is_recursive = 1),
-                    (assignment.ref_id IN ({$this->getParentIdsForSqlComparison($ref_id)})), 
-                    (assignment.ref_id = {$this->getParentIdForSqlComparison($ref_id)})
+                AND (
+                    (assignment.is_recursive = 1 AND assignment.ref_id IN ({$this->getParentIdsForSqlComparison($ref_id)})) OR
+                    (assignment.is_recursive = 0 AND assignment.ref_id IN (%s, %s))
                 )
             ;
         ";
@@ -116,8 +115,12 @@ class ilSrRuleRepository implements IRuleRepository
             $this->database->fetchAll(
                 $this->database->queryF(
                     $query,
-                    ['text'],
-                    [$routine_type]
+                    ['text', 'integer', 'integer'],
+                    [
+                        $routine_type,
+                        $this->getParentId($ref_id),
+                        $ref_id,
+                    ]
                 )
             )
         );

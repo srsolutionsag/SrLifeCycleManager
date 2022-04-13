@@ -3,6 +3,7 @@
 use srag\Plugins\SrLifeCycleManager\Assignment\IRoutineAssignmentRepository;
 use srag\Plugins\SrLifeCycleManager\Assignment\IRoutineAssignment;
 use srag\Plugins\SrLifeCycleManager\Assignment\RoutineAssignment;
+use srag\Plugins\SrLifeCycleManager\Repository\ObjectHelper;
 use srag\Plugins\SrLifeCycleManager\Repository\DTOHelper;
 
 /**
@@ -11,6 +12,7 @@ use srag\Plugins\SrLifeCycleManager\Repository\DTOHelper;
  */
 class ilSrAssignmentRepository implements IRoutineAssignmentRepository
 {
+    use ObjectHelper;
     use DTOHelper;
 
     /**
@@ -20,10 +22,12 @@ class ilSrAssignmentRepository implements IRoutineAssignmentRepository
 
     /**
      * @param ilDBInterface $database
+     * @param ilTree        $tree
      */
-    public function __construct(ilDBInterface $database)
+    public function __construct(ilDBInterface $database, ilTree $tree)
     {
         $this->database = $database;
+        $this->tree = $tree;
     }
 
     /**
@@ -109,10 +113,13 @@ class ilSrAssignmentRepository implements IRoutineAssignmentRepository
             SELECT 
                 routine.routine_id, routine.usr_id, routine.routine_type, routine.origin_type, 
                 routine.has_opt_out, routine.elongation, routine.title, routine.creation_date,
-                assignment.routine_id, assignment.ref_id, assignment.usr_id, assignment.is_recursive, assignment.is_active 
+                assignment.routine_id, assignment.ref_id, assignment.usr_id, assignment.is_recursive, assignment.is_active
                 FROM srlcm_assigned_routine AS assignment
                 JOIN srlcm_routine AS routine ON `routine`.routine_id = assignment.routine_id
-                WHERE ref_id = %s
+                WHERE (
+                    (assignment.is_recursive = 1 AND assignment.ref_id IN ({$this->getParentIdsForSqlComparison($ref_id)})) OR
+                    (assignment.is_recursive = 0 AND assignment.ref_id IN (%s, %s))
+                )
             ;
         ";
 
@@ -120,9 +127,10 @@ class ilSrAssignmentRepository implements IRoutineAssignmentRepository
             $this->database->fetchAll(
                 $this->database->queryF(
                     $query,
-                    ['integer'],
+                    ['integer', 'integer'],
                     [
-                        $ref_id
+                        $this->getParentId($ref_id),
+                        $ref_id,
                     ]
                 )
             ), true

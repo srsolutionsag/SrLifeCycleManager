@@ -1,12 +1,21 @@
 <?php declare(strict_types=1);
 
-use srag\Plugins\SrLifeCycleManager\Routine\IRoutine;
 use srag\Plugins\SrLifeCycleManager\Form\Assignment\RoutineAssignmentFormBuilder;
+use srag\Plugins\SrLifeCycleManager\Routine\IRoutine;
 use srag\Plugins\SrLifeCycleManager\Form\IFormBuilder;
 use ILIAS\UI\Component\Input\Container\Form\Form;
 
 /**
- * @author       Thibeau Fuhrer <thibeau@sr.solutions>
+ * This class is responsible for assigning multiple or one routine to
+ * exactly one object.
+ *
+ * @author Thibeau Fuhrer <thibeau@sr.solutions>
+ *
+ * The GUI must therefore be provided with @see ilSrAbstractGUI::PARAM_OBJECT_REF_ID,
+ * Otherwise the constructor will throw an exception.
+ * Optionally, @see ilSrAbstractGUI::PARAM_ROUTINE_ID can be provided, which means
+ * an existing assignment is edited.
+ *
  * @noinspection AutoloadingIssuesInspection
  */
 class ilSrRoutineAssignmentGUI extends ilSrAbstractAssignmentGUI
@@ -35,7 +44,7 @@ class ilSrRoutineAssignmentGUI extends ilSrAbstractAssignmentGUI
 
         $this->panicOnMissingAssignmentRefId();
 
-        $this->unassigned_routines = $this->repository->routine()->getAllUnassignedByRefId($this->assignment_ref_id);
+        $this->unassigned_routines = $this->repository->routine()->getAllUnassigned($this->assignment_ref_id);
         $this->form_builder = new RoutineAssignmentFormBuilder(
             $this->translator,
             $this->ui_factory->input()->container()->form(),
@@ -97,7 +106,7 @@ class ilSrRoutineAssignmentGUI extends ilSrAbstractAssignmentGUI
     }
 
     /**
-     * Throws an exception if the request didn't provide an assignment-ref-id.
+     * Throws an exception if the request didn't provide an object-ref-id.
      *
      * @see ilSrAbstractAssignmentGUI::PARAM_OBJECT_REF_ID
      * @throws LogicException

@@ -33,7 +33,7 @@ return array(
     'ilSrRoutineAssignmentTable' => $baseDir . '/classes/Assignment/Routine/class.ilSrRoutineAssignmentTable.php',
     'ilSrRoutineCronJob' => $baseDir . '/classes/Cron/class.ilSrRoutineCronJob.php',
     'ilSrRoutineGUI' => $baseDir . '/classes/Routine/class.ilSrRoutineGUI.php',
-    'ilSrRoutineList' => $baseDir . '/classes/Routine/class.ilSrRoutineList.php',
+    'ilSrRoutineListBuilder' => $baseDir . '/classes/Routine/class.ilSrRoutineListBuilder.php',
     'ilSrRoutineRepository' => $baseDir . '/classes/Routine/class.ilSrRoutineRepository.php',
     'ilSrRoutineTable' => $baseDir . '/classes/Routine/class.ilSrRoutineTable.php',
     'ilSrRuleGUI' => $baseDir . '/classes/Rule/class.ilSrRuleGUI.php',

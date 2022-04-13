@@ -82,7 +82,7 @@ class ilSrTabManager
     public function addConfigurationTab(bool $is_active = false) : self
     {
         // add plugin-configuration tab only for administrator
-        if (!$this->access_handler->isAdministrator() || !$this->inAdministration()) {
+        if (!$this->access_handler->isAdministrator()) {
             return $this;
         }
 
@@ -113,7 +113,7 @@ class ilSrTabManager
     public function addRoutineTab(bool $is_active = false) : self
     {
         // add routine-tab only for routine managers.
-        if (!$this->access_handler->canManageRoutines() || !$this->inAdministration()) {
+        if (!$this->access_handler->canManageRoutines()) {
             return $this;
         }
 

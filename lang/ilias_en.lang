@@ -22,7 +22,8 @@ msg_routine_whitelist_error#:#The requested routine does not support whitelist-e
 msg_routine_whitelist_failure#:#Your request was not an opt-out and elongations aren't supported.
 msg_routine_whitelist_success#:#Object successfully whitelisted.
 msg_privileged_user#:#You are allowed to manage your own routines at this position.
-msg_affected_routines#:#There are active routines that affect this object! Check the tools for more information.
+msg_affected_routines#:#There are routines that affect this object:
+msg_assigned_routines#:#There are routines assigned to this object:
 msg_routine_cant_extend#:#This routine cannot be extended.
 msg_routine_extended#:#This object has been successfully whitelisted for [ELONGATION] days.
 msg_routine_already_extended#:#The deletion of this object was already postponed.
@@ -105,9 +106,8 @@ action_routine_add#:#Add routine
 action_routine_edit#:#Edit
 action_routine_delete#:#Delete
 action_routine_manage#:#Manage routines
-action_routine_extend#:#Extend
-action_routine_opt_out#:#Opt-out
-action_routine_view#:#View
+action_whitelist_postpone#:#Postpone
+action_whitelist_opt_out#:#Opt-out
 action_routine_rules#:#Rules
 action_routine_notifications#:#Notifications
 action_routine_whitelist#:#Whitelist
@@ -116,6 +116,7 @@ action_routine_assignment_manage#:#Manage assignments
 action_routine_assignment_add#:#Add assignment
 action_routine_assignment_edit#:#Edit
 action_routine_assignment_delete#:#Delete
+action_routine_assignment_remove#:#Remove
 action_rule_add#:#Add rule
 action_rule_delete#:#Remove
 action_notification_add#:#Add notification

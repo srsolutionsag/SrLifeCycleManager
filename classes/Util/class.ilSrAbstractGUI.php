@@ -155,7 +155,7 @@ abstract class ilSrAbstractGUI
             new ilSrGeneralRepository($DIC->database(), $DIC->repositoryTree(), $DIC->rbac()),
             new ilSrConfigRepository($DIC->database(), $DIC->rbac()),
             new ilSrRoutineRepository($DIC->database(), $DIC->repositoryTree()),
-            new ilSrAssignmentRepository($DIC->database()),
+            new ilSrAssignmentRepository($DIC->database(), $DIC->repositoryTree()),
             new ilSrRuleRepository($DIC->database(), $DIC->repositoryTree()),
             new ilSrNotificationRepository($DIC->database()),
             new ilSrWhitelistRepository($DIC->database())

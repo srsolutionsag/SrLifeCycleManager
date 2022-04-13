@@ -154,7 +154,7 @@ class ilSrNotificationRepository implements INotificationRepository
     public function notifyObject(INotification $notification, int $ref_id) : ISentNotification
     {
         $query = "
-            INSERT INTO slrmc_notified_objects (routine_id, notification_id, ref_id, date)
+            INSERT INTO srlcm_notified_objects (routine_id, notification_id, ref_id, date)
                 VALUES (%s, %s, %s, %s)
             ;
         ";

@@ -95,21 +95,6 @@ class ilSrRuleGUI extends ilSrAbstractGUI
     }
 
     /**
-     * Fetches the requested rule from the database if an id was provided.
-     *
-     * @return IRule|null
-     */
-    protected function getRequestedRule() : ?IRule
-    {
-        $rule_id = $this->getRequestParameter(self::PARAM_RULE_ID);
-        if (null !== $rule_id) {
-            return $this->repository->rule()->get((int) $rule_id);
-        }
-
-        return null;
-    }
-
-    /**
      * Displays all existing rules that are related to the requested routine.
      */
     protected function index() : void
@@ -182,6 +167,21 @@ class ilSrRuleGUI extends ilSrAbstractGUI
         }
 
         $this->cancel();
+    }
+
+    /**
+     * Fetches the requested rule from the database if an id was provided.
+     *
+     * @return IRule|null
+     */
+    protected function getRequestedRule() : ?IRule
+    {
+        $rule_id = $this->getRequestParameter(self::PARAM_RULE_ID);
+        if (null !== $rule_id) {
+            return $this->repository->rule()->get((int) $rule_id);
+        }
+
+        return null;
     }
 
     /**

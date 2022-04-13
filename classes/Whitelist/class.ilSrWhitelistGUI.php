@@ -16,8 +16,8 @@ use srag\Plugins\SrLifeCycleManager\Routine\IRoutine;
 class ilSrWhitelistGUI extends ilSrAbstractGUI
 {
     // ilSrWhitelistGUI command/method names:
-    public const CMD_ROUTINE_OPT_OUT = 'optOut';
-    public const CMD_ROUTINE_EXTEND  = 'extend';
+    public const CMD_WHITELIST_POSTPONE  = 'postpone';
+    public const CMD_WHITELIST_OPT_OUT = 'optOut';
 
     // ilSrWhitelistGUI language variables:
     protected const MSG_ROUTINE_EXTENDED = 'msg_routine_extended';
@@ -105,7 +105,7 @@ class ilSrWhitelistGUI extends ilSrAbstractGUI
      * Otherwise, the user will be redirected back to the requested
      * object with an according info-message.
      */
-    protected function extend() : void
+    protected function postpone() : void
     {
         // abort if the requested routine has not been stored yet or
         // no target object was provided.

@@ -58,4 +58,69 @@ class ilSrRoutineAssignmentTable extends ilSrAbstractAssignmentTable
 
         parent::renderTableRow($template, $data);
     }
+
+    /**
+     * @inheritDoc
+     */
+    protected function getDropdownActions(array $data) : array
+    {
+        $actions = $this->getDefaultActions();
+
+        // add the delete action if the requested object is directly assigned
+        // to the routine (and not by recursion), otherwise the whitelist
+        // actions might be added (see below).
+        if ($this->parent_obj->getAssignmentRefId() === (int) $data[IRoutineAssignment::F_REF_ID]) {
+            $actions[] = $this->ui_factory->button()->shy(
+                $this->translator->txt(self::ACTION_ASSIGNMENT_DELETE),
+                $this->ctrl->getLinkTargetByClass(
+                    get_class($this->parent_obj),
+                    ilSrAbstractAssignmentGUI::CMD_ASSIGNMENT_DELETE
+                )
+            );
+
+            return $actions;
+        }
+
+        if ($data[IRoutine::F_HAS_OPT_OUT]) {
+            $actions[] = $this->ui_factory->button()->shy(
+                $this->translator->txt(self::ACTION_WHITELIST_OPT_OUT),
+                $this->ctrl->getLinkTargetByClass(
+                    ilSrWhitelistGUI::class,
+                    ilSrWhitelistGUI::CMD_WHITELIST_OPT_OUT
+                )
+            );
+        }
+
+        if (0 < (int) $data[IRoutine::F_ELONGATION]) {
+            $actions[] = $this->ui_factory->button()->shy(
+                $this->translator->txt(self::ACTION_WHITELIST_POSTPONE),
+                $this->ctrl->getLinkTargetByClass(
+                    ilSrWhitelistGUI::class,
+                    ilSrWhitelistGUI::CMD_WHITELIST_POSTPONE
+                )
+            );
+        }
+
+        return $actions;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    protected function setActionParameters(int $routine_id, int $ref_id) : void
+    {
+        parent::setActionParameters($routine_id, $ref_id);
+
+        $this->ctrl->setParameterByClass(
+            ilSrWhitelistGUI::class,
+            ilSrWhitelistGUI::PARAM_ROUTINE_ID,
+            $routine_id
+        );
+
+        $this->ctrl->setParameterByClass(
+            ilSrWhitelistGUI::class,
+            ilSrWhitelistGUI::PARAM_OBJECT_REF_ID,
+            $ref_id
+        );
+    }
 }

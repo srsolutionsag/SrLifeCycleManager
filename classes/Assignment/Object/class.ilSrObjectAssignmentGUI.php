@@ -1,13 +1,22 @@
 <?php declare(strict_types=1);
 
-use srag\Plugins\SrLifeCycleManager\Form\IFormBuilder;
 use srag\Plugins\SrLifeCycleManager\Form\Assignment\ObjectAssignmentFormBuilder;
+use srag\Plugins\SrLifeCycleManager\Form\IFormBuilder;
 use ILIAS\UI\Component\Input\Container\Form\Form;
 use ILIAS\Filesystem\Stream\Streams;
 use ILIAS\DI\HTTPServices;
 
 /**
- * @author       Thibeau Fuhrer <thibeau@sr.solutions>
+ * This class is responsible for assigning multiple or one object to
+ * exactly one routine.
+ *
+ * @author Thibeau Fuhrer <thibeau@sr.solutions>
+ *
+ * The GUI must therefore be provided with @see ilSrAbstractGUI::PARAM_ROUTINE_ID,
+ * Otherwise the constructor will throw an exception.
+ * Optionally, @see ilSrObjectAssignmentGUI::PARAM_ASSIGNED_REF_ID can be provided,
+ * which means an existing assignment is edited.
+ *
  * @noinspection AutoloadingIssuesInspection
  */
 class ilSrObjectAssignmentGUI extends ilSrAbstractAssignmentGUI

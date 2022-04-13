@@ -1,6 +1,8 @@
 <?php declare(strict_types=1);
 
-use srag\Plugins\SrLifeCycleManager\Repository\RepositoryFactory;
+use srag\Plugins\SrLifeCycleManager\Routine\Provider\RoutineProvider;
+use srag\Plugins\SrLifeCycleManager\Routine\IRoutineRepository;
+use srag\Plugins\SrLifeCycleManager\Routine\IRoutine;
 use srag\Plugins\SrLifeCycleManager\Rule\Requirement\RequirementFactory;
 use srag\Plugins\SrLifeCycleManager\Rule\Attribute\AttributeFactory;
 use srag\Plugins\SrLifeCycleManager\Rule\Comparison\ComparisonFactory;
@@ -27,6 +29,7 @@ class ilSrToolProvider extends AbstractDynamicToolPluginProvider
     protected const ACTION_ASSIGNMENTS_MANAGE = 'action_routine_assignment_manage';
     protected const ACTION_ROUTINE_MANAGE = 'action_routine_manage';
     protected const MSG_AFFECTED_ROUTINES = 'msg_affected_routines';
+    protected const MSG_ASSIGNED_ROUTINES = 'msg_assigned_routines';
 
     /**
      * @var int|null
@@ -34,14 +37,19 @@ class ilSrToolProvider extends AbstractDynamicToolPluginProvider
     protected $request_object;
 
     /**
-     * @var ComparisonFactory
+     * @var ilSrAssignmentRepository
      */
-    protected $comparisons;
+    protected $assignment_repository;
 
     /**
-     * @var RepositoryFactory
+     * @var IRoutineRepository
      */
-    protected $repository;
+    protected $routine_repository;
+
+    /**
+     * @var RoutineProvider
+     */
+    protected $routine_provider;
 
     /**
      * @var ilSrAccessHandler
@@ -92,22 +100,33 @@ class ilSrToolProvider extends AbstractDynamicToolPluginProvider
             $this->keepObjectAlive($this->request_object);
         }
 
-        $this->comparisons = new ComparisonFactory(
-            new RequirementFactory($this->dic->database()),
-            new AttributeFactory()
+        $this->config = (new ilSrConfigRepository(
+            $this->dic->database(),
+            $this->dic->rbac())
+        )->get();
+
+        $this->assignment_repository = new ilSrAssignmentRepository(
+            $this->dic->database(),
+            $this->dic->repositoryTree()
         );
 
-        $this->repository = new RepositoryFactory(
-            new ilSrGeneralRepository($this->dic->database(), $this->dic->repositoryTree(), $this->dic->rbac()),
-            new ilSrConfigRepository($this->dic->database(), $this->dic->rbac()),
-            new ilSrRoutineRepository($this->dic->database(), $this->dic->repositoryTree()),
-            new ilSrAssignmentRepository($this->dic->database()),
-            new ilSrRuleRepository($this->dic->database(), $this->dic->repositoryTree()),
-            new ilSrNotificationRepository($this->dic->database()),
-            new ilSrWhitelistRepository($this->dic->database())
+        $this->routine_repository = new ilSrRoutineRepository(
+            $this->dic->database(),
+            $this->dic->repositoryTree()
         );
 
-        $this->config = $this->repository->config()->get();
+        $this->routine_provider = new RoutineProvider(
+            new ComparisonFactory(
+                new RequirementFactory($this->dic->database()),
+                new AttributeFactory()
+            ),
+            $this->routine_repository,
+            new ilSrRuleRepository(
+                $this->dic->database(),
+                $this->dic->repositoryTree()
+            )
+        );
+
         $this->access_handler = new ilSrAccessHandler(
             $this->dic->rbac(),
             $this->config,
@@ -124,9 +143,9 @@ class ilSrToolProvider extends AbstractDynamicToolPluginProvider
     {
         return function () : Component {
             $html = '';
-            if ($this->shouldRenderRoutineList()) {
+            if ($this->shouldRenderRoutineLists()) {
                 $html .= $this->wrapHtml(
-                    $this->renderActiveRoutineList($this->request_object)
+                    $this->renderRoutineLists($this->request_object)
                 );
             }
 
@@ -147,7 +166,7 @@ class ilSrToolProvider extends AbstractDynamicToolPluginProvider
      * @param int $ref_id
      * @return string
      */
-    protected function renderActiveRoutineList(int $ref_id) : string
+    protected function renderRoutineLists(int $ref_id) : string
     {
         try {
             $object = ilObjectFactory::getInstanceByRefId($ref_id);
@@ -157,24 +176,51 @@ class ilSrToolProvider extends AbstractDynamicToolPluginProvider
 
         /** @var $translator ITranslator */
         $translator = $this->plugin;
+        $html = '';
 
-        $routine_list = new ilSrRoutineList(
-            $this->dic->ui()->renderer(),
-            $this->dic->ui()->factory(),
-            $this->repository->routine(),
-            $this->repository->rule(),
-            $this->repository->whitelist(),
-            $this->comparisons,
+        $list_builder = new ilSrRoutineListBuilder(
+            $this->assignment_repository,
             $translator,
+            $this->dic->ui()->factory(),
+            $this->dic->ui()->renderer(),
             $object,
             $this->dic->ctrl()
         );
 
-        if (0 < $routine_list->getAffectedRoutineCount()) {
-            ilUtil::sendQuestion($this->plugin->txt(self::MSG_AFFECTED_ROUTINES));
+        $affected_routines = $this->routine_provider->getAffectingRoutines($object);
+        if (!empty($affected_routines)) {
+            $html .= $this->dic->ui()->renderer()->render(
+                [
+                    $this->dic->ui()->factory()->messageBox()->confirmation(
+                        $translator->txt(self::MSG_AFFECTED_ROUTINES)
+                    ),
+
+                    $list_builder->getList($affected_routines),
+                ]
+            );
         }
 
-        return $routine_list->render();
+        $assigned_routines = array_udiff(
+            $affected_routines,
+            $this->routine_repository->getAllByRefId($object->getRefId()),
+            static function (IRoutine $routine_a, IRoutine $routine_b) {
+                return ($routine_a->getRoutineId() - $routine_b->getRoutineId());
+            }
+        );
+
+        if (!empty($assigned_routines)) {
+            $html .= $this->dic->ui()->renderer()->render(
+                [
+                    $this->dic->ui()->factory()->messageBox()->info(
+                        $translator->txt(self::MSG_ASSIGNED_ROUTINES)
+                    ),
+
+                    $list_builder->getList($assigned_routines),
+                ]
+            );
+        }
+
+        return $html;
     }
 
     /**
@@ -302,7 +348,7 @@ class ilSrToolProvider extends AbstractDynamicToolPluginProvider
             return (
                 null !== $this->request_object && (
                     $this->shouldRenderRoutineControls() ||
-                    $this->shouldRenderRoutineList()
+                    $this->shouldRenderRoutineLists()
                 )
             );
         };
@@ -329,7 +375,7 @@ class ilSrToolProvider extends AbstractDynamicToolPluginProvider
      *
      * @return bool
      */
-    protected function shouldRenderRoutineList() : bool
+    protected function shouldRenderRoutineLists() : bool
     {
         return (
             null !== $this->request_object &&

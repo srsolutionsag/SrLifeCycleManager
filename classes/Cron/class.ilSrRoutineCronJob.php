@@ -2,7 +2,7 @@
 
 /* Copyright (c) 2022 Thibeau Fuhrer <thibeau@sr.solutions> Extended GPL, see docs/LICENSE */
 
-use srag\Plugins\SrLifeCycleManager\Rule\Generator\IDeletableObjectGenerator;
+use srag\Plugins\SrLifeCycleManager\Routine\Provider\IDeletableObjectProvider;
 use srag\Plugins\SrLifeCycleManager\Notification\INotificationRepository;
 use srag\Plugins\SrLifeCycleManager\Notification\INotificationSender;
 use srag\Plugins\SrLifeCycleManager\Notification\INotification;
@@ -18,8 +18,9 @@ use srag\Plugins\SrLifeCycleManager\Cron\ResultBuilder;
  *
  * Affected means:
  *
- *         (a)  the object is a child (in the repository tree) of the routines
- *              configured ref-id.
+ *         (a)  the object is a direct child (in the repository tree) of the routines
+ *              assigned ref-id OR the routine is recursive and the object is one of
+ *              the children.
  *         (b)  the object is of the same type as the routines configured
  *              routine type.
  *         (c)  the objects attributes are all applicable to all the related
@@ -58,22 +59,22 @@ class ilSrRoutineCronJob extends ilSrAbstractCronJob
     protected $notification_sender;
 
     /**
-     * @var IDeletableObjectGenerator
+     * @var IDeletableObjectProvider
      */
     protected $deletable_objects;
 
     /**
-     * @param INotificationSender       $notification_sender
-     * @param IDeletableObjectGenerator $deletable_objects
-     * @param ResultBuilder             $result_builder
-     * @param INotificationRepository   $notification_repository
-     * @param IRoutineRepository        $routine_repository
-     * @param IWhitelistRepository      $whitelist_repository
-     * @param ilLogger                  $logger
+     * @param INotificationSender      $notification_sender
+     * @param IDeletableObjectProvider $deletable_objects
+     * @param ResultBuilder            $result_builder
+     * @param INotificationRepository  $notification_repository
+     * @param IRoutineRepository       $routine_repository
+     * @param IWhitelistRepository     $whitelist_repository
+     * @param ilLogger                 $logger
      */
     public function __construct(
         INotificationSender $notification_sender,
-        IDeletableObjectGenerator $deletable_objects,
+        IDeletableObjectProvider $deletable_objects,
         ResultBuilder $result_builder,
         INotificationRepository $notification_repository,
         IRoutineRepository $routine_repository,
@@ -114,34 +115,14 @@ class ilSrRoutineCronJob extends ilSrAbstractCronJob
             $object_instance = $object->getInstance();
             $object_ref_id = $object_instance->getRefId();
 
-            foreach ($object->getAffectedRoutines() as $routine) {
-                $whitelist_entry = $this->whitelist_repository->get($routine, $object_ref_id);
-                $is_whitelisted = (null !== $whitelist_entry);
-
-                // the object must neither be notified nor deleted, because
-                // it is opted-out.
-                if ($is_whitelisted && $whitelist_entry->isOptOut()) {
-                    continue;
-                }
-
+            foreach ($object->getAffectingRoutines() as $routine) {
                 $notifications = $this->notification_repository->getByRoutine($routine);
-                $notifications_available = (!empty($notifications));
 
-                // if no notifications are registered and the object is
-                // not whitelisted, it can be deleted immediately.
-                if ((!$notifications_available) &&
-                    (!$is_whitelisted || $whitelist_entry->isElapsed($this->getDate()))
-                ) {
-                    // delete the object and stop iterating the affected routines,
-                    // because the object instance does not exist anymore.
+                // if there are no notifications to be sent, the object can be
+                // deleted immediately.
+                if (empty($notifications)) {
                     $this->deleteObject($object_instance);
-                    break;
-                }
-
-                // if no notifications are available there's nothing more
-                // to be done for the current routine.
-                if (!$notifications_available) {
-                    continue;
+                    break 2;
                 }
 
                 $sent_notifications = $this->notification_repository->getSentNotifications($routine, $object_ref_id);
@@ -163,10 +144,8 @@ class ilSrRoutineCronJob extends ilSrAbstractCronJob
                     $last_notification &&
                     $last_notification->isElapsed($this->getDate())
                 ) {
-                    // delete the object and stop iterating the affected routines,
-                    // because the object instance does not exist anymore.
                     $this->deleteObject($object_instance);
-                    break;
+                    break 2;
                 }
 
                 // if all notification have been sent at this point, there's nothing

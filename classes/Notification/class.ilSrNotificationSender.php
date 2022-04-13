@@ -109,11 +109,11 @@ class ilSrNotificationSender implements INotificationSender
                 ilLink::_getStaticLink($object->getRefId()),
                 ilSrLifeCycleManagerDispatcher::getLinkTarget(
                     ilSrWhitelistGUI::class,
-                    ilSrWhitelistGUI::CMD_ROUTINE_EXTEND
+                    ilSrWhitelistGUI::CMD_WHITELIST_POSTPONE
                 ),
                 ilSrLifeCycleManagerDispatcher::getLinkTarget(
                     ilSrWhitelistGUI::class,
-                    ilSrWhitelistGUI::CMD_ROUTINE_OPT_OUT
+                    ilSrWhitelistGUI::CMD_WHITELIST_OPT_OUT
                 ),
             ],
             $notification->getContent()

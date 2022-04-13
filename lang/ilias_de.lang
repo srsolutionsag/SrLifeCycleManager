@@ -22,7 +22,8 @@ msg_routine_whitelist_error#:#Die angefragte Routine unterstützt keine Whitelis
 msg_routine_whitelist_failure#:#Die Anfrage war kein Opt-Out und Verlängerungen wird nicht unterstützt.
 msg_routine_whitelist_success#:#Objekt wurde erfolgreich auf die Whitelist gesetzt.
 msg_privileged_user#:#Sie sind berechtigt, eigene Routinen an dieser Stelle zu verwalten.
-msg_affected_routines#:#Es gibt Routinen die das aktuelle Objekt betreffen! Prüfe das Tool für mehr Informationen.
+msg_affected_routines#:#Es gibt Routinen die das aktuelle Objekt löschen könnten:
+msg_assigned_routines#:#Es gibt Routinen die dem aktuellen Objekt zugewiesen sind:
 msg_routine_cant_extend#:#Objekte können von dieser Routine nicht verlängert werden.
 msg_routine_extended#:#Das Objekt wurde erfolgreich für [ELONGATION] Tage verlängert.
 msg_routine_extend_error#:#Das Objekt konnte nicht verlängert werden, ggf. haben Sie das bereits getan.
@@ -105,9 +106,8 @@ action_routine_add#:#Routine hinzufügen
 action_routine_edit#:#Bearbeiten
 action_routine_delete#:#Löschen
 action_routine_manage#:#Routinen verwalten
-action_routine_extend#:#Verlängern
-action_routine_opt_out#:#Opt-out
-action_routine_view#:#Ansehen
+action_whitelist_postpone#:#Verlängern
+action_whitelist_opt_out#:#Opt-out
 action_routine_rules#:#Regeln
 action_routine_notifications#:#Benachrichtigungen
 action_routine_whitelist#:#Whitelist
@@ -116,6 +116,7 @@ action_routine_assignment_manage#:#Zuweisungen verwalten
 action_routine_assignment_add#:#Zuweisung hinzufügen
 action_routine_assignment_edit#:#Bearbeiten
 action_routine_assignment_delete#:#Löschen
+action_routine_assignment_remove#:#Entfernen
 action_rule_add#:#Regel hinzufügen
 action_rule_delete#:#Enfernen
 action_notification_add#:#Benachrichtigung hinzufügen

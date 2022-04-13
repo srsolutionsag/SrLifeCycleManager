@@ -180,6 +180,6 @@ class WhitelistEntry implements IWhitelistEntry
 
         $elapsed_date = $this->getDate()->add(new DateInterval("P{$this->getElongation()}D"));
 
-        return ($when >= $elapsed_date);
+        return ($when > $elapsed_date);
     }
 }
