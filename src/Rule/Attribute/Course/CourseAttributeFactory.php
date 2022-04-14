@@ -30,6 +30,9 @@ class CourseAttributeFactory
             case CourseTitle::class:
                 return new CourseTitle($requirement->getCourse());
 
+            case CourseAge::class:
+                return new CourseAge($requirement->getCourse());
+
             case CourseActive::class:
                 return new CourseActive($requirement->getCourse());
 
@@ -64,6 +67,7 @@ class CourseAttributeFactory
             CourseTaxonomy::class,
             CourseMetadata::class,
             CourseCreation::class,
+            CourseAge::class,
         ];
     }
 }

@@ -156,6 +156,7 @@ srag\Plugins\SrLifeCycleManager\Rule\Attribute\Course\CourseMetadata#:#course me
 srag\Plugins\SrLifeCycleManager\Rule\Attribute\Course\CourseTaxonomy#:#course taxonomy
 srag\Plugins\SrLifeCycleManager\Rule\Attribute\Course\CourseTitle#:#course title
 srag\Plugins\SrLifeCycleManager\Rule\Attribute\Course\CourseCreation#:#course creation
+srag\Plugins\SrLifeCycleManager\Rule\Attribute\Course\CourseAge#:#course age (in days)
 
 srag\Plugins\SrLifeCycleManager\Rule\Attribute\Group\GroupAttribute#:#group attribute
 srag\Plugins\SrLifeCycleManager\Rule\Attribute\Group\GroupTitle#:#group title
@@ -163,6 +164,7 @@ srag\Plugins\SrLifeCycleManager\Rule\Attribute\Group\GroupMember#:#group member
 srag\Plugins\SrLifeCycleManager\Rule\Attribute\Group\GroupMetadata#:#group metadata
 srag\Plugins\SrLifeCycleManager\Rule\Attribute\Group\GroupTaxonomy#:#group taxonomy
 srag\Plugins\SrLifeCycleManager\Rule\Attribute\Group\GroupCreation#:#group creation
+srag\Plugins\SrLifeCycleManager\Rule\Attribute\Group\GroupAge#:#group age (in days)
 
 srag\Plugins\SrLifeCycleManager\Rule\Attribute\Common\CommonAttribute#:#common attribute
 srag\Plugins\SrLifeCycleManager\Rule\Attribute\Common\CommonBoolean#:#boolean (0 or 1)
