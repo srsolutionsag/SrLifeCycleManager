@@ -22,7 +22,8 @@ msg_routine_whitelist_error#:#The requested routine does not support whitelist-e
 msg_routine_whitelist_failure#:#Your request was not an opt-out and elongations aren't supported.
 msg_routine_whitelist_success#:#Object successfully whitelisted.
 msg_privileged_user#:#You are allowed to manage your own routines at this position.
-msg_affected_routines#:#There are active routines that affect this object! Check the tools for more information.
+msg_affected_routines#:#There are routines that affect this object:
+msg_assigned_routines#:#There are routines assigned to this object:
 msg_routine_cant_extend#:#This routine cannot be extended.
 msg_routine_extended#:#This object has been successfully whitelisted for [ELONGATION] days.
 msg_routine_already_extended#:#The deletion of this object was already postponed.
@@ -30,28 +31,36 @@ msg_routine_cant_opt_out#:#This routine cannot be opted out.
 msg_routine_opted_out#:#This object has been successfully whitelisted.
 msg_routine_already_opted_out#:#This object was already been whitelisted.
 msg_days_before_submission_error#:#A notification for this amount of days before submission already exists.
+msg_assignment_success#:#Assignment(s) successfully updated.
+msg_no_unassigned_routines#:#There are no routines available that don't already affect this object.
 
 page_title_rules#:#SrLifeCycleManager rules
 page_title_config#:#SrLifeCycleManager configuration
 page_title_routine#:#SrLifeCycleManager routines
+page_title_routine_assignment#:#SrLifeCycleManager routine assignments
 page_title_notifications#:#SrLifeCycleManager notifications
 page_title_whitelist#:#SrLifeCycleManager whitelist
 
 tab_config_index#:#Configuration
 tab_routine_index#:#Routines
 
-cnf_privileged_roles#:#Global roles that can add Routines
-cnf_create_routines_in_repository#:#Create new Routines from Repository?
-cnf_show_routines_in_repository#:#Show active Routines in Repository?
+cnf_role_manage_routines#:#Manage routines
+cnf_role_manage_assignments#:#Manage assignments
+cnf_tool_is_enabled#:#Enable Tool
+cnf_tool_show_routines#:#Show active routines
+cnf_tool_show_controls#:#Show controls
 
 col_actions#:#Actions
-col_routine_ref_id#:#Ref-id (scope)
 col_routine_title#:#Name
-col_routine_is_active#:#Active
 col_routine_type#:#Routine type
 col_routine_usr_id#:#Owner
 col_routine_has_opt_out#:#Opt-out
 col_routine_elongation#:#Elongaition (days)
+col_object_assignment_ref_id#:#Ref-ID
+col_object_assignment_title#:#Object title
+col_assignment_recursive#:#Recursive
+col_assignment_active#:#Active
+col_assignment_user_id#:#Assigned by
 col_rule_rhs_type#:#RHS type
 col_rule_rhs_value#:#RHS value
 col_rule_operator#:#Operator
@@ -60,14 +69,21 @@ col_rule_lhs_value#:#LHS value
 col_notification_title#:#Notification title
 col_notification_content#:#Notification content
 col_notification_days_before_submission#:#Sent (days before deletion)
+col_whitelist_ref_id#:#Ref-ID
+col_whitelist_user_name#:#User
+col_whitelist_opt_out#:#Opt-out
+col_whitelist_elongation#:#Elongation
+col_whitelist_date#:#Date
 
-input_name_routine_ref_id#:#Ref-id (scope)
 input_name_routine_title#:#Name
 input_name_routine_type#:#Routine type
-input_name_routine_is_active#:#Active?
 input_name_routine_has_opt_out#:#Opt-out possible?
 input_name_routine_elongation#:#Elongation (in days)
 input_name_routine_elongation_possible#:#Elongation possible?
+input_name_routine_assignment_routine#:#Routine
+input_name_routine_assignment_ref_id#:#Object (ref-id)
+input_name_routine_assignment_recursive#:#Recursive?
+input_name_routine_assignment_active#:#Active?
 input_name_notification_title#:#Notification title
 input_name_notification_content#:#Notification content
 input_name_notification_content_info#:#Type [EXTENSION_LINK] where recipients can postpone the deletion by your routines configured amount. <br /> Type [OPT_OUT_LINK] where recipients can opt-out the deletion by your routine. <br /> Type [OBJECT_LINK] where recipients can go to the object that is about to be deleted.
@@ -79,23 +95,34 @@ routine_origin_type_ext#:#External
 
 status_active#:#Active
 status_inactive#:#Inactive
+status_recursive#:#Yes
+status_not_recursive#:#No
 status_possible#:#Possible
 status_impossible#:#Impossible
+status_is_opt_out#:#Yes
+status_is_not_opt_out#:#No
 
 action_routine_add#:#Add routine
 action_routine_edit#:#Edit
 action_routine_delete#:#Delete
-action_routine_manage#:#Manage
-action_routine_extend#:#Extend
-action_routine_opt_out#:#Opt-out
-action_routine_view#:#View
+action_routine_manage#:#Manage routines
+action_whitelist_postpone#:#Postpone
+action_whitelist_opt_out#:#Opt-out
 action_routine_rules#:#Rules
 action_routine_notifications#:#Notifications
+action_routine_whitelist#:#Whitelist
+action_routine_assignments#:#Assignments
+action_routine_assignment_manage#:#Manage assignments
+action_routine_assignment_add#:#Add assignment
+action_routine_assignment_edit#:#Edit
+action_routine_assignment_delete#:#Delete
+action_routine_assignment_remove#:#Remove
 action_rule_add#:#Add rule
 action_rule_delete#:#Remove
 action_notification_add#:#Add notification
 action_notification_edit#:#Edit
 action_notification_delete#:#Remove
+action_object_view#:#View object
 
 lhs_value#:#LHS Value
 rhs_value#:#RHS Value

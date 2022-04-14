@@ -12,7 +12,7 @@ use srag\Plugins\SrLifeCycleManager\Routine\IRoutine;
  *
  * This helper class is meant to centralize the toolbar implementation
  * and simplify their management. Methods that add or render toolbars
- * must never be fluently, because there should only be exactly ONE
+ * must never do so fluently, because there should only be exactly ONE
  * toolbar on every page.
  *
  * @noinspection AutoloadingIssuesInspection
@@ -20,6 +20,7 @@ use srag\Plugins\SrLifeCycleManager\Routine\IRoutine;
 class ilSrToolbarManager
 {
     // ilSrToolbarManager toolbar actions:
+    public const ACTION_ASSIGNMENT_ADD = 'action_routine_assignment_add';
     public const ACTION_ROUTINE_ADD = 'action_routine_add';
     public const ACTION_NOTIFICATION_ADD = 'action_notification_add';
     public const ACTION_RULE_ADD = 'action_rule_add';
@@ -71,6 +72,50 @@ class ilSrToolbarManager
     }
 
     /**
+     * Renders the assignment toolbar with actions pointing to @see ilSrObjectAssignmentGUI.
+     *
+     * The toolbar is only added if the current user can manage assignments.
+     */
+    public function addRoutineAssignmentToolbar() : void
+    {
+        if (!$this->access_handler->canManageAssignments()) {
+            return;
+        }
+
+        $this->addPrimaryButton(
+            self::ACTION_ASSIGNMENT_ADD,
+            $this->ctrl->getLinkTargetByClass(
+                ilSrRoutineAssignmentGUI::class,
+                ilSrRoutineAssignmentGUI::CMD_ASSIGNMENT_EDIT
+            )
+        );
+
+        $this->render();
+    }
+
+    /**
+     * Renders the assignment toolbar with actions pointing to @see ilSrRoutineAssignmentGUI.
+     *
+     * The toolbar is only added if the current user can manage assignments.
+     */
+    public function addObjectAssignmentToolbar() : void
+    {
+        if (!$this->access_handler->canManageAssignments()) {
+            return;
+        }
+
+        $this->addPrimaryButton(
+            self::ACTION_ASSIGNMENT_ADD,
+            $this->ctrl->getLinkTargetByClass(
+                ilSrObjectAssignmentGUI::class,
+                ilSrObjectAssignmentGUI::CMD_ASSIGNMENT_EDIT
+            )
+        );
+
+        $this->render();
+    }
+
+    /**
      * Renders the routine toolbar to the current page (global template).
      *
      * The toolbar is only added if the current user can manage routines.
@@ -81,18 +126,15 @@ class ilSrToolbarManager
             return;
         }
 
-        $button = ilLinkButton::getInstance();
-        $button->setPrimary(true);
-        $button->setCaption($this->translator->txt(self::ACTION_ROUTINE_ADD), false);
-        $button->setUrl($this->ctrl->getLinkTargetByClass(
-            ilSrRoutineGUI::class,
-            ilSrRoutineGUI::CMD_ROUTINE_EDIT
-        ));
-
-        $this->toolbar->addButtonInstance($button);
-        $this->global_template->setContent(
-            $this->toolbar->getHTML()
+        $this->addPrimaryButton(
+            self::ACTION_ROUTINE_ADD,
+            $this->ctrl->getLinkTargetByClass(
+                ilSrRoutineGUI::class,
+                ilSrRoutineGUI::CMD_ROUTINE_EDIT
+            )
         );
+
+        $this->render();
     }
 
     /**
@@ -106,18 +148,15 @@ class ilSrToolbarManager
             return;
         }
 
-        $button = ilLinkButton::getInstance();
-        $button->setPrimary(true);
-        $button->setCaption($this->translator->txt(self::ACTION_RULE_ADD), false);
-        $button->setUrl($this->ctrl->getLinkTargetByClass(
-            ilSrRuleGUI::class,
-            ilSrRuleGUI::CMD_RULE_EDIT
-        ));
-
-        $this->toolbar->addButtonInstance($button);
-        $this->global_template->setContent(
-            $this->toolbar->getHTML()
+        $this->addPrimaryButton(
+            self::ACTION_RULE_ADD,
+            $this->ctrl->getLinkTargetByClass(
+                ilSrRuleGUI::class,
+                ilSrRuleGUI::CMD_RULE_EDIT
+            )
         );
+
+        $this->render();
     }
 
     /**
@@ -131,17 +170,38 @@ class ilSrToolbarManager
             return;
         }
 
+        $this->addPrimaryButton(
+            self::ACTION_NOTIFICATION_ADD,
+            $this->ctrl->getLinkTargetByClass(
+                ilSrNotificationGUI::class,
+                ilSrNotificationGUI::CMD_NOTIFICATION_EDIT
+            )
+        );
+
+        $this->render();
+    }
+
+    /**
+     * Adds a primary button to the toolbar.
+     *
+     * @param string $language_variable
+     * @param string $action
+     */
+    protected function addPrimaryButton(string $language_variable, string $action) : void
+    {
         $button = ilLinkButton::getInstance();
         $button->setPrimary(true);
-        $button->setCaption($this->translator->txt(self::ACTION_NOTIFICATION_ADD), false);
-        $button->setUrl($this->ctrl->getLinkTargetByClass(
-            ilSrNotificationGUI::class,
-            ilSrNotificationGUI::CMD_NOTIFICATION_EDIT
-        ));
+        $button->setCaption($this->translator->txt($language_variable), false);
+        $button->setUrl($action);
 
         $this->toolbar->addButtonInstance($button);
-        $this->global_template->setContent(
-            $this->toolbar->getHTML()
-        );
+    }
+
+    /**
+     * Renders the current toolbar on the current page.
+     */
+    protected function render() : void
+    {
+        $this->global_template->setContent($this->toolbar->getHTML());
     }
 }

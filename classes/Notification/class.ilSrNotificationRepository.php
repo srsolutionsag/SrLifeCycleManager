@@ -7,6 +7,7 @@ use srag\Plugins\SrLifeCycleManager\Notification\INotification;
 use srag\Plugins\SrLifeCycleManager\Notification\Notification;
 use srag\Plugins\SrLifeCycleManager\Routine\IRoutine;
 use srag\Plugins\SrLifeCycleManager\Notification\ISentNotification;
+use srag\Plugins\SrLifeCycleManager\Repository\DTOHelper;
 
 /**
  * This repository is responsible for all notification CRUD operations.
@@ -17,6 +18,8 @@ use srag\Plugins\SrLifeCycleManager\Notification\ISentNotification;
  */
 class ilSrNotificationRepository implements INotificationRepository
 {
+    use DTOHelper;
+
     /**
      * @var string mysql datetime format string.
      */
@@ -47,19 +50,15 @@ class ilSrNotificationRepository implements INotificationRepository
             ; 
         ";
 
-        $result = $this->database->fetchAll(
-            $this->database->queryF(
-                $query,
-                ['integer'],
-                [$notification_id]
+        return $this->returnSingleQueryResult(
+            $this->database->fetchAll(
+                $this->database->queryF(
+                    $query,
+                    ['integer'],
+                    [$notification_id]
+                )
             )
         );
-
-        if (!empty($result)) {
-            return $this->transformToNotification($result[0]);
-        }
-
-        return null;
     }
 
     /**
@@ -75,24 +74,17 @@ class ilSrNotificationRepository implements INotificationRepository
             ;
         ";
 
-        $results = $this->database->fetchAll(
-            $this->database->queryF(
-                $query,
-                ['integer'],
-                [$routine->getRoutineId()]
-            )
+        return $this->returnAllQueryResults(
+            $this->database->fetchAll(
+                $this->database->queryF(
+                    $query,
+                    ['integer'],
+                    [
+                        $routine->getRoutineId() ?? 0,
+                    ]
+                )
+            ), $array_data
         );
-
-        if ($array_data) {
-            return $results;
-        }
-
-        $notifications = [];
-        foreach ($results as $query_result) {
-            $notifications[] = $this->transformToNotification($query_result);
-        }
-
-        return $notifications;
     }
 
     /**
@@ -108,22 +100,18 @@ class ilSrNotificationRepository implements INotificationRepository
             ; 
         ";
 
-        $result = $this->database->fetchAll(
-            $this->database->queryF(
-                $query,
-                ['integer', 'integer'],
-                [
-                    $routine_id,
-                    $days_before_submission,
-                ]
+        return $this->returnSingleQueryResult(
+            $this->database->fetchAll(
+                $this->database->queryF(
+                    $query,
+                    ['integer', 'integer'],
+                    [
+                        $routine_id,
+                        $days_before_submission,
+                    ]
+                )
             )
         );
-
-        if (!empty($result)) {
-            return $this->transformToNotification($result[0]);
-        }
-
-        return null;
     }
 
     /**
@@ -132,7 +120,8 @@ class ilSrNotificationRepository implements INotificationRepository
     public function getSentNotifications(IRoutine $routine, int $ref_id) : array
     {
         $query = "
-            SELECT msg.notification_id, msg.routine_id, msg.title, msg.content, msg.days_before_submission
+            SELECT 
+                msg.notification_id, msg.routine_id, msg.title, msg.content, msg.days_before_submission, notified_objs.date
                 FROM srlcm_notification AS msg
                 JOIN srlcm_notified_objects AS notified_objs ON notified_objs.notification_id = msg.notification_id
                 WHERE notified_objs.routine_id = %s
@@ -146,7 +135,7 @@ class ilSrNotificationRepository implements INotificationRepository
                 $query,
                 ['integer', 'integer'],
                 [
-                    $routine->getRoutineId(),
+                    $routine->getRoutineId() ?? 0,
                     $ref_id
                 ]
             )
@@ -154,7 +143,7 @@ class ilSrNotificationRepository implements INotificationRepository
 
         $sent_notifications = [];
         foreach ($results as $result) {
-            $sent_notifications[] = $this->transformToSentNotification($result);
+            $sent_notifications[] = $this->transformToSentNotificationDTO($result);
         }
 
         return $sent_notifications;
@@ -166,7 +155,7 @@ class ilSrNotificationRepository implements INotificationRepository
     public function notifyObject(INotification $notification, int $ref_id) : ISentNotification
     {
         $query = "
-            INSERT INTO slrmc_notified_objects (routine_id, notification_id, ref_id, date)
+            INSERT INTO srlcm_notified_objects (routine_id, notification_id, ref_id, date)
                 VALUES (%s, %s, %s, %s)
             ;
         ";
@@ -292,7 +281,7 @@ class ilSrNotificationRepository implements INotificationRepository
      * @param array $query_result
      * @return INotification
      */
-    protected function transformToNotification(array $query_result) : INotification
+    protected function transformToDTO(array $query_result) : INotification
     {
         return new Notification(
             (int) $query_result[INotification::F_ROUTINE_ID],
@@ -307,7 +296,7 @@ class ilSrNotificationRepository implements INotificationRepository
      * @param array $query_result
      * @return ISentNotification
      */
-    protected function transformToSentNotification(array $query_result) : ISentNotification
+    protected function transformToSentNotificationDTO(array $query_result) : ISentNotification
     {
         return new Notification(
             (int) $query_result[INotification::F_ROUTINE_ID],

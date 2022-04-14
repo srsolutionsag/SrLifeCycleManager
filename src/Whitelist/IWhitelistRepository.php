@@ -22,6 +22,19 @@ interface IWhitelistRepository
     public function get(IRoutine $routine, int $ref_id) : ?IWhitelistEntry;
 
     /**
+     * Fetches all existing whitelist entries from the database which are
+     * related to the given routine.
+     *
+     * To retrieve routines as array-data, true can be passed as an argument
+     * (usually required by ilTableGUI).
+     *
+     * @param IRoutine $routine
+     * @param bool     $array_data
+     * @return array
+     */
+    public function getByRoutine(IRoutine $routine, bool $array_data = false) : array;
+
+    /**
      * Creates or updates an existing whitelist entry in the database.
      *
      * @param IWhitelistEntry $entry

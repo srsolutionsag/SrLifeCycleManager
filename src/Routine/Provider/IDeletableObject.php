@@ -2,7 +2,7 @@
 
 /* Copyright (c) 2021 Thibeau Fuhrer <thibeau@sr.solutions> Extended GPL, see docs/LICENSE */
 
-namespace srag\Plugins\SrLifeCycleManager\Rule\Generator;
+namespace srag\Plugins\SrLifeCycleManager\Routine\Provider;
 
 use srag\Plugins\SrLifeCycleManager\Routine\IRoutine;
 use ilObject;
@@ -24,5 +24,5 @@ interface IDeletableObject
      *
      * @return IRoutine[]
      */
-    public function getAffectedRoutines() : array;
+    public function getAffectingRoutines() : array;
 }

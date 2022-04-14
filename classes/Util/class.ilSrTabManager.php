@@ -3,6 +3,7 @@
 /* Copyright (c) 2022 Thibeau Fuhrer <thibeau@sr.solutions> Extended GPL, see docs/LICENSE */
 
 use srag\Plugins\SrLifeCycleManager\ITranslator;
+use srag\Plugins\SrLifeCycleManager\Routine\IRoutine;
 
 /**
  * This class is responsible for managing the plugin tabs.
@@ -45,21 +46,29 @@ class ilSrTabManager
     protected $ctrl;
 
     /**
+     * @var int
+     */
+    protected $origin;
+
+    /**
      * @param ilSrAccessHandler $access_handler
      * @param ITranslator       $translator
      * @param ilTabsGUI         $tabs
      * @param ilCtrl            $ctrl
+     * @param int               $origin
      */
     public function __construct(
         ilSrAccessHandler $access_handler,
         ITranslator $translator,
         ilTabsGUI $tabs,
-        ilCtrl $ctrl
+        ilCtrl $ctrl,
+        int $origin
     ) {
         $this->access_handler = $access_handler;
         $this->translator = $translator;
         $this->tabs = $tabs;
         $this->ctrl = $ctrl;
+        $this->origin = $origin;
     }
 
     /**
@@ -73,19 +82,21 @@ class ilSrTabManager
     public function addConfigurationTab(bool $is_active = false) : self
     {
         // add plugin-configuration tab only for administrator
-        if ($this->access_handler->isAdministrator()) {
-            $this->tabs->addTab(
-                self::TAB_CONFIG,
-                $this->translator->txt(self::TAB_CONFIG),
-                $this->ctrl->getLinkTargetByClass(
-                    ilSrConfigGUI::class,
-                    ilSrConfigGUI::CMD_INDEX
-                )
-            );
+        if (!$this->access_handler->isAdministrator()) {
+            return $this;
+        }
 
-            if ($is_active) {
-                $this->tabs->activateTab(self::TAB_CONFIG);
-            }
+        $this->tabs->addTab(
+            self::TAB_CONFIG,
+            $this->translator->txt(self::TAB_CONFIG),
+            $this->ctrl->getLinkTargetByClass(
+                ilSrConfigGUI::class,
+                ilSrConfigGUI::CMD_INDEX
+            )
+        );
+
+        if ($is_active) {
+            $this->setActiveTab(self::TAB_CONFIG);
         }
 
         return $this;
@@ -101,6 +112,11 @@ class ilSrTabManager
      */
     public function addRoutineTab(bool $is_active = false) : self
     {
+        // add routine-tab only for routine managers.
+        if (!$this->access_handler->canManageRoutines()) {
+            return $this;
+        }
+
         $this->tabs->addTab(
             self::TAB_ROUTINES,
             $this->translator->txt(self::TAB_ROUTINES),
@@ -111,9 +127,57 @@ class ilSrTabManager
         );
 
         if ($is_active) {
-            $this->tabs->activateTab(self::TAB_ROUTINES);
+            $this->setActiveTab(self::TAB_ROUTINES);
         }
 
+        return $this;
+    }
+
+    /**
+     * Adds a back-to tab pointing to @see ilSrRoutineGUI::index().
+     *
+     * @return self
+     */
+    public function addBackToRoutines() : self
+    {
+        $this->addBackToTarget(
+            $this->ctrl->getLinkTargetByClass(
+                ilSrRoutineGUI::class,
+                ilSrRoutineGUI::CMD_INDEX
+            )
+        );
+
+        return $this;
+    }
+
+    /**
+     * Adds a back-to tab pointing to @see ilSrAbstractGUI::index() of the
+     * given classname.
+     *
+     * @param string $class
+     * @return self
+     */
+    public function addBackToIndex(string $class) : self
+    {
+        $this->addBackToTarget(
+            $this->ctrl->getLinkTargetByClass(
+                $class,
+                ilSrAbstractGUI::CMD_INDEX
+            )
+        );
+
+        return $this;
+    }
+
+    /**
+     * Adds a back-to tab pointing to the given object (ref-id).
+     *
+     * @param int $ref_id
+     * @return self
+     */
+    public function addBackToObject(int $ref_id) : self
+    {
+        $this->addBackToTarget(ilLink::_getLink($ref_id));
         return $this;
     }
 
@@ -123,13 +187,25 @@ class ilSrTabManager
      * @param string $target
      * @return self
      */
-    public function setBackToTarget(string $target) : self
+    public function addBackToTarget(string $target) : self
     {
         $this->tabs->setBackTarget(
             $this->translator->txt(self::MSG_BACK_TO),
             $target
         );
 
+        return $this;
+    }
+
+    /**
+     * Shows a given tab-id as activated (can only be one at a time).
+     *
+     * @param string $tab_id
+     * @return self
+     */
+    public function setActiveTab(string $tab_id) : self
+    {
+        $this->tabs->activateTab($tab_id);
         return $this;
     }
 
@@ -145,14 +221,22 @@ class ilSrTabManager
     }
 
     /**
-     * Shows a given tab-id as activated (can only be one at a time).
+     * Returns whether the current user is in the administration context or not.
      *
-     * @param string $tab_id
-     * @return self
+     * @return bool
      */
-    public function setActiveTab(string $tab_id) : self
+    protected function inAdministration() : bool
     {
-        $this->tabs->activateTab($tab_id);
-        return $this;
+        return (IRoutine::ORIGIN_TYPE_ADMINISTRATION === $this->origin);
+    }
+
+    /**
+     * Returns whether the current user is in the repository context or not.
+     *
+     * @return bool
+     */
+    protected function inRepository() : bool
+    {
+        return (IRoutine::ORIGIN_TYPE_REPOSITORY === $this->origin);
     }
 }

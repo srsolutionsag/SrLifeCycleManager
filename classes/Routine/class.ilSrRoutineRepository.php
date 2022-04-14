@@ -5,6 +5,8 @@
 use srag\Plugins\SrLifeCycleManager\Routine\IRoutineRepository;
 use srag\Plugins\SrLifeCycleManager\Routine\IRoutine;
 use srag\Plugins\SrLifeCycleManager\Routine\Routine;
+use srag\Plugins\SrLifeCycleManager\Repository\DTOHelper;
+use srag\Plugins\SrLifeCycleManager\Repository\ObjectHelper;
 
 /**
  * This repository is responsible for all routine CRUD operations.
@@ -15,7 +17,8 @@ use srag\Plugins\SrLifeCycleManager\Routine\Routine;
  */
 class ilSrRoutineRepository implements IRoutineRepository
 {
-    use ilSrRepositoryHelper;
+    use ObjectHelper;
+    use DTOHelper;
 
     /**
      * @var string mysql datetime format string.
@@ -28,16 +31,13 @@ class ilSrRoutineRepository implements IRoutineRepository
     protected $database;
 
     /**
-     * @var ilTree
+     * @param ilDBInterface                $database
+     * @param ilTree                       $tree
      */
-    protected $tree;
-
-    /**
-     * @param ilDBInterface        $database
-     * @param ilTree               $tree
-     */
-    public function __construct(ilDBInterface $database, ilTree $tree)
-    {
+    public function __construct(
+        ilDBInterface $database,
+        ilTree $tree
+    ) {
         $this->database = $database;
         $this->tree = $tree;
     }
@@ -49,58 +49,42 @@ class ilSrRoutineRepository implements IRoutineRepository
     {
         $query = "
             SELECT
-                routine_id, ref_id, usr_id, routine_type, origin_type, is_active, 
+                routine_id, usr_id, routine_type, origin_type, 
                 has_opt_out, elongation, title, creation_date
                 FROM srlcm_routine 
                 WHERE routine_id = %s
             ;
         ";
 
-        $result = $this->database->fetchAll(
-            $this->database->queryF(
-                $query,
-                ['integer'],
-                [$routine_id]
+        return $this->returnSingleQueryResult(
+            $this->database->fetchAll(
+                $this->database->queryF(
+                    $query,
+                    ['integer'],
+                    [$routine_id]
+                )
             )
         );
-
-        if (!empty($result)) {
-            return $this->transformToDTO($result[0]);
-        }
-
-        return null;
     }
 
     /**
      * @inheritDoc
      */
-    public function getAllByActivity(bool $is_active) : array
+    public function getAll(bool $array_data = false) : array
     {
         $query = "
             SELECT 
-                routine_id, ref_id, usr_id, routine_type, origin_type, is_active, 
+                routine_id, usr_id, routine_type, origin_type, 
                 has_opt_out, elongation, title, creation_date
                 FROM srlcm_routine
-                WHERE is_active = %s
             ;
         ";
 
-        $results = $this->database->fetchAll(
-            $this->database->queryF(
-                $query,
-                ['integer'],
-                [
-                    (int) $is_active,
-                ]
-            )
+        return $this->returnAllQueryResults(
+            $this->database->fetchAll(
+                $this->database->query($query)
+            ), $array_data
         );
-
-        $routines = [];
-        foreach ($results as $result) {
-            $routines[] = $this->transformToDTO($result);
-        }
-
-        return $routines;
     }
 
     /**
@@ -109,28 +93,149 @@ class ilSrRoutineRepository implements IRoutineRepository
     public function getAllByRefId(int $ref_id, bool $array_data = false) : array
     {
         $query = "
-            SELECT 
-                routine_id, ref_id, usr_id, routine_type, origin_type, is_active, 
-                has_opt_out, elongation, title, creation_date
-                FROM srlcm_routine 
-                WHERE ref_id IN ({$this->getParentIdsForSqlComparison($ref_id)})
+            SELECT
+                routine.routine_id, routine.usr_id, routine.routine_type, routine.origin_type, 
+                routine.has_opt_out, routine.elongation, routine.title, routine.creation_date
+                FROM srlcm_assigned_routine AS assignment    
+                JOIN srlcm_routine AS routine ON `routine`.routine_id = assignment.routine_id
+                WHERE (
+                    (assignment.is_recursive = 1 AND assignment.ref_id IN ({$this->getParentIdsForSqlComparison($ref_id)})) OR
+                    (assignment.is_recursive = 0 AND assignment.ref_id IN (%s, %s))
+                )
             ;
         ";
 
-        $results = $this->database->fetchAll(
-            $this->database->query($query)
+        return $this->returnAllQueryResults(
+            $this->database->fetchAll(
+                $this->database->queryF(
+                    $query,
+                    ['integer', 'integer'],
+                    [
+                        $this->getParentId($ref_id),
+                        $ref_id,
+                    ]
+                )
+            ), $array_data
         );
+    }
 
-        if ($array_data) {
-            return $results;
-        }
+    /**
+     * Fetches all existing routines from the database that affect the
+     * given ref-id AND are active.
+     *
+     * To retrieve routines as array-data, true can be passed as an argument
+     * (usually required by ilTableGUI).
+     *
+     * @param int  $ref_id
+     * @param bool $array_data
+     * @return IRoutine[]
+     */
+    public function getAllActiveByRefId(int $ref_id, bool $array_data = false) : array
+    {
+        $query = "
+            SELECT 
+                routine.routine_id, routine.usr_id, routine.routine_type, routine.origin_type, 
+                routine.has_opt_out, routine.elongation, routine.title, routine.creation_date
+                FROM srlcm_assigned_routine AS assignment    
+                JOIN srlcm_routine AS routine ON `routine`.routine_id = assignment.routine_id
+                WHERE assignment.is_active = 1
+                AND (
+                    (assignment.is_recursive = 1 AND assignment.ref_id IN ({$this->getParentIdsForSqlComparison($ref_id)})) OR
+                    (assignment.is_recursive = 0 AND assignment.ref_id IN (%s, %s))
+                )
+            ;
+        ";
 
-        $routines = [];
-        foreach ($results as $result) {
-            $routines[] = $this->transformToDTO($result);
-        }
+        return $this->returnAllQueryResults(
+            $this->database->fetchAll(
+                $this->database->queryF(
+                    $query,
+                    ['integer', 'integer'],
+                    [
+                        $this->getParentId($ref_id),
+                        $ref_id,
+                    ]
+                )
+            ), $array_data
+        );
+    }
 
-        return $routines;
+    /**
+     * @inheritDoc
+     */
+    public function getAllForComparison(int $ref_id, string $type) : array
+    {
+        $query = "
+            SELECT 
+                routine.routine_id, routine.usr_id, routine.routine_type, routine.origin_type, 
+                routine.has_opt_out, routine.elongation, routine.title, routine.creation_date
+                FROM srlcm_assigned_routine AS assignment
+                JOIN srlcm_routine AS routine ON routine.routine_id = assignment.routine_id
+                WHERE assignment.is_active = 1
+                AND routine.routine_type = %s
+                AND (
+                    (assignment.is_recursive = 1 AND assignment.ref_id IN ({$this->getParentIdsForSqlComparison($ref_id)})) OR
+                    (assignment.is_recursive = 0 AND assignment.ref_id IN (%s, %s))
+                ) 
+                AND routine.routine_id NOT IN (
+                    SELECT whitelist.routine_id FROM srlcm_whitelist AS whitelist
+                        WHERE whitelist.routine_id = assignment.routine_id
+                        AND whitelist.ref_id = %s
+                        AND whitelist.is_opt_out = 1
+                )
+            ;
+        ";
+
+        return $this->returnAllQueryResults(
+            $this->database->fetchAll(
+                $this->database->queryF(
+                    $query,
+                    ['text', 'integer', 'integer', 'integer'],
+                    [
+                        $type,
+                        $this->getParentId($ref_id),
+                        $ref_id,
+                        $ref_id,
+                    ]
+                )
+            )
+        );
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function getAllUnassigned(int $ref_id, bool $array_data = false) : array
+    {
+        $query = "
+            SELECT 
+                routine.routine_id, routine.usr_id, routine.routine_type, routine.origin_type, 
+                routine.has_opt_out, routine.elongation, routine.title, routine.creation_date
+                FROM srlcm_routine AS routine
+                WHERE routine.routine_id NOT IN (
+                    SELECT routine.routine_id 
+                        FROM srlcm_assigned_routine AS assignment 
+                        JOIN srlcm_routine AS routine ON routine.routine_id = assignment.routine_id
+                        WHERE (
+                            (assignment.is_recursive = 1 AND assignment.ref_id IN ({$this->getParentIdsForSqlComparison($ref_id)})) OR
+                            (assignment.is_recursive = 0 AND assignment.ref_id IN (%s, %s))
+                        )
+                )
+            ;
+        ";
+
+        return $this->returnAllQueryResults(
+            $this->database->fetchAll(
+                $this->database->queryF(
+                    $query,
+                    ['integer', 'integer'],
+                    [
+                        $this->getParentId($ref_id),
+                        $ref_id,
+                    ]
+                )
+            ), $array_data
+        );
     }
 
     /**
@@ -154,13 +259,14 @@ class ilSrRoutineRepository implements IRoutineRepository
         // fk constraints we have to delete them manually, and I really
         // wanted to do this in one statement.
         $query = "
-            DELETE `routine`, rule, relation, notification, whitelist
+            DELETE `routine`, rule, relation, notification, whitelist, assignment
                 FROM (SELECT %s AS routine_id) AS deletable
                 LEFT OUTER JOIN srlcm_routine AS `routine` ON `routine`.routine_id = deletable.routine_id
                 LEFT OUTER JOIN srlcm_routine_rule AS relation ON relation.routine_id = deletable.routine_id
                 LEFT OUTER JOIN srlcm_rule AS rule ON rule.rule_id = relation.rule_id
                 LEFT OUTER JOIN srlcm_notification AS notification ON notification.routine_id = deletable.routine_id
                 LEFT OUTER JOIN srlcm_whitelist AS whitelist ON whitelist.routine_id = deletable.routine_id
+                LEFT OUTER JOIN srlcm_assigned_routine AS assignment ON assignment.routine_id = deletable.routine_id
             ;
         ";
 
@@ -179,12 +285,10 @@ class ilSrRoutineRepository implements IRoutineRepository
     public function empty(int $owner_id, int $origin_type) : IRoutine
     {
         return new Routine(
-            0,
             $owner_id,
             '',
             $origin_type,
             '',
-            false,
             false,
             new DateTime()
         );
@@ -198,7 +302,7 @@ class ilSrRoutineRepository implements IRoutineRepository
     {
         $query = "
             UPDATE srlcm_routine SET
-                ref_id = %s, usr_id = %s, routine_type = %s, origin_type = %s, is_active = %s, has_opt_out = %s, 
+                usr_id = %s, routine_type = %s, origin_type = %s, has_opt_out = %s, 
                 elongation = %s, title = %s, creation_date = %s
                 WHERE routine_id = %s
             ;
@@ -206,13 +310,11 @@ class ilSrRoutineRepository implements IRoutineRepository
 
         $this->database->manipulateF(
             $query,
-            ['integer', 'integer', 'text', 'integer', 'integer', 'integer', 'integer', 'text', 'date', 'integer'],
+            ['integer', 'text', 'integer', 'integer', 'integer', 'text', 'date', 'integer'],
             [
-                $routine->getRefId(),
                 $routine->getOwnerId(),
                 $routine->getRoutineType(),
                 $routine->getOrigin(),
-                $routine->isActive(),
                 $routine->hasOptOut(),
                 $routine->getElongation(),
                 $routine->getTitle(),
@@ -231,23 +333,21 @@ class ilSrRoutineRepository implements IRoutineRepository
     protected function insertRoutine(IRoutine $routine) : IRoutine
     {
         $query = "
-            INSERT INTO srlcm_routine (routine_id, ref_id, usr_id, routine_type, origin_type, is_active,
+            INSERT INTO srlcm_routine (routine_id, usr_id, routine_type, origin_type,
                 has_opt_out, elongation, title, creation_date)
-                VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+                VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
             ;
         ";
 
         $routine_id = (int) $this->database->nextId('srlcm_routine');
         $this->database->manipulateF(
             $query,
-            ['integer', 'integer', 'integer', 'text', 'integer', 'integer', 'integer', 'integer', 'text', 'date'],
+            ['integer', 'integer', 'text', 'integer', 'integer', 'integer', 'text', 'date'],
             [
                 $routine_id,
-                $routine->getRefId(),
                 $routine->getOwnerId(),
                 $routine->getRoutineType(),
                 $routine->getOrigin(),
-                $routine->isActive(),
                 $routine->hasOptOut(),
                 $routine->getElongation(),
                 $routine->getTitle(),
@@ -265,12 +365,10 @@ class ilSrRoutineRepository implements IRoutineRepository
     protected function transformToDTO(array $query_result) : IRoutine
     {
         return new Routine(
-            (int) $query_result[IRoutine::F_REF_ID],
             (int) $query_result[IRoutine::F_USER_ID],
             $query_result[IRoutine::F_ROUTINE_TYPE],
             (int) $query_result[IRoutine::F_ORIGIN_TYPE],
             $query_result[IRoutine::F_TITLE],
-            (bool) $query_result[IRoutine::F_IS_ACTIVE],
             (bool) $query_result[IRoutine::F_HAS_OPT_OUT],
             DateTime::createFromFormat(self::MYSQL_DATETIME_FORMAT, $query_result[IRoutine::F_CREATION_DATE]),
             (null !== $query_result[IRoutine::F_ELONGATION]) ? (int) $query_result[IRoutine::F_ELONGATION] : null,

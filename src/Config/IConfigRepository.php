@@ -25,11 +25,4 @@ interface IConfigRepository
      * @return IConfig
      */
     public function store(IConfig $config) : IConfig;
-
-    /**
-     * Returns all available global roles as id => title pairs.
-     *
-     * @return array<int, string>
-     */
-    public function getAvailableGlobalRoles() : array;
 }

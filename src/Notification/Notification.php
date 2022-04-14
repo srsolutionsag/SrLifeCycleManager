@@ -210,6 +210,6 @@ class Notification implements ISentNotification
     {
         $elapsed_date = $this->getNotifiedDate()->add(new DateInterval("P{$this->getDaysBeforeSubmission()}D"));
 
-        return ($when >= $elapsed_date);
+        return ($when > $elapsed_date);
     }
 }

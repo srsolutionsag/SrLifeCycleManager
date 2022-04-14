@@ -10,83 +10,133 @@ namespace srag\Plugins\SrLifeCycleManager\Config;
 class Config implements IConfig
 {
     /**
-     * @var int[]
+     * @var int[] role ids
      */
-    protected $privileged_roles = [];
+    protected $manage_routine_roles;
+
+    /**
+     * @var int[] role ids
+     */
+    protected $manage_assignment_roles;
 
     /**
      * @var bool
      */
-    protected $can_tool_show = false;
+    protected $tool_is_enabled;
 
     /**
      * @var bool
      */
-    protected $can_tool_create = false;
+    protected $tool_show_routines;
 
     /**
-     * @param int[] $privileged_roles
-     * @param bool  $can_tool_show
-     * @param bool  $can_tool_create
+     * @var bool
+     */
+    protected $tool_show_controls;
+
+    /**
+     * @param int[] $manage_routines
+     * @param int[] $manage_assignments
+     * @param bool  $is_tool_enabled
+     * @param bool  $tool_show_routines
+     * @param bool  $tool_show_controls
      */
     public function __construct(
-        array $privileged_roles = [],
-        bool $can_tool_show = false,
-        bool $can_tool_create = false
+        array $manage_routines = [],
+        array $manage_assignments = [],
+        bool $is_tool_enabled = false,
+        bool $tool_show_routines = false,
+        bool $tool_show_controls = false
     ) {
-        $this->privileged_roles = $privileged_roles;
-        $this->can_tool_show = $can_tool_show;
-        $this->can_tool_create = $can_tool_create;
-    }
-
-    /**
-     * @return array
-     */
-    public function getPrivilegedRoles() : array
-    {
-        return $this->privileged_roles;
+        $this->manage_routine_roles = $manage_routines;
+        $this->manage_assignment_roles = $manage_assignments;
+        $this->tool_is_enabled = $is_tool_enabled;
+        $this->tool_show_routines = $tool_show_routines;
+        $this->tool_show_controls = $tool_show_controls;
     }
 
     /**
      * @inheritDoc
      */
-    public function setPrivilegedRoles(array $privileged_roles) : IConfig
+    public function getManageRoutineRoles() : array
     {
-        $this->privileged_roles = $privileged_roles;
+        return $this->manage_routine_roles;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function setManageRoutineRoles(array $roles) : IConfig
+    {
+        $this->manage_routine_roles = $roles;
         return $this;
     }
 
     /**
      * @inheritDoc
      */
-    public function showRoutinesInRepository() : bool
+    public function getManageAssignmentRoles() : array
     {
-        return $this->can_tool_show;
+        return $this->manage_assignment_roles;
     }
 
     /**
      * @inheritDoc
      */
-    public function setShowRoutinesInRepository(bool $can_show) : IConfig
+    public function setManageAssignmentRoles(array $roles) : IConfig
     {
-        $this->can_tool_show = $can_show;
+        $this->manage_assignment_roles = $roles;
         return $this;
     }
 
     /**
      * @inheritDoc
      */
-    public function createRoutinesInRepository() : bool
+    public function isToolEnabled() : bool
     {
-        return $this->can_tool_create;
+        return $this->tool_is_enabled;
     }
 
     /**
      * @inheritDoc
      */
-    public function setCreateRoutinesInRepository(bool $can_create) : IConfig
+    public function setToolEnabled(bool $is_enabled) : IConfig
     {
-        $this->can_tool_create = $can_create;
+        $this->tool_is_enabled = $is_enabled;
+        return $this;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function shouldToolShowRoutines() : bool
+    {
+        return $this->tool_show_routines;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function setShouldToolShowRoutines(bool $should_show) : IConfig
+    {
+        $this->tool_show_routines = $should_show;
+        return $this;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function shouldToolShowControls() : bool
+    {
+        return $this->tool_show_controls;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function setShouldToolShowControls(bool $should_show) : IConfig
+    {
+        $this->tool_show_controls = $should_show;
         return $this;
     }
 }

@@ -10,23 +10,32 @@ namespace srag\Plugins\SrLifeCycleManager\Config;
 interface IConfig
 {
     /**
-     * @var string config primary key for privileged role ids. privileged roles are allowed
-     *             to create and update their own routines.
+     * @var string config primary key that determines which global roles are allowed to
+     *             manage routines (and assignments).
      */
-    public const CNF_PRIVILEGED_ROLES = 'cnf_privileged_roles';
+    public const CNF_ROLE_MANAGE_ROUTINES = 'cnf_role_manage_routines';
 
     /**
-     * @var string config primary key that determines if routines can be created in the repository.
-     *             If enabled, the tool will show an entry for privileged roles.
+     * @var string config primary key that determines which global roles are allowed to
+     *             manage assignments.
      */
-    public const CNF_CREATE_ROUTINES_IN_REPOSITORY = 'cnf_create_routines_in_repository';
+    public const CNF_ROLE_MANAGE_ASSIGNMENTS = 'cnf_role_manage_assignments';
 
     /**
-     * @var string config primary key that determines if active routines should be displayed in the
-     *             repository. If enabled, the tool will show a table that lists all routines that
-     *             affect the current object.
+     * @var string config primary key that determines if the tool in enabled.
      */
-    public const CNF_SHOW_ROUTINES_IN_REPOSITORY = 'cnf_show_routines_in_repository';
+    public const CNF_TOOL_IS_ENABLED = 'cnf_tool_is_enabled';
+
+    /**
+     * @var string config primary key that determines if the tool shows active routines.
+     */
+    public const CNF_TOOL_SHOW_ROUTINES = 'cnf_tool_show_routines';
+
+    /**
+     * @var string config primary key that determines if the tool shows controls (for
+     *             configured roles).
+     */
+    public const CNF_TOOL_SHOW_CONTROLS = 'cnf_tool_show_controls';
 
     // IConfig attribute names:
     public const F_IDENTIFIER = 'identifier';
@@ -35,30 +44,55 @@ interface IConfig
     /**
      * @return int[]
      */
-    public function getPrivilegedRoles() : array;
+    public function getManageRoutineRoles() : array;
 
     /**
-     * @param int[] $privileged_roles
+     * @param int[] $roles
+     * @return IConfig
      */
-    public function setPrivilegedRoles(array $privileged_roles) : IConfig;
+    public function setManageRoutineRoles(array $roles) : IConfig;
+
+    /**
+     * @return int[]
+     */
+    public function getManageAssignmentRoles() : array;
+
+    /**
+     * @param int[] $roles
+     * @return IConfig
+     */
+    public function setManageAssignmentRoles(array $roles) : IConfig;
 
     /**
      * @return bool
      */
-    public function showRoutinesInRepository() : bool;
+    public function isToolEnabled() : bool;
 
     /**
-     * @param bool $can_show
+     * @param bool $is_enabled
+     * @return IConfig
      */
-    public function setShowRoutinesInRepository(bool $can_show) : IConfig;
+    public function setToolEnabled(bool $is_enabled) : IConfig;
 
     /**
      * @return bool
      */
-    public function createRoutinesInRepository() : bool;
+    public function shouldToolShowRoutines() : bool;
 
     /**
-     * @param bool $can_create
+     * @param bool $should_show
+     * @return IConfig
      */
-    public function setCreateRoutinesInRepository(bool $can_create) : IConfig;
+    public function setShouldToolShowRoutines(bool $should_show) : IConfig;
+
+    /**
+     * @return bool
+     */
+    public function shouldToolShowControls() : bool;
+
+    /**
+     * @param bool $should_show
+     * @return IConfig
+     */
+    public function setShouldToolShowControls(bool $should_show) : IConfig;
 }

@@ -6,6 +6,7 @@ use srag\Plugins\SrLifeCycleManager\Whitelist\IWhitelistRepository;
 use srag\Plugins\SrLifeCycleManager\Whitelist\IWhitelistEntry;
 use srag\Plugins\SrLifeCycleManager\Whitelist\WhitelistEntry;
 use srag\Plugins\SrLifeCycleManager\Routine\IRoutine;
+use srag\Plugins\SrLifeCycleManager\Repository\DTOHelper;
 
 /**
  * This repository is responsible for all whitelist CRUD operations.
@@ -16,6 +17,8 @@ use srag\Plugins\SrLifeCycleManager\Routine\IRoutine;
  */
 class ilSrWhitelistRepository implements IWhitelistRepository
 {
+    use DTOHelper;
+
     /**
      * @var string mysql datetime format string.
      */
@@ -39,7 +42,34 @@ class ilSrWhitelistRepository implements IWhitelistRepository
      */
     public function get(IRoutine $routine, int $ref_id) : ?IWhitelistEntry
     {
-        return $this->getWhitelistEntry($routine->getRoutineId(), $ref_id);
+        return $this->getWhitelistEntry(
+            $routine->getRoutineId() ?? 0,
+            $ref_id
+        );
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function getByRoutine(IRoutine $routine, bool $array_data = false) : array
+    {
+        $query = "
+            SELECT routine_id, ref_id, usr_id, is_opt_out, elongation, date FROM srlcm_whitelist
+                WHERE routine_id = %s
+            ;
+        ";
+
+        return $this->returnAllQueryResults(
+            $this->database->fetchAll(
+                $this->database->queryF(
+                    $query,
+                    ['integer'],
+                    [
+                        $routine->getRoutineId() ?? 0,
+                    ]
+                )
+            ), $array_data
+        );
     }
 
     /**
@@ -77,6 +107,7 @@ class ilSrWhitelistRepository implements IWhitelistRepository
     {
         $query = "
             UPDATE srlcm_whitelist SET
+                usr_id = %s,
                 is_opt_out = %s,
                 elongation = %s,
                 date = %s
@@ -87,8 +118,9 @@ class ilSrWhitelistRepository implements IWhitelistRepository
 
         $this->database->manipulateF(
             $query,
-            ['integer', 'integer', 'date', 'integer', 'integer'],
+            ['integer', 'integer', 'integer', 'date', 'integer', 'integer'],
             [
+                $entry->getUserId(),
                 (int) $entry->isOptOut(),
                 $entry->getElongation(),
                 $entry->getDate()->format(self::MYSQL_DATETIME_FORMAT),
@@ -107,17 +139,18 @@ class ilSrWhitelistRepository implements IWhitelistRepository
     protected function insertWhitelistEntry(IWhitelistEntry $entry) : IWhitelistEntry
     {
         $query = "
-            INSERT INTO srlcm_whitelist (routine_id, ref_id, is_opt_out, elongation, date)
-                VALUES (%s, %s, %s, %s, %s)
+            INSERT INTO srlcm_whitelist (routine_id, ref_id, usr_id, is_opt_out, elongation, date)
+                VALUES (%s, %s, %s, %s, %s, %s)
             ;
         ";
 
         $this->database->manipulateF(
             $query,
-            ['integer', 'integer', 'integer', 'integer', 'date'],
+            ['integer', 'integer', 'integer', 'integer', 'integer', 'date'],
             [
                 $entry->getRoutineId(),
                 $entry->getRefId(),
+                $entry->getUserId(),
                 (int) $entry->isOptOut(),
                 $entry->getElongation(),
                 $entry->getDate()->format(self::MYSQL_DATETIME_FORMAT)
@@ -135,29 +168,25 @@ class ilSrWhitelistRepository implements IWhitelistRepository
     protected function getWhitelistEntry(int $routine_id, int $ref_id) : ?IWhitelistEntry
     {
         $query = "
-            SELECT routine_id, ref_id, is_opt_out, elongation, date
+            SELECT routine_id, ref_id, usr_id, is_opt_out, elongation, date
                 FROM srlcm_whitelist
                 WHERE routine_id = %s
                 AND ref_id = %s
             ;
         ";
 
-        $result = $this->database->fetchAll(
-            $this->database->queryF(
-                $query,
-                ['integer', 'integer'],
-                [
-                    $routine_id,
-                    $ref_id,
-                ]
+        return $this->returnSingleQueryResult(
+            $this->database->fetchAll(
+                $this->database->queryF(
+                    $query,
+                    ['integer', 'integer'],
+                    [
+                        $routine_id,
+                        $ref_id,
+                    ]
+                )
             )
         );
-
-        if (!empty($result)) {
-            return $this->transformToDTO($result[0]);
-        }
-
-        return null;
     }
 
     /**
@@ -169,6 +198,7 @@ class ilSrWhitelistRepository implements IWhitelistRepository
         return new WhitelistEntry(
             (int) $query_result[IWhitelistEntry::F_ROUTINE_ID],
             (int) $query_result[IWhitelistEntry::F_REF_ID],
+            (int) $query_result[IWhitelistEntry::F_USER_ID],
             (bool) $query_result[IWhitelistEntry::F_IS_OPT_OUT],
             DateTimeImmutable::createFromFormat(
                 self::MYSQL_DATETIME_FORMAT,
