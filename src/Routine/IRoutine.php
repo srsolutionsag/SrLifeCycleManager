@@ -2,8 +2,6 @@
 
 namespace srag\Plugins\SrLifeCycleManager\Routine;
 
-use srag\Plugins\SrLifeCycleManager\Notification\INotification;
-use srag\Plugins\SrLifeCycleManager\Rule\IRule;
 use DateTime;
 
 /**
@@ -17,9 +15,7 @@ interface IRoutine
     public const F_CREATION_DATE = 'creation_date';
     public const F_ELONGATION    = 'elongation';
     public const F_HAS_OPT_OUT   = 'has_opt_out';
-    public const F_IS_ACTIVE     = 'is_active';
     public const F_ORIGIN_TYPE   = 'origin_type';
-    public const F_REF_ID        = 'ref_id';
     public const F_ROUTINE_TYPE  = 'routine_type';
     public const F_ROUTINE_ID    = 'routine_id';
     public const F_TITLE         = 'title';
@@ -53,17 +49,6 @@ interface IRoutine
      * @return IRoutine
      */
     public function setRoutineId(int $routine_id) : IRoutine;
-
-    /**
-     * @return int
-     */
-    public function getRefId() : int;
-
-    /**
-     * @param int $ref_id
-     * @return IRoutine
-     */
-    public function setRefId(int $ref_id) : IRoutine;
 
     /**
      * @return int
@@ -108,17 +93,6 @@ interface IRoutine
      * @return IRoutine
      */
     public function setTitle(string $title) : IRoutine;
-
-    /**
-     * @return bool
-     */
-    public function isActive() : bool;
-
-    /**
-     * @param bool $is_active
-     * @return IRoutine
-     */
-    public function setActive(bool $is_active) : IRoutine;
 
     /**
      * @return bool

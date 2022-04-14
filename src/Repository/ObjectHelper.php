@@ -1,23 +1,27 @@
 <?php declare(strict_types=1);
 
-/* Copyright (c) 2022 Thibeau Fuhrer <thibeau@sr.solutions> Extended GPL, see docs/LICENSE */
+namespace srag\Plugins\SrLifeCycleManager\Repository;
 
 use srag\Plugins\SrLifeCycleManager\Routine\IRoutine;
+use Iterator;
+use Exception;
+use ilObjectFactory;
+use ilTree;
 
 /**
- * This trait contains a set of helper functions that are used
- * within multiple repositories.
- *
  * @author Thibeau Fuhrer <thibeau@sr.solutions>
- *
- * @noinspection AutoloadingIssuesInspection
  */
-trait ilSrRepositoryHelper
+trait ObjectHelper
 {
+    /**
+     * @var ilTree
+     */
+    protected $tree;
+
     /**
      * @inheritDoc
      */
-    public function getRepositoryObjects(int $ref_id = 1) : Generator
+    public function getRepositoryObjects(int $ref_id = 1) : Iterator
     {
         $container_objects = $this->tree->getChildsByTypeFilter($ref_id, ['crs', 'cat', 'grp', 'fold']);
         if (empty($container_objects)) {
@@ -35,6 +39,14 @@ trait ilSrRepositoryHelper
                 yield from $this->getRepositoryObjects((int) $container['ref_id']);
             }
         }
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getParentId(int $ref_id) : int
+    {
+        return (int) $this->tree->getParentId($ref_id);
     }
 
     /**
@@ -74,5 +86,19 @@ trait ilSrRepositoryHelper
         $parents[] = $ref_id;
 
         return implode(',', $parents);
+    }
+
+    /**
+     * Returns the parent id of the given object (ref-id).
+     *
+     * If the parent id cannot be located, 0 is returned so that the
+     * comparison will not deliver any results.
+     *
+     * @param int $ref_id
+     * @return string
+     */
+    protected function getParentIdForSqlComparison(int $ref_id) : string
+    {
+        return (string) ($this->tree->getParentId($ref_id) ?? 0);
     }
 }

@@ -71,9 +71,8 @@ class ilSrNotificationGUI extends ilSrAbstractGUI
      */
     protected function canUserExecute(ilSrAccessHandler $access_handler, string $command) : bool
     {
-        // notifications can only be managed if the current user is
-        // also the owner of the requested routine.
-        return $access_handler->isCurrentUser($this->routine->getOwnerId());
+        // only routine-managers can execute commands in this gui.
+        return $this->access_handler->canManageRoutines();
     }
 
     /**
@@ -86,12 +85,7 @@ class ilSrNotificationGUI extends ilSrAbstractGUI
             ->addConfigurationTab()
             ->addRoutineTab()
             ->deactivateTabs()
-            ->setBackToTarget(
-                $this->ctrl->getLinkTargetByClass(
-                    ilSrRoutineGUI::class,
-                    self::CMD_INDEX
-                )
-            )
+            ->addBackToIndex(static::class)
         ;
     }
 
@@ -126,6 +120,7 @@ class ilSrNotificationGUI extends ilSrAbstractGUI
             $this->repository->notification()->getByRoutine($this->routine, true)
         );
 
+        $this->tab_manager->addBackToRoutines();
         $this->toolbar_manager->addNotificationToolbar();
         $this->render($table->getTable());
     }

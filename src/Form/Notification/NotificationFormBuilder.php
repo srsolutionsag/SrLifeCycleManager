@@ -115,7 +115,7 @@ class NotificationFormBuilder extends AbstractFormBuilder
                     (int) $days_before_submission
                 ));
             },
-            self::MSG_DAYS_BEFORE_SUBMISSION_ERROR
+            $this->translator->txt(self::MSG_DAYS_BEFORE_SUBMISSION_ERROR)
         );
     }
 }

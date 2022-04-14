@@ -47,9 +47,8 @@ class RoutineFormProcessor extends AbstractFormProcessor
      */
     protected function isValid(array $post_data) : bool
     {
-        // ensure that at least the routine's ref-id, name and exec dates were submitted.
+        // ensure that required fields were submitted (might be redundant).
         return (
-            null !== $post_data[RoutineFormBuilder::INPUT_REF_ID] &&
             null !== $post_data[RoutineFormBuilder::INPUT_TITLE] &&
             !empty($post_data[RoutineFormBuilder::INPUT_ROUTINE_TYPE])
         );
@@ -61,10 +60,8 @@ class RoutineFormProcessor extends AbstractFormProcessor
     protected function processData(array $post_data) : void
     {
         $this->routine
-            ->setRefId((int) $post_data[RoutineFormBuilder::INPUT_REF_ID])
             ->setTitle($post_data[RoutineFormBuilder::INPUT_TITLE])
             ->setRoutineType($post_data[RoutineFormBuilder::INPUT_ROUTINE_TYPE])
-            ->setActive($post_data[RoutineFormBuilder::INPUT_IS_ACTIVE])
             ->setOptOut($post_data[RoutineFormBuilder::INPUT_HAS_OPT_OUT])
         ;
 

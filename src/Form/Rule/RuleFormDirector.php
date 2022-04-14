@@ -33,7 +33,7 @@ class RuleFormDirector
      * @param IRoutine $routine
      * @return UIForm
      */
-    public function getRuleFormByRoutine(IRoutine $routine) : UIForm
+    public function getFormByRoutine(IRoutine $routine) : UIForm
     {
         switch ($routine->getRoutineType()) {
             case IRoutine::ROUTINE_TYPE_COURSE:

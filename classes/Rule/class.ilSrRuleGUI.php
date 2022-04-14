@@ -81,12 +81,7 @@ class ilSrRuleGUI extends ilSrAbstractGUI
             ->addConfigurationTab()
             ->addRoutineTab()
             ->deactivateTabs()
-            ->setBackToTarget(
-                $this->ctrl->getLinkTargetByClass(
-                    ilSrRoutineGUI::class,
-                    self::CMD_INDEX
-                )
-            )
+            ->addBackToIndex(self::class)
         ;
     }
 
@@ -95,28 +90,8 @@ class ilSrRuleGUI extends ilSrAbstractGUI
      */
     protected function canUserExecute(ilSrAccessHandler $access_handler, string $command) : bool
     {
-        // rules must be visible for object administrators.
-        if (self::CMD_INDEX === $command) {
-            return $access_handler->canViewRoutines($this->object_ref_id);
-        }
-
-        // for all other commands the user must be owner of the routine.
-        return $access_handler->isCurrentUser($this->routine->getOwnerId());
-    }
-
-    /**
-     * Fetches the requested rule from the database if an id was provided.
-     *
-     * @return IRule|null
-     */
-    protected function getRequestedRule() : ?IRule
-    {
-        $rule_id = $this->getRequestParameter(self::PARAM_RULE_ID);
-        if (null !== $rule_id) {
-            return $this->repository->rule()->get((int) $rule_id);
-        }
-
-        return null;
+        // only routine-managers can execute commands in this gui.
+        return $this->access_handler->canManageRoutines();
     }
 
     /**
@@ -135,6 +110,7 @@ class ilSrRuleGUI extends ilSrAbstractGUI
             $this->repository->rule()->getByRoutine($this->routine, true)
         );
 
+        $this->tab_manager->addBackToRoutines();
         $this->toolbar_manager->addRuleToolbar();
         $this->render($table->getTable());
     }
@@ -148,9 +124,7 @@ class ilSrRuleGUI extends ilSrAbstractGUI
      */
     protected function edit() : void
     {
-        $this->render(
-            $this->form_director->getRuleFormByRoutine($this->routine)
-        );
+        $this->render($this->form_director->getFormByRoutine($this->routine));
     }
 
     /**
@@ -167,7 +141,7 @@ class ilSrRuleGUI extends ilSrAbstractGUI
         $processor = new RuleFormProcessor(
             $this->repository->rule(),
             $this->request,
-            $this->form_director->getRuleFormByRoutine($this->routine),
+            $this->form_director->getFormByRoutine($this->routine),
             $this->rule
         );
 
@@ -193,6 +167,21 @@ class ilSrRuleGUI extends ilSrAbstractGUI
         }
 
         $this->cancel();
+    }
+
+    /**
+     * Fetches the requested rule from the database if an id was provided.
+     *
+     * @return IRule|null
+     */
+    protected function getRequestedRule() : ?IRule
+    {
+        $rule_id = $this->getRequestParameter(self::PARAM_RULE_ID);
+        if (null !== $rule_id) {
+            return $this->repository->rule()->get((int) $rule_id);
+        }
+
+        return null;
     }
 
     /**

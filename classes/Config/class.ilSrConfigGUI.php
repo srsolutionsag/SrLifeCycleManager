@@ -41,7 +41,7 @@ class ilSrConfigGUI extends ilSrAbstractGUI
             $this->ui_factory->input()->field(),
             $this->refinery,
             $this->repository->config()->get(),
-            $this->repository->config()->getAvailableGlobalRoles(),
+            $this->repository->general()->getAvailableGlobalRoles(),
             $this->getFormAction()
         );
     }
@@ -49,7 +49,8 @@ class ilSrConfigGUI extends ilSrAbstractGUI
     /**
      * @inheritDoc
      */
-    protected function setupGlobalTemplate(ilGlobalTemplateInterface $template, ilSrTabManager $tabs) : void {
+    protected function setupGlobalTemplate(ilGlobalTemplateInterface $template, ilSrTabManager $tabs) : void
+    {
         $template->setTitle($this->translator->txt(self::PAGE_TITLE));
         $tabs
             ->addConfigurationTab(true)
@@ -62,6 +63,7 @@ class ilSrConfigGUI extends ilSrAbstractGUI
      */
     protected function canUserExecute(ilSrAccessHandler $access_handler, string $command) : bool
     {
+        // the configurations are only accessible for administrators.
         return $access_handler->isAdministrator();
     }
 

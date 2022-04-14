@@ -24,6 +24,11 @@ class WhitelistEntry implements IWhitelistEntry
     protected $ref_id;
 
     /**
+     * @var int
+     */
+    protected $user_id;
+
+    /**
      * @var bool
      */
     protected $is_opt_out;
@@ -41,6 +46,7 @@ class WhitelistEntry implements IWhitelistEntry
     /**
      * @param int               $routine_id
      * @param int               $ref_id
+     * @param int               $user_id
      * @param bool              $is_opt_out
      * @param DateTimeImmutable $date
      * @param int|null          $elongation
@@ -48,12 +54,14 @@ class WhitelistEntry implements IWhitelistEntry
     public function __construct(
         int $routine_id,
         int $ref_id,
+        int $user_id,
         bool $is_opt_out,
         DateTimeImmutable $date,
         int $elongation = null
     ) {
         $this->routine_id = $routine_id;
         $this->ref_id = $ref_id;
+        $this->user_id = $user_id;
         $this->is_opt_out = $is_opt_out;
         $this->elongation = $elongation;
         $this->date = $date;
@@ -92,7 +100,24 @@ class WhitelistEntry implements IWhitelistEntry
         $this->ref_id = $ref_id;
         return $this;
     }
-    
+
+    /**
+     * @inheritdoc
+     */
+    public function getUserId() : int
+    {
+        return $this->user_id;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function setUserId(int $user_id) : IWhitelistEntry
+    {
+        $this->user_id = $user_id;
+        return $this;
+    }
+
     /**
      * @inheritdoc
      */
@@ -155,6 +180,6 @@ class WhitelistEntry implements IWhitelistEntry
 
         $elapsed_date = $this->getDate()->add(new DateInterval("P{$this->getElongation()}D"));
 
-        return ($when >= $elapsed_date);
+        return ($when > $elapsed_date);
     }
 }

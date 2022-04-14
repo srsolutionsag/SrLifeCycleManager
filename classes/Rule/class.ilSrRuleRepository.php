@@ -6,6 +6,8 @@ use srag\Plugins\SrLifeCycleManager\Routine\IRoutine;
 use srag\Plugins\SrLifeCycleManager\Rule\IRuleRepository;
 use srag\Plugins\SrLifeCycleManager\Rule\IRule;
 use srag\Plugins\SrLifeCycleManager\Rule\Rule;
+use srag\Plugins\SrLifeCycleManager\Repository\ObjectHelper;
+use srag\Plugins\SrLifeCycleManager\Repository\DTOHelper;
 
 /**
  * This repository is responsible for all rule CRUD operations.
@@ -16,7 +18,8 @@ use srag\Plugins\SrLifeCycleManager\Rule\Rule;
  */
 class ilSrRuleRepository implements IRuleRepository
 {
-    use ilSrRepositoryHelper;
+    use ObjectHelper;
+    use DTOHelper;
 
     /**
      * @var ilDBInterface
@@ -51,19 +54,15 @@ class ilSrRuleRepository implements IRuleRepository
             ;
         ";
 
-        $result = $this->database->fetchAll(
-            $this->database->queryF(
-                $query,
-                ['integer'],
-                [$rule_id]
+        return $this->returnSingleQueryResult(
+            $this->database->fetchAll(
+                $this->database->queryF(
+                    $query,
+                    ['integer'],
+                    [$rule_id]
+                )
             )
         );
-
-        if (!empty($result)) {
-            return $this->transformToDTO($result[0]);
-        }
-
-        return null;
     }
 
     /**
@@ -79,24 +78,17 @@ class ilSrRuleRepository implements IRuleRepository
             ;
         ";
 
-        $results = $this->database->fetchAll(
-            $this->database->queryF(
-                $query,
-                ['integer'],
-                [$routine->getRoutineId()]
-            )
+        return $this->returnAllQueryResults(
+            $this->database->fetchAll(
+                $this->database->queryF(
+                    $query,
+                    ['integer'],
+                    [
+                        $routine->getRoutineId() ?? 0,
+                    ]
+                )
+            ), $array_data
         );
-
-        if ($array_data) {
-            return $results;
-        }
-
-        $rules = [];
-        foreach ($results as $result) {
-            $rules[] = $this->transformToDTO($result);
-        }
-
-        return $rules;
     }
 
     /**
@@ -106,31 +98,32 @@ class ilSrRuleRepository implements IRuleRepository
     {
         $query = "
             SELECT rule.rule_id, rule.lhs_type, rule.lhs_value, rule.rhs_type, rule.rhs_value, rule.operator, relation.routine_id 
-                FROM srlcm_rule AS rule
+                FROM  srlcm_rule AS rule
                 JOIN srlcm_routine_rule AS relation ON relation.rule_id = rule.rule_id
-                WHERE relation.routine_id IN (
-                    SELECT routine_id FROM srlcm_routine AS routine
-                        WHERE ref_id IN ({$this->getParentIdsForSqlComparison($ref_id)})
-                        AND routine_type LIKE %s
-                        AND is_active = 1
+                JOIN srlcm_routine AS routine ON routine.routine_id = relation.routine_id
+                JOIN srlcm_assigned_routine AS assignment ON assignment.routine_id = routine.routine_id
+                WHERE routine.routine_type = %s
+                AND assignment.is_active = 1
+                AND (
+                    (assignment.is_recursive = 1 AND assignment.ref_id IN ({$this->getParentIdsForSqlComparison($ref_id)})) OR
+                    (assignment.is_recursive = 0 AND assignment.ref_id IN (%s, %s))
                 )
             ;
         ";
 
-        $results = $this->database->fetchAll(
-            $this->database->queryF(
-                $query,
-                ['text'],
-                [$routine_type]
+        return $this->returnAllQueryResults(
+            $this->database->fetchAll(
+                $this->database->queryF(
+                    $query,
+                    ['text', 'integer', 'integer'],
+                    [
+                        $routine_type,
+                        $this->getParentId($ref_id),
+                        $ref_id,
+                    ]
+                )
             )
         );
-
-        $routines = [];
-        foreach ($results as $result) {
-            $routines[] = $this->transformToDTO($result);
-        }
-
-        return $routines;
     }
 
     /**
@@ -176,6 +169,10 @@ class ilSrRuleRepository implements IRuleRepository
      */
     public function empty(IRoutine $routine) : IRule
     {
+        if (null === $routine->getRoutineId()) {
+            throw new LogicException("Cannot relate rule to routine that has not been stored yet.");
+        }
+
         return new Rule(
             '',
             '',

@@ -2,8 +2,8 @@
 
 /* Copyright (c) 2022 Thibeau Fuhrer <thibeau@sr.solutions> Extended GPL, see docs/LICENSE */
 
+use srag\Plugins\SrLifeCycleManager\Repository\RepositoryFactory;
 use srag\Plugins\SrLifeCycleManager\Routine\IRoutine;
-use srag\Plugins\SrLifeCycleManager\IRepository;
 use srag\Plugins\SrLifeCycleManager\ITranslator;
 use Psr\Http\Message\ServerRequestInterface;
 use ILIAS\Refinery\Factory as Refinery;
@@ -58,7 +58,7 @@ abstract class ilSrAbstractGUI
     protected $routine;
 
     /**
-     * @var IRepository
+     * @var RepositoryFactory
      */
     protected $repository;
 
@@ -151,10 +151,14 @@ abstract class ilSrAbstractGUI
         $this->ctrl = $DIC->ctrl();
         $this->user = $DIC->user();
 
-        $this->repository = new ilSrLifeCycleManagerRepository(
-            $DIC->database(),
-            $DIC->rbac(),
-            $DIC->repositoryTree()
+        $this->repository = new RepositoryFactory(
+            new ilSrGeneralRepository($DIC->database(), $DIC->repositoryTree(), $DIC->rbac()),
+            new ilSrConfigRepository($DIC->database(), $DIC->rbac()),
+            new ilSrRoutineRepository($DIC->database(), $DIC->repositoryTree()),
+            new ilSrAssignmentRepository($DIC->database(), $DIC->repositoryTree()),
+            new ilSrRuleRepository($DIC->database(), $DIC->repositoryTree()),
+            new ilSrNotificationRepository($DIC->database()),
+            new ilSrWhitelistRepository($DIC->database())
         );
 
         $this->access_handler = new ilSrAccessHandler(
@@ -175,24 +179,14 @@ abstract class ilSrAbstractGUI
             $this->access_handler,
             $this->translator,
             $DIC->tabs(),
-            $this->ctrl
+            $this->ctrl,
+            $this->origin
         );
 
         $this->object_ref_id = $this->getRequestedObject();
-        $this->routine =
-            $this->getRequestedRoutine() ??
-            $this->repository->routine()->empty($this->user->getId(), $this->origin)
-        ;
+        $this->routine = $this->getRequestedRoutine();
 
-        // save current request object for all implementing classes.
-        // this cannot be done via static::class, because when building
-        // link targets to another gui the parameter must be considered.
-        $this->ctrl->saveParameterByClass(ilSrRoutineGUI::class, self::PARAM_OBJECT_REF_ID);
-        $this->ctrl->saveParameterByClass(ilSrRuleGUI::class, self::PARAM_OBJECT_REF_ID);
-        $this->ctrl->saveParameterByClass(ilSrNotificationGUI::class, self::PARAM_OBJECT_REF_ID);
-
-        // save current routine-id if provided for all derived classes.
-        $this->ctrl->saveParameterByClass(static::class, self::PARAM_ROUTINE_ID);
+        $this->keepNecessaryParametersAlive();
     }
 
     /**
@@ -232,6 +226,7 @@ abstract class ilSrAbstractGUI
 
     /**
      * This method MUST check if the given user can execute the command.
+     * Note that all actions should be accessible for administrators.
      *
      * The command is passed as an argument in case the permissions
      * differ between the derived classes commands.
@@ -268,17 +263,20 @@ abstract class ilSrAbstractGUI
 
     /**
      * Fetches the requested routine from the database, if a routine id was provided.
+     * Otherwise, an empty instance will be returned.
      *
-     * @return IRoutine|null
+     * @return IRoutine
      */
-    protected function getRequestedRoutine() : ?IRoutine
+    protected function getRequestedRoutine() : IRoutine
     {
         $routine_id = $this->getRequestParameter(self::PARAM_ROUTINE_ID);
+        $routine = null;
+
         if (null !== $routine_id) {
-            return $this->repository->routine()->get((int) $routine_id);
+            $routine = $this->repository->routine()->get((int) $routine_id);
         }
 
-        return null;
+        return $routine ?? $this->repository->routine()->empty($this->user->getId(), $this->origin);
     }
 
     /**
@@ -289,7 +287,9 @@ abstract class ilSrAbstractGUI
      */
     protected function getRequestedObject() : ?int
     {
-        // only consider request objects from the repository.
+        // only consider request objects from the repository. for example
+        // the configuration context also provides a ref-id, which doesn't
+        // belong to a repository object.
         if (IRoutine::ORIGIN_TYPE_REPOSITORY !== $this->origin) {
             return null;
         }
@@ -397,6 +397,32 @@ abstract class ilSrAbstractGUI
     protected function displayInfoMessage(string $lang_var) : void
     {
         $this->displayMessageToast($lang_var, 'info');
+    }
+
+    /**
+     * This method keeps all query-parameters alive that are required
+     * throughout the derived classes.
+     */
+    private function keepNecessaryParametersAlive() : void
+    {
+        // the request object must be saved individually for each derived class
+        // and cannot be saved via 'static::class', because then ilCtrl would only
+        // consider the parameter for the instantiated object.
+        // this has to be done in order to generate links to different GUI classes
+        // and keeping alive the ref_id parameter, once provided.
+        $this->ctrl->saveParameterByClass(ilSrRoutineGUI::class, self::PARAM_OBJECT_REF_ID);
+        $this->ctrl->saveParameterByClass(ilSrRoutineAssignmentGUI::class, self::PARAM_OBJECT_REF_ID);
+        $this->ctrl->saveParameterByClass(ilSrObjectAssignmentGUI::class, self::PARAM_OBJECT_REF_ID);
+        $this->ctrl->saveParameterByClass(ilSrRuleGUI::class, self::PARAM_OBJECT_REF_ID);
+        $this->ctrl->saveParameterByClass(ilSrNotificationGUI::class, self::PARAM_OBJECT_REF_ID);
+        $this->ctrl->saveParameterByClass(ilSrWhitelistGUI::class, self::PARAM_OBJECT_REF_ID);
+
+        // DON'T save the parameter for routine-assignments, otherwise some links
+        // might misbehave because the routine-id must only be provided for edits.
+        if (ilSrRoutineAssignmentGUI::class !== static::class) {
+            // save current routine-id if provided for all other derived classes.
+            $this->ctrl->saveParameterByClass(static::class, self::PARAM_ROUTINE_ID);
+        }
     }
 
     /**

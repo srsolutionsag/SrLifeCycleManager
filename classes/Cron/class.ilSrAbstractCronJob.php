@@ -40,14 +40,14 @@ abstract class ilSrAbstractCronJob extends ilCronJob
      */
     public function run() : ilCronJobResult
     {
-        $this->result_builder->trackTime()->request();
+        $this->result_builder->request()->trackTime();
 
         try {
             $this->execute();
         } catch (Throwable $throwable) {
             return $this->result_builder
                 ->crash()
-                ->message($throwable->getMessage())
+                ->message($throwable->getMessage() . $throwable->getTraceAsString())
                 ->getResult()
             ;
         }

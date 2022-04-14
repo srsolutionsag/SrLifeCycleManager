@@ -16,8 +16,8 @@ use srag\Plugins\SrLifeCycleManager\Routine\IRoutine;
 class ilSrWhitelistGUI extends ilSrAbstractGUI
 {
     // ilSrWhitelistGUI command/method names:
-    public const CMD_ROUTINE_OPT_OUT = 'optOut';
-    public const CMD_ROUTINE_EXTEND  = 'extend';
+    public const CMD_WHITELIST_POSTPONE  = 'postpone';
+    public const CMD_WHITELIST_OPT_OUT = 'optOut';
 
     // ilSrWhitelistGUI language variables:
     protected const MSG_ROUTINE_EXTENDED = 'msg_routine_extended';
@@ -29,15 +29,27 @@ class ilSrWhitelistGUI extends ilSrAbstractGUI
     protected const PAGE_TITLE = 'page_title_whitelist';
 
     /**
+     * Panics if the request is missing an existing routine.
+     *
+     * @inheritdoc
+     */
+    public function __construct()
+    {
+        parent::__construct();
+        $this->panicOnMissingRoutine();
+    }
+
+    /**
      * @inheritDoc
      */
     protected function setupGlobalTemplate(ilGlobalTemplateInterface $template, ilSrTabManager $tabs) : void
     {
         $template->setTitle($this->translator->txt(self::PAGE_TITLE));
-
-        if (null !== $this->object_ref_id) {
-            $tabs->setBackToTarget(ilLink::_getLink($this->object_ref_id));
-        }
+        $tabs
+            ->addConfigurationTab()
+            ->addRoutineTab()
+            ->deactivateTabs()
+        ;
     }
 
     /**
@@ -45,13 +57,14 @@ class ilSrWhitelistGUI extends ilSrAbstractGUI
      */
     protected function canUserExecute(ilSrAccessHandler $access_handler, string $command) : bool
     {
-        // whitelist overview must be available for routine owners.
+        // index method is accessible for routine managers to see
+        // which objects are currently whitelisted.
         if (self::CMD_INDEX === $command) {
-            return $access_handler->isCurrentUser($this->routine->getOwnerId());
+            return $access_handler->canManageRoutines();
         }
 
-        // routine extension or opt-out must only be accessible for
-        // administrators of the requested object.
+        // all other actions (opt-out, postpone) are only accessible
+        // for object-administrators.
         if (null !== $this->object_ref_id) {
             return $access_handler->isAdministratorOf($this->object_ref_id);
         }
@@ -60,11 +73,26 @@ class ilSrWhitelistGUI extends ilSrAbstractGUI
     }
 
     /**
+     * Displays a table with all whitelist entries for the currently
+     * requested routine.
+     *
      * @inheritDoc
      */
     protected function index() : void
     {
-        throw new LogicException("Not yet implemented.");
+        $table = new ilSrWhitelistTable(
+            $this->ui_factory,
+            $this->renderer,
+            $this->translator,
+            $this->access_handler,
+            $this->ctrl,
+            $this,
+            self::CMD_INDEX,
+            $this->repository->whitelist()->getByRoutine($this->routine, true)
+        );
+
+        $this->tab_manager->addBackToRoutines();
+        $this->render($table->getTable());
     }
 
     /**
@@ -77,7 +105,7 @@ class ilSrWhitelistGUI extends ilSrAbstractGUI
      * Otherwise, the user will be redirected back to the requested
      * object with an according info-message.
      */
-    protected function extend() : void
+    protected function postpone() : void
     {
         // abort if the requested routine has not been stored yet or
         // no target object was provided.
@@ -122,6 +150,7 @@ class ilSrWhitelistGUI extends ilSrAbstractGUI
             new WhitelistEntry(
                 $this->routine->getRoutineId(),
                 $this->object_ref_id,
+                $this->user->getId(),
                 false,
                 new DateTimeImmutable(),
                 $elongation
@@ -175,6 +204,7 @@ class ilSrWhitelistGUI extends ilSrAbstractGUI
             new WhitelistEntry(
                 $this->routine->getRoutineId(),
                 $this->object_ref_id,
+                $this->user->getId(),
                 true,
                 new DateTimeImmutable()
             )

@@ -18,13 +18,15 @@ interface IRoutineRepository
     public function get(int $routine_id) : ?IRoutine;
 
     /**
-     * Fetches all existing routines from the database that are either
-     * active or inactive, depending on the given argument.
+     * Fetches all existing routines from the database.
      *
-     * @param bool $is_active
-     * @return array
+     * To retrieve routines as array-data, true can be passed as an argument
+     * (usually required by ilTableGUI).
+     *
+     * @param bool $array_data
+     * @return IRoutine[]
      */
-    public function getAllByActivity(bool $is_active) : array;
+    public function getAll(bool $array_data = false) : array;
 
     /**
      * Fetches all existing routines from the database that affect the
@@ -38,6 +40,34 @@ interface IRoutineRepository
      * @return IRoutine[]
      */
     public function getAllByRefId(int $ref_id, bool $array_data = false) : array;
+
+    /**
+     * Returns all existing routines from the database that are affecting
+     * the given object (ref-id and type).
+     *
+     * If the routine has an opt-out whitelist entry it will not be considered.
+     *
+     * @param int    $ref_id
+     * @param string $type
+     * @return IRoutine[]
+     */
+    public function getAllForComparison(int $ref_id, string $type) : array;
+
+    /**
+     * Fetches all existing routines from the database that ARE NOT already
+     * affecting the given object (ref-id).
+     *
+     * Affecting means, the object is either assigned directly, or the routine
+     * of a parent is recursive.
+     *
+     * To retrieve routines as array-data, true can be passed as an argument
+     * (usually required by ilTableGUI).
+     *
+     * @param int  $ref_id
+     * @param bool $array_data
+     * @return IRoutine[]
+     */
+    public function getAllUnassigned(int $ref_id, bool $array_data = false) : array;
 
     /**
      * Creates or updates the given routine in the database.

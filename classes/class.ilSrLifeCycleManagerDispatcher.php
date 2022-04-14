@@ -13,6 +13,8 @@ use srag\Plugins\SrLifeCycleManager\Routine\IRoutine;
  * @ilCtrl_isCalledBy ilSrLifeCycleManagerDispatcher : ilSrLifeCycleManagerConfigGUI
  *
  * @ilCtrl_Calls ilSrLifeCycleManagerDispatcher : ilSrConfigGUI
+ * @ilCtrl_Calls ilSrLifeCycleManagerDispatcher : ilSrRoutineAssignmentGUI
+ * @ilCtrl_Calls ilSrLifeCycleManagerDispatcher : ilSrObjectAssignmentGUI
  * @ilCtrl_Calls ilSrLifeCycleManagerDispatcher : ilSrNotificationGUI
  * @ilCtrl_Calls ilSrLifeCycleManagerDispatcher : ilSrRoutineGUI
  * @ilCtrl_Calls ilSrLifeCycleManagerDispatcher : ilSrRuleGUI
@@ -55,6 +57,12 @@ class ilSrLifeCycleManagerDispatcher
         switch ($this->ctrl->getNextClass()) {
             case strtolower(ilSrConfigGUI::class):
                 $this->safelyForward(ilSrConfigGUI::class);
+                break;
+            case strtolower(ilSrRoutineAssignmentGUI::class);
+                $this->safelyForward(ilSrRoutineAssignmentGUI::class);
+                break;
+            case strtolower(ilSrObjectAssignmentGUI::class);
+                $this->safelyForward(ilSrObjectAssignmentGUI::class);
                 break;
             case strtolower(ilSrNotificationGUI::class):
                 $this->safelyForward(ilSrNotificationGUI::class);

@@ -6,6 +6,8 @@ use srag\Plugins\SrLifeCycleManager\Form\IFormBuilder;
 use srag\Plugins\SrLifeCycleManager\Form\Routine\RoutineFormBuilder;
 use srag\Plugins\SrLifeCycleManager\Form\Routine\RoutineFormProcessor;
 use srag\Plugins\SrLifeCycleManager\Routine\IRoutine;
+use srag\Plugins\SrLifeCycleManager\Form\Assignment\RoutineAssignmentFormBuilder;
+use srag\Plugins\SrLifeCycleManager\Assignment\RoutineAssignment;
 
 /**
  * This GUI class is responsible for all actions regarding routines.
@@ -29,7 +31,7 @@ class ilSrRoutineGUI extends ilSrAbstractGUI
     /**
      * @var IFormBuilder
      */
-    protected $form_builder;
+    protected $routine_form_builder;
 
     /**
      * Initializes the routine form-builder and fetches the required request
@@ -39,12 +41,12 @@ class ilSrRoutineGUI extends ilSrAbstractGUI
     {
         parent::__construct();
 
-        $this->form_builder = new RoutineFormBuilder(
+        $this->routine_form_builder = new RoutineFormBuilder(
             $this->translator,
             $this->ui_factory->input()->container()->form(),
             $this->ui_factory->input()->field(),
             $this->refinery,
-            $this->routine ?? $this->repository->routine()->empty($this->user->getId(), $this->origin),
+            $this->routine,
             $this->getFormAction()
         );
     }
@@ -55,12 +57,6 @@ class ilSrRoutineGUI extends ilSrAbstractGUI
     protected function setupGlobalTemplate(ilGlobalTemplateInterface $template, ilSrTabManager $tabs) : void
     {
         $template->setTitle($this->translator->txt(self::PAGE_TITLE));
-
-        // don't override the "back-to-plugins" target in configuration.
-        if (IRoutine::ORIGIN_TYPE_ADMINISTRATION !== $this->origin) {
-            $tabs->setBackToTarget($this->getBackToTarget());
-        }
-
         $tabs
             ->addConfigurationTab()
             ->addRoutineTab(true)
@@ -72,22 +68,12 @@ class ilSrRoutineGUI extends ilSrAbstractGUI
      */
     protected function canUserExecute(ilSrAccessHandler $access_handler, string $command) : bool
     {
-        switch ($command) {
-            // routines must be visible for object administrators.
-            case self::CMD_INDEX:
-                return $access_handler->canViewRoutines($this->object_ref_id);
-
-            // for all other commands the user must be able to manage routines.
-            default:
-                return $access_handler->canManageRoutines();
-        }
+        // only routine-managers can execute commands in this gui.
+        return $this->access_handler->canManageRoutines();
     }
 
     /**
-     * Displays all routines that affect the requested routine-ref-id.
-     *
-     * Affected means, that the id itself belongs to a routine or one
-     * of its parents does.
+     * Displays a table with all existing routines on the current page.
      */
     protected function index() : void
     {
@@ -99,11 +85,13 @@ class ilSrRoutineGUI extends ilSrAbstractGUI
             $this->ctrl,
             $this,
             self::CMD_INDEX,
-            $this->repository->routine()->getAllByRefId(
-                $this->object_ref_id ?? 1,
-                true
-            )
+            $this->repository->routine()->getAll(true)
         );
+
+        // set back-to object target in repository context.
+        if (IRoutine::ORIGIN_TYPE_REPOSITORY === $this->origin) {
+            $this->tab_manager->addBackToObject($this->object_ref_id);
+        }
 
         $this->toolbar_manager->addRoutineToolbar();
         $this->render($table->getTable());
@@ -118,17 +106,8 @@ class ilSrRoutineGUI extends ilSrAbstractGUI
      */
     protected function edit() : void
     {
-        // if the current routine has not been stored yet and
-        // an object was requested, the user wants to create
-        // a routine at this position, therefore the object is
-        // treated as routine-ref-id.
-        if (null !== $this->object_ref_id &&
-            null === $this->routine->getRoutineId()
-        ) {
-            $this->routine->setRefId($this->object_ref_id);
-        }
-
-        $this->render($this->form_builder->getForm());
+        $this->tab_manager->addBackToRoutines();
+        $this->render($this->routine_form_builder->getForm());
     }
 
     /**
@@ -145,7 +124,7 @@ class ilSrRoutineGUI extends ilSrAbstractGUI
         $processor = new RoutineFormProcessor(
             $this->repository->routine(),
             $this->request,
-            $this->form_builder->getForm(),
+            $this->routine_form_builder->getForm(),
             $this->routine
         );
 
@@ -172,24 +151,6 @@ class ilSrRoutineGUI extends ilSrAbstractGUI
         }
 
         $this->cancel();
-    }
-
-    /**
-     * Returns a back-to target to either the requested object, if provided,
-     * or the routine GUI index.
-     *
-     * @return string
-     */
-    protected function getBackToTarget() : string
-    {
-        if (null !== $this->object_ref_id) {
-            return ilLink::_getLink($this->object_ref_id);
-        }
-
-        return $this->ctrl->getLinkTargetByClass(
-            self::class,
-            self::CMD_INDEX
-        );
     }
 
     /**

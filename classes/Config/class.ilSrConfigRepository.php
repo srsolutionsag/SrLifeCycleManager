@@ -16,6 +16,8 @@ use ILIAS\DI\RBACServices;
  */
 class ilSrConfigRepository implements IConfigRepository
 {
+    protected const ARRAY_STRING_SEPARATOR = ',';
+
     /**
      * @var ilDBInterface
      */
@@ -53,20 +55,28 @@ class ilSrConfigRepository implements IConfigRepository
 
         foreach ($results as $query_result) {
             switch ($query_result[IConfig::F_IDENTIFIER]) {
-                case IConfig::CNF_PRIVILEGED_ROLES:
-                    $roles = (!empty($query_result[IConfig::F_CONFIG])) ?
-                        explode(',', $query_result[IConfig::F_CONFIG]) : []
-                    ;
-
-                    $config->setPrivilegedRoles($roles);
+                case IConfig::CNF_ROLE_MANAGE_ROUTINES:
+                    $config->setManageRoutineRoles(
+                        $this->stringToArray($query_result[IConfig::F_CONFIG])
+                    );
                     break;
 
-                case IConfig::CNF_SHOW_ROUTINES_IN_REPOSITORY:
-                    $config->setShowRoutinesInRepository((bool) $query_result[IConfig::F_CONFIG]);
+                case IConfig::CNF_ROLE_MANAGE_ASSIGNMENTS:
+                    $config->setManageAssignmentRoles(
+                        $this->stringToArray($query_result[IConfig::F_CONFIG])
+                    );
                     break;
 
-                case IConfig::CNF_CREATE_ROUTINES_IN_REPOSITORY:
-                    $config->setCreateRoutinesInRepository((bool) $query_result[IConfig::F_CONFIG]);
+                case IConfig::CNF_TOOL_IS_ENABLED:
+                    $config->setToolEnabled((bool) $query_result[IConfig::F_CONFIG]);
+                    break;
+
+                case IConfig::CNF_TOOL_SHOW_ROUTINES:
+                    $config->setShouldToolShowRoutines((bool) $query_result[IConfig::F_CONFIG]);
+                    break;
+
+                case IConfig::CNF_TOOL_SHOW_CONTROLS:
+                    $config->setShouldToolShowControls((bool) $query_result[IConfig::F_CONFIG]);
                     break;
             }
         }
@@ -79,37 +89,13 @@ class ilSrConfigRepository implements IConfigRepository
      */
     public function store(IConfig $config) : IConfig
     {
-        $this->updateConfig(IConfig::CNF_PRIVILEGED_ROLES, implode(',', $config->getPrivilegedRoles()));
-        $this->updateConfig(IConfig::CNF_SHOW_ROUTINES_IN_REPOSITORY, (string) $config->showRoutinesInRepository());
-        $this->updateConfig(IConfig::CNF_CREATE_ROUTINES_IN_REPOSITORY, (string) $config->createRoutinesInRepository());
+        $this->updateConfig(IConfig::CNF_ROLE_MANAGE_ROUTINES, $this->arrayToString($config->getManageRoutineRoles()));
+        $this->updateConfig(IConfig::CNF_ROLE_MANAGE_ASSIGNMENTS, $this->arrayToString($config->getManageAssignmentRoles()));
+        $this->updateConfig(IConfig::CNF_TOOL_IS_ENABLED, (string) $config->isToolEnabled());
+        $this->updateConfig(IConfig::CNF_TOOL_SHOW_ROUTINES, (string) $config->shouldToolShowRoutines());
+        $this->updateConfig(IConfig::CNF_TOOL_SHOW_CONTROLS, (string) $config->shouldToolShowControls());
 
         return $config;
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function getAvailableGlobalRoles() : array
-    {
-        $role_options = [];
-        $global_roles = $this->rbac->review()->getRolesByFilter(ilRbacReview::FILTER_ALL_GLOBAL);
-        if (empty($global_roles)) {
-            return $role_options;
-        }
-
-        foreach ($global_roles as $role_data) {
-            $role_id = (int) $role_data['obj_id'];
-            // the administrator role can be ignored, as this
-            // role should always be able to do everything.
-            if ((int) SYSTEM_ROLE_ID !== $role_id) {
-                $role_title = ilObjRole::_getTranslation($role_data['title']);
-
-                // map the role-title to its role id associatively.
-                $role_options[$role_id] = $role_title;
-            }
-        }
-
-        return $role_options;
     }
 
     /**
@@ -129,5 +115,29 @@ class ilSrConfigRepository implements IConfigRepository
                 $identifier,
             ]
         );
+    }
+
+    /**
+     * @todo: this could be improved with json_decode.
+     * @param string $array
+     * @return array
+     */
+    protected function stringToArray(string $array) : array
+    {
+        if (!empty($array)) {
+            return explode(self::ARRAY_STRING_SEPARATOR, $array);
+        }
+
+        return [];
+    }
+
+    /**
+     * @todo: this could be improved with json_encode.
+     * @param array $array
+     * @return string
+     */
+    protected function arrayToString(array $array) : string
+    {
+        return implode(self::ARRAY_STRING_SEPARATOR, $array);
     }
 }

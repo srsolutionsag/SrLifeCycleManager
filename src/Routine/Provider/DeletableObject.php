@@ -2,7 +2,7 @@
 
 /* Copyright (c) 2022 Thibeau Fuhrer <thibeau@sr.solutions> Extended GPL, see docs/LICENSE */
 
-namespace srag\Plugins\SrLifeCycleManager\Rule\Generator;
+namespace srag\Plugins\SrLifeCycleManager\Routine\Provider;
 
 use srag\Plugins\SrLifeCycleManager\Routine\IRoutine;
 use ilObject;
@@ -43,7 +43,7 @@ class DeletableObject implements IDeletableObject
     /**
      * @inheritDoc
      */
-    public function getAffectedRoutines() : array
+    public function getAffectingRoutines() : array
     {
         return $this->affected_routines;
     }

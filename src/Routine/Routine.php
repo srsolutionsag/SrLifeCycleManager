@@ -18,11 +18,6 @@ class Routine implements IRoutine
     /**
      * @var int
      */
-    protected $ref_id;
-
-    /**
-     * @var int
-     */
     protected $owner_id;
 
     /**
@@ -43,11 +38,6 @@ class Routine implements IRoutine
     /**
      * @var bool
      */
-    protected $active;
-
-    /**
-     * @var bool
-     */
     protected $has_opt_out;
 
     /**
@@ -61,43 +51,37 @@ class Routine implements IRoutine
     protected $creation_date;
 
     /**
-     * @param int      $ref_id
      * @param int      $owner_id
      * @param string   $routine_type
      * @param int      $origin
      * @param string   $title
-     * @param bool     $active
      * @param bool     $has_opt_out
      * @param DateTime $creation_date
      * @param int|null $elongation
      * @param int|null $routine_id
      */
     public function __construct(
-        int $ref_id,
         int $owner_id,
         string $routine_type,
         int $origin,
         string $title,
-        bool $active,
         bool $has_opt_out,
         DateTime $creation_date,
         int $elongation = null,
         int $routine_id = null
     ) {
         $this->routine_id = $routine_id;
-        $this->ref_id = $ref_id;
         $this->owner_id = $owner_id;
         $this->routine_type = $routine_type;
         $this->origin = $origin;
         $this->title = $title;
-        $this->active = $active;
         $this->has_opt_out = $has_opt_out;
         $this->elongation = $elongation;
         $this->creation_date = $creation_date;
     }
 
     /**
-     * @return int|null
+     * @inheritDoc
      */
     public function getRoutineId() : ?int
     {
@@ -105,8 +89,7 @@ class Routine implements IRoutine
     }
 
     /**
-     * @param int $routine_id
-     * @return IRoutine
+     * @inheritDoc
      */
     public function setRoutineId(int $routine_id) : IRoutine
     {
@@ -115,25 +98,7 @@ class Routine implements IRoutine
     }
 
     /**
-     * @return int
-     */
-    public function getRefId() : int
-    {
-        return $this->ref_id;
-    }
-
-    /**
-     * @param int $ref_id
-     * @return IRoutine
-     */
-    public function setRefId(int $ref_id) : IRoutine
-    {
-        $this->ref_id = $ref_id;
-        return $this;
-    }
-
-    /**
-     * @return int
+     * @inheritDoc
      */
     public function getOwnerId() : int
     {
@@ -141,8 +106,7 @@ class Routine implements IRoutine
     }
 
     /**
-     * @param int $owner_id
-     * @return IRoutine
+     * @inheritDoc
      */
     public function setOwnerId(int $owner_id) : IRoutine
     {
@@ -151,7 +115,7 @@ class Routine implements IRoutine
     }
 
     /**
-     * @return int
+     * @inheritDoc
      */
     public function getOrigin() : int
     {
@@ -159,8 +123,7 @@ class Routine implements IRoutine
     }
 
     /**
-     * @param int $origin
-     * @return Routine
+     * @inheritDoc
      */
     public function setOrigin(int $origin) : IRoutine
     {
@@ -169,7 +132,7 @@ class Routine implements IRoutine
     }
 
     /**
-     * @return string
+     * @inheritDoc
      */
     public function getRoutineType() : string
     {
@@ -177,8 +140,7 @@ class Routine implements IRoutine
     }
 
     /**
-     * @param string $routine_type
-     * @return IRoutine
+     * @inheritDoc
      */
     public function setRoutineType(string $routine_type) : IRoutine
     {
@@ -187,7 +149,7 @@ class Routine implements IRoutine
     }
 
     /**
-     * @return string
+     * @inheritDoc
      */
     public function getTitle() : string
     {
@@ -195,8 +157,7 @@ class Routine implements IRoutine
     }
 
     /**
-     * @param string $title
-     * @return IRoutine
+     * @inheritDoc
      */
     public function setTitle(string $title) : IRoutine
     {
@@ -205,25 +166,7 @@ class Routine implements IRoutine
     }
 
     /**
-     * @return bool
-     */
-    public function isActive() : bool
-    {
-        return $this->active;
-    }
-
-    /**
-     * @param bool $is_active
-     * @return IRoutine
-     */
-    public function setActive(bool $is_active) : IRoutine
-    {
-        $this->active = $is_active;
-        return $this;
-    }
-
-    /**
-     * @return bool
+     * @inheritDoc
      */
     public function hasOptOut() : bool
     {
@@ -231,8 +174,7 @@ class Routine implements IRoutine
     }
 
     /**
-     * @param bool $has_opt_out
-     * @return IRoutine
+     * @inheritDoc
      */
     public function setOptOut(bool $has_opt_out) : IRoutine
     {
@@ -241,7 +183,7 @@ class Routine implements IRoutine
     }
 
     /**
-     * @return int|null
+     * @inheritDoc
      */
     public function getElongation() : ?int
     {
@@ -249,8 +191,7 @@ class Routine implements IRoutine
     }
 
     /**
-     * @param int|null $amount
-     * @return IRoutine
+     * @inheritDoc
      */
     public function setElongation(?int $amount) : IRoutine
     {
@@ -259,7 +200,7 @@ class Routine implements IRoutine
     }
 
     /**
-     * @return DateTime
+     * @inheritDoc
      */
     public function getCreationDate() : DateTime
     {
@@ -267,8 +208,7 @@ class Routine implements IRoutine
     }
 
     /**
-     * @param DateTime $creation_date
-     * @return IRoutine
+     * @inheritDoc
      */
     public function setCreationDate(DateTime $creation_date) : IRoutine
     {
