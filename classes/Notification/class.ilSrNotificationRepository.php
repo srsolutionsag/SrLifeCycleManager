@@ -120,7 +120,8 @@ class ilSrNotificationRepository implements INotificationRepository
     public function getSentNotifications(IRoutine $routine, int $ref_id) : array
     {
         $query = "
-            SELECT msg.notification_id, msg.routine_id, msg.title, msg.content, msg.days_before_submission
+            SELECT 
+                msg.notification_id, msg.routine_id, msg.title, msg.content, msg.days_before_submission, notified_objs.date
                 FROM srlcm_notification AS msg
                 JOIN srlcm_notified_objects AS notified_objs ON notified_objs.notification_id = msg.notification_id
                 WHERE notified_objs.routine_id = %s

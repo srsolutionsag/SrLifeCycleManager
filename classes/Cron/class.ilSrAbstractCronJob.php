@@ -47,7 +47,7 @@ abstract class ilSrAbstractCronJob extends ilCronJob
         } catch (Throwable $throwable) {
             return $this->result_builder
                 ->crash()
-                ->message($throwable->getMessage())
+                ->message($throwable->getMessage() . $throwable->getTraceAsString())
                 ->getResult()
             ;
         }
