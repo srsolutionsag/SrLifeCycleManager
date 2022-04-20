@@ -29,7 +29,7 @@ class GroupCreation extends GroupAttribute
     public function getComparableValue(string $type)
     {
         $creation_string = $this->group->getCreateDate();
-        $creation_date = DateTime::createFromFormat('Y-m-d h:i:s', $creation_string);
+        $creation_date = DateTime::createFromFormat(self::ILIAS_DATETIME_FORMAT, $creation_string);
         if (false === $creation_date) {
             return null;
         }

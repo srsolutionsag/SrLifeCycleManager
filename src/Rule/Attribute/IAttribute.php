@@ -15,6 +15,11 @@ interface IAttribute
     public const COMPARABLE_DATETIME_FORMAT = 'Y-m-d';
 
     /**
+     * @var string default datetime format of dates in ilias.
+     */
+    public const ILIAS_DATETIME_FORMAT = 'Y-m-d H:i:s';
+
+    /**
      * Comparable value types.
      */
     public const COMPARABLE_VALUE_TYPE_ARRAY    = 'array';
