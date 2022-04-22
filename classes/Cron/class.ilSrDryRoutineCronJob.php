@@ -37,7 +37,7 @@ class ilSrDryRoutineCronJob extends ilSrRoutineCronJob
      */
     public function getDescription() : string
     {
-        return '...';
+        return 'Emulates the routine-cron-job and gathers its information.';
     }
 
     /**
@@ -46,7 +46,7 @@ class ilSrDryRoutineCronJob extends ilSrRoutineCronJob
     protected function execute() : void
     {
         parent::execute();
-        
+
         foreach ($this->deleted_objects as $object) {
             $message = "Object {$object->getRefId()} ({$object->getType()}) would have been deleted.";
             $this->addSummary($message);
@@ -79,6 +79,4 @@ class ilSrDryRoutineCronJob extends ilSrRoutineCronJob
             $object,
         ];
     }
-    
-    
 }

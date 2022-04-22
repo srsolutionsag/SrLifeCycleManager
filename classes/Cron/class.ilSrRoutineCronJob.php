@@ -64,13 +64,13 @@ class ilSrRoutineCronJob extends ilSrAbstractCronJob
     protected $deletable_objects;
 
     /**
-     * @param INotificationSender      $notification_sender
-     * @param IDeletableObjectProvider $deletable_objects
-     * @param ResultBuilder            $result_builder
-     * @param INotificationRepository  $notification_repository
-     * @param IRoutineRepository       $routine_repository
-     * @param IWhitelistRepository     $whitelist_repository
-     * @param ilLogger                 $logger
+     * @param INotificationSender     $notification_sender
+     * @param Generator               $deletable_objects
+     * @param ResultBuilder           $result_builder
+     * @param INotificationRepository $notification_repository
+     * @param IRoutineRepository      $routine_repository
+     * @param IWhitelistRepository    $whitelist_repository
+     * @param ilLogger                $logger
      */
     public function __construct(
         INotificationSender $notification_sender,
@@ -103,7 +103,8 @@ class ilSrRoutineCronJob extends ilSrAbstractCronJob
      */
     public function getDescription() : string
     {
-        return '...';
+        return 'This cron job will delete repository objects that are affected by any of the active routines and sends
+        notifications (if present) for the configured amount of days before their deletion.';
     }
 
     /**

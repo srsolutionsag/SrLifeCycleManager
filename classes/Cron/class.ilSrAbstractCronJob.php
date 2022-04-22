@@ -39,7 +39,7 @@ abstract class ilSrAbstractCronJob extends ilCronJob
         $this->result_builder = $builder;
         $this->logger = $logger;
     }
-    
+
     /**
      * @inheritDoc
      */
@@ -56,7 +56,7 @@ abstract class ilSrAbstractCronJob extends ilCronJob
                 ->getResult()
             ;
         }
-    
+
         $result = $this->result_builder
             ->success()
             ->message($this->getSummary())
@@ -68,7 +68,7 @@ abstract class ilSrAbstractCronJob extends ilCronJob
         if (!$this->isCLI()) {
             ilUtil::sendInfo($this->getSummary('<br />'), true);
         }
-        
+
         return $result;
     }
 

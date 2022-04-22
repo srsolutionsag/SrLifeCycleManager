@@ -33,16 +33,24 @@ msg_routine_already_opted_out#:#This object was already been whitelisted.
 msg_days_before_submission_error#:#A notification for this amount of days before submission already exists.
 msg_assignment_success#:#Assignment(s) successfully updated.
 msg_no_unassigned_routines#:#There are no routines available that don't already affect this object.
+msg_this_may_take_a_while#:#Collecting Data, this may take a while ...
 
-page_title_rules#:#SrLifeCycleManager rules
-page_title_config#:#SrLifeCycleManager configuration
-page_title_routine#:#SrLifeCycleManager routines
-page_title_routine_assignment#:#SrLifeCycleManager routine assignments
-page_title_notifications#:#SrLifeCycleManager notifications
-page_title_whitelist#:#SrLifeCycleManager whitelist
+page_title_rules#:#Life-Cycle Rules
+page_title_config#:#Life-Cycle Configuration
+page_title_routine#:#Life-Cycle Routines
+page_title_routine_assignment#:#Life-Cycle Routine Assignments
+page_title_notifications#:#Life-Cycle Notifications
+page_title_whitelist#:#Life-Cycle Whitelist
+page_title_routine_preview#:#Life-Cycle Preview
 
 tab_config_index#:#Configuration
 tab_routine_index#:#Routines
+tab_preview_index#:#Preview
+
+preview_ref_id#:#Ref-ID
+preview_type#:#Type
+preview_routines#:#Affected by Routines
+preview_link_goto_object#:#Open in Repository
 
 cnf_role_manage_routines#:#Manage routines
 cnf_role_manage_assignments#:#Manage assignments

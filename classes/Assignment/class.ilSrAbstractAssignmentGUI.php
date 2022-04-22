@@ -92,6 +92,7 @@ abstract class ilSrAbstractAssignmentGUI extends ilSrAbstractGUI
             $tabs
                 ->addConfigurationTab()
                 ->addRoutineTab()
+                ->addPreviewTab()
                 ->deactivateTabs()
             ;
         }

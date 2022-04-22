@@ -80,6 +80,7 @@ class ilSrRuleGUI extends ilSrAbstractGUI
         $tabs
             ->addConfigurationTab()
             ->addRoutineTab()
+            ->addPreviewTab()
             ->deactivateTabs()
             ->addBackToIndex(self::class)
         ;

@@ -102,7 +102,7 @@ class ilSrCronJobFactory
         $this->rbac = $rbac;
         $this->ctrl = $ctrl;
     }
-    
+
     /**
      * @param string $cron_job_id
      * @return ilCronJob

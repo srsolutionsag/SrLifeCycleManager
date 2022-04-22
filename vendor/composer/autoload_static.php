@@ -54,6 +54,8 @@ class ComposerStaticInit7aa5d9bc8a6e2685daf4aef313101773
         'ilSrRoutineCronJob' => __DIR__ . '/../..' . '/classes/Cron/class.ilSrRoutineCronJob.php',
         'ilSrRoutineGUI' => __DIR__ . '/../..' . '/classes/Routine/class.ilSrRoutineGUI.php',
         'ilSrRoutineListBuilder' => __DIR__ . '/../..' . '/classes/Routine/class.ilSrRoutineListBuilder.php',
+        'ilSrRoutinePreviewGUI' => __DIR__ . '/../..' . '/classes/Preview/class.ilSrRoutinePreviewGUI.php',
+        'ilSrRoutinePreviewRenderer' => __DIR__ . '/../..' . '/classes/Preview/class.ilSrRoutinePreviewRenderer.php',
         'ilSrRoutineRepository' => __DIR__ . '/../..' . '/classes/Routine/class.ilSrRoutineRepository.php',
         'ilSrRoutineTable' => __DIR__ . '/../..' . '/classes/Routine/class.ilSrRoutineTable.php',
         'ilSrRuleGUI' => __DIR__ . '/../..' . '/classes/Rule/class.ilSrRuleGUI.php',

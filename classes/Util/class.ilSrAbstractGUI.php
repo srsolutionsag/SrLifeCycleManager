@@ -100,6 +100,11 @@ abstract class ilSrAbstractGUI
     protected $request;
 
     /**
+     * @var ilDBInterface
+     */
+    protected $database;
+
+    /**
      * @var Factory
      */
     protected $ui_factory;
@@ -131,7 +136,7 @@ abstract class ilSrAbstractGUI
      * @var ilGlobalTemplateInterface
      */
     private $global_template;
-
+    
     /**
      * Initializes common dependencies which are used in every derived GUI class.
      *
@@ -150,15 +155,16 @@ abstract class ilSrAbstractGUI
         $this->request = $DIC->http()->request();
         $this->ctrl = $DIC->ctrl();
         $this->user = $DIC->user();
+        $this->database = $DIC->database();
 
         $this->repository = new RepositoryFactory(
-            new ilSrGeneralRepository($DIC->database(), $DIC->repositoryTree(), $DIC->rbac()),
-            new ilSrConfigRepository($DIC->database(), $DIC->rbac()),
-            new ilSrRoutineRepository($DIC->database(), $DIC->repositoryTree()),
-            new ilSrAssignmentRepository($DIC->database(), $DIC->repositoryTree()),
-            new ilSrRuleRepository($DIC->database(), $DIC->repositoryTree()),
-            new ilSrNotificationRepository($DIC->database()),
-            new ilSrWhitelistRepository($DIC->database())
+            new ilSrGeneralRepository($this->database, $DIC->repositoryTree(), $DIC->rbac()),
+            new ilSrConfigRepository($this->database, $DIC->rbac()),
+            new ilSrRoutineRepository($this->database, $DIC->repositoryTree()),
+            new ilSrAssignmentRepository($this->database, $DIC->repositoryTree()),
+            new ilSrRuleRepository($this->database, $DIC->repositoryTree()),
+            new ilSrNotificationRepository($this->database),
+            new ilSrWhitelistRepository($this->database)
         );
 
         $this->access_handler = new ilSrAccessHandler(
@@ -323,6 +329,13 @@ abstract class ilSrAbstractGUI
     {
         $this->global_template->setContent(
             $this->renderer->render($component)
+        );
+    }
+    
+    protected function renderMulti(array $components) : void
+    {
+        $this->global_template->setContent(
+            $this->renderer->render($components)
         );
     }
 
