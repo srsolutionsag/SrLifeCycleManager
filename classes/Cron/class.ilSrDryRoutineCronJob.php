@@ -46,14 +46,18 @@ class ilSrDryRoutineCronJob extends ilSrRoutineCronJob
     protected function execute() : void
     {
         parent::execute();
-
+        
         foreach ($this->deleted_objects as $object) {
-            $this->info("Object {$object->getRefId()} ({$object->getType()}) would have been deleted.");
+            $message = "Object {$object->getRefId()} ({$object->getType()}) would have been deleted.";
+            $this->addSummary($message);
+            $this->info($message);
         }
 
         foreach ($this->notified_objects as $notified_object) {
-            $this->info("Object {$notified_object[1]->getRefId()} ({$notified_object[1]->getType()}) would have been notified 
-            with notification {$notified_object[0]->getNotificationId()} ({$notified_object[0]->getTitle()})");
+            $message = "Object {$notified_object[1]->getRefId()} ({$notified_object[1]->getType()}) would have been notified
+            with notification {$notified_object[0]->getNotificationId()} ({$notified_object[0]->getTitle()})";
+            $this->addSummary($message);
+            $this->info($message);
         }
     }
 
@@ -62,7 +66,7 @@ class ilSrDryRoutineCronJob extends ilSrRoutineCronJob
      */
     protected function deleteObject(ilObject $object) : void
     {
-        $this->deletable_objects[] = $object;
+        $this->deleted_objects[] = $object;
     }
 
     /**
@@ -75,4 +79,6 @@ class ilSrDryRoutineCronJob extends ilSrRoutineCronJob
             $object,
         ];
     }
+    
+    
 }

@@ -4,7 +4,6 @@ namespace srag\Plugins\SrLifeCycleManager\Repository;
 
 use Generator;
 use ilObject;
-use Iterator;
 
 /**
  * @author Thibeau Fuhrer <thibeau@sr.solutions>
@@ -23,9 +22,9 @@ interface IGeneralRepository
      * Returns all repository objects that can be deleted by a routine
      * starting from the given ref-id.
      *
-     * @return Iterator|ilObject[]
+     * @return Generator|ilObject[]
      */
-    public function getRepositoryObjects() : Iterator;
+    public function getRepositoryObjects() : Generator;
 
     /**
      * Returns all repository objects that relate to the given term.

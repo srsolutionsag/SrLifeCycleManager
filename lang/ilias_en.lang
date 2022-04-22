@@ -49,6 +49,9 @@ cnf_role_manage_assignments#:#Manage assignments
 cnf_tool_is_enabled#:#Enable Tool
 cnf_tool_show_routines#:#Show active routines
 cnf_tool_show_controls#:#Show controls
+cnf_tool_controls#:#Controls
+cnf_tool_routines_header#:#Routines for this Location
+cnf_tool_routines_triggered_header#:#Affecting Routines
 
 col_actions#:#Actions
 col_routine_title#:#Name
@@ -77,13 +80,13 @@ col_whitelist_date#:#Date
 
 input_name_routine_title#:#Name
 input_name_routine_type#:#Routine type
-input_name_routine_has_opt_out#:#Opt-out possible?
+input_name_routine_has_opt_out#:#Opt-out possible
 input_name_routine_elongation#:#Elongation (in days)
-input_name_routine_elongation_possible#:#Elongation possible?
+input_name_routine_elongation_possible#:#Elongation possible
 input_name_routine_assignment_routine#:#Routine
 input_name_routine_assignment_ref_id#:#Object (ref-id)
-input_name_routine_assignment_recursive#:#Recursive?
-input_name_routine_assignment_active#:#Active?
+input_name_routine_assignment_recursive#:#Recursive
+input_name_routine_assignment_active#:#Active
 input_name_notification_title#:#Notification title
 input_name_notification_content#:#Notification content
 input_name_notification_content_info#:#Type [EXTENSION_LINK] where recipients can postpone the deletion by your routines configured amount. <br /> Type [OPT_OUT_LINK] where recipients can opt-out the deletion by your routine. <br /> Type [OBJECT_LINK] where recipients can go to the object that is about to be deleted.
@@ -117,6 +120,8 @@ action_routine_assignment_add#:#Add assignment
 action_routine_assignment_edit#:#Edit
 action_routine_assignment_delete#:#Delete
 action_routine_assignment_remove#:#Remove
+action_routine_extend#:#Postpone deletion (for %s days from now)
+action_routine_opt_out#:#Opt-Out from deletion
 action_rule_add#:#Add rule
 action_rule_delete#:#Remove
 action_notification_add#:#Add notification

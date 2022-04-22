@@ -21,6 +21,11 @@ abstract class ilSrAbstractCronJob extends ilCronJob
     protected $result_builder;
 
     /**
+     * @var string[]
+     */
+    protected $summary = [];
+
+    /**
      * @var ilLogger
      */
     private $logger;
@@ -34,7 +39,7 @@ abstract class ilSrAbstractCronJob extends ilCronJob
         $this->result_builder = $builder;
         $this->logger = $logger;
     }
-
+    
     /**
      * @inheritDoc
      */
@@ -51,12 +56,20 @@ abstract class ilSrAbstractCronJob extends ilCronJob
                 ->getResult()
             ;
         }
-
-        return $this->result_builder
+    
+        $result = $this->result_builder
             ->success()
-            ->message('Successfully terminated.')
+            ->message($this->getSummary())
             ->getResult()
         ;
+
+        // displays an info-toast with the summary of the current cron-job
+        // at the top of the cron-job administration page.
+        if (!$this->isCLI()) {
+            ilUtil::sendInfo($this->getSummary('<br />'), true);
+        }
+        
+        return $result;
     }
 
     /**
@@ -108,6 +121,34 @@ abstract class ilSrAbstractCronJob extends ilCronJob
     abstract protected function execute() : void;
 
     /**
+     * Returns the summary glued together (each entry as a new line).
+     *
+     * @param string $line_break
+     * @return string
+     */
+    protected function getSummary(string $line_break = PHP_EOL) : string
+    {
+        $message = 'Successfully terminated.';
+        if (!empty($this->summary)) {
+            $message .=
+                $line_break .
+                $line_break .
+                implode($line_break, $this->summary)
+            ;
+        }
+
+        return $message;
+    }
+
+    /**
+     * @param string $summary
+     */
+    protected function addSummary(string $summary) : void
+    {
+        $this->summary[] = $summary;
+    }
+
+    /**
      * @param string $message
      */
     protected function info(string $message) : void
@@ -121,5 +162,15 @@ abstract class ilSrAbstractCronJob extends ilCronJob
     protected function error(string $message) : void
     {
         $this->logger->error(self::LOGGER_PREFIX . $message);
+    }
+
+    /**
+     * Returns whether the cron-job instance has been started via CLI.
+     *
+     * @return bool
+     */
+    protected function isCLI() : bool
+    {
+        return PHP_SAPI === 'cli';
     }
 }

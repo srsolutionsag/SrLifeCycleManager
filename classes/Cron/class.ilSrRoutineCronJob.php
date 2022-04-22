@@ -74,7 +74,7 @@ class ilSrRoutineCronJob extends ilSrAbstractCronJob
      */
     public function __construct(
         INotificationSender $notification_sender,
-        IDeletableObjectProvider $deletable_objects,
+        Generator $deletable_objects,
         ResultBuilder $result_builder,
         INotificationRepository $notification_repository,
         IRoutineRepository $routine_repository,
@@ -204,8 +204,8 @@ class ilSrRoutineCronJob extends ilSrAbstractCronJob
     protected function deleteObject(ilObject $object) : void
     {
         try {
+            ilRepUtil::deleteObjects(null, [$object->getRefId()]);
             $this->info("Deleting object {$object->getRefId()} ({$object->getType()})");
-            ilRepUtil::deleteObjects(null, $object->getRefId());
         } catch (ilRepositoryException $exception) {
             $this->error("Could not delete object {$object->getRefId()}: {$exception->getMessage()}");
         }
@@ -220,8 +220,8 @@ class ilSrRoutineCronJob extends ilSrAbstractCronJob
      */
     protected function notifyObject(INotification $notification, ilObject $object) : void
     {
-        $this->info("Sending administrators of object {$object->getRefId()} notification {$notification->getNotificationId()}");
         $this->notification_sender->sendNotification($notification, $object);
+        $this->info("Sending administrators of object {$object->getRefId()} notification {$notification->getNotificationId()}");
     }
 
     /**

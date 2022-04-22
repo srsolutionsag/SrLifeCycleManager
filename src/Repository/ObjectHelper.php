@@ -3,8 +3,8 @@
 namespace srag\Plugins\SrLifeCycleManager\Repository;
 
 use srag\Plugins\SrLifeCycleManager\Routine\IRoutine;
-use Iterator;
 use Exception;
+use Generator;
 use ilObjectFactory;
 use ilTree;
 
@@ -21,22 +21,27 @@ trait ObjectHelper
     /**
      * @inheritDoc
      */
-    public function getRepositoryObjects(int $ref_id = 1) : Iterator
+    public function getRepositoryObjects(int $ref_id = 1) : Generator
     {
-        $container_objects = $this->tree->getChildsByTypeFilter($ref_id, ['crs', 'cat', 'grp', 'fold']);
+        $container_objects = $this->tree->getChildsByTypeFilter(
+            $ref_id,
+            ['crs', 'cat', 'grp', 'fold', 'itgr']
+        );
+        
         if (empty($container_objects)) {
-            yield null;
+            return;
         }
-
+        
         foreach ($container_objects as $container) {
+            $container_ref_id = (int) $container['ref_id'];
             if (in_array($container['type'], IRoutine::ROUTINE_TYPES, true)) {
                 try {
-                    yield ilObjectFactory::getInstanceByRefId((int) $container['ref_id']);
+                    yield $container_ref_id => ilObjectFactory::getInstanceByRefId($container_ref_id);
                 } catch (Exception $exception) {
                     continue;
                 }
             } else {
-                yield from $this->getRepositoryObjects((int) $container['ref_id']);
+                yield from $this->getRepositoryObjects($container_ref_id);
             }
         }
     }
@@ -46,6 +51,7 @@ trait ObjectHelper
      */
     public function getParentId(int $ref_id) : int
     {
+        // type-cast is necessary, the phpdoc comment is wrong.
         return (int) $this->tree->getParentId($ref_id);
     }
 
@@ -56,19 +62,18 @@ trait ObjectHelper
      * @param int $ref_id
      * @return array|null
      */
-    protected function getParentIdsRecursively(int $ref_id) : ?array
+    protected function getParentIdsRecursively(int $ref_id) : array
     {
-        static $parents;
-
-        $parent_id = $this->tree->getParentId($ref_id);
-        // type-cast is not redundant, as getParentId() returns
-        // a string (not as stated by the phpdoc).
-        if (null !== $parent_id && 0 < (int) $parent_id) {
-            $parents[] = (int) $parent_id;
-            $this->getParentIdsRecursively((int) $parent_id);
+        if (1 === $ref_id) {
+            return [];
         }
 
-        return (!empty($parents)) ? $parents : null;
+        $parents_ref_ids = [];
+        while (0 !== ($ref_id = $this->getParentId($ref_id))) {
+            $parents_ref_ids[] = $ref_id;
+        }
+
+        return $parents_ref_ids;
     }
 
     /**

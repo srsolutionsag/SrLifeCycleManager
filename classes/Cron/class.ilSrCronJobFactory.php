@@ -3,8 +3,8 @@
 /* Copyright (c) 2022 Thibeau Fuhrer <thibeau@sr.solutions> Extended GPL, see docs/LICENSE */
 
 use srag\Plugins\SrLifeCycleManager\Repository\RepositoryFactory;
-use srag\Plugins\SrLifeCycleManager\Routine\Provider\DeletableObjectProvider;
 use srag\Plugins\SrLifeCycleManager\Routine\Provider\RoutineProvider;
+use srag\Plugins\SrLifeCycleManager\Routine\Provider\ObjectProvider;
 use srag\Plugins\SrLifeCycleManager\Rule\Comparison\ComparisonFactory;
 use srag\Plugins\SrLifeCycleManager\Rule\Requirement\RequirementFactory;
 use srag\Plugins\SrLifeCycleManager\Rule\Attribute\AttributeFactory;
@@ -53,6 +53,11 @@ class ilSrCronJobFactory
     protected $ctrl;
 
     /**
+     * @var ObjectProvider
+     */
+    protected $object_provider;
+
+    /**
      * @param ilMailMimeSenderFactory $mail_factory
      * @param ilDBInterface           $database
      * @param ilTree                  $tree
@@ -78,6 +83,18 @@ class ilSrCronJobFactory
             new ilSrWhitelistRepository($database)
         );
 
+        $this->object_provider = new ObjectProvider(
+            new RoutineProvider(
+                new ComparisonFactory(
+                    new RequirementFactory($database),
+                    new AttributeFactory()
+                ),
+                $this->repository->routine(),
+                $this->repository->rule()
+            ),
+            $this->repository->general()
+        );
+
         $this->mail_factory = $mail_factory;
         $this->database = $database;
         $this->tree = $tree;
@@ -85,7 +102,7 @@ class ilSrCronJobFactory
         $this->rbac = $rbac;
         $this->ctrl = $ctrl;
     }
-
+    
     /**
      * @param string $cron_job_id
      * @return ilCronJob
@@ -118,17 +135,7 @@ class ilSrCronJobFactory
                 $this->mail_factory->system(),
                 $this->ctrl
             ),
-            new DeletableObjectProvider(
-                new RoutineProvider(
-                    new ComparisonFactory(
-                        new RequirementFactory($this->database),
-                        new AttributeFactory()
-                    ),
-                    $this->repository->routine(),
-                    $this->repository->rule()
-                ),
-                $this->repository->general()->getRepositoryObjects()
-            ),
+            $this->object_provider->getDeletableObjects(),
             new ResultBuilder(new ilCronJobResult()),
             $this->repository->notification(),
             $this->repository->routine(),
@@ -148,17 +155,7 @@ class ilSrCronJobFactory
                 $this->mail_factory->system(),
                 $this->ctrl
             ),
-            new DeletableObjectProvider(
-                new RoutineProvider(
-                    new ComparisonFactory(
-                        new RequirementFactory($this->database),
-                        new AttributeFactory()
-                    ),
-                    $this->repository->routine(),
-                    $this->repository->rule()
-                ),
-                $this->repository->general()->getRepositoryObjects()
-            ),
+            $this->object_provider->getDeletableObjects(),
             new ResultBuilder(new ilCronJobResult()),
             $this->repository->notification(),
             $this->repository->routine(),
