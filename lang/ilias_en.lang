@@ -131,6 +131,7 @@ action_routine_assignment_remove#:#Remove
 action_routine_extend#:#Postpone deletion (for %s days from now)
 action_routine_opt_out#:#Opt-Out from deletion
 action_rule_add#:#Add rule
+action_rule_edit#:#Edit
 action_rule_delete#:#Remove
 action_notification_add#:#Add notification
 action_notification_edit#:#Edit

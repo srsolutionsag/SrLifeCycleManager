@@ -171,6 +171,7 @@ abstract class ilSrAbstractCronJob extends ilCronJob
      */
     protected function isCLI() : bool
     {
-        return PHP_SAPI === 'cli';
+        // cannot use PHP_SAPI in this scenario.
+        return ('cli' === php_sapi_name());
     }
 }

@@ -47,7 +47,10 @@ class ilSrRoutineGUI extends ilSrAbstractGUI
             $this->ui_factory->input()->field(),
             $this->refinery,
             $this->routine,
-            $this->getFormAction()
+            $this->getFormAction(
+                self::CMD_ROUTINE_SAVE,
+                self::PARAM_ROUTINE_ID
+            )
         );
     }
 
@@ -152,18 +155,5 @@ class ilSrRoutineGUI extends ilSrAbstractGUI
         }
 
         $this->cancel();
-    }
-
-    /**
-     * Returns the routine form-action pointing to @see ilSrRoutineGUI::save().
-     *
-     * @return string
-     */
-    protected function getFormAction() : string
-    {
-        return $this->ctrl->getFormActionByClass(
-            self::class,
-            self::CMD_ROUTINE_SAVE
-        );
     }
 }

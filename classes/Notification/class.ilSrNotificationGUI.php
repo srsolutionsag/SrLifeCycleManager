@@ -62,7 +62,10 @@ class ilSrNotificationGUI extends ilSrAbstractGUI
             $this->refinery,
             $this->repository->notification(),
             $this->notification,
-            $this->getFormAction()
+            $this->getFormAction(
+                self::CMD_NOTIFICATION_SAVE,
+                self::PARAM_NOTIFICATION_ID
+            )
         );
     }
 
@@ -178,18 +181,5 @@ class ilSrNotificationGUI extends ilSrAbstractGUI
         }
 
         $this->cancel();
-    }
-
-    /**
-     * Returns the notification form-action pointing to @see ilSrNotificationGUI::save().
-     *
-     * @return string
-     */
-    protected function getFormAction() : string
-    {
-        return $this->ctrl->getFormActionByClass(
-            self::class,
-            self::CMD_NOTIFICATION_SAVE
-        );
     }
 }

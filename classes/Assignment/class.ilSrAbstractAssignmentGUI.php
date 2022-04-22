@@ -189,20 +189,6 @@ abstract class ilSrAbstractAssignmentGUI extends ilSrAbstractGUI
     }
 
     /**
-     * Returns a form action pointing to @see ilSrAbstractAssignmentGUI::save(),
-     * which handles form submissions of derived classes.
-     *
-     * @return string
-     */
-    protected function getFormAction() : string
-    {
-        return $this->ctrl->getFormActionByClass(
-            static::class,
-            self::CMD_ASSIGNMENT_SAVE
-        );
-    }
-
-    /**
      * Returns the requested ref-id that should be used for the current assignment.
      *
      * @return int|null

@@ -131,6 +131,7 @@ action_routine_assignment_remove#:#Entfernen
 action_routine_extend#:#Verlängerung aktivieren (%s Tage ab jetzt)
 action_routine_opt_out#:#Automatische Löschung dauerhaft verhindern
 action_rule_add#:#Regel hinzufügen
+action_rule_edit#:#Bearbeiten
 action_rule_delete#:#Enfernen
 action_notification_add#:#Benachrichtigung hinzufügen
 action_notification_edit#:#Bearbeiten

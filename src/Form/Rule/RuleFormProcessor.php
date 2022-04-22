@@ -45,22 +45,25 @@ class RuleFormProcessor extends AbstractFormProcessor
     }
 
     /**
+     * @todo: make this more readable and move this to a constraint
      * @inheritDoc
      */
     public function isValid(array $post_data) : bool
     {
+        $lhs_value = $this->getValueTypeBySide(RuleFormBuilder::KEY_LHS_VALUE, $post_data);
         // ensure that LHS value is only empty if the type is CommonNull.
         if ($this->isSideCommonAttribute(RuleFormBuilder::KEY_LHS_VALUE, $post_data) &&
             $this->getValueTypeBySide(RuleFormBuilder::KEY_LHS_VALUE, $post_data) !== CommonNull::class &&
-            empty($this->getValueBySide(RuleFormBuilder::KEY_LHS_VALUE, $post_data))
+            ('0' === $lhs_value || empty($lhs_value))
         ) {
             return false;
         }
 
+        $rhs_value = $this->getValueTypeBySide(RuleFormBuilder::KEY_LHS_VALUE, $post_data);
         // ensure that RHS value is only empty if the type is CommonNull.
         if ($this->isSideCommonAttribute(RuleFormBuilder::KEY_RHS_VALUE, $post_data) &&
             $this->getValueTypeBySide(RuleFormBuilder::KEY_RHS_VALUE, $post_data) !== CommonNull::class &&
-            empty($this->getValueBySide(RuleFormBuilder::KEY_RHS_VALUE, $post_data))
+            ('0' === $rhs_value || empty($rhs_value))
         ) {
             return false;
         }

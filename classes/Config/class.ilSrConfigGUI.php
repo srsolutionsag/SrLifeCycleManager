@@ -42,7 +42,7 @@ class ilSrConfigGUI extends ilSrAbstractGUI
             $this->refinery,
             $this->repository->config()->get(),
             $this->repository->general()->getAvailableGlobalRoles(),
-            $this->getFormAction()
+            $this->getFormAction(self::CMD_CONFIG_SAVE)
         );
     }
 
@@ -102,18 +102,5 @@ class ilSrConfigGUI extends ilSrAbstractGUI
 
         $this->sendErrorMessage(self::MSG_CONFIGURATION_ERROR);
         $this->render($processor->getProcessedForm());
-    }
-
-    /**
-     * Returns the form action pointing to @see ilSrConfigGUI::CMD_CONFIG_SAVE.
-     *
-     * @return string
-     */
-    protected function getFormAction() : string
-    {
-        return $this->ctrl->getFormActionByClass(
-            self::class,
-            self::CMD_CONFIG_SAVE
-        );
     }
 }
