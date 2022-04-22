@@ -27,11 +27,11 @@ trait ObjectHelper
             $ref_id,
             ['crs', 'cat', 'grp', 'fold', 'itgr']
         );
-        
+
         if (empty($container_objects)) {
             return;
         }
-        
+
         foreach ($container_objects as $container) {
             $container_ref_id = (int) $container['ref_id'];
             if (in_array($container['type'], IRoutine::ROUTINE_TYPES, true)) {

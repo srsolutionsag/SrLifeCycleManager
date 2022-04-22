@@ -18,6 +18,12 @@ use ILIAS\UI\Component\Input\Field\Factory as FieldFactory;
 use ILIAS\UI\Component\Input\Field\SwitchableGroup;
 use ILIAS\UI\Component\Input\Field\Group;
 use ILIAS\UI\Component\Input\Field\Input;
+use srag\Plugins\SrLifeCycleManager\Rule\Attribute\Common\CommonString;
+use srag\Plugins\SrLifeCycleManager\Rule\Attribute\Common\CommonInteger;
+use srag\Plugins\SrLifeCycleManager\Rule\Attribute\Common\CommonList;
+use srag\Plugins\SrLifeCycleManager\Rule\Attribute\Common\CommonBoolean;
+use srag\Plugins\SrLifeCycleManager\Rule\Attribute\Common\CommonDateTime;
+use srag\Plugins\SrLifeCycleManager\Rule\Attribute\Common\CommonNull;
 
 /**
  * @author Thibeau Fuhrer <thibeau@sr.solutions>
@@ -81,9 +87,20 @@ class RuleFormBuilder extends AbstractFormBuilder
         return $this->forms->standard(
             $this->form_action,
             [
-                self::KEY_LHS_VALUE => $this->getSwitchableAttributesInput(self::KEY_LHS_VALUE),
-                self::KEY_RHS_VALUE => $this->getSwitchableAttributesInput(self::KEY_RHS_VALUE),
-                self::KEY_OPERATOR => $this->getOperatorInput(),
+                self::KEY_LHS_VALUE => $this
+                    ->getSwitchableAttributesInput(self::KEY_LHS_VALUE)
+                    ->withValue($this->getCurrentValueBySide(IRule::RULE_SIDE_LEFT))
+                ,
+                self::KEY_RHS_VALUE => $this
+                    ->getSwitchableAttributesInput(self::KEY_RHS_VALUE)
+                    ->withValue($this->getCurrentValueBySide(IRule::RULE_SIDE_RIGHT))
+                ,
+                self::KEY_OPERATOR => $this
+                    ->getOperatorInput()
+                    ->withValue(
+                        (null !== $this->rule->getRuleId()) ? $this->rule->getOperator() : null
+                    )
+                ,
             ]
         );
     }
@@ -212,5 +229,48 @@ class RuleFormBuilder extends AbstractFormBuilder
         }
 
         return $options;
+    }
+
+    /**
+     * Returns the current "withValue()" argument for switchable-groups.
+     *
+     * @param string $rule_side (lhs|rhs)
+     * @return array<string, string|array<string, string>>|null
+     */
+    protected function getCurrentValueBySide(string $rule_side) : ?array
+    {
+        $attribute_type = $this->rule->getTypeBySide($rule_side);
+        if (null === $attribute_type) {
+            return null;
+        }
+
+        // common attributes are mapped to the CommonAttribute array key,
+        // they specify the actual attribute type within another sub-input.
+        if ($this->isCommonAttribute($attribute_type)) {
+            return [
+                CommonAttribute::class, // must always be the same
+                [
+                    self::KEY_ATTR_TYPE => $attribute_type,
+                    self::KEY_ATTR_VALUE => $this->rule->getValueBySide($rule_side)
+                ]
+            ];
+        }
+
+        // dynamic attributes are directly mapped to their type
+        return [
+            $attribute_type,
+            [
+                self::KEY_ATTR_VALUE => $this->rule->getValueBySide($rule_side)
+            ]
+        ];
+    }
+
+    /**
+     * @param string $attribute_type
+     * @return bool
+     */
+    protected function isCommonAttribute(string $attribute_type) : bool
+    {
+        return in_array($attribute_type, $this->attributes->common()->getAttributeList(), true);
     }
 }

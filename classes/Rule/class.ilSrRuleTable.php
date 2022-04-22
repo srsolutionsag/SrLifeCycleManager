@@ -95,13 +95,13 @@ class ilSrRuleTable extends ilSrAbstractTable
             $rule_id
         );
 
-//        $actions[] = $this->ui_factory->button()->shy(
-//            $this->translator->txt(self::ACTION_RULE_EDIT),
-//            $this->ctrl->getLinkTargetByClass(
-//                ilSrRuleGUI::class,
-//                ilSrRuleGUI::CMD_RULE_EDIT
-//            )
-//        );
+        $actions[] = $this->ui_factory->button()->shy(
+            $this->translator->txt(self::ACTION_RULE_EDIT),
+            $this->ctrl->getLinkTargetByClass(
+                ilSrRuleGUI::class,
+                ilSrRuleGUI::CMD_RULE_EDIT
+            )
+        );
 
         $actions[] = $this->ui_factory->button()->shy(
             $this->translator->txt(self::ACTION_RULE_DELETE),

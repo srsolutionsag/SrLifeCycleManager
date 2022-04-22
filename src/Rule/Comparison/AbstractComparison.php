@@ -60,8 +60,8 @@ abstract class AbstractComparison implements IComparison
             $this->rhs_attribute->getComparableValueTypes()
         ));
 
-        if (empty($similarities) ||
-            !in_array($similarities[0], IAttribute::COMPARABLE_VALUE_TYPES, true)
+        if ($similarities === []
+            || !in_array($similarities[0], IAttribute::COMPARABLE_VALUE_TYPES, true)
         ) {
             return null;
         }

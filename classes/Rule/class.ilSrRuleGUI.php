@@ -66,7 +66,10 @@ class ilSrRuleGUI extends ilSrAbstractGUI
                 $this->refinery,
                 new AttributeFactory(),
                 $this->rule,
-                $this->getFormAction()
+                $this->getFormAction(
+                    self::CMD_RULE_SAVE,
+                    self::PARAM_RULE_ID
+                )
             )
         );
     }
@@ -80,6 +83,7 @@ class ilSrRuleGUI extends ilSrAbstractGUI
         $tabs
             ->addConfigurationTab()
             ->addRoutineTab()
+            ->addPreviewTab()
             ->deactivateTabs()
             ->addBackToIndex(self::class)
         ;
@@ -182,18 +186,5 @@ class ilSrRuleGUI extends ilSrAbstractGUI
         }
 
         return null;
-    }
-
-    /**
-     * Returns the rule form-action pointing to @see ilSrRuleGUI::save().
-     *
-     * @return string
-     */
-    protected function getFormAction() : string
-    {
-        return $this->ctrl->getFormActionByClass(
-            self::class,
-            self::CMD_RULE_SAVE
-        );
     }
 }

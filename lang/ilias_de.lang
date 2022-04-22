@@ -33,16 +33,24 @@ msg_routine_opt_out_error#:#Dieses Objekt konnte nicht von der Routine ausgeschl
 msg_days_before_submission_error#:#Eine Benachrichtigung die um diese Anzahl vor der Löschung geschickt wird existiert bereits.
 msg_assignment_success#:#Zusweisung(en) erfolgreich aktualisiert.
 msg_no_unassigned_routines#:#Es gibt keine Routinen mehr die diesem Objekt zugewiesen werden können.
+msg_this_may_take_a_while#:#Sammle Daten, dies könnte eine Weile dauern ...
 
-page_title_rules#:#SrLifeCycleManager Regeln
-page_title_config#:#SrLifeCycleManager Einstellungen
-page_title_routine#:#SrLifeCycleManager Routinen
-page_title_routine_assignment#:#SrLifeCycleManager Routinen-Zuweisungen
-page_title_notifications#:#SrLifeCycleManager Benachrichtigungen
-page_title_whitelist#:#SrLifeCycleManager Whitelist
+page_title_rules#:#Life-Cycle Regeln
+page_title_config#:#Life-Cycle Einstellungen
+page_title_routine#:#Life-Cycle Routinen
+page_title_routine_assignment#:#Life-Cycle Routinen-Zuweisungen
+page_title_notifications#:#Life-Cycle Benachrichtigungen
+page_title_whitelist#:#Life-Cycle Whitelist
+page_title_routine_preview#:#Life-Cycle Vorschau
 
 tab_config_index#:#Einstellungen
 tab_routine_index#:#Routinen
+tab_preview_index#:#Vorschau
+
+preview_ref_id#:#Ref-ID
+preview_type#:#Typ
+preview_routines#:#Angewendete Routines
+preview_link_goto_object#:#In Magazin öffnen
 
 cnf_role_manage_routines#:#Routinen verwalten
 cnf_role_manage_assignments#:#Zuweisungen verwalten
@@ -123,6 +131,7 @@ action_routine_assignment_remove#:#Entfernen
 action_routine_extend#:#Verlängerung aktivieren (%s Tage ab jetzt)
 action_routine_opt_out#:#Automatische Löschung dauerhaft verhindern
 action_rule_add#:#Regel hinzufügen
+action_rule_edit#:#Bearbeiten
 action_rule_delete#:#Enfernen
 action_notification_add#:#Benachrichtigung hinzufügen
 action_notification_edit#:#Bearbeiten

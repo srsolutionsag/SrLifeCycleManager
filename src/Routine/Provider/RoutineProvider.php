@@ -79,7 +79,7 @@ class RoutineProvider
         if (!in_array($object->getType(), IRoutine::ROUTINE_TYPES, true)) {
             return false;
         }
-        
+
         $rules = $this->rule_repository->getByRoutine($routine);
 
         // if there are no rules yet, the routine is not applicable.

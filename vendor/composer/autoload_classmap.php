@@ -34,6 +34,8 @@ return array(
     'ilSrRoutineCronJob' => $baseDir . '/classes/Cron/class.ilSrRoutineCronJob.php',
     'ilSrRoutineGUI' => $baseDir . '/classes/Routine/class.ilSrRoutineGUI.php',
     'ilSrRoutineListBuilder' => $baseDir . '/classes/Routine/class.ilSrRoutineListBuilder.php',
+    'ilSrRoutinePreviewGUI' => $baseDir . '/classes/Preview/class.ilSrRoutinePreviewGUI.php',
+    'ilSrRoutinePreviewRenderer' => $baseDir . '/classes/Preview/class.ilSrRoutinePreviewRenderer.php',
     'ilSrRoutineRepository' => $baseDir . '/classes/Routine/class.ilSrRoutineRepository.php',
     'ilSrRoutineTable' => $baseDir . '/classes/Routine/class.ilSrRoutineTable.php',
     'ilSrRuleGUI' => $baseDir . '/classes/Rule/class.ilSrRuleGUI.php',

@@ -70,7 +70,7 @@ class Rule implements IRule
     }
 
     /**
-     * @return int|null
+     * @inheritDoc
      */
     public function getRuleId() : ?int
     {
@@ -78,8 +78,7 @@ class Rule implements IRule
     }
 
     /**
-     * @param int|null $rule_id
-     * @return IRule
+     * @inheritDoc
      */
     public function setRuleId(?int $rule_id) : IRule
     {
@@ -113,8 +112,7 @@ class Rule implements IRule
     }
 
     /**
-     * @param string $type
-     * @return IRule
+     * @inheritDoc
      */
     public function setLhsType(string $type) : IRule
     {
@@ -123,7 +121,7 @@ class Rule implements IRule
     }
 
     /**
-     * @return mixed
+     * @inheritDoc
      */
     public function getLhsValue()
     {
@@ -131,8 +129,7 @@ class Rule implements IRule
     }
 
     /**
-     * @param mixed $value
-     * @return IRule
+     * @inheritDoc
      */
     public function setLhsValue($value) : IRule
     {
@@ -141,7 +138,7 @@ class Rule implements IRule
     }
 
     /**
-     * @return string
+     * @inheritDoc
      */
     public function getOperator() : string
     {
@@ -149,8 +146,7 @@ class Rule implements IRule
     }
 
     /**
-     * @param string $operator
-     * @return IRule
+     * @inheritDoc
      */
     public function setOperator(string $operator) : IRule
     {
@@ -159,7 +155,7 @@ class Rule implements IRule
     }
 
     /**
-     * @return string
+     * @inheritDoc
      */
     public function getRhsType() : string
     {
@@ -167,8 +163,7 @@ class Rule implements IRule
     }
 
     /**
-     * @param string $type
-     * @return IRule
+     * @inheritDoc
      */
     public function setRhsType(string $type) : IRule
     {
@@ -177,7 +172,7 @@ class Rule implements IRule
     }
 
     /**
-     * @return mixed
+     * @inheritDoc
      */
     public function getRhsValue()
     {
@@ -185,12 +180,45 @@ class Rule implements IRule
     }
 
     /**
-     * @param mixed $value
-     * @return IRule
+     * @inheritDoc
      */
     public function setRhsValue($value) : IRule
     {
         $this->rhs_value = $value;
         return $this;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function getTypeBySide(string $rule_side) : ?string
+    {
+        switch ($rule_side) {
+            case self::RULE_SIDE_LEFT:
+                return $this->getLhsType();
+
+            case self::RULE_SIDE_RIGHT:
+                return $this->getRhsType();
+
+            default:
+                return null;
+        }
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function getValueBySide(string $rule_side)
+    {
+        switch ($rule_side) {
+            case self::RULE_SIDE_LEFT:
+                return $this->getLhsValue();
+
+            case self::RULE_SIDE_RIGHT:
+                return $this->getRhsValue();
+
+            default:
+                return null;
+        }
     }
 }
