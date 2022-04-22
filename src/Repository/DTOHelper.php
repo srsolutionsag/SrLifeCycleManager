@@ -52,12 +52,9 @@ trait DTOHelper
         if (empty($query_results) || $array_data) {
             return $query_results;
         }
-
-        $dto_array = [];
-        foreach ($query_results as $query_result) {
-            $dto_array[] = $this->transformToDTO($query_result);
-        }
-
-        return $dto_array;
+        
+        return array_map(function(array $r){
+            return $this->transformToDTO($r);
+        }, $query_results);
     }
 }

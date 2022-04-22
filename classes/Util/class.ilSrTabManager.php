@@ -21,6 +21,7 @@ class ilSrTabManager
     // ilSrTabManager tab name and ids:
     public const TAB_CONFIG   = 'tab_config_index';
     public const TAB_ROUTINES = 'tab_routine_index';
+    public const TAB_PREVIEW = 'tab_preview_index';
 
     // ilSrTabManager language variables:
     protected const MSG_BACK_TO = 'msg_back_to';
@@ -130,6 +131,37 @@ class ilSrTabManager
             $this->setActiveTab(self::TAB_ROUTINES);
         }
 
+        return $this;
+    }
+    
+    /**
+     * Adds a tab pointing to @see ilSrRoutinePreviewGUI::CMD_INDEX.
+     *
+     * If true is provided as an argument, this tab will be shown as active.
+     *
+     * @param bool $is_active
+     * @return self
+     */
+    public function addPreviewTab(bool $is_active = false) : self
+    {
+        // add preview-tab only for routine managers.
+        if (!$this->access_handler->canManageRoutines()) {
+            return $this;
+        }
+        
+        $this->tabs->addTab(
+            self::TAB_PREVIEW,
+            $this->translator->txt(self::TAB_PREVIEW),
+            $this->ctrl->getLinkTargetByClass(
+                ilSrRoutinePreviewGUI::class,
+                ilSrRoutinePreviewGUI::CMD_INDEX
+            )
+        );
+        
+        if ($is_active) {
+            $this->setActiveTab(self::TAB_PREVIEW);
+        }
+        
         return $this;
     }
 

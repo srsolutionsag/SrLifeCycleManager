@@ -63,11 +63,17 @@ class ResultBuilder implements IResultBuilder
      * Sets the current results message to the one given.
      *
      * @param string $message
+     * @param string[] $summary
      * @return self
      */
-    public function message(string $message) : self
+    public function message(string $message, array $summary = []) : self
     {
-        $this->result->setMessage($message);
+        $message_combined = $message . (
+            $summary != []
+                ? PHP_EOL . PHP_EOL . implode(PHP_EOL, $summary)
+                : ''
+            );
+        $this->result->setMessage($message_combined);
         return $this;
     }
 

@@ -84,6 +84,7 @@ class ilSrNotificationGUI extends ilSrAbstractGUI
         $tabs
             ->addConfigurationTab()
             ->addRoutineTab()
+            ->addPreviewTab()
             ->deactivateTabs()
             ->addBackToIndex(static::class)
         ;

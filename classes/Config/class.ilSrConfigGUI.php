@@ -55,6 +55,7 @@ class ilSrConfigGUI extends ilSrAbstractGUI
         $tabs
             ->addConfigurationTab(true)
             ->addRoutineTab()
+            ->addPreviewTab()
         ;
     }
 
