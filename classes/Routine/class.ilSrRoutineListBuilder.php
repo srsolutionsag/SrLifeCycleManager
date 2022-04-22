@@ -2,18 +2,14 @@
 
 /* Copyright (c) 2022 Thibeau Fuhrer <thibeau@sr.solutions> Extended GPL, see docs/LICENSE */
 
-use srag\Plugins\SrLifeCycleManager\Rule\Comparison\ComparisonFactory;
-use srag\Plugins\SrLifeCycleManager\Rule\IRuleRepository;
-use srag\Plugins\SrLifeCycleManager\Routine\IRoutineRepository;
+use srag\Plugins\SrLifeCycleManager\Assignment\IRoutineAssignmentRepository;
 use srag\Plugins\SrLifeCycleManager\Routine\IRoutine;
-use srag\Plugins\SrLifeCycleManager\Whitelist\IWhitelistRepository;
+use srag\Plugins\SrLifeCycleManager\Routine\Routine;
 use srag\Plugins\SrLifeCycleManager\ITranslator;
 use ILIAS\UI\Component\Listing\Descriptive;
 use ILIAS\UI\Component\Button\Shy;
 use ILIAS\UI\Renderer;
 use ILIAS\UI\Factory;
-use srag\Plugins\SrLifeCycleManager\Config\IConfig;
-use srag\Plugins\SrLifeCycleManager\Assignment\IRoutineAssignmentRepository;
 
 /**
  * @author Thibeau Fuhrer <thibeau@sr.solutions>
@@ -81,7 +77,7 @@ class ilSrRoutineListBuilder
     }
 
     /**
-     * @param array $routines
+     * @param Routine[] $routines
      * @return Descriptive
      */
     public function getList(array $routines) : Descriptive
@@ -105,7 +101,7 @@ class ilSrRoutineListBuilder
 
             $list_entries[$routine_title] = "
                 <div style=\"margin-bottom: 20px;\">
-                    {$this->renderer->render($this->getListEntryActions($routine))}                
+                    {$this->renderer->render($this->getListEntryActions($routine))}
                 </div>
             ";
         }
@@ -137,7 +133,10 @@ class ilSrRoutineListBuilder
 
         if (1 <= $routine->getElongation()) {
             $actions[] = $this->ui_factory->button()->shy(
-                $this->translator->txt(self::ACTION_ROUTINE_EXTEND),
+                sprintf(
+                    $this->translator->txt(self::ACTION_ROUTINE_EXTEND),
+                    (string) $routine->getElongation()
+                ),
                 ilSrLifeCycleManagerDispatcher::getLinkTarget(
                     ilSrWhitelistGUI::class,
                     ilSrWhitelistGUI::CMD_WHITELIST_POSTPONE

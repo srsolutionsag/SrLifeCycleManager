@@ -110,10 +110,19 @@ class NotificationFormBuilder extends AbstractFormBuilder
                     return false;
                 }
 
-                return (null === $this->repository->getByRoutineAndDaysBeforeSubmission(
+                $existing_notification = $this->repository->getByRoutineAndDaysBeforeSubmission(
                     $this->notification->getRoutineId(),
                     (int) $days_before_submission
-                ));
+                );
+
+                // the constraint only fails if the existing notification for the
+                // amount of days before submission is NOT the current one.
+                // Otherwise, the notification could never be updated.
+                if (null !== $existing_notification) {
+                    return ($this->notification->getNotificationId() === $existing_notification->getNotificationId());
+                }
+
+                return true;
             },
             $this->translator->txt(self::MSG_DAYS_BEFORE_SUBMISSION_ERROR)
         );

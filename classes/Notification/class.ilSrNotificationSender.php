@@ -88,14 +88,14 @@ class ilSrNotificationSender implements INotificationSender
     protected function getNotificationBody(ilObject $object, INotification $notification) : string
     {
         $this->ctrl->setParameterByClass(
-            ilSrRoutineGUI::class,
-            ilSrRoutineGUI::PARAM_ROUTINE_ID,
+            ilSrWhitelistGUI::class,
+            ilSrWhitelistGUI::PARAM_ROUTINE_ID,
             $notification->getRoutineId()
         );
 
         $this->ctrl->setParameterByClass(
-            ilSrRoutineGUI::class,
-            ilSrRoutineGUI::PARAM_OBJECT_REF_ID,
+            ilSrWhitelistGUI::class,
+            ilSrWhitelistGUI::PARAM_OBJECT_REF_ID,
             $object->getRefId()
         );
 
@@ -103,15 +103,15 @@ class ilSrNotificationSender implements INotificationSender
             [
                 '[OBJECT_LINK]',
                 '[EXTENSION_LINK]',
-                '[EXTENSION_OPT_OUT]',
+                '[OPT_OUT_LINK]',
             ],
             [
                 ilLink::_getStaticLink($object->getRefId()),
-                ilSrLifeCycleManagerDispatcher::getLinkTarget(
+                ILIAS_HTTP_PATH . '/' . ilSrLifeCycleManagerDispatcher::getLinkTarget(
                     ilSrWhitelistGUI::class,
                     ilSrWhitelistGUI::CMD_WHITELIST_POSTPONE
                 ),
-                ilSrLifeCycleManagerDispatcher::getLinkTarget(
+                ILIAS_HTTP_PATH . '/' . ilSrLifeCycleManagerDispatcher::getLinkTarget(
                     ilSrWhitelistGUI::class,
                     ilSrWhitelistGUI::CMD_WHITELIST_OPT_OUT
                 ),

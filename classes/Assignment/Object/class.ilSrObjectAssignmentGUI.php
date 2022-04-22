@@ -62,7 +62,7 @@ class ilSrObjectAssignmentGUI extends ilSrAbstractAssignmentGUI
             $this->refinery,
             $this->assignment,
             $this->repository->routine()->getAll(),
-            $this->getFormAction(),
+            $this->getFormAction(self::CMD_ASSIGNMENT_SAVE),
             $this->getAjaxSource()
         );
     }

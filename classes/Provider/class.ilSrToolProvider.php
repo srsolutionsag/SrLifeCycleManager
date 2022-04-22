@@ -28,8 +28,9 @@ class ilSrToolProvider extends AbstractDynamicToolPluginProvider
     // ilSrToolProvider language variables:
     protected const ACTION_ASSIGNMENTS_MANAGE = 'action_routine_assignment_manage';
     protected const ACTION_ROUTINE_MANAGE = 'action_routine_manage';
-    protected const MSG_AFFECTED_ROUTINES = 'msg_affected_routines';
-    protected const MSG_ASSIGNED_ROUTINES = 'msg_assigned_routines';
+    protected const ROUTINES_HEADER = 'cnf_tool_routines_header';
+    protected const ROUTINES_TRIGGERED_HEADER = 'cnf_tool_routines_triggered_header';
+    protected const CNF_TOOL_CONTROLS = 'cnf_tool_controls';
 
     /**
      * @var int|null
@@ -78,7 +79,7 @@ class ilSrToolProvider extends AbstractDynamicToolPluginProvider
 
         return [
             $this->factory
-                ->tool($this->if->identifier($this->getPluginID() . '_tool'))
+                ->tool($this->if->identifier('tool'))
                 ->withTitle($this->plugin->txt('tool_main_entry'))
                 ->withAvailableCallable($this->getToolAvailabilityClosure())
                 ->withVisibilityCallable($this->getToolVisibilityClosure())
@@ -144,15 +145,11 @@ class ilSrToolProvider extends AbstractDynamicToolPluginProvider
         return function () : Component {
             $html = '';
             if ($this->shouldRenderRoutineLists()) {
-                $html .= $this->wrapHtml(
-                    $this->renderRoutineLists($this->request_object)
-                );
+                $html .= $this->renderRoutineLists($this->request_object);
             }
 
             if ($this->shouldRenderRoutineControls()) {
-                $html .= $this->wrapHtml(
-                    $this->renderRoutineControls()
-                );
+                $html .= $this->renderRoutineControls();
             }
 
             return $this->dic->ui()->factory()->legacy($html);
@@ -176,7 +173,8 @@ class ilSrToolProvider extends AbstractDynamicToolPluginProvider
 
         /** @var $translator ITranslator */
         $translator = $this->plugin;
-        $html = '';
+
+        $panels = [];
 
         $list_builder = new ilSrRoutineListBuilder(
             $this->assignment_repository,
@@ -187,40 +185,43 @@ class ilSrToolProvider extends AbstractDynamicToolPluginProvider
             $this->dic->ctrl()
         );
 
-        $affected_routines = $this->routine_provider->getAffectingRoutines($object);
-        if (!empty($affected_routines)) {
-            $html .= $this->dic->ui()->renderer()->render(
-                [
-                    $this->dic->ui()->factory()->messageBox()->confirmation(
-                        $translator->txt(self::MSG_AFFECTED_ROUTINES)
-                    ),
+        $affecting_routines = $this->routine_provider->getAffectingRoutines($object);
 
-                    $list_builder->getList($affected_routines),
-                ]
+        if (!empty($affecting_routines)) {
+            $panels[] = $this->dic->ui()->factory()->panel()->secondary()->legacy(
+                $translator->txt(self::ROUTINES_TRIGGERED_HEADER),
+                $this->dic->ui()->factory()->legacy(
+                    $this->dic->ui()->renderer()->render(
+                        $list_builder->getList($affecting_routines)
+                    )
+                )
             );
         }
 
-        $assigned_routines = array_udiff(
-            $affected_routines,
-            $this->routine_repository->getAllByRefId($object->getRefId()),
-            static function (IRoutine $routine_a, IRoutine $routine_b) {
-                return ($routine_a->getRoutineId() - $routine_b->getRoutineId());
+        $routines_for_location = $this->routine_provider->getRoutinesForLocation($object);
+
+        $diff_routines = array_udiff(
+            $routines_for_location,
+            $affecting_routines,
+            static function (IRoutine $one, IRoutine $two) : bool {
+                return $one->getRoutineId() !== $two->getRoutineId();
             }
         );
 
-        if (!empty($assigned_routines)) {
-            $html .= $this->dic->ui()->renderer()->render(
-                [
-                    $this->dic->ui()->factory()->messageBox()->info(
-                        $translator->txt(self::MSG_ASSIGNED_ROUTINES)
-                    ),
-
-                    $list_builder->getList($assigned_routines),
-                ]
+        if (!empty($diff_routines)) {
+            $panels[] = $this->dic->ui()->factory()->panel()->secondary()->legacy(
+                $translator->txt(self::ROUTINES_HEADER),
+                $this->dic->ui()->factory()->legacy(
+                    $this->dic->ui()->renderer()->render(
+                        $list_builder->getList($diff_routines)
+                    )
+                )
             );
         }
 
-        return $html;
+        return $this->dic->ui()->renderer()->render(
+            $panels
+        );
     }
 
     /**
@@ -254,7 +255,12 @@ class ilSrToolProvider extends AbstractDynamicToolPluginProvider
             );
         }
 
-        return $this->dic->ui()->renderer()->render($controls);
+        return $this->dic->ui()->renderer()->render(
+            $this->dic->ui()->factory()->panel()->secondary()->legacy(
+                $this->plugin->txt(self::CNF_TOOL_CONTROLS),
+                $this->dic->ui()->factory()->legacy($this->dic->ui()->renderer()->render($controls))
+            )
+        );
     }
 
     /**
@@ -385,17 +391,5 @@ class ilSrToolProvider extends AbstractDynamicToolPluginProvider
                 $this->access_handler->isAdministratorOf($this->request_object)
             )
         );
-    }
-
-    /**
-     * Helper function that wraps the given HTML in a div that allows
-     * some space to the edge of the tool.
-     *
-     * @param string $html
-     * @return string
-     */
-    protected function wrapHtml(string $html) : string
-    {
-        return "<div style=\"margin: 10px 10px 20px 10px;\">$html</div>";
     }
 }

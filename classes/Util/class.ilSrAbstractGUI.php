@@ -100,6 +100,11 @@ abstract class ilSrAbstractGUI
     protected $request;
 
     /**
+     * @var ilDBInterface
+     */
+    protected $database;
+
+    /**
      * @var Factory
      */
     protected $ui_factory;
@@ -131,7 +136,7 @@ abstract class ilSrAbstractGUI
      * @var ilGlobalTemplateInterface
      */
     private $global_template;
-
+    
     /**
      * Initializes common dependencies which are used in every derived GUI class.
      *
@@ -150,15 +155,16 @@ abstract class ilSrAbstractGUI
         $this->request = $DIC->http()->request();
         $this->ctrl = $DIC->ctrl();
         $this->user = $DIC->user();
+        $this->database = $DIC->database();
 
         $this->repository = new RepositoryFactory(
-            new ilSrGeneralRepository($DIC->database(), $DIC->repositoryTree(), $DIC->rbac()),
-            new ilSrConfigRepository($DIC->database(), $DIC->rbac()),
-            new ilSrRoutineRepository($DIC->database(), $DIC->repositoryTree()),
-            new ilSrAssignmentRepository($DIC->database(), $DIC->repositoryTree()),
-            new ilSrRuleRepository($DIC->database(), $DIC->repositoryTree()),
-            new ilSrNotificationRepository($DIC->database()),
-            new ilSrWhitelistRepository($DIC->database())
+            new ilSrGeneralRepository($this->database, $DIC->repositoryTree(), $DIC->rbac()),
+            new ilSrConfigRepository($this->database, $DIC->rbac()),
+            new ilSrRoutineRepository($this->database, $DIC->repositoryTree()),
+            new ilSrAssignmentRepository($this->database, $DIC->repositoryTree()),
+            new ilSrRuleRepository($this->database, $DIC->repositoryTree()),
+            new ilSrNotificationRepository($this->database),
+            new ilSrWhitelistRepository($this->database)
         );
 
         $this->access_handler = new ilSrAccessHandler(
@@ -325,6 +331,13 @@ abstract class ilSrAbstractGUI
             $this->renderer->render($component)
         );
     }
+    
+    protected function renderMulti(array $components) : void
+    {
+        $this->global_template->setContent(
+            $this->renderer->render($components)
+        );
+    }
 
     /**
      * Helper function that aborts (throws an exception) if the requested
@@ -337,6 +350,40 @@ abstract class ilSrAbstractGUI
         if (null === $this->routine->getRoutineId()) {
             throw new LogicException($this->translator->txt(self::MSG_ROUTINE_NOT_FOUND));
         }
+    }
+
+    /**
+     * Returns a form-action for the given command of the derived class.
+     *
+     * If a query-parameter is provided, the method checks if a value has been
+     * submitted ($_GET) and if so, the parameter will be appended or used for
+     * the form-action.
+     *
+     * @param string      $command
+     * @param string|null $query_parameter
+     * @return string
+     */
+    protected function getFormAction(string $command, string $query_parameter = null) : string
+    {
+        // temporarily safe the parameter value if it has been requested.
+        if (null !== $query_parameter &&
+            null !==($query_value = $this->getRequestParameter($query_parameter))
+        ) {
+            $this->ctrl->setParameterByClass(static::class, $query_parameter, $query_value);
+        }
+
+        // build the form action while the query value (maybe) is set.
+        $form_action = $this->ctrl->getFormActionByClass(
+            static::class,
+            $command
+        );
+
+        // remove the parameter again once the form action has been generated.
+        if (null !== $query_parameter) {
+            $this->ctrl->clearParameterByClass(static::class, $query_parameter);
+        }
+
+        return $form_action;
     }
 
     /**
@@ -417,10 +464,11 @@ abstract class ilSrAbstractGUI
         $this->ctrl->saveParameterByClass(ilSrNotificationGUI::class, self::PARAM_OBJECT_REF_ID);
         $this->ctrl->saveParameterByClass(ilSrWhitelistGUI::class, self::PARAM_OBJECT_REF_ID);
 
-        // DON'T save the parameter for routine-assignments, otherwise some links
-        // might misbehave because the routine-id must only be provided for edits.
-        if (ilSrRoutineAssignmentGUI::class !== static::class) {
-            // save current routine-id if provided for all other derived classes.
+        // save the routine-id parameter for all derived classes except routine-assignment-
+        // and routine-gui, otherwise the link-generation might misbehave.
+        if (ilSrRoutineAssignmentGUI::class !== static::class &&
+            ilSrRoutineGUI::class !== static::class
+        ) {
             $this->ctrl->saveParameterByClass(static::class, self::PARAM_ROUTINE_ID);
         }
     }

@@ -92,6 +92,7 @@ abstract class ilSrAbstractAssignmentGUI extends ilSrAbstractGUI
             $tabs
                 ->addConfigurationTab()
                 ->addRoutineTab()
+                ->addPreviewTab()
                 ->deactivateTabs()
             ;
         }
@@ -185,20 +186,6 @@ abstract class ilSrAbstractAssignmentGUI extends ilSrAbstractGUI
         }
 
         return null;
-    }
-
-    /**
-     * Returns a form action pointing to @see ilSrAbstractAssignmentGUI::save(),
-     * which handles form submissions of derived classes.
-     *
-     * @return string
-     */
-    protected function getFormAction() : string
-    {
-        return $this->ctrl->getFormActionByClass(
-            static::class,
-            self::CMD_ASSIGNMENT_SAVE
-        );
     }
 
     /**

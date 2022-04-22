@@ -26,6 +26,10 @@ interface IRule
     public const F_RULE_ID    = 'rule_id';
     public const F_ROUTINE_ID = 'routine_id';
 
+    // IRule equation sides:
+    public const RULE_SIDE_RIGHT = 'rhs';
+    public const RULE_SIDE_LEFT  = 'lhs';
+
     /**
      * @return int|null
      */
@@ -102,4 +106,20 @@ interface IRule
      * @return IRule
      */
     public function setRhsValue($value) : IRule;
+
+    /**
+     * Helper function that returns the value-type of the given side.
+     *
+     * @param string $rule_side (lhs|rhs)
+     * @return string|null
+     */
+    public function getTypeBySide(string $rule_side) : ?string;
+
+    /**
+     * Helper function that returns the value-type of the given side.
+     *
+     * @param string $rule_side (lhs|rhs)
+     * @return mixed|null
+     */
+    public function getValueBySide(string $rule_side);
 }
