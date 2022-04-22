@@ -10,12 +10,12 @@ msg_invalid_ref_id#:#Diese Ref-id ist ungültig.
 msg_routine_success#:#Routine(n) wurde erfolgreich aktualisiert.
 msg_configuration_success#:#Konfiguration wurde erfolgreich aktualisiert.
 msg_configuration_error#:#Konfiguration konne nicht aktualisiert werden.
-msg_origin_unknown#:#Es wurde kein, oder ein unbekannter Herkunftstyp geliefert.
-msg_routine_not_found#:#Es wurde keine Routine geliefert, oder sie existiert nicht mehr.
+msg_origin_unknown#:#Es wurde kein oder ein unbekannter Herkunftstyp geliefert.
+msg_routine_not_found#:#Es wurde keine Routine geliefert oder sie existiert nicht mehr.
 msg_rule_success#:#Regel(n) erfolgreich aktualisiert.
-msg_rule_error#:#Regel(n) konnten nicht aktualisiert werden.
+msg_rule_error#:#Regel(n) konnte(n) nicht aktualisiert werden.
 msg_notification_success#:#Benachrichtigung(en) erfolgreich aktualisiert.
-msg_notification_error#:#Benachrichtigung(en) konnten nicht aktualisiert werden.
+msg_notification_error#:#Benachrichtigung(en) konnte(n) nicht aktualisiert werden.
 msg_back_to#:#Zurück
 msg_invalid_execution_dates#:#Eines der eingegeben Daten entspricht nicht dem Format DD/MM.
 msg_routine_whitelist_error#:#Die angefragte Routine unterstützt keine Whitelists.
@@ -49,6 +49,9 @@ cnf_role_manage_assignments#:#Zuweisungen verwalten
 cnf_tool_is_enabled#:#Tool anzeigen
 cnf_tool_show_routines#:#Aktive routinen anzeigen
 cnf_tool_show_controls#:#Verwaltung anzeigen
+cnf_tool_controls#:#Verwaltung
+cnf_tool_routines_header#:#Routinen für diesen Ort
+cnf_tool_routines_triggered_header#:#Zutreffende Routinen
 
 col_actions#:#Aktionen
 col_routine_title#:#Name
@@ -77,13 +80,13 @@ col_whitelist_date#:#Datum
 
 input_name_routine_title#:#Name
 input_name_routine_type#:#Routinen Typ
-input_name_routine_has_opt_out#:#Opt-out möglich?
+input_name_routine_has_opt_out#:#Opt-out aktivieren
 input_name_routine_elongation#:#Verlängerung (in Tage)
-input_name_routine_elongation_possible#:#Verlängerung möglich?
+input_name_routine_elongation_possible#:#Verlängerung aktivieren
 input_name_routine_assignment_routine#:#Routine
 input_name_routine_assignment_ref_id#:#Objekt (ref-id)
 input_name_routine_assignment_recursive#:#Rekursiv?
-input_name_routine_assignment_active#:#Aktiv?
+input_name_routine_assignment_active#:#Aktivieren
 input_name_notification_title#:#Titel
 input_name_notification_content#:#Inhalt
 input_name_notification_content_info#:#Benutze [EXTENSION_LINK] für einen Link, mit dem Empfänger das Objekt um die definierte Zeit verlängern können. <br /> Benutze [OPT_OUT_LINK] für einen Link, mit dem Empfänger das Objekt von der Löschung ausschliessen können. <br /> Benutze [OBJECT_LINK] für einen Link zum Objekt, dass gelöscht werden soll.
@@ -117,6 +120,8 @@ action_routine_assignment_add#:#Zuweisung hinzufügen
 action_routine_assignment_edit#:#Bearbeiten
 action_routine_assignment_delete#:#Löschen
 action_routine_assignment_remove#:#Entfernen
+action_routine_extend#:#Verlängerung aktivieren (%s Tage ab jetzt)
+action_routine_opt_out#:#Automatische Löschung dauerhaft verhindern
 action_rule_add#:#Regel hinzufügen
 action_rule_delete#:#Enfernen
 action_notification_add#:#Benachrichtigung hinzufügen

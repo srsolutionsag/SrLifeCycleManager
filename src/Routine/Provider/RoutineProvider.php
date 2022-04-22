@@ -48,19 +48,25 @@ class RoutineProvider
      */
     public function getAffectingRoutines(ilObject $object) : array
     {
-        $applicable_routines = [];
-        $routines = $this->routine_repository->getAllForComparison(
-            $object->getRefId(),
-            $object->getType()
-        );
-
-        foreach ($routines as $routine) {
-            if ($this->isApplicable($routine, $object)) {
-                $applicable_routines[] = $routine;
+        return array_filter(
+            $this->routine_repository->getAllForComparison(
+                $object->getRefId(),
+                $object->getType()
+            ),
+            function (IRoutine $routine) use ($object) : bool {
+                return $this->isApplicable($routine, $object);
             }
-        }
+        );
+    }
 
-        return $applicable_routines;
+    /**
+     * @return IRoutine[]
+     */
+    public function getRoutinesForLocation(ilObject $object) : array
+    {
+        return $this->routine_repository->getAllByRefId(
+            $object->getRefId()
+        );
     }
 
     /**
@@ -70,6 +76,10 @@ class RoutineProvider
      */
     protected function isApplicable(IRoutine $routine, ilObject $object) : bool
     {
+        if (!in_array($object->getType(), IRoutine::ROUTINE_TYPES, true)) {
+            return false;
+        }
+        
         $rules = $this->rule_repository->getByRoutine($routine);
 
         // if there are no rules yet, the routine is not applicable.

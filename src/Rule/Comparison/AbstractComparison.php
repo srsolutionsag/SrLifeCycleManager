@@ -55,10 +55,10 @@ abstract class AbstractComparison implements IComparison
      */
     protected function getSimilarValueType() : ?string
     {
-        $similarities = array_intersect(
+        $similarities = array_values(array_intersect(
             $this->lhs_attribute->getComparableValueTypes(),
             $this->rhs_attribute->getComparableValueTypes()
-        );
+        ));
 
         if (empty($similarities) ||
             !in_array($similarities[0], IAttribute::COMPARABLE_VALUE_TYPES, true)
