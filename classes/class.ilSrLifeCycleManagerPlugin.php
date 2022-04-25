@@ -113,7 +113,8 @@ class ilSrLifeCycleManagerPlugin extends ilCronHookPlugin implements ITranslator
             $dic->offsetExists('tree') &&
             $dic->offsetExists('ilLoggerFactory') &&
             $dic->offsetExists('rbacreview') &&
-            $dic->offsetExists('ilCtrl')
+            $dic->offsetExists('ilCtrl') &&
+            $dic->offsetExists('ilUser')
         ) {
             $this->cron_job_factory = new ilSrCronJobFactory(
                 $dic['mail.mime.sender.factory'],
@@ -121,7 +122,8 @@ class ilSrLifeCycleManagerPlugin extends ilCronHookPlugin implements ITranslator
                 $dic->repositoryTree(),
                 $dic->logger()->root(),
                 $dic->rbac(),
-                $dic->ctrl()
+                $dic->ctrl(),
+                $dic->user()
             );
         }
     }

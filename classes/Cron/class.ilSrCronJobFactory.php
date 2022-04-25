@@ -53,6 +53,11 @@ class ilSrCronJobFactory
     protected $ctrl;
 
     /**
+     * @var ilObjUser
+     */
+    protected $actor;
+
+    /**
      * @var ObjectProvider
      */
     protected $object_provider;
@@ -64,6 +69,7 @@ class ilSrCronJobFactory
      * @param ilLogger                $logger
      * @param RBACServices            $rbac
      * @param ilCtrl                  $ctrl
+     * @param ilObjUser               $actor
      */
     public function __construct(
         ilMailMimeSenderFactory $mail_factory,
@@ -71,7 +77,8 @@ class ilSrCronJobFactory
         ilTree $tree,
         ilLogger $logger,
         RBACServices $rbac,
-        ilCtrl $ctrl
+        ilCtrl $ctrl,
+        ilObjUser $actor
     ) {
         $this->repository = new RepositoryFactory(
             new ilSrGeneralRepository($database, $tree, $rbac),
@@ -101,6 +108,7 @@ class ilSrCronJobFactory
         $this->logger = $logger;
         $this->rbac = $rbac;
         $this->ctrl = $ctrl;
+        $this->actor = $actor;
     }
 
     /**
@@ -133,6 +141,7 @@ class ilSrCronJobFactory
             new ilSrNotificationSender(
                 $this->repository->notification(),
                 $this->mail_factory->system(),
+                $this->actor,
                 $this->ctrl
             ),
             $this->object_provider->getDeletableObjects(),
@@ -153,6 +162,7 @@ class ilSrCronJobFactory
             new ilSrNotificationSender(
                 $this->repository->notification(),
                 $this->mail_factory->system(),
+                $this->actor,
                 $this->ctrl
             ),
             $this->object_provider->getDeletableObjects(),

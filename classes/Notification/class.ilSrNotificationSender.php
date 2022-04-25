@@ -33,6 +33,11 @@ class ilSrNotificationSender implements INotificationSender
     protected $mail_sender;
 
     /**
+     * @var ilObjUser
+     */
+    protected $actor;
+
+    /**
      * @var ilCtrl
      */
     protected $ctrl;
@@ -40,15 +45,18 @@ class ilSrNotificationSender implements INotificationSender
     /**
      * @param INotificationRepository $repository
      * @param ilMailMimeSender        $mail_sender
+     * @param ilObjUser               $actor
      * @param ilCtrl                  $ctrl
      */
     public function __construct(
         INotificationRepository $repository,
         ilMailMimeSender $mail_sender,
+        ilObjUser $actor,
         ilCtrl $ctrl
     ) {
         $this->repository = $repository;
         $this->mail_sender = $mail_sender;
+        $this->actor = $actor;
         $this->ctrl = $ctrl;
     }
 
@@ -58,6 +66,9 @@ class ilSrNotificationSender implements INotificationSender
     public function sendNotification(INotification $notification, ilObject $object) : ISentNotification
     {
         $administrators = ilParticipants::getInstance($object->getRefId())->getAdmins();
+        $message = $this->getNotificationBody($object, $notification);
+        $subject = $notification->getTitle();
+
         foreach ($administrators as $user_id) {
             // it's possible that participants are delivered whose user
             // accounts were deleted.
@@ -65,17 +76,51 @@ class ilSrNotificationSender implements INotificationSender
                 continue;
             }
 
-            $user = new ilObjUser($user_id);
-            $mail = new ilMimeMail();
+            $recipient = new ilObjUser($user_id);
 
-            $mail->From($this->mail_sender);
-            $mail->To($user->getEmail());
-            $mail->Subject($notification->getTitle());
-            $mail->Body($this->getNotificationBody($object, $notification));
-            $mail->Send();
+            $this->sendIliasMail($recipient, $subject, $message);
+            $this->sendMimeMail($recipient, $subject, $message);
         }
 
         return $this->repository->notifyObject($notification, $object->getRefId());
+    }
+
+    /**
+     * Sends an actual email to the given recipient with the given subject and message.
+     *
+     * @param ilObjUser $recipient
+     * @param string    $subject
+     * @param string    $message
+     */
+    protected function sendMimeMail(ilObjUser $recipient, string $subject, string $message) : void
+    {
+        $mail = new ilMimeMail();
+        $mail->From($this->mail_sender);
+        $mail->To($recipient->getEmail());
+        $mail->Subject($subject);
+        $mail->Body($message);
+        $mail->Send();
+    }
+
+    /**
+     * Sends an ILIAS notification to the given recipient with the given subject and message.
+     *
+     * @param ilObjUser $recipient
+     * @param string    $subject
+     * @param string    $message
+     */
+    protected function sendIliasMail(ilObjUser $recipient, string $subject, string $message) : void
+    {
+        $mail = new ilMail($this->actor->getId());
+        $mail->setSaveInSentbox(true);
+        $mail->enqueue(
+            $recipient->getLogin(),
+            '',
+            '',
+            $subject,
+            $message,
+            []
+        );
     }
 
     /**
