@@ -20,6 +20,7 @@ abstract class AbstractFormBuilder implements IFormBuilder
     // AbstractFormBuilder language variables:
     private const MSG_INVALID_RED_IDS = 'msg_invalid_ref_ids';
     private const MSG_INVALID_REF_ID = 'msg_invalid_ref_id';
+    private const MSG_INVALID_EMAIL = 'msg_invalid_email';
 
     /**
      * @var ITranslator
@@ -102,6 +103,22 @@ abstract class AbstractFormBuilder implements IFormBuilder
                 return true;
             },
             $this->translator->txt(self::MSG_INVALID_RED_IDS)
+        );
+    }
+
+    /**
+     * Returns a validation constraint for text-inputs that can be used to check
+     * if a valid email-address has been submitted.
+     *
+     * @return Constraint
+     */
+    protected function getEmailValidationConstraint() : Constraint
+    {
+        return $this->refinery->custom()->constraint(
+            static function (string $email) : bool {
+                return is_string(filter_var($email, FILTER_VALIDATE_EMAIL));
+            },
+            $this->translator->txt(self::MSG_INVALID_EMAIL)
         );
     }
 

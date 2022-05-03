@@ -60,7 +60,8 @@ class ConfigFormProcessor extends AbstractFormProcessor
                 $post_data[IConfig::CNF_ROLE_MANAGE_ASSIGNMENTS] ?? [],
                 $is_tool_enabled,
                 $show_routines,
-                $show_controls
+                $show_controls,
+                $post_data[IConfig::CNF_CUSTOM_FROM_EMAIL]
             )
         );
     }

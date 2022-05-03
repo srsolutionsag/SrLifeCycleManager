@@ -34,6 +34,7 @@ msg_days_before_submission_error#:#A notification for this amount of days before
 msg_assignment_success#:#Assignment(s) successfully updated.
 msg_no_unassigned_routines#:#There are no routines available that don't already affect this object.
 msg_this_may_take_a_while#:#Collecting Data, this may take a while ...
+msg_invalid_email#:#The submitted email address is invalid.
 
 page_title_rules#:#Life-Cycle Rules
 page_title_config#:#Life-Cycle Configuration
@@ -60,6 +61,7 @@ cnf_tool_show_controls#:#Show controls
 cnf_tool_controls#:#Controls
 cnf_tool_routines_header#:#Routines for this Location
 cnf_tool_routines_triggered_header#:#Affecting Routines
+cnf_custom_from_email#:#Notification email
 
 col_actions#:#Actions
 col_routine_title#:#Name
@@ -97,7 +99,7 @@ input_name_routine_assignment_recursive#:#Recursive
 input_name_routine_assignment_active#:#Active
 input_name_notification_title#:#Notification title
 input_name_notification_content#:#Notification content
-input_name_notification_content_info#:#Type [EXTENSION_LINK] where recipients can postpone the deletion by your routines configured amount. <br /> Type [OPT_OUT_LINK] where recipients can opt-out the deletion by your routine. <br /> Type [OBJECT_LINK] where recipients can go to the object that is about to be deleted.
+input_name_notification_content_info#:#Type [EXTENSION_LINK] where recipients can postpone the deletion by your routines configured amount. <br /> Type [OPT_OUT_LINK] where recipients can opt-out the deletion by your routine. <br /> Type [OBJECT_LINK] where recipients can go to the object that is about to be deleted. <br /> Type [OBJECT_TITLE] to display recipients the object-title that is about to be deleted.
 input_name_notification_days_before_submission#:#Sent (in days before deletion)
 
 routine_origin_type_admin#:#Administration

@@ -84,24 +84,28 @@ class RuleFormBuilder extends AbstractFormBuilder
      */
     public function getForm() : UIForm
     {
+        $inputs[self::KEY_LHS_VALUE] = $this->getSwitchableAttributesInput(self::KEY_LHS_VALUE);
+
+        if (null !== ($lhs_value = $this->getCurrentValueBySide(IRule::RULE_SIDE_LEFT))) {
+            $inputs[self::KEY_LHS_VALUE] = $inputs[self::KEY_LHS_VALUE]->withValue($lhs_value);
+        }
+
+        $inputs[self::KEY_RHS_VALUE] = $this->getSwitchableAttributesInput(self::KEY_RHS_VALUE);
+
+        if (null !== ($rhs_value = $this->getCurrentValueBySide(IRule::RULE_SIDE_RIGHT))) {
+            $inputs[self::KEY_RHS_VALUE] = $inputs[self::KEY_RHS_VALUE]->withValue($rhs_value);
+        }
+
+        $inputs[self::KEY_OPERATOR] = $this
+            ->getOperatorInput()
+            ->withValue(
+                (null !== $this->rule->getRuleId()) ? $this->rule->getOperator() : null
+            )
+        ;
+
         return $this->forms->standard(
             $this->form_action,
-            [
-                self::KEY_LHS_VALUE => $this
-                    ->getSwitchableAttributesInput(self::KEY_LHS_VALUE)
-                    ->withValue($this->getCurrentValueBySide(IRule::RULE_SIDE_LEFT))
-                ,
-                self::KEY_RHS_VALUE => $this
-                    ->getSwitchableAttributesInput(self::KEY_RHS_VALUE)
-                    ->withValue($this->getCurrentValueBySide(IRule::RULE_SIDE_RIGHT))
-                ,
-                self::KEY_OPERATOR => $this
-                    ->getOperatorInput()
-                    ->withValue(
-                        (null !== $this->rule->getRuleId()) ? $this->rule->getOperator() : null
-                    )
-                ,
-            ]
+            $inputs
         );
     }
 
@@ -240,7 +244,7 @@ class RuleFormBuilder extends AbstractFormBuilder
     protected function getCurrentValueBySide(string $rule_side) : ?array
     {
         $attribute_type = $this->rule->getTypeBySide($rule_side);
-        if (null === $attribute_type) {
+        if (empty($attribute_type)) {
             return null;
         }
 

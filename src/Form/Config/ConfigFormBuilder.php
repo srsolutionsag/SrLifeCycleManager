@@ -69,6 +69,14 @@ class ConfigFormBuilder extends AbstractFormBuilder
             )
         ;
 
+        $inputs[IConfig::CNF_CUSTOM_FROM_EMAIL] = $this->fields
+            ->text($this->translator->txt(IConfig::CNF_CUSTOM_FROM_EMAIL))
+            ->withValue($this->config->getNotificationSenderAddress() ?? '')
+            ->withAdditionalTransformation(
+                $this->getEmailValidationConstraint()
+            )
+        ;
+
         $inputs[IConfig::CNF_TOOL_IS_ENABLED] = $this->fields->optionalGroup([
 
             IConfig::CNF_TOOL_SHOW_ROUTINES => $this->fields

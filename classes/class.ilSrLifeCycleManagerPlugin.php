@@ -53,8 +53,12 @@ class ilSrLifeCycleManagerPlugin extends ilCronHookPlugin implements ITranslator
         global $DIC;
         parent::__construct();
 
-        $this->safelyInitjobFactory($DIC);
-        $this->safelyInitProviders($DIC);
+        // only initialize cron-job factory and providers if the plugin is active.
+        // there might be installation errors because db tables don't exist yet.
+        if ($this->isActive()) {
+            $this->safelyInitjobFactory($DIC);
+            $this->safelyInitProviders($DIC);
+        }
     }
 
     /**
@@ -113,8 +117,7 @@ class ilSrLifeCycleManagerPlugin extends ilCronHookPlugin implements ITranslator
             $dic->offsetExists('tree') &&
             $dic->offsetExists('ilLoggerFactory') &&
             $dic->offsetExists('rbacreview') &&
-            $dic->offsetExists('ilCtrl') &&
-            $dic->offsetExists('ilUser')
+            $dic->offsetExists('ilCtrl')
         ) {
             $this->cron_job_factory = new ilSrCronJobFactory(
                 $dic['mail.mime.sender.factory'],
@@ -122,8 +125,7 @@ class ilSrLifeCycleManagerPlugin extends ilCronHookPlugin implements ITranslator
                 $dic->repositoryTree(),
                 $dic->logger()->root(),
                 $dic->rbac(),
-                $dic->ctrl(),
-                $dic->user()
+                $dic->ctrl()
             );
         }
     }
