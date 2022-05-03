@@ -37,6 +37,12 @@ interface IConfig
      */
     public const CNF_TOOL_SHOW_CONTROLS = 'cnf_tool_show_controls';
 
+    /**
+     * @var string config primary key to define a custom email-address from which the
+     *             ilSrNotificationSender will send notifications.
+     */
+    public const CNF_CUSTOM_FROM_EMAIL = 'cnf_custom_from_email';
+
     // IConfig attribute names:
     public const F_IDENTIFIER = 'identifier';
     public const F_CONFIG = 'configuration';
@@ -95,4 +101,15 @@ interface IConfig
      * @return IConfig
      */
     public function setShouldToolShowControls(bool $should_show) : IConfig;
+
+    /**
+     * @return string|null
+     */
+    public function getNotificationSenderAddress() : ?string;
+
+    /**
+     * @param string $email
+     * @return IConfig
+     */
+    public function setNotificationSenderAddress(string $email) : IConfig;
 }

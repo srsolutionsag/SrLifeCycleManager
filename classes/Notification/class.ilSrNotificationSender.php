@@ -33,11 +33,6 @@ class ilSrNotificationSender implements INotificationSender
     protected $mail_sender;
 
     /**
-     * @var ilObjUser
-     */
-    protected $actor;
-
-    /**
      * @var ilCtrl
      */
     protected $ctrl;
@@ -45,18 +40,15 @@ class ilSrNotificationSender implements INotificationSender
     /**
      * @param INotificationRepository $repository
      * @param ilMailMimeSender        $mail_sender
-     * @param ilObjUser               $actor
      * @param ilCtrl                  $ctrl
      */
     public function __construct(
         INotificationRepository $repository,
         ilMailMimeSender $mail_sender,
-        ilObjUser $actor,
         ilCtrl $ctrl
     ) {
         $this->repository = $repository;
         $this->mail_sender = $mail_sender;
-        $this->actor = $actor;
         $this->ctrl = $ctrl;
     }
 
@@ -111,7 +103,7 @@ class ilSrNotificationSender implements INotificationSender
      */
     protected function sendIliasMail(ilObjUser $recipient, string $subject, string $message) : void
     {
-        $mail = new ilMail($this->actor->getId());
+        $mail = new ilMail(ANONYMOUS_USER_ID);
         $mail->setSaveInSentbox(true);
         $mail->enqueue(
             $recipient->getLogin(),
@@ -146,11 +138,13 @@ class ilSrNotificationSender implements INotificationSender
 
         return str_replace(
             [
+                '[OBJECT_TITLE]',
                 '[OBJECT_LINK]',
                 '[EXTENSION_LINK]',
                 '[OPT_OUT_LINK]',
             ],
             [
+                $object->getTitle(),
                 ilLink::_getStaticLink($object->getRefId()),
                 ILIAS_HTTP_PATH . '/' . ilSrLifeCycleManagerDispatcher::getLinkTarget(
                     ilSrWhitelistGUI::class,

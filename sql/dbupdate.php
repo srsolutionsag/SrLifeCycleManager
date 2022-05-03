@@ -343,3 +343,14 @@ if (!$ilDB->tableExists($table_name)) {
     ]);
 }
 ?>
+<#10>
+<?php
+/** @var $ilDB ilDBInterface */
+$table_name = 'srlcm_configuration';
+if ($ilDB->tableExists($table_name)) {
+    $ilDB->insert($table_name, [
+        'identifier' => ['text', 'cnf_custom_from_email'],
+        'configuration' => ['text', ''],
+    ]);
+}
+?>

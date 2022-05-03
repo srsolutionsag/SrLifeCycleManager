@@ -35,24 +35,32 @@ class Config implements IConfig
     protected $tool_show_controls;
 
     /**
-     * @param int[] $manage_routines
-     * @param int[] $manage_assignments
-     * @param bool  $is_tool_enabled
-     * @param bool  $tool_show_routines
-     * @param bool  $tool_show_controls
+     * @var string|null
+     */
+    protected $custom_email;
+
+    /**
+     * @param int[]       $manage_routines
+     * @param int[]       $manage_assignments
+     * @param bool        $is_tool_enabled
+     * @param bool        $tool_show_routines
+     * @param bool        $tool_show_controls
+     * @param string|null $custom_email
      */
     public function __construct(
         array $manage_routines = [],
         array $manage_assignments = [],
         bool $is_tool_enabled = false,
         bool $tool_show_routines = false,
-        bool $tool_show_controls = false
+        bool $tool_show_controls = false,
+        string $custom_email = null
     ) {
         $this->manage_routine_roles = $manage_routines;
         $this->manage_assignment_roles = $manage_assignments;
         $this->tool_is_enabled = $is_tool_enabled;
         $this->tool_show_routines = $tool_show_routines;
         $this->tool_show_controls = $tool_show_controls;
+        $this->custom_email = $custom_email;
     }
 
     /**
@@ -137,6 +145,23 @@ class Config implements IConfig
     public function setShouldToolShowControls(bool $should_show) : IConfig
     {
         $this->tool_show_controls = $should_show;
+        return $this;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function getNotificationSenderAddress() : ?string
+    {
+        return $this->custom_email;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function setNotificationSenderAddress(string $email) : IConfig
+    {
+        $this->custom_email = $email;
         return $this;
     }
 }

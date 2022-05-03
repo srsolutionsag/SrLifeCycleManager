@@ -34,6 +34,7 @@ msg_days_before_submission_error#:#Eine Benachrichtigung die um diese Anzahl vor
 msg_assignment_success#:#Zusweisung(en) erfolgreich aktualisiert.
 msg_no_unassigned_routines#:#Es gibt keine Routinen mehr die diesem Objekt zugewiesen werden können.
 msg_this_may_take_a_while#:#Sammle Daten, dies könnte eine Weile dauern ...
+msg_invalid_email#:#Die eingegebene E-Mail Adresse ist ungültig.
 
 page_title_rules#:#Life-Cycle Regeln
 page_title_config#:#Life-Cycle Einstellungen
@@ -60,6 +61,7 @@ cnf_tool_show_controls#:#Verwaltung anzeigen
 cnf_tool_controls#:#Verwaltung
 cnf_tool_routines_header#:#Routinen für diesen Ort
 cnf_tool_routines_triggered_header#:#Zutreffende Routinen
+cnf_custom_from_email#:#Email für Benachrichtigungen
 
 col_actions#:#Aktionen
 col_routine_title#:#Name
@@ -97,7 +99,7 @@ input_name_routine_assignment_recursive#:#Rekursiv?
 input_name_routine_assignment_active#:#Aktivieren
 input_name_notification_title#:#Titel
 input_name_notification_content#:#Inhalt
-input_name_notification_content_info#:#Benutze [EXTENSION_LINK] für einen Link, mit dem Empfänger das Objekt um die definierte Zeit verlängern können. <br /> Benutze [OPT_OUT_LINK] für einen Link, mit dem Empfänger das Objekt von der Löschung ausschliessen können. <br /> Benutze [OBJECT_LINK] für einen Link zum Objekt, dass gelöscht werden soll.
+input_name_notification_content_info#:#Benutze [EXTENSION_LINK] für einen Link, mit dem Empfänger das Objekt um die definierte Zeit verlängern können. <br /> Benutze [OPT_OUT_LINK] für einen Link, mit dem Empfänger das Objekt von der Löschung ausschliessen können. <br /> Benutze [OBJECT_LINK] für einen Link zum Objekt, dass gelöscht werden soll. <br /> Benutze [OBJECT_TITLE] um den Objekttitel anzuzeigen.
 input_name_notification_days_before_submission#:#Senden (Tage vor Löschung)
 
 routine_origin_type_admin#:#Administration

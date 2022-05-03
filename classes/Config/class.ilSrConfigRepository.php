@@ -78,6 +78,10 @@ class ilSrConfigRepository implements IConfigRepository
                 case IConfig::CNF_TOOL_SHOW_CONTROLS:
                     $config->setShouldToolShowControls((bool) $query_result[IConfig::F_CONFIG]);
                     break;
+
+                case IConfig::CNF_CUSTOM_FROM_EMAIL:
+                    $config->setNotificationSenderAddress($query_result[IConfig::F_CONFIG]);
+                    break;
             }
         }
 
@@ -94,6 +98,7 @@ class ilSrConfigRepository implements IConfigRepository
         $this->updateConfig(IConfig::CNF_TOOL_IS_ENABLED, (string) $config->isToolEnabled());
         $this->updateConfig(IConfig::CNF_TOOL_SHOW_ROUTINES, (string) $config->shouldToolShowRoutines());
         $this->updateConfig(IConfig::CNF_TOOL_SHOW_CONTROLS, (string) $config->shouldToolShowControls());
+        $this->updateConfig(IConfig::CNF_CUSTOM_FROM_EMAIL, $config->getNotificationSenderAddress());
 
         return $config;
     }

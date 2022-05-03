@@ -159,7 +159,31 @@ class ilSrLifeCycleManagerDispatcher
         try {
             $this->ctrl->forwardCommand(new $class_name());
         } catch (LogicException|ilCtrlException $exception) {
-            $this->global_template->setOnScreenMessage('failure', $exception->getMessage());
+            $this->global_template->setOnScreenMessage(
+                'failure',
+                (DEVMODE || DEBUG) ?
+                    $this->getExceptionString($exception) :
+                    "Whoops, something went wrong!"
+            );
         }
+    }
+
+    /**
+     * Helper function to nicely format the exception message to display on screen.
+     *
+     * @param Throwable $exception
+     * @return string
+     */
+    protected function getExceptionString(Throwable $exception) : string
+    {
+        $message = "{$exception->getMessage()} : ";
+        $message .= "<br /><br />";
+        $message .= str_replace(
+            PHP_EOL,
+            "<br />",
+            $exception->getTraceAsString()
+        );
+
+        return $message;
     }
 }

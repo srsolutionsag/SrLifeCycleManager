@@ -10,6 +10,7 @@ use srag\Plugins\SrLifeCycleManager\Rule\Requirement\RequirementFactory;
 use srag\Plugins\SrLifeCycleManager\Rule\Attribute\AttributeFactory;
 use srag\Plugins\SrLifeCycleManager\Cron\ResultBuilder;
 use ILIAS\DI\RBACServices;
+use srag\Plugins\SrLifeCycleManager\Config\IConfig;
 
 /**
  * @author       Thibeau Fuhrer <thibeau@sr.solutions>
@@ -21,6 +22,11 @@ class ilSrCronJobFactory
      * @var RepositoryFactory
      */
     protected $repository;
+
+    /**
+     * @var IConfig
+     */
+    protected $config;
 
     /**
      * @var ilDBInterface
@@ -53,11 +59,6 @@ class ilSrCronJobFactory
     protected $ctrl;
 
     /**
-     * @var ilObjUser
-     */
-    protected $actor;
-
-    /**
      * @var ObjectProvider
      */
     protected $object_provider;
@@ -69,7 +70,6 @@ class ilSrCronJobFactory
      * @param ilLogger                $logger
      * @param RBACServices            $rbac
      * @param ilCtrl                  $ctrl
-     * @param ilObjUser               $actor
      */
     public function __construct(
         ilMailMimeSenderFactory $mail_factory,
@@ -77,8 +77,7 @@ class ilSrCronJobFactory
         ilTree $tree,
         ilLogger $logger,
         RBACServices $rbac,
-        ilCtrl $ctrl,
-        ilObjUser $actor
+        ilCtrl $ctrl
     ) {
         $this->repository = new RepositoryFactory(
             new ilSrGeneralRepository($database, $tree, $rbac),
@@ -102,13 +101,13 @@ class ilSrCronJobFactory
             $this->repository->general()
         );
 
+        $this->config = $this->repository->config()->get();
         $this->mail_factory = $mail_factory;
         $this->database = $database;
         $this->tree = $tree;
         $this->logger = $logger;
         $this->rbac = $rbac;
         $this->ctrl = $ctrl;
-        $this->actor = $actor;
     }
 
     /**
@@ -140,8 +139,7 @@ class ilSrCronJobFactory
         return new ilSrRoutineCronJob(
             new ilSrNotificationSender(
                 $this->repository->notification(),
-                $this->mail_factory->system(),
-                $this->actor,
+                $this->getMailSender(),
                 $this->ctrl
             ),
             $this->object_provider->getDeletableObjects(),
@@ -161,8 +159,7 @@ class ilSrCronJobFactory
         return new ilSrDryRoutineCronJob(
             new ilSrNotificationSender(
                 $this->repository->notification(),
-                $this->mail_factory->system(),
-                $this->actor,
+                $this->getMailSender(),
                 $this->ctrl
             ),
             $this->object_provider->getDeletableObjects(),
@@ -183,5 +180,19 @@ class ilSrCronJobFactory
             new ResultBuilder(new ilCronJobResult()),
             $this->logger
         );
+    }
+
+    /**
+     * @return ilMailMimeSender
+     */
+    protected function getMailSender() : ilMailMimeSender
+    {
+        if (!empty($this->config->getNotificationSenderAddress())) {
+            return $this->mail_factory->userByEmailAddress(
+                $this->config->getNotificationSenderAddress()
+            );
+        }
+
+        return $this->mail_factory->system();
     }
 }
