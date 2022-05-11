@@ -132,9 +132,8 @@ class ilSrRoutinePreviewRenderer
             ;
         }
 
-        return $this->renderer->renderAsync([
-            $this->ui_factory->messageBox()->info(count($items) . ' Items'),
-            $items
-        ]);
+        return $this->renderer->renderAsync(
+            array_merge([$this->ui_factory->messageBox()->info(count($items) . ' Item(s)')], $items)
+        );
     }
 }
