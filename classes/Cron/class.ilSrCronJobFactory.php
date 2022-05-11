@@ -140,6 +140,7 @@ class ilSrCronJobFactory
             new ilSrNotificationSender(
                 $this->repository->notification(),
                 $this->getMailSender(),
+                $this->config,
                 $this->ctrl
             ),
             $this->object_provider->getDeletableObjects(),
@@ -160,6 +161,7 @@ class ilSrCronJobFactory
             new ilSrNotificationSender(
                 $this->repository->notification(),
                 $this->getMailSender(),
+                $this->config,
                 $this->ctrl
             ),
             $this->object_provider->getDeletableObjects(),

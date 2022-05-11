@@ -62,6 +62,7 @@ cnf_tool_controls#:#Controls
 cnf_tool_routines_header#:#Routines for this Location
 cnf_tool_routines_triggered_header#:#Affecting Routines
 cnf_custom_from_email#:#Notification email
+cnf_mailing_whitelist#:#Mailing Whitelist
 
 col_actions#:#Actions
 col_routine_title#:#Name

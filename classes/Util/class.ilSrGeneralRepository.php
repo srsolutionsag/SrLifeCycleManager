@@ -58,6 +58,24 @@ class ilSrGeneralRepository implements IGeneralRepository
     /**
      * @inheritDoc
      */
+    public function getUsersByTerm(string $term) : array
+    {
+        $users = [];
+        foreach (ilObjUser::searchUsers($term) as $user_data) {
+            $beautified_name   = "{$user_data['login_name']} ({$user_data['usr_id']})";
+            $users[] = [
+                'value'    => $user_data['usr_id'],
+                'searchBy' => $beautified_name,
+                'display'  => $beautified_name,
+            ];
+        }
+
+        return $users;
+    }
+
+    /**
+     * @inheritDoc
+     */
     public function getAvailableGlobalRoles() : array
     {
         $role_options = [];

@@ -5,6 +5,8 @@
 use srag\Plugins\SrLifeCycleManager\Form\IFormBuilder;
 use srag\Plugins\SrLifeCycleManager\Form\Config\ConfigFormBuilder;
 use srag\Plugins\SrLifeCycleManager\Form\Config\ConfigFormProcessor;
+use ILIAS\DI\HTTPServices;
+use ILIAS\Filesystem\Stream\Streams;
 
 /**
  * This GUI is responsible for all actions in regard to plugin configuration.
@@ -16,7 +18,8 @@ use srag\Plugins\SrLifeCycleManager\Form\Config\ConfigFormProcessor;
 class ilSrConfigGUI extends ilSrAbstractGUI
 {
     // ilSrConfigGUI command/method names:
-    public const CMD_CONFIG_SAVE  = 'save';
+    public const CMD_CONFIG_SAVE = 'save';
+    public const CMD_SEARCH = 'findUsers';
 
     // ilSrConfigGUI language variables:
     protected const MSG_CONFIGURATION_SUCCESS = 'msg_configuration_success';
@@ -29,12 +32,19 @@ class ilSrConfigGUI extends ilSrAbstractGUI
     protected $form_builder;
 
     /**
+     * @var HTTPServices
+     */
+    protected $http;
+
+    /**
      * Initializes the configuration form-builder.
      */
     public function __construct()
     {
+        global $DIC;
         parent::__construct();
 
+        $this->http = $DIC->http();
         $this->form_builder = new ConfigFormBuilder(
             $this->translator,
             $this->ui_factory->input()->container()->form(),
@@ -42,7 +52,8 @@ class ilSrConfigGUI extends ilSrAbstractGUI
             $this->refinery,
             $this->repository->config()->get(),
             $this->repository->general()->getAvailableGlobalRoles(),
-            $this->getFormAction(self::CMD_CONFIG_SAVE)
+            $this->getFormAction(self::CMD_CONFIG_SAVE),
+            $this->getAjaxAction()
         );
     }
 
@@ -102,5 +113,44 @@ class ilSrConfigGUI extends ilSrAbstractGUI
 
         $this->sendErrorMessage(self::MSG_CONFIGURATION_ERROR);
         $this->render($processor->getProcessedForm());
+    }
+
+    /**
+     * This method searches objects by the requested term and returns
+     * them asynchronously (as a json-response).
+     *
+     * @see AbstractFormBuilder::getTagInputAutoCompleteBinder()
+     */
+    protected function findUsers() : void
+    {
+        $body = $this->request->getQueryParams();
+        $term = $body['term'] ?? '';
+
+        $this->http->saveResponse(
+            $this->http
+                ->response()
+                ->withBody(Streams::ofString(json_encode(
+                    $this->repository->general()->getUsersByTerm($term)
+                )))
+                ->withHeader('Content-Type', 'application/json; charset=utf-8')
+        );
+
+        $this->http->sendResponse();
+        $this->http->close();
+    }
+
+    /**
+     * Returns an ajax autocomplete source that points to @see ilSrConfigGUI::findUsers().
+     *
+     * @return string
+     */
+    protected function getAjaxAction() : string
+    {
+        return $this->ctrl->getLinkTargetByClass(
+            self::class,
+            self::CMD_SEARCH,
+            "",
+            true
+        );
     }
 }
