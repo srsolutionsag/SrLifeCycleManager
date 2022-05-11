@@ -42,7 +42,7 @@ class Config implements IConfig
     /**
      * @var int[]
      */
-    protected $mailing_whitelist;
+    protected $mailing_blacklist;
 
     /**
      * @param int[]       $manage_routines
@@ -59,7 +59,7 @@ class Config implements IConfig
         bool $tool_show_routines = false,
         bool $tool_show_controls = false,
         string $custom_email = null,
-        array $mailing_whitelist = []
+        array $mailing_backlist = []
     ) {
         $this->manage_routine_roles = $manage_routines;
         $this->manage_assignment_roles = $manage_assignments;
@@ -67,7 +67,7 @@ class Config implements IConfig
         $this->tool_show_routines = $tool_show_routines;
         $this->tool_show_controls = $tool_show_controls;
         $this->custom_email = $custom_email;
-        $this->mailing_whitelist = $mailing_whitelist;
+        $this->mailing_blacklist = $mailing_backlist;
     }
 
     /**
@@ -175,17 +175,17 @@ class Config implements IConfig
     /**
      * @inheritDoc
      */
-    public function getMailingWhitelist() : array
+    public function getMailingBlacklist() : array
     {
-        return $this->mailing_whitelist;
+        return $this->mailing_blacklist;
     }
 
     /**
      * @inheritDoc
      */
-    public function setMailingWhitelist(array $user_ids) : IConfig
+    public function setMailingBlacklist(array $user_ids) : IConfig
     {
-        $this->mailing_whitelist = $user_ids;
+        $this->mailing_blacklist = $user_ids;
         return $this;
     }
 }

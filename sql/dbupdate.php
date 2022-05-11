@@ -365,3 +365,15 @@ if ($ilDB->tableExists($table_name)) {
     ]);
 }
 ?>
+<#12>
+<?php
+/** @var $ilDB ilDBInterface */
+$table_name = 'srlcm_configuration';
+if ($ilDB->tableExists($table_name)) {
+    $ilDB->update($table_name, [
+        'identifier' => ['text', 'cnf_mailing_blacklist']
+    ], [
+        'identifier' => ['text', 'cnf_mailing_whitelist']
+    ]);
+}
+?>
