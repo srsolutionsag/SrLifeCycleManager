@@ -23,6 +23,11 @@ class ConfigFormBuilder extends AbstractFormBuilder
     protected $global_roles;
 
     /**
+     * @var string
+     */
+    protected $ajax_action;
+
+    /**
      * @var IConfig
      */
     protected $config;
@@ -35,6 +40,7 @@ class ConfigFormBuilder extends AbstractFormBuilder
      * @param IConfig      $config
      * @param string[]     $global_roles
      * @param string       $form_action
+     * @param string       $ajax_action
      */
     public function __construct(
         ITranslator $translator,
@@ -43,10 +49,12 @@ class ConfigFormBuilder extends AbstractFormBuilder
         Refinery $refinery,
         IConfig $config,
         array $global_roles,
-        string $form_action
+        string $form_action,
+        string $ajax_action
     ) {
         parent::__construct($translator, $forms, $fields, $refinery, $form_action);
         $this->global_roles = $global_roles;
+        $this->ajax_action = $ajax_action;
         $this->config = $config;
     }
 
@@ -66,6 +74,17 @@ class ConfigFormBuilder extends AbstractFormBuilder
             ->multiSelect($this->translator->txt(IConfig::CNF_ROLE_MANAGE_ASSIGNMENTS), $this->global_roles)
             ->withValue((!empty($this->config->getManageAssignmentRoles())) ?
                 $this->config->getManageAssignmentRoles() : null
+            )
+        ;
+
+        $inputs[IConfig::CNF_MAILING_WHITELIST] = $this->fields
+            ->tag(
+                $this->translator->txt(IConfig::CNF_MAILING_WHITELIST),
+                [] // all inputs are user generated.
+            )
+            ->withValue(array_map('strval', $this->config->getMailingWhitelist()))
+            ->withAdditionalOnLoadCode(
+                $this->getTagInputAutoCompleteBinder($this->ajax_action)
             )
         ;
 

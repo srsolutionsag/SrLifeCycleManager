@@ -40,6 +40,11 @@ class Config implements IConfig
     protected $custom_email;
 
     /**
+     * @var int[]
+     */
+    protected $mailing_whitelist;
+
+    /**
      * @param int[]       $manage_routines
      * @param int[]       $manage_assignments
      * @param bool        $is_tool_enabled
@@ -53,7 +58,8 @@ class Config implements IConfig
         bool $is_tool_enabled = false,
         bool $tool_show_routines = false,
         bool $tool_show_controls = false,
-        string $custom_email = null
+        string $custom_email = null,
+        array $mailing_whitelist = []
     ) {
         $this->manage_routine_roles = $manage_routines;
         $this->manage_assignment_roles = $manage_assignments;
@@ -61,6 +67,7 @@ class Config implements IConfig
         $this->tool_show_routines = $tool_show_routines;
         $this->tool_show_controls = $tool_show_controls;
         $this->custom_email = $custom_email;
+        $this->mailing_whitelist = $mailing_whitelist;
     }
 
     /**
@@ -162,6 +169,23 @@ class Config implements IConfig
     public function setNotificationSenderAddress(string $email) : IConfig
     {
         $this->custom_email = $email;
+        return $this;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function getMailingWhitelist() : array
+    {
+        return $this->mailing_whitelist;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function setMailingWhitelist(array $user_ids) : IConfig
+    {
+        $this->mailing_whitelist = $user_ids;
         return $this;
     }
 }

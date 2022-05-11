@@ -6,6 +6,7 @@ use srag\Plugins\SrLifeCycleManager\Notification\INotification;
 use srag\Plugins\SrLifeCycleManager\Notification\INotificationSender;
 use srag\Plugins\SrLifeCycleManager\Notification\ISentNotification;
 use srag\Plugins\SrLifeCycleManager\Notification\INotificationRepository;
+use srag\Plugins\SrLifeCycleManager\Config\IConfig;
 
 /**
  * This class is responsible for sending notifications to object
@@ -33,6 +34,11 @@ class ilSrNotificationSender implements INotificationSender
     protected $mail_sender;
 
     /**
+     * @var IConfig
+     */
+    protected $config;
+
+    /**
      * @var ilCtrl
      */
     protected $ctrl;
@@ -40,15 +46,18 @@ class ilSrNotificationSender implements INotificationSender
     /**
      * @param INotificationRepository $repository
      * @param ilMailMimeSender        $mail_sender
+     * @param IConfig                 $config
      * @param ilCtrl                  $ctrl
      */
     public function __construct(
         INotificationRepository $repository,
         ilMailMimeSender $mail_sender,
+        IConfig $config,
         ilCtrl $ctrl
     ) {
         $this->repository = $repository;
         $this->mail_sender = $mail_sender;
+        $this->config = $config;
         $this->ctrl = $ctrl;
     }
 
@@ -61,17 +70,27 @@ class ilSrNotificationSender implements INotificationSender
         $message = $this->getNotificationBody($object, $notification);
         $subject = $notification->getTitle();
 
+        /** @var $administrators string[] */
         foreach ($administrators as $user_id) {
+            $user_id = (int) $user_id;
+
             // it's possible that participants are delivered whose user
             // accounts were deleted.
-            if (!ilObjUser::_exists($user_id)) {
+            // In this case, or if the user_id is contained within the
+            // configured mailing-whitelist, the iteration is skipped.
+            if (!ilObjUser::_exists($user_id) ||
+                in_array($user_id, $this->config->getMailingWhitelist(), true)
+            ) {
                 continue;
             }
 
             $recipient = new ilObjUser($user_id);
 
+            // We decided to only rely on ILIAS mails because if users have enabled
+            // mail-forwarding, the notification would've been sent twice.
+            // $this->sendMimeMail($recipient, $subject, $message);
+
             $this->sendIliasMail($recipient, $subject, $message);
-            $this->sendMimeMail($recipient, $subject, $message);
         }
 
         return $this->repository->notifyObject($notification, $object->getRefId());
