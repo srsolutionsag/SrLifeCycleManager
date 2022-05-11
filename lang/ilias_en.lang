@@ -62,7 +62,8 @@ cnf_tool_controls#:#Controls
 cnf_tool_routines_header#:#Routines for this Location
 cnf_tool_routines_triggered_header#:#Affecting Routines
 cnf_custom_from_email#:#Notification email
-cnf_mailing_whitelist#:#Mailing Whitelist
+cnf_mailing_blacklist#:#Mailing Blacklist
+cnf_mailing_blacklist_info#:#Comma-separated list of user IDs that should not receive notifications about routines. This is suitable, for example, for system accounts that are administrators in a large number of courses because they have created the courses automatically.
 
 col_actions#:#Actions
 col_routine_title#:#Name

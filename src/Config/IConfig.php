@@ -47,7 +47,7 @@ interface IConfig
      * @var string config primary key to define a set of users that will be ignored when
      *             sending notifications. This is necessary due to system-users like Cron.
      */
-    public const CNF_MAILING_WHITELIST = 'cnf_mailing_whitelist';
+    public const CNF_MAILING_BLACKLIST = 'cnf_mailing_blacklist';
 
     // IConfig attribute names:
     public const F_IDENTIFIER = 'identifier';
@@ -122,11 +122,11 @@ interface IConfig
     /**
      * @return int[]
      */
-    public function getMailingWhitelist() : array;
+    public function getMailingBlacklist() : array;
 
     /**
      * @param int[] $user_ids
      * @return IConfig
      */
-    public function setMailingWhitelist(array $user_ids) : IConfig;
+    public function setMailingBlacklist(array $user_ids) : IConfig;
 }

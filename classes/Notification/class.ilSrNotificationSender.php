@@ -79,7 +79,7 @@ class ilSrNotificationSender implements INotificationSender
             // In this case, or if the user_id is contained within the
             // configured mailing-whitelist, the iteration is skipped.
             if (!ilObjUser::_exists($user_id) ||
-                in_array($user_id, $this->config->getMailingWhitelist(), true)
+                in_array($user_id, $this->config->getMailingBlacklist(), true)
             ) {
                 continue;
             }

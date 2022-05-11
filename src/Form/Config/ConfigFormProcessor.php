@@ -53,7 +53,7 @@ class ConfigFormProcessor extends AbstractFormProcessor
         $is_tool_enabled = (null !== $post_data[IConfig::CNF_TOOL_IS_ENABLED]);
         $show_routines = ($is_tool_enabled) ? $post_data[IConfig::CNF_TOOL_IS_ENABLED][IConfig::CNF_TOOL_SHOW_ROUTINES] : false;
         $show_controls = ($is_tool_enabled) ? $post_data[IConfig::CNF_TOOL_IS_ENABLED][IConfig::CNF_TOOL_SHOW_CONTROLS] : false;
-        $user_ids = array_map('intval', ($post_data[IConfig::CNF_MAILING_WHITELIST] ?? []));
+        $user_ids = array_map('intval', ($post_data[IConfig::CNF_MAILING_BLACKLIST] ?? []));
 
         $this->repository->store(
             new Config(

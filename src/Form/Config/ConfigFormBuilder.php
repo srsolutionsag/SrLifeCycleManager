@@ -77,12 +77,13 @@ class ConfigFormBuilder extends AbstractFormBuilder
             )
         ;
 
-        $inputs[IConfig::CNF_MAILING_WHITELIST] = $this->fields
+        $inputs[IConfig::CNF_MAILING_BLACKLIST] = $this->fields
             ->tag(
-                $this->translator->txt(IConfig::CNF_MAILING_WHITELIST),
+                $this->translator->txt(IConfig::CNF_MAILING_BLACKLIST),
                 [] // all inputs are user generated.
             )
-            ->withValue(array_map('strval', $this->config->getMailingWhitelist()))
+            ->withByline($this->translator->txt(IConfig::CNF_MAILING_BLACKLIST . '_info'))
+            ->withValue(array_map('strval', $this->config->getMailingBlacklist()))
             ->withAdditionalOnLoadCode(
                 $this->getTagInputAutoCompleteBinder($this->ajax_action)
             )
