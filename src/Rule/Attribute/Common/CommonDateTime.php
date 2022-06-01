@@ -24,7 +24,10 @@ class CommonDateTime extends CommonAttribute
     public function __construct($value)
     {
         try {
-            $this->value = new ilDateTime($value, IL_CAL_DATE);
+            // the datetime must be appended by 'H:i:s', otherwise PHP will
+            // automatically use the current 'H:i:s' which leads to false-
+            // positives when comparing <= or >=.
+            $this->value = new ilDateTime($value . " 00:00:00", IL_CAL_DATETIME);
         } catch (ilDateTimeException $e) {
             $this->value = null;
         }
@@ -54,8 +57,8 @@ class CommonDateTime extends CommonAttribute
         switch ($type) {
             case self::COMPARABLE_VALUE_TYPE_DATE:
                 return (DateTime::createFromFormat(
-                    self::COMPARABLE_DATETIME_FORMAT,
-                    $this->value->get(IL_CAL_DATE)
+                    self::ILIAS_DATETIME_FORMAT,
+                    $this->value->get(IL_CAL_DATETIME)
                 )) ?: null;
 
             case self::COMPARABLE_VALUE_TYPE_STRING:

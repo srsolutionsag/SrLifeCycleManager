@@ -127,8 +127,6 @@ class ilSrRoutineListBuilder
                     ilSrRoutineAssignmentGUI::CMD_ASSIGNMENT_DELETE
                 )
             );
-
-            return $actions;
         }
 
         if (1 <= $routine->getElongation()) {

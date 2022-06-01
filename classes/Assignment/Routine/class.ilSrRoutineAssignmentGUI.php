@@ -53,7 +53,10 @@ class ilSrRoutineAssignmentGUI extends ilSrAbstractAssignmentGUI
             $this->assignment,
             $this->repository->routine()->getAll(),
             $this->unassigned_routines,
-            $this->getFormAction(self::CMD_ASSIGNMENT_SAVE)
+            $this->getFormAction(
+                self::CMD_ASSIGNMENT_SAVE,
+                self::PARAM_ROUTINE_ID
+            )
         );
     }
 
