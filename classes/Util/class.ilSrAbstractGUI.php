@@ -463,6 +463,7 @@ abstract class ilSrAbstractGUI
         $this->ctrl->saveParameterByClass(ilSrRuleGUI::class, self::PARAM_OBJECT_REF_ID);
         $this->ctrl->saveParameterByClass(ilSrNotificationGUI::class, self::PARAM_OBJECT_REF_ID);
         $this->ctrl->saveParameterByClass(ilSrWhitelistGUI::class, self::PARAM_OBJECT_REF_ID);
+        $this->ctrl->saveParameterByClass(ilSrRoutinePreviewGUI::class, self::PARAM_OBJECT_REF_ID);
 
         // save the routine-id parameter for all derived classes except routine-assignment-
         // and routine-gui, otherwise the link-generation might misbehave.
