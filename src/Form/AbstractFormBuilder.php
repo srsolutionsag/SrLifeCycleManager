@@ -116,7 +116,12 @@ abstract class AbstractFormBuilder implements IFormBuilder
     {
         return $this->refinery->custom()->constraint(
             static function (string $email) : bool {
-                return is_string(filter_var($email, FILTER_VALIDATE_EMAIL));
+                if (!empty($email)) {
+                    return is_string(filter_var($email, FILTER_VALIDATE_EMAIL));
+                }
+
+                // the constraint should pass if there was no submitted email.
+                return true;
             },
             $this->translator->txt(self::MSG_INVALID_EMAIL)
         );

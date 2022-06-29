@@ -56,6 +56,18 @@ class AssignmentFormProcessor extends AbstractFormProcessor
      */
     protected function processData(array $post_data) : void
     {
+        if (null !== $this->assignment->getRoutineId() &&
+            null !== $this->assignment->getRefId()
+        ) {
+            $this->repository->store(
+                $this->assignment
+                    ->setRecursive($post_data[AbstractAssignmentFormBuilder::INPUT_IS_RECURSIVE])
+                    ->setActive($post_data[AbstractAssignmentFormBuilder::INPUT_IS_ACTIVE])
+            );
+
+            return;
+        }
+
         if (is_array($post_data[AbstractAssignmentFormBuilder::INPUT_ROUTINE]) &&
             null === $this->assignment->getRoutineId()
         ) {
