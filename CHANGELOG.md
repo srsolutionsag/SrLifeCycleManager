@@ -1,5 +1,10 @@
 # SrLifeCycleManager Changelog
 
+## 1.4.3
+
+- Fixed an issue where query-parameters were not passed along to `ilSrRoutinePreviewGUI`.
+- Added CaptainHook configuration to enforce pretty commit-messages.
+
 ## 1.4.2
 
 - An empty string can now be submitted in the plugin-configuration's "notification email" field.
