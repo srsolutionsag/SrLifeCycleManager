@@ -331,13 +331,6 @@ abstract class ilSrAbstractGUI
             $this->renderer->render($component)
         );
     }
-    
-    protected function renderMulti(array $components) : void
-    {
-        $this->global_template->setContent(
-            $this->renderer->render($components)
-        );
-    }
 
     /**
      * Helper function that aborts (throws an exception) if the requested
@@ -449,6 +442,11 @@ abstract class ilSrAbstractGUI
     /**
      * This method keeps all query-parameters alive that are required
      * throughout the derived classes.
+     *
+     * This method exists thanks to the super annoying way ilCtrl handles
+     * query-parameters when generating link targets. For laziness's sake,
+     * this function will append the most used parameters to each possible
+     * target class, so you don't have to do that every time :).
      */
     private function keepNecessaryParametersAlive() : void
     {
@@ -464,6 +462,12 @@ abstract class ilSrAbstractGUI
         $this->ctrl->saveParameterByClass(ilSrNotificationGUI::class, self::PARAM_OBJECT_REF_ID);
         $this->ctrl->saveParameterByClass(ilSrWhitelistGUI::class, self::PARAM_OBJECT_REF_ID);
         $this->ctrl->saveParameterByClass(ilSrRoutinePreviewGUI::class, self::PARAM_OBJECT_REF_ID);
+
+        // save the ref-id for the configuration GUI as well if the context is NOT
+        // administration (otherwise ref-id would be the plugin).
+        if (IRoutine::ORIGIN_TYPE_ADMINISTRATION !== $this->origin) {
+            $this->ctrl->saveParameterByClass(ilSrConfigGUI::class, self::PARAM_OBJECT_REF_ID);
+        }
 
         // save the routine-id parameter for all derived classes except routine-assignment-
         // and routine-gui, otherwise the link-generation might misbehave.

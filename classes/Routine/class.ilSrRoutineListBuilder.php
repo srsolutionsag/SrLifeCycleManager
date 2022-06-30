@@ -28,6 +28,11 @@ class ilSrRoutineListBuilder
     protected $assignment_repository;
 
     /**
+     * @var ilSrAccessHandler
+     */
+    protected $access_handler;
+
+    /**
      * @var ITranslator
      */
     protected $translator;
@@ -54,6 +59,7 @@ class ilSrRoutineListBuilder
 
     /**
      * @param IRoutineAssignmentRepository $assignment_repository
+     * @param ilSrAccessHandler            $access_handler
      * @param ITranslator                  $translator
      * @param Factory                      $ui_factory
      * @param Renderer                     $renderer
@@ -62,6 +68,7 @@ class ilSrRoutineListBuilder
      */
     public function __construct(
         IRoutineAssignmentRepository $assignment_repository,
+        ilSrAccessHandler $access_handler,
         ITranslator $translator,
         Factory $ui_factory,
         Renderer $renderer,
@@ -69,6 +76,7 @@ class ilSrRoutineListBuilder
         ilCtrl $ctrl
     ) {
         $this->assignment_repository = $assignment_repository;
+        $this->access_handler = $access_handler;
         $this->translator = $translator;
         $this->ui_factory = $ui_factory;
         $this->renderer = $renderer;
@@ -142,7 +150,8 @@ class ilSrRoutineListBuilder
             );
         }
 
-        if ($routine->hasOptOut()) {
+        // opt-outs are always available for administrators (since v1.5.0).
+        if ($routine->hasOptOut() || $this->access_handler->isAdministrator()) {
             $actions[] = $this->ui_factory->button()->shy(
                 $this->translator->txt(self::ACTION_ROUTINE_OPT_OUT),
                 ilSrLifeCycleManagerDispatcher::getLinkTarget(

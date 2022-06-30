@@ -188,8 +188,10 @@ class ilSrWhitelistGUI extends ilSrAbstractGUI
             $this->cancel();
         }
 
-        // abort if the requested routine does not support elongations.
-        if (!$this->routine->hasOptOut()) {
+        // abort if the requested routine does not support opt-outs AND
+        // the current user is not administrator (since v1.5.0 administrators
+        // are always able to opt out).
+        if (!$this->routine->hasOptOut() && !$this->access_handler->isAdministrator()) {
             $this->sendErrorMessage(self::MSG_ROUTINE_CANT_OPT_OUT);
             $this->cancel();
         }

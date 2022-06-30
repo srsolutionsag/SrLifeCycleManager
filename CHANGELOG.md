@@ -1,5 +1,11 @@
 # SrLifeCycleManager Changelog
 
+## 1.5.0
+
+- Administrators (`SYSTEM_ROLE_ID`) are now permitted to always opt out an object that is affected by a routine.
+- The configuration GUI now also shows a "back-to" tab when not in administration context.
+- Removed unused method `ilSrAbstarctGUI::renderMulti()`.
+
 ## 1.4.3
 
 - Fixed an issue where query-parameters were not passed along to `ilSrRoutinePreviewGUI`.

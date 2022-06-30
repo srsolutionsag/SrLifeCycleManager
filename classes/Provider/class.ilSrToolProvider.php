@@ -83,9 +83,7 @@ class ilSrToolProvider extends AbstractDynamicToolPluginProvider
                 ->withTitle($this->plugin->txt('tool_main_entry'))
                 ->withAvailableCallable($this->getToolAvailabilityClosure())
                 ->withVisibilityCallable($this->getToolVisibilityClosure())
-                ->withContentWrapper(
-                    $this->getContentWrapper()
-                )
+                ->withContentWrapper($this->getContentWrapper())
             ,
         ];
     }
@@ -178,6 +176,7 @@ class ilSrToolProvider extends AbstractDynamicToolPluginProvider
 
         $list_builder = new ilSrRoutineListBuilder(
             $this->assignment_repository,
+            $this->access_handler,
             $translator,
             $this->dic->ui()->factory(),
             $this->dic->ui()->renderer(),

@@ -7,6 +7,7 @@ use srag\Plugins\SrLifeCycleManager\Form\Config\ConfigFormBuilder;
 use srag\Plugins\SrLifeCycleManager\Form\Config\ConfigFormProcessor;
 use ILIAS\DI\HTTPServices;
 use ILIAS\Filesystem\Stream\Streams;
+use srag\Plugins\SrLifeCycleManager\Routine\IRoutine;
 
 /**
  * This GUI is responsible for all actions in regard to plugin configuration.
@@ -68,6 +69,12 @@ class ilSrConfigGUI extends ilSrAbstractGUI
             ->addRoutineTab()
             ->addPreviewTab()
         ;
+
+        // if the current user is not within the administration context we
+        // need to add the back-to target manually.
+        if (null !== $this->object_ref_id && IRoutine::ORIGIN_TYPE_ADMINISTRATION !== $this->origin) {
+            $tabs->addBackToObject($this->object_ref_id);
+        }
     }
 
     /**
