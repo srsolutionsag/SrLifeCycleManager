@@ -30,11 +30,12 @@ msg_routine_extend_error#:#Das Objekt konnte nicht verlängert werden, ggf. habe
 msg_routine_cant_opt_out#:#Objekte können von dieser Routine nicht ignoriert werden.
 msg_routine_opted_out#:#Das Objekt wurde erfolgreich von dieser Routine ausgeschlossen.
 msg_routine_opt_out_error#:#Dieses Objekt konnte nicht von der Routine ausgeschlossen werden, ggf. haben Sie das bereits getan.
-msg_days_before_submission_error#:#Eine Benachrichtigung die um diese Anzahl vor der Löschung geschickt wird existiert bereits.
+msg_days_before_deletion_error#:#Eine Benachrichtigung die um diese Anzahl vor der Löschung geschickt wird existiert bereits.
 msg_assignment_success#:#Zusweisung(en) erfolgreich aktualisiert.
 msg_no_unassigned_routines#:#Es gibt keine Routinen mehr die diesem Objekt zugewiesen werden können.
 msg_this_may_take_a_while#:#Sammle Daten, dies könnte eine Weile dauern ...
 msg_invalid_email#:#Die eingegebene E-Mail Adresse ist ungültig.
+msg_confirmation_event_error#:#Eine Benachrichtigung für dieses Event existiert bereits.
 
 page_title_rules#:#Life-Cycle Regeln
 page_title_config#:#Life-Cycle Einstellungen
@@ -83,7 +84,8 @@ col_rule_lhs_type#:#LHS Typ
 col_rule_lhs_value#:#LHS Wert
 col_notification_title#:#Titel
 col_notification_content#:#Inhalt
-col_notification_days_before_submission#:#Senden (Tage vor Löschung)
+col_reminder_days_before_deletion#:#Senden (Tage vor Löschung)
+col_confirmation_event#:#Event
 col_whitelist_ref_id#:#Ref-ID
 col_whitelist_user_name#:#Benutzer
 col_whitelist_opt_out#:#Opt-out
@@ -102,7 +104,8 @@ input_name_routine_assignment_active#:#Aktivieren
 input_name_notification_title#:#Titel
 input_name_notification_content#:#Inhalt
 input_name_notification_content_info#:#Benutze [EXTENSION_LINK] für einen Link, mit dem Empfänger das Objekt um die definierte Zeit verlängern können. <br /> Benutze [OPT_OUT_LINK] für einen Link, mit dem Empfänger das Objekt von der Löschung ausschliessen können. <br /> Benutze [OBJECT_LINK] für einen Link zum Objekt, dass gelöscht werden soll. <br /> Benutze [OBJECT_TITLE] um den Objekttitel anzuzeigen.
-input_name_notification_days_before_submission#:#Senden (Tage vor Löschung)
+input_name_reminder_days_before_deletion#:#Senden (Tage vor Löschung)
+input_name_confirmation_event#:#Event
 
 routine_origin_type_admin#:#Administration
 routine_origin_type_repo#:#Magazin
@@ -124,7 +127,8 @@ action_routine_manage#:#Routinen verwalten
 action_whitelist_postpone#:#Verlängern
 action_whitelist_opt_out#:#Opt-out
 action_routine_rules#:#Regeln
-action_routine_notifications#:#Benachrichtigungen
+action_routine_reminders#:#Erinnerungen
+action_routine_confirmations#:#Bestätigungen
 action_routine_whitelist#:#Whitelist
 action_routine_assignments#:#Zuweisungen
 action_routine_assignment_manage#:#Zuweisungen verwalten
@@ -137,10 +141,15 @@ action_routine_opt_out#:#Automatische Löschung dauerhaft verhindern
 action_rule_add#:#Regel hinzufügen
 action_rule_edit#:#Bearbeiten
 action_rule_delete#:#Enfernen
-action_notification_add#:#Benachrichtigung hinzufügen
+action_confirmation_add#:#Bestätigung hinzufügen
+action_reminder_add#:#Erinnerung hinzufügen
 action_notification_edit#:#Bearbeiten
 action_notification_delete#:#Löschen
 action_view_object#:#Objekt anzeigen
+
+onPostpone#:#Verlängerung
+onOptOut#:#Opt-out
+onDelete#:#Löschung
 
 lhs_value#:#LHS Wert
 rhs_value#:#RHS Wert

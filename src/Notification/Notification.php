@@ -2,15 +2,13 @@
 
 namespace srag\Plugins\SrLifeCycleManager\Notification;
 
-use LogicException;
 use DateTimeImmutable;
-use DateInterval;
-use DateTime;
+use LogicException;
 
 /**
  * @author Thibeau Fuhrer <thibeau@sr.solutions>
  */
-class Notification implements ISentNotification
+abstract class Notification implements ISentNotification
 {
     /**
      * @var int|null
@@ -23,21 +21,6 @@ class Notification implements ISentNotification
     protected $routine_id;
 
     /**
-     * @var string
-     */
-    protected $title;
-
-    /**
-     * @var string
-     */
-    protected $content;
-
-    /**
-     * @var int
-     */
-    protected $days_before_submission;
-
-    /**
      * @var int|null
      */
     protected $notified_ref_id;
@@ -48,34 +31,41 @@ class Notification implements ISentNotification
     protected $notified_date;
 
     /**
-     * @param int                    $routine_id
-     * @param string                 $title
-     * @param string                 $content
-     * @param int                    $days_before_submission
-     * @param int|null               $notification_id
-     * @param int|null               $notified_ref_id
+     * @var string
+     */
+    protected $title;
+
+    /**
+     * @var string
+     */
+    protected $content;
+
+    /**
+     * @param int|null $notification_id
+     * @param int $routine_id
+     * @param int|null $notified_ref_id
      * @param DateTimeImmutable|null $notified_date
+     * @param string $title
+     * @param string $content
      */
     public function __construct(
         int $routine_id,
         string $title,
         string $content,
-        int $days_before_submission,
-        int $notification_id = null,
-        int $notified_ref_id = null,
-        DateTimeImmutable $notified_date = null
+        ?int $notification_id = null,
+        ?int $notified_ref_id = null,
+        ?DateTimeImmutable $notified_date = null
     ) {
-        $this->routine_id = $routine_id;
-        $this->title = $title;
-        $this->content = $content;
-        $this->days_before_submission = $days_before_submission;
         $this->notification_id = $notification_id;
+        $this->routine_id = $routine_id;
         $this->notified_ref_id = $notified_ref_id;
         $this->notified_date = $notified_date;
+        $this->title = $title;
+        $this->content = $content;
     }
 
     /**
-     * @ineritdoc
+     * @inheritDoc
      */
     public function getNotificationId() : ?int
     {
@@ -83,14 +73,13 @@ class Notification implements ISentNotification
     }
 
     /**
-     * @ineritdoc
+     * @inheritDoc
      */
     public function setNotificationId(int $notification_id) : INotification
     {
         $this->notification_id = $notification_id;
         return $this;
     }
-
 
     /**
      * @inheritDoc
@@ -110,65 +99,11 @@ class Notification implements ISentNotification
     }
 
     /**
-     * @return string
-     */
-    public function getTitle() : string
-    {
-        return $this->title;
-    }
-
-    /**
-     * @param string $title
-     * @return INotification
-     */
-    public function setTitle(string $title) : INotification
-    {
-        $this->title = $title;
-        return $this;
-    }
-
-    /**
-     * @ineritdoc
-     */
-    public function getContent() : string
-    {
-        return $this->content;
-    }
-
-    /**
-     * @ineritdoc
-     */
-    public function setContent(string $content) : INotification
-    {
-        $this->content = $content;
-        return $this;
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function getDaysBeforeSubmission() : int
-    {
-        return $this->days_before_submission;
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function setDaysBeforeSubmission(int $amount) : INotification
-    {
-        $this->days_before_submission = $amount;
-        return $this;
-    }
-
-    /**
      * @inheritDoc
      */
     public function getNotifiedRefId() : int
     {
-        if (null === $this->notified_date) {
-            throw new LogicException("Notification has not been sent yet.");
-        }
+        $this->abortIfNotSent();
 
         return $this->notified_ref_id;
     }
@@ -187,9 +122,7 @@ class Notification implements ISentNotification
      */
     public function getNotifiedDate() : DateTimeImmutable
     {
-        if (null === $this->notified_date) {
-            throw new LogicException("Notification has not been sent yet.");
-        }
+        $this->abortIfNotSent();
 
         return $this->notified_date;
     }
@@ -206,10 +139,45 @@ class Notification implements ISentNotification
     /**
      * @inheritDoc
      */
-    public function isElapsed($when) : bool
+    public function getTitle() : string
     {
-        $elapsed_date = $this->getNotifiedDate()->add(new DateInterval("P{$this->getDaysBeforeSubmission()}D"));
+        return $this->title;
+    }
 
-        return ($when > $elapsed_date);
+    /**
+     * @inheritDoc
+     */
+    public function setTitle(string $title) : INotification
+    {
+        $this->title = $title;
+        return $this;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function getContent() : string
+    {
+        return $this->content;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function setContent(string $content) : INotification
+    {
+        $this->content = $content;
+        return $this;
+    }
+
+    /**
+     * Helper function that throws an exception if the notification
+     * has not been sent yet.
+     */
+    protected function abortIfNotSent() : void
+    {
+        if (null === $this->notified_ref_id || null === $this->notified_date) {
+            throw new LogicException("Notification has not been sent yet");
+        }
     }
 }

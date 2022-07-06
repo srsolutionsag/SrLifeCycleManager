@@ -10,7 +10,7 @@ use ilObject;
 /**
  * @author Thibeau Fuhrer <thibeau@sr.solutions>
  */
-class DeletableObject implements IDeletableObject
+class DeletableObject
 {
     /**
      * @var ilObject

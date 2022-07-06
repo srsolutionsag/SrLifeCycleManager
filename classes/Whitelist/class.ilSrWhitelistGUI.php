@@ -3,8 +3,10 @@
 /* Copyright (c) 2022 Thibeau Fuhrer <thibeau@sr.solutions> Extended GPL, see docs/LICENSE */
 
 use srag\Plugins\SrLifeCycleManager\Whitelist\WhitelistEntry;
-use srag\Plugins\SrLifeCycleManager\Notification\INotification;
+use srag\Plugins\SrLifeCycleManager\Notification\Reminder\Reminder\IReminder;
+use srag\Plugins\SrLifeCycleManager\Routine\RoutineEvent;
 use srag\Plugins\SrLifeCycleManager\Routine\IRoutine;
+use srag\Plugins\SrLifeCycleManager\Event\IObserver;
 
 /**
  * This GUI class is responsible for all actions regarding whitelist entries.
@@ -29,6 +31,11 @@ class ilSrWhitelistGUI extends ilSrAbstractGUI
     protected const PAGE_TITLE = 'page_title_whitelist';
 
     /**
+     * @var IObserver
+     */
+    protected $event_observer;
+
+    /**
      * Panics if the request is missing an existing routine.
      *
      * @inheritdoc
@@ -36,6 +43,9 @@ class ilSrWhitelistGUI extends ilSrAbstractGUI
     public function __construct()
     {
         parent::__construct();
+
+        $this->event_observer = ilSrLifeCycleManagerPlugin::getInstance();
+
         $this->panicOnMissingRoutine();
     }
 
@@ -128,22 +138,30 @@ class ilSrWhitelistGUI extends ilSrAbstractGUI
             $this->cancel();
         }
 
-        $notifications = $this->repository->notification()->getSentNotifications(
+        $reminders = $this->repository->reminder()->getSentByRoutineAndObject(
             $this->routine,
             $this->object_ref_id
         );
 
         // if a notification has already been sent, the remaining amount
         // of elongation must be calculated.
-        if (!empty($notifications)) {
-            $last_notification = $notifications[count($notifications) - 1];
-            $elongation = $this->getRemainingElongation($last_notification, $this->routine);
+        if (!empty($reminders)) {
+            $last_reminder = $reminders[count($reminders) - 1];
+            $elongation = $this->getRemainingElongation($last_reminder, $this->routine);
             if (0 >= $elongation) {
                 $this->sendErrorMessage(self::MSG_ROUTINE_CANT_EXTEND);
                 $this->cancel();
             }
         } else {
             $elongation = $this->routine->getElongation();
+        }
+
+        try {
+            $object_instance = ilObjectFactory::getInstanceByRefId($this->object_ref_id);
+        } catch (Exception $e) {
+            $this->sendErrorMessage(self::MSG_OBJECT_NOT_FOUND);
+            $this->cancel();
+            return;
         }
 
         $this->repository->whitelist()->store(
@@ -161,6 +179,15 @@ class ilSrWhitelistGUI extends ilSrAbstractGUI
             '[ELONGATION]',
             (string) $elongation,
             $this->translator->txt(self::MSG_ROUTINE_EXTENDED)
+        );
+
+        $this->event_observer->broadcast(
+            new RoutineEvent(
+                $this->routine,
+                $object_instance,
+                self::class,
+                RoutineEvent::POSTPONE
+            )
         );
 
         // redirect back to the target object with according message.
@@ -202,6 +229,14 @@ class ilSrWhitelistGUI extends ilSrAbstractGUI
             $this->cancel();
         }
 
+        try {
+            $object_instance = ilObjectFactory::getInstanceByRefId($this->object_ref_id);
+        } catch (Exception $e) {
+            $this->sendErrorMessage(self::MSG_OBJECT_NOT_FOUND);
+            $this->cancel();
+            return;
+        }
+
         $this->repository->whitelist()->store(
             new WhitelistEntry(
                 $this->routine->getRoutineId(),
@@ -209,6 +244,15 @@ class ilSrWhitelistGUI extends ilSrAbstractGUI
                 $this->user->getId(),
                 true,
                 new DateTimeImmutable()
+            )
+        );
+
+        $this->event_observer->broadcast(
+            new RoutineEvent(
+                $this->routine,
+                $object_instance,
+                self::class,
+                RoutineEvent::OPT_OUT
             )
         );
 
@@ -225,14 +269,14 @@ class ilSrWhitelistGUI extends ilSrAbstractGUI
      * extension links can't postpone one day before deletion and still
      * be able to extend the full amount.
      *
-     * @param INotification $notification
-     * @param IRoutine      $routine
+     * @param IReminder $notification
+     * @param IRoutine  $routine
      * @return int
      */
-    protected function getRemainingElongation(INotification $notification, IRoutine $routine) : int
+    protected function getRemainingElongation(IReminder $notification, IRoutine $routine) : int
     {
         $elongation_from = $notification->getNotifiedDate()->add(
-            new DateInterval("P{$notification->getDaysBeforeSubmission()}D")
+            new DateInterval("P{$notification->getDaysBeforeDeletion()}D")
         );
 
         $elongation_until = $elongation_from->add(

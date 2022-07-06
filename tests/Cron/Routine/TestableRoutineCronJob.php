@@ -4,16 +4,19 @@
 
 namespace srag\Plugins\SrLifeCycleManager\Tests\Cron\Routine;
 
-use srag\Plugins\SrLifeCycleManager\Notification\INotification;
+use srag\Plugins\SrLifeCycleManager\Notification\Reminder\Reminder\IReminder;
+use srag\Plugins\SrLifeCycleManager\Routine\IRoutine;
 use ilSrRoutineCronJob;
+use ilObject;
 use DateTimeImmutable;
 use LogicException;
-use ilObject;
+use Generator;
+use srag\Plugins\SrLifeCycleManager\Routine\Provider\DeletableObjectProvider;
 
 /**
  * @author Thibeau Fuhrer <thibeau@sr.solutions>
  */
-class RoutineCronJobTestObject extends ilSrRoutineCronJob
+class TestableRoutineCronJob extends ilSrRoutineCronJob
 {
     /**
      * @var ilObject[]
@@ -21,7 +24,7 @@ class RoutineCronJobTestObject extends ilSrRoutineCronJob
     protected $deleted_objects = [];
 
     /**
-     * @var array<int, array<ilObject|INotification>>
+     * @var array<int, array<ilObject|IReminder>>
      */
     protected $notified_objects = [];
 
@@ -29,17 +32,6 @@ class RoutineCronJobTestObject extends ilSrRoutineCronJob
      * @var DateTimeImmutable|null
      */
     protected $current_date;
-
-    /**
-     * @ineritdoc
-     */
-    protected function execute() : void
-    {
-        $this->deleted_objects = [];
-        $this->notified_objects = [];
-
-        parent::execute();
-    }
 
     /**
      * @return ilObject[]
@@ -50,7 +42,7 @@ class RoutineCronJobTestObject extends ilSrRoutineCronJob
     }
 
     /**
-     * @return array<int, array<ilObject|INotification>>
+     * @return array<int, array<ilObject|IReminder>>
      */
     public function getNotifiedObjects() : array
     {
@@ -66,9 +58,22 @@ class RoutineCronJobTestObject extends ilSrRoutineCronJob
     }
 
     /**
+     * required during tests with the same instance to avoid an
+     * "already traversed generator" exception.
+     *
+     * @param DeletableObjectProvider $new_provider
+     */
+    public function rewind(DeletableObjectProvider $new_provider) : void
+    {
+        $this->object_provider = $new_provider;
+        $this->notified_objects = [];
+        $this->deleted_objects = [];
+    }
+
+    /**
      * @inheritDoc
      */
-    protected function deleteObject(ilObject $object) : void
+    protected function deleteObject(IRoutine $routine, ilObject $object) : void
     {
         $this->deleted_objects[] = $object;
     }
@@ -76,10 +81,10 @@ class RoutineCronJobTestObject extends ilSrRoutineCronJob
     /**
      * @inheritDoc
      */
-    protected function notifyObject(INotification $notification, ilObject $object) : void
+    protected function notifyObject(IReminder $notification, ilObject $object) : void
     {
         $this->notified_objects[] = [
-            INotification::class => $notification,
+            IReminder::class => $notification,
             ilObject::class => $object,
         ];
     }

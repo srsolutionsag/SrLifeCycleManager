@@ -8,7 +8,7 @@ use Generator;
 /**
  * @author Thibeau Fuhrer <thibeau@sr.solutions>
  */
-class ObjectProvider
+class DeletableObjectProvider
 {
     /**
      * @var RoutineProvider
@@ -33,7 +33,7 @@ class ObjectProvider
     /**
      * Yields all deletable repository objects.
      *
-     * @return IDeletableObject[]|Generator
+     * @return DeletableObject[]|Generator
      */
     public function getDeletableObjects() : Generator
     {

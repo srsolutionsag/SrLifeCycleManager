@@ -15,7 +15,8 @@ use srag\Plugins\SrLifeCycleManager\Routine\IRoutine;
  * @ilCtrl_Calls ilSrLifeCycleManagerDispatcher : ilSrConfigGUI
  * @ilCtrl_Calls ilSrLifeCycleManagerDispatcher : ilSrRoutineAssignmentGUI
  * @ilCtrl_Calls ilSrLifeCycleManagerDispatcher : ilSrObjectAssignmentGUI
- * @ilCtrl_Calls ilSrLifeCycleManagerDispatcher : ilSrNotificationGUI
+ * @ilCtrl_Calls ilSrLifeCycleManagerDispatcher : ilSrConfirmationGUI
+ * @ilCtrl_Calls ilSrLifeCycleManagerDispatcher : ilSrReminderGUI
  * @ilCtrl_Calls ilSrLifeCycleManagerDispatcher : ilSrRoutineGUI
  * @ilCtrl_Calls ilSrLifeCycleManagerDispatcher : ilSrRuleGUI
  * @ilCtrl_Calls ilSrLifeCycleManagerDispatcher : ilSrRoutinePreviewGUI
@@ -65,8 +66,11 @@ class ilSrLifeCycleManagerDispatcher
             case strtolower(ilSrObjectAssignmentGUI::class);
                 $this->safelyForward(ilSrObjectAssignmentGUI::class);
                 break;
-            case strtolower(ilSrNotificationGUI::class):
-                $this->safelyForward(ilSrNotificationGUI::class);
+            case strtolower(ilSrConfirmationGUI::class):
+                $this->safelyForward(ilSrConfirmationGUI::class);
+                break;
+            case strtolower(ilSrReminderGUI::class):
+                $this->safelyForward(ilSrReminderGUI::class);
                 break;
             case strtolower(ilSrRoutineGUI::class):
                 $this->safelyForward(ilSrRoutineGUI::class);

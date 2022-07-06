@@ -3,12 +3,15 @@
 /* Copyright (c) 2022 Thibeau Fuhrer <thibeau@sr.solutions> Extended GPL, see docs/LICENSE */
 
 use srag\Plugins\SrLifeCycleManager\Routine\Provider\IDeletableObjectProvider;
-use srag\Plugins\SrLifeCycleManager\Notification\INotificationRepository;
+use srag\Plugins\SrLifeCycleManager\Notification\Reminder\Reminder\IReminderRepository;
 use srag\Plugins\SrLifeCycleManager\Notification\INotificationSender;
-use srag\Plugins\SrLifeCycleManager\Notification\INotification;
 use srag\Plugins\SrLifeCycleManager\Routine\IRoutineRepository;
-use srag\Plugins\SrLifeCycleManager\Whitelist\IWhitelistRepository;
 use srag\Plugins\SrLifeCycleManager\Cron\ResultBuilder;
+use srag\Plugins\SrLifeCycleManager\Routine\RoutineEvent;
+use srag\Plugins\SrLifeCycleManager\Event\IObserver;
+use srag\Plugins\SrLifeCycleManager\Routine\IRoutine;
+use srag\Plugins\SrLifeCycleManager\Notification\Reminder\Reminder\IReminder;
+use srag\Plugins\SrLifeCycleManager\Routine\Provider\DeletableObjectProvider;
 
 /**
  * This cron job will delete repository objects that are affected by
@@ -39,9 +42,14 @@ use srag\Plugins\SrLifeCycleManager\Cron\ResultBuilder;
 class ilSrRoutineCronJob extends ilSrAbstractCronJob
 {
     /**
-     * @var INotificationRepository
+     * @var IObserver
      */
-    protected $notification_repository;
+    protected $event_observer;
+
+    /**
+     * @var IReminderRepository
+     */
+    protected $reminder_repository;
 
     /**
      * @var IRoutineRepository
@@ -49,45 +57,40 @@ class ilSrRoutineCronJob extends ilSrAbstractCronJob
     protected $routine_repository;
 
     /**
-     * @var IWhitelistRepository
-     */
-    protected $whitelist_repository;
-
-    /**
      * @var INotificationSender
      */
     protected $notification_sender;
 
     /**
-     * @var IDeletableObjectProvider
+     * @var DeletableObjectProvider
      */
-    protected $deletable_objects;
+    protected $object_provider;
 
     /**
      * @param INotificationSender     $notification_sender
-     * @param Generator               $deletable_objects
+     * @param DeletableObjectProvider $object_provider
      * @param ResultBuilder           $result_builder
-     * @param INotificationRepository $notification_repository
+     * @param IObserver               $event_observer
+     * @param IReminderRepository     $notification_repository
      * @param IRoutineRepository      $routine_repository
-     * @param IWhitelistRepository    $whitelist_repository
      * @param ilLogger                $logger
      */
     public function __construct(
         INotificationSender $notification_sender,
-        Generator $deletable_objects,
+        DeletableObjectProvider $object_provider,
         ResultBuilder $result_builder,
-        INotificationRepository $notification_repository,
+        IObserver $event_observer,
+        IReminderRepository $notification_repository,
         IRoutineRepository $routine_repository,
-        IWhitelistRepository $whitelist_repository,
         ilLogger $logger
     ) {
         parent::__construct($result_builder, $logger);
 
-        $this->notification_repository = $notification_repository;
+        $this->event_observer = $event_observer;
+        $this->reminder_repository = $notification_repository;
         $this->routine_repository = $routine_repository;
-        $this->whitelist_repository = $whitelist_repository;
         $this->notification_sender = $notification_sender;
-        $this->deletable_objects = $deletable_objects;
+        $this->object_provider = $object_provider;
     }
 
     /**
@@ -112,46 +115,46 @@ class ilSrRoutineCronJob extends ilSrAbstractCronJob
      */
     protected function execute() : void
     {
-        foreach ($this->deletable_objects as $object) {
+        foreach ($this->object_provider->getDeletableObjects() as $object) {
             $object_instance = $object->getInstance();
             $object_ref_id = $object_instance->getRefId();
 
             foreach ($object->getAffectingRoutines() as $routine) {
-                $notifications = $this->notification_repository->getByRoutine($routine);
+                $notifications = $this->reminder_repository->getByRoutine($routine);
 
                 // if there are no notifications to be sent, the object can be
                 // deleted immediately.
                 if (empty($notifications)) {
-                    $this->deleteObject($object_instance);
+                    $this->deleteObject($routine, $object_instance);
                     break 2;
                 }
 
-                $sent_notifications = $this->notification_repository->getSentNotifications($routine, $object_ref_id);
-                $sent_notification_count = count($sent_notifications);
+                $sent_reminders = $this->reminder_repository->getSentByRoutineAndObject($routine, $object_ref_id);
+                $sent_reminder_count = count($sent_reminders);
 
                 // it might be possible that already sent notifications are deleted,
                 // therefore we must check if the count is larger-or-equal to the
                 // available ones, to check if all have been sent.
-                $all_notifications_sent = ($sent_notification_count >= count($notifications));
+                $are_all_reminders_sent = ($sent_reminder_count >= count($notifications));
 
-                $last_notification = (0 < $sent_notification_count) ?
-                    $sent_notifications[$sent_notification_count - 1] : null
+                $last_reminder = (0 < $sent_reminder_count) ?
+                    $sent_reminders[$sent_reminder_count - 1] : null
                 ;
 
                 // if notifications are available, the object can only be deleted
                 // if all of them have been sent and the last ones execution date
                 // is past today.
-                if ($all_notifications_sent &&
-                    $last_notification &&
-                    $last_notification->isElapsed($this->getDate())
+                if ($are_all_reminders_sent &&
+                    $last_reminder &&
+                    $last_reminder->isElapsed($this->getDate())
                 ) {
-                    $this->deleteObject($object_instance);
+                    $this->deleteObject($routine, $object_instance);
                     break 2;
                 }
 
                 // if all notification have been sent at this point, there's nothing
                 // more to done for the current routine.
-                if ($all_notifications_sent) {
+                if ($are_all_reminders_sent) {
                     continue;
                 }
 
@@ -161,13 +164,13 @@ class ilSrRoutineCronJob extends ilSrAbstractCronJob
                 // must be sent from $notifications.
                 //
                 // NOTE that this works, due to ordering both notification arrays
-                // by their days_before_submission (ASC).
-                $next_notification = $notifications[$sent_notification_count];
+                // by their days_before_deletion (ASC).
+                $next_reminder = $notifications[$sent_reminder_count];
 
                 // if no notifications were sent, the initial one can be sent without
                 // further calculations.
-                if (0 === $sent_notification_count) {
-                    $this->notifyObject($next_notification, $object_instance);
+                if (0 === $sent_reminder_count) {
+                    $this->notifyObject($next_reminder, $object_instance);
                     continue;
                 }
 
@@ -177,19 +180,19 @@ class ilSrRoutineCronJob extends ilSrAbstractCronJob
                 // otherwise the object won't be deleted for X+Y days, since notifications
                 // are one of the determining factor for deletions.
                 $submission_gap = (
-                    $last_notification->getDaysBeforeSubmission() -
-                    $next_notification->getDaysBeforeSubmission()
+                    $last_reminder->getDaysBeforeDeletion() -
+                    $next_reminder->getDaysBeforeDeletion()
                 );
 
                 // the notification date can then simply be calculated by adding the
                 // determined gap to the last ones date of submission.
-                $notification_date = $last_notification->getNotifiedDate()->add(
+                $notification_date = $last_reminder->getNotifiedDate()->add(
                     new DateInterval("P{$submission_gap}D")
                 );
 
                 // send the notification if the notification date is today.
                 if ($this->getDate()->format('Y-m-d') === $notification_date->format('Y-m-d')) {
-                    $this->notifyObject($next_notification, $object_instance);
+                    $this->notifyObject($next_reminder, $object_instance);
                 }
             }
         }
@@ -199,14 +202,23 @@ class ilSrRoutineCronJob extends ilSrAbstractCronJob
      * Tries to delete the given object, if it fails a corresponding
      * log entry will be made.
      *
+     * @param IRoutine $routine
      * @param ilObject $object
      * @return void
      */
-    protected function deleteObject(ilObject $object) : void
+    protected function deleteObject(IRoutine $routine, ilObject $object) : void
     {
         try {
             ilRepUtil::deleteObjects(null, [$object->getRefId()]);
             $this->info("Deleting object {$object->getRefId()} ({$object->getType()})");
+            $this->event_observer->broadcast(
+                new RoutineEvent(
+                    $routine,
+                    $object,
+                    self::class,
+                    RoutineEvent::DELETE
+                )
+            );
         } catch (ilRepositoryException $exception) {
             $this->error("Could not delete object {$object->getRefId()}: {$exception->getMessage()}");
         }
@@ -215,11 +227,11 @@ class ilSrRoutineCronJob extends ilSrAbstractCronJob
     /**
      * Sends the given notification to all administrators of the object.
      *
-     * @param INotification $notification
-     * @param ilObject      $object
+     * @param IReminder $notification
+     * @param ilObject  $object
      * @return void
      */
-    protected function notifyObject(INotification $notification, ilObject $object) : void
+    protected function notifyObject(IReminder $notification, ilObject $object) : void
     {
         $this->notification_sender->sendNotification($notification, $object);
         $this->info("Sending administrators of object {$object->getRefId()} notification {$notification->getNotificationId()}");

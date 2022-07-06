@@ -6,6 +6,17 @@
 // autoloader can be included here.
 require __DIR__ . '/../vendor/autoload.php';
 
+use srag\Plugins\SrLifeCycleManager\Notification\Confirmation\ConfirmationEventListener;
+use srag\Plugins\SrLifeCycleManager\Routine\Provider\DeletableObjectProvider;
+use srag\Plugins\SrLifeCycleManager\Routine\Provider\RoutineProvider;
+use srag\Plugins\SrLifeCycleManager\Rule\Comparison\ComparisonFactory;
+use srag\Plugins\SrLifeCycleManager\Rule\Requirement\RequirementFactory;
+use srag\Plugins\SrLifeCycleManager\Rule\Attribute\AttributeFactory;
+use srag\Plugins\SrLifeCycleManager\Repository\RepositoryFactory;
+use srag\Plugins\SrLifeCycleManager\Cron\ResultBuilder;
+use srag\Plugins\SrLifeCycleManager\Event\IEventListener;
+use srag\Plugins\SrLifeCycleManager\Event\IObserver;
+use srag\Plugins\SrLifeCycleManager\Event\IEvent;
 use srag\Plugins\SrLifeCycleManager\ITranslator;
 use ILIAS\DI\Container;
 
@@ -23,42 +34,48 @@ use ILIAS\DI\Container;
  *
  * @noinspection AutoloadingIssuesInspection
  */
-class ilSrLifeCycleManagerPlugin extends ilCronHookPlugin implements ITranslator
+class ilSrLifeCycleManagerPlugin extends ilCronHookPlugin implements IObserver, ITranslator
 {
-    /**
-     * @var string plugin-id (MUST be the same as in plugin.php).
-     */
-    public const PLUGIN_ID = 'srlcm';
-
     /**
      * @var string plugin-directory relative to the ILIAS-installation path.
      */
     public const PLUGIN_DIR = './Customizing/global/plugins/Services/Cron/CronHook/SrLifeCycleManager/';
 
     /**
-     * @var self
+     * @var string plugin-id (MUST be the same as in plugin.php).
+     */
+    public const PLUGIN_ID = 'srlcm';
+
+    /**
+     * @var self|null
      */
     protected static $instance;
 
     /**
-     * @var ilSrCronJobFactory
+     * @var IEventListener[]
      */
-    protected $cron_job_factory;
+    protected $event_listeners = [];
 
     /**
-     * Initializes the global screen providers and cron job factory.
+     * @var ilSrCronJobFactory
      */
-    public function __construct()
+    protected $job_factory;
+
+    /**
+     * Initializes the global screen providers and event-listeners.
+     */
+    protected function __construct()
     {
         global $DIC;
         parent::__construct();
 
-        // only initialize cron-job factory and providers if the plugin is active.
-        // there might be installation errors because db tables don't exist yet.
+        // only initialize dependencies if the plugin is active, there might be
+        // installation errors because db tables don't exist yet.
         if ($this->isActive()) {
-            $this->safelyInitjobFactory($DIC);
-            $this->safelyInitProviders($DIC);
+            $this->safelyInitDependencies($DIC);
         }
+
+        self::$instance = $this;
     }
 
     /**
@@ -78,6 +95,27 @@ class ilSrLifeCycleManagerPlugin extends ilCronHookPlugin implements ITranslator
     /**
      * @inheritDoc
      */
+    public function register(IEventListener $listener) : IObserver
+    {
+        $this->event_listeners[] = $listener;
+        return $this;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function broadcast(IEvent $event) : IObserver
+    {
+        foreach ($this->event_listeners as $listener) {
+            $listener->handle($event);
+        }
+
+        return $this;
+    }
+
+    /**
+     * @inheritDoc
+     */
     public function getPluginName() : string
     {
         return 'SrLifeCycleManager';
@@ -89,8 +127,8 @@ class ilSrLifeCycleManagerPlugin extends ilCronHookPlugin implements ITranslator
     public function getCronJobInstances() : array
     {
         return [
-            $this->cron_job_factory->routine(),
-            $this->cron_job_factory->dryRoutine(),
+            $this->job_factory->routine(),
+            $this->job_factory->dryRoutine(),
         ];
     }
 
@@ -100,51 +138,78 @@ class ilSrLifeCycleManagerPlugin extends ilCronHookPlugin implements ITranslator
      */
     public function getCronJobInstance($a_job_id) : ilCronJob
     {
-        return $this->cron_job_factory->getCronJob($a_job_id);
+        return $this->job_factory->getCronJob($a_job_id);
     }
 
     /**
-     * Wraps the initialization of the cron job factory in order to
-     * keep compatibility with new setup-features where dependencies
-     * might not be available.
+     * Wraps the initialization of plugin-dependencies to ensure compatibility with
+     * ILIAS>=7 where the setup-mechanism will require an instance of this object
+     * but cannot provide all ILIAS dependencies.
      *
      * @param Container $dic
      */
-    protected function safelyInitJobFactory(Container $dic) : void
+    protected function safelyInitDependencies(Container $dic) : void
     {
-        if ($dic->offsetExists('mail.mime.sender.factory') &&
-            $dic->offsetExists('ilDB') &&
-            $dic->offsetExists('tree') &&
-            $dic->offsetExists('ilLoggerFactory') &&
-            $dic->offsetExists('rbacreview') &&
-            $dic->offsetExists('ilCtrl')
-        ) {
-            $this->cron_job_factory = new ilSrCronJobFactory(
-                $dic['mail.mime.sender.factory'],
-                $dic->database(),
-                $dic->repositoryTree(),
-                $dic->logger()->root(),
-                $dic->rbac(),
-                $dic->ctrl()
-            );
-        }
-    }
+        $required_offsets = [
+            'mail.mime.sender.factory', 'ilLoggerFactory', 'global_screen', 'rbacreview', 'ilCtrl', 'ilDB', 'tree',
+        ];
 
-    /**
-     * Wraps the initialization of the GS providers in order to
-     * keep compatibility with new setup-features where dependencies
-     * might not be available.
-     *
-     * @param Container $dic
-     * @return void
-     */
-    protected function safelyInitProviders(Container $dic) : void
-    {
-        if ($dic->offsetExists('global_screen')) {
-            $this->provider_collection
-                ->setMainBarProvider(new ilSrMenuProvider($dic, $this))
-                ->setToolProvider(new ilSrToolProvider($dic, $this))
-            ;
+        foreach ($required_offsets as $offset) {
+            if (!$dic->offsetExists($offset)) {
+                return;
+            }
         }
+
+        $repository_factory = new RepositoryFactory(
+            new ilSrGeneralRepository($dic->database(), $dic->repositoryTree(), $dic->rbac()),
+            new ilSrConfigRepository($dic->database(), $dic->rbac()),
+            new ilSrRoutineRepository($dic->database(), $dic->repositoryTree()),
+            new ilSrAssignmentRepository($dic->database(), $dic->repositoryTree()),
+            new ilSrRuleRepository($dic->database(), $dic->repositoryTree()),
+            new ilSrConfirmationRepository($dic->database()),
+            new ilSrReminderRepository($dic->database()),
+            new ilSrWhitelistRepository($dic->database())
+        );
+
+        $notification_sender = new ilSrNotificationSender(
+            $repository_factory->reminder(),
+            $dic['mail.mime.sender.factory'],
+            $repository_factory->config()->get(),
+            $dic->ctrl()
+        );
+
+        $deletable_object_provider = new DeletableObjectProvider(
+            new RoutineProvider(
+                new ComparisonFactory(
+                    new RequirementFactory($dic->database()),
+                    new AttributeFactory()
+                ),
+                $repository_factory->routine(),
+                $repository_factory->rule()
+            ),
+            $repository_factory->general()
+        );
+
+        $this->job_factory = new ilSrRoutineJobFactory(
+            $notification_sender,
+            new ResultBuilder(
+                new ilCronJobResult()
+            ),
+            $repository_factory->reminder(),
+            $repository_factory->routine(),
+            $this,
+            $deletable_object_provider,
+            $dic->logger()->root()
+        );
+
+        $this->provider_collection
+            ->setMainBarProvider(new ilSrMenuProvider($dic, $this))
+            ->setToolProvider(new ilSrToolProvider($dic, $this))
+        ;
+
+        $this->register(new ConfirmationEventListener(
+            $repository_factory->confirmation(),
+            $notification_sender
+        ));
     }
 }

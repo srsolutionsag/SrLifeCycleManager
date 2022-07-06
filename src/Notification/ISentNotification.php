@@ -1,23 +1,22 @@
 <?php
 
-/* Copyright (c) 2021 Thibeau Fuhrer <thibeau@sr.solutions> Extended GPL, see docs/LICENSE */
-
 namespace srag\Plugins\SrLifeCycleManager\Notification;
 
 use DateTimeImmutable;
-use DateTime;
+use LogicException;
 
 /**
  * @author Thibeau Fuhrer <thibeau@sr.solutions>
  */
 interface ISentNotification extends INotification
 {
-    // ISentNotification attribute names:
+    // ISentNotification attributes:
     public const F_NOTIFIED_REF_ID = 'ref_id';
     public const F_NOTIFIED_DATE = 'date';
 
     /**
      * @return int
+     * @throws LogicException if the notification has not been sent yet.
      */
     public function getNotifiedRefId() : int;
 
@@ -29,6 +28,7 @@ interface ISentNotification extends INotification
 
     /**
      * @return DateTimeImmutable
+     * @throws LogicException if the notification has not been sent yet.
      */
     public function getNotifiedDate() : DateTimeImmutable;
 
@@ -37,15 +37,4 @@ interface ISentNotification extends INotification
      * @return ISentNotification
      */
     public function setNotifiedDate(DateTimeImmutable $date) : ISentNotification;
-
-    /**
-     * Returns whether the notification is elapsed on the given date.
-     *
-     * A notification is elapsed if the notified date plus the amount of
-     * days before it's submission is past $when.
-     *
-     * @param DateTimeImmutable|DateTime $when
-     * @return bool
-     */
-    public function isElapsed($when) : bool;
 }

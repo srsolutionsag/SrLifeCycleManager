@@ -4,38 +4,38 @@
 
 namespace srag\Plugins\SrLifeCycleManager\Form\Notification;
 
-use Psr\Http\Message\ServerRequestInterface;
-use ILIAS\UI\Component\Input\Container\Form\Form as UIForm;
 use srag\Plugins\SrLifeCycleManager\Form\AbstractFormProcessor;
-use srag\Plugins\SrLifeCycleManager\Notification\INotification;
-use srag\Plugins\SrLifeCycleManager\Notification\INotificationRepository;
+use srag\Plugins\SrLifeCycleManager\Notification\Confirmation\IConfirmationRepository;
+use srag\Plugins\SrLifeCycleManager\Notification\Confirmation\IConfirmation;
+use ILIAS\UI\Component\Input\Container\Form\Form as UIForm;
+use Psr\Http\Message\ServerRequestInterface;
 
 /**
  * @author Thibeau Fuhrer <thibeau@sr.solutions>
  */
-class NotificationFormProcessor extends AbstractFormProcessor
+class ConfirmationFormProcessor extends AbstractFormProcessor
 {
     /**
-     * @var INotificationRepository
+     * @var IConfirmationRepository
      */
     protected $repository;
 
     /**
-     * @var INotification
+     * @var IConfirmation
      */
     protected $notification;
 
     /**
-     * @param INotificationRepository $repository
+     * @param IConfirmationRepository $repository
      * @param ServerRequestInterface  $request
      * @param UIForm                  $form
-     * @param INotification           $notification
+     * @param IConfirmation           $notification
      */
     public function __construct(
-        INotificationRepository $repository,
+        IConfirmationRepository $repository,
         ServerRequestInterface $request,
         UIForm $form,
-        INotification $notification
+        IConfirmation $notification
     ) {
         parent::__construct($request, $form);
         $this->repository = $repository;
@@ -49,9 +49,9 @@ class NotificationFormProcessor extends AbstractFormProcessor
     {
         // ensure that the required values are not empty.
         return (
-            !empty($post_data[NotificationFormBuilder::INPUT_NOTIFICATION_TITLE]) &&
-            !empty($post_data[NotificationFormBuilder::INPUT_NOTIFICATION_CONTENT]) &&
-            !empty($post_data[NotificationFormBuilder::INPUT_NOTIFICATION_DAYS_BEFORE_SUBMISSION])
+            !empty($post_data[ConfirmationFormBuilder::INPUT_NOTIFICATION_TITLE]) &&
+            !empty($post_data[ConfirmationFormBuilder::INPUT_NOTIFICATION_CONTENT]) &&
+            !empty($post_data[ConfirmationFormBuilder::INPUT_CONFIRMATION_EVENT])
         );
     }
 
@@ -61,9 +61,9 @@ class NotificationFormProcessor extends AbstractFormProcessor
     protected function processData(array $post_data) : void
     {
         $this->notification
-            ->setTitle($post_data[NotificationFormBuilder::INPUT_NOTIFICATION_TITLE])
-            ->setContent($post_data[NotificationFormBuilder::INPUT_NOTIFICATION_CONTENT])
-            ->setDaysBeforeSubmission((int) $post_data[NotificationFormBuilder::INPUT_NOTIFICATION_DAYS_BEFORE_SUBMISSION])
+            ->setTitle($post_data[ConfirmationFormBuilder::INPUT_NOTIFICATION_TITLE])
+            ->setContent($post_data[ConfirmationFormBuilder::INPUT_NOTIFICATION_CONTENT])
+            ->setEvent($post_data[ConfirmationFormBuilder::INPUT_CONFIRMATION_EVENT])
         ;
 
         $this->repository->store($this->notification);

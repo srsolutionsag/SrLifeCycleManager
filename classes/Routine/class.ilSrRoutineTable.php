@@ -23,7 +23,8 @@ class ilSrRoutineTable extends ilSrAbstractTable
     public const ACTION_ROUTINE_RULES = 'action_routine_rules';
     public const ACTION_ROUTINE_ASSIGNMENTS = 'action_routine_assignments';
     public const ACTION_ROUTINE_EDIT = 'action_routine_edit';
-    public const ACTION_ROUTINE_NOTIFICATIONS = 'action_routine_notifications';
+    public const ACTION_ROUTINE_REMINDERS = 'action_routine_reminders';
+    public const ACTION_ROUTINE_CONFIRMATIONS = 'action_routine_confirmations';
     public const ACTION_ROUTINE_WHITELIST = 'action_routine_whitelist';
     public const ACTION_ROUTINE_DELETE = 'action_routine_delete';
 
@@ -117,10 +118,18 @@ class ilSrRoutineTable extends ilSrAbstractTable
             );
 
             $actions[] = $this->ui_factory->button()->shy(
-                $this->translator->txt(self::ACTION_ROUTINE_NOTIFICATIONS),
+                $this->translator->txt(self::ACTION_ROUTINE_REMINDERS),
                 $this->ctrl->getLinkTargetByClass(
-                    ilSrNotificationGUI::class,
-                    ilSrNotificationGUI::CMD_INDEX
+                    ilSrReminderGUI::class,
+                    ilSrReminderGUI::CMD_INDEX
+                )
+            );
+
+            $actions[] = $this->ui_factory->button()->shy(
+                $this->translator->txt(self::ACTION_ROUTINE_CONFIRMATIONS),
+                $this->ctrl->getLinkTargetByClass(
+                    ilSrConfirmationGUI::class,
+                    ilSrConfirmationGUI::CMD_INDEX
                 )
             );
 
@@ -182,8 +191,14 @@ class ilSrRoutineTable extends ilSrAbstractTable
         );
 
         $this->ctrl->setParameterByClass(
-            ilSrNotificationGUI::class,
-            ilSrNotificationGUI::PARAM_ROUTINE_ID,
+            ilSrConfirmationGUI::class,
+            ilSrConfirmationGUI::PARAM_ROUTINE_ID,
+            $routine_id
+        );
+
+        $this->ctrl->setParameterByClass(
+            ilSrReminderGUI::class,
+            ilSrReminderGUI::PARAM_ROUTINE_ID,
             $routine_id
         );
     }

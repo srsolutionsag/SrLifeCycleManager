@@ -3,22 +3,17 @@
 /* Copyright (c) 2022 Thibeau Fuhrer <thibeau@sr.solutions> Extended GPL, see docs/LICENSE */
 
 use srag\Plugins\SrLifeCycleManager\Notification\INotification;
-use srag\Plugins\SrLifeCycleManager\Routine\IRoutine;
-use srag\Plugins\SrLifeCycleManager\ITranslator;
 use ILIAS\UI\Component\Dropdown\Dropdown;
-use ILIAS\UI\Renderer;
-use ILIAS\UI\Factory;
 
 /**
  * @author Thibeau Fuhrer <thibeau@sr.solutions>
  * @noinspection AutoloadingIssuesInspection
  */
-class ilSrNotificationTable extends ilSrAbstractTable
+abstract class ilSrAbstractNotificationTable extends ilSrAbstractTable
 {
     // ilSrNotificationTable table columns:
     public const COL_NOTIFICATION_TITLE = 'col_notification_title';
     public const COL_NOTIFICATION_CONTENT = 'col_notification_content';
-    public const COL_NOTIFICATION_DAYS_BEFORE_SUBMISSION = 'col_notification_days_before_submission';
 
     // ilSrNotificationTable actions:
     public const ACTION_NOTIFICATION_EDIT = 'action_notification_edit';
@@ -27,19 +22,13 @@ class ilSrNotificationTable extends ilSrAbstractTable
     /**
      * @inheritDoc
      */
-    protected function getTemplateName() : string
-    {
-        return 'tpl.notification_table_row.html';
-    }
-
-    /**
-     * @inheritDoc
-     */
     protected function addTableColumns() : void
     {
         $this->addColumn($this->translator->txt(self::COL_NOTIFICATION_TITLE));
         $this->addColumn($this->translator->txt(self::COL_NOTIFICATION_CONTENT));
-        $this->addColumn($this->translator->txt(self::COL_NOTIFICATION_DAYS_BEFORE_SUBMISSION));
+
+        $this->addNotificationSpecificColumns();
+
         $this->addActionColumn();
     }
 
@@ -50,7 +39,9 @@ class ilSrNotificationTable extends ilSrAbstractTable
     {
         $template->setVariable(self::COL_NOTIFICATION_TITLE, $data[INotification::F_TITLE]);
         $template->setVariable(self::COL_NOTIFICATION_CONTENT, $data[INotification::F_CONTENT]);
-        $template->setVariable(self::COL_NOTIFICATION_DAYS_BEFORE_SUBMISSION, $data[INotification::F_DAYS_BEFORE_SUBMISSION]);
+
+        $this->renderNotificationSpecificColumns($template, $data);
+
         $template->setVariable(
             self::COL_ACTIONS,
             $this->renderer->render(
@@ -74,16 +65,16 @@ class ilSrNotificationTable extends ilSrAbstractTable
         $actions[] = $this->ui_factory->button()->shy(
             $this->translator->txt(self::ACTION_NOTIFICATION_EDIT),
             $this->ctrl->getLinkTargetByClass(
-                ilSrNotificationGUI::class,
-                ilSrNotificationGUI::CMD_NOTIFICATION_EDIT
+                get_class($this->parent_obj),
+                ilSrAbstractNotificationGUI::CMD_NOTIFICATION_EDIT
             )
         );
 
         $actions[] = $this->ui_factory->button()->shy(
             $this->translator->txt(self::ACTION_NOTIFICATION_DELETE),
             $this->ctrl->getLinkTargetByClass(
-                ilSrNotificationGUI::class,
-                ilSrNotificationGUI::CMD_NOTIFICATION_DELETE
+                get_class($this->parent_obj),
+                ilSrAbstractNotificationGUI::CMD_NOTIFICATION_DELETE
             )
         );
 
@@ -98,15 +89,31 @@ class ilSrNotificationTable extends ilSrAbstractTable
     protected function setActionParameters(int $notification_id, int $routine_id) : void
     {
         $this->ctrl->setParameterByClass(
-            ilSrNotificationGUI::class,
-            ilSrNotificationGUI::PARAM_ROUTINE_ID,
+            get_class($this->parent_obj),
+            ilSrAbstractNotificationGUI::PARAM_ROUTINE_ID,
             $routine_id
         );
 
         $this->ctrl->setParameterByClass(
-            ilSrNotificationGUI::class,
-            ilSrNotificationGUI::PARAM_NOTIFICATION_ID,
+            get_class($this->parent_obj),
+            ilSrAbstractNotificationGUI::PARAM_NOTIFICATION_ID,
             $notification_id
         );
     }
+
+    /**
+     * This method is called when rendering each table-row and should fill all
+     * necessary template variables that are specific to the notification.
+     *
+     * @param ilTemplate $template
+     * @param array      $data
+     * @return void
+     */
+    abstract protected function renderNotificationSpecificColumns(ilTemplate $template, array $data) : void;
+
+    /**
+     * This method is called when initializing this table and should add all
+     * necessary template variables that are specific to the notification.
+     */
+    abstract protected function addNotificationSpecificColumns() : void;
 }

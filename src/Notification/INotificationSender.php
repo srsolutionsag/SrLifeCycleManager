@@ -12,7 +12,8 @@ use ilObject;
 interface INotificationSender
 {
     /**
-     * Sends the given notification to all administrators of the given object.
+     * Sends the given notification (regardless of the type) to all administrators
+     * of the given object.
      *
      * @param INotification $notification
      * @param ilObject      $object

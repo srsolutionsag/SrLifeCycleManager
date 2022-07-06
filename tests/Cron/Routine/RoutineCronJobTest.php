@@ -4,25 +4,24 @@ namespace srag\Plugins\SrLifeCycleManager\Tests\Cron\Routine;
 
 require_once __DIR__ . '/../../../vendor/autoload.php';
 
-use PHPUnit\Framework\TestCase;
-use srag\Plugins\SrLifeCycleManager\Routine\Provider\IDeletableObjectProvider;
-use srag\Plugins\SrLifeCycleManager\Routine\Provider\DeletableObject;
-use srag\Plugins\SrLifeCycleManager\Routine\Provider\IDeletableObject;
+use srag\Plugins\SrLifeCycleManager\Routine\Provider\DeletableObjectProvider;
 use srag\Plugins\SrLifeCycleManager\Notification\INotificationSender;
-use srag\Plugins\SrLifeCycleManager\Notification\INotificationRepository;
-use srag\Plugins\SrLifeCycleManager\Notification\INotification;
-use srag\Plugins\SrLifeCycleManager\Notification\Notification;
+use srag\Plugins\SrLifeCycleManager\Notification\Reminder\Reminder\IReminderRepository;
+use srag\Plugins\SrLifeCycleManager\Notification\Reminder\Reminder\IReminder;
+use srag\Plugins\SrLifeCycleManager\Notification\Reminder\Reminder;
 use srag\Plugins\SrLifeCycleManager\Whitelist\IWhitelistRepository;
-use srag\Plugins\SrLifeCycleManager\Whitelist\WhitelistEntry;
 use srag\Plugins\SrLifeCycleManager\Routine\IRoutineRepository;
 use srag\Plugins\SrLifeCycleManager\Routine\IRoutine;
 use srag\Plugins\SrLifeCycleManager\Cron\ResultBuilder;
-use DateTimeImmutable;
-use ArrayIterator;
-use DateInterval;
+use srag\Plugins\SrLifeCycleManager\Event\IObserver;
+use PHPUnit\Framework\TestCase;
 use ilObjCourse;
 use ilObject;
 use ilLogger;
+use DateTimeImmutable;
+use DateInterval;
+use Generator;
+use srag\Plugins\SrLifeCycleManager\Routine\Provider\DeletableObject;
 
 /**
  * @author Thibeau Fuhrer <thibeau@sr.solutions>
@@ -45,14 +44,9 @@ class RoutineCronJobTest extends TestCase
     protected $routine_repository;
 
     /**
-     * @var INotificationRepository
+     * @var IReminderRepository
      */
     protected $notification_repository;
-
-    /**
-     * @var IWhitelistRepository
-     */
-    protected $whitelist_repository;
 
     /**
      * @var ilLogger
@@ -68,151 +62,16 @@ class RoutineCronJobTest extends TestCase
         $this->result_builder->method('request')->willReturn($this->result_builder);
         $this->pseudo_routine = $this->createMock(IRoutine::class);
         $this->pseudo_routine->method('getRoutineId')->willReturn(1);
-        $this->notification_repository = $this->createMock(INotificationRepository::class);
+        $this->notification_repository = $this->createMock(IReminderRepository::class);
         $this->routine_repository = $this->createMock(IRoutineRepository::class);
-        $this->whitelist_repository = $this->createMock(IWhitelistRepository::class);
         $this->logger = $this->createMock(ilLogger::class);
-    }
-
-    public function testDeletedObjectsWithActiveElongation() : void
-    {
-        $whitelisted_ref_id = 1;
-        $deletable_ref_id = 2;
-
-        $this->notification_repository->method('getByRoutine')->willReturn([]);
-        $this->notification_repository->method('getSentNotifications')->willReturn([]);
-        $this->whitelist_repository->method('get')->willReturnCallback(
-            static function ($routine, $ref_id) use ($whitelisted_ref_id) {
-                // return the whitelist entry only for the whitelisted test object.
-                if ($ref_id === $whitelisted_ref_id) {
-                    return new WhitelistEntry(
-                        1,
-                        $whitelisted_ref_id,
-                        1,
-                        false,
-                        new DateTimeImmutable(),
-                        10
-                    );
-                }
-
-                return null;
-            }
-        );
-
-        $job = $this->getTestableRoutineJob(
-            $this->notification_repository,
-            $this->routine_repository,
-            $this->whitelist_repository,
-            [
-                $this->getCourseMock($whitelisted_ref_id),
-                $this->getCourseMock($deletable_ref_id),
-            ]
-        );
-
-        $job->run();
-
-        $this->assertCount(1, $job->getDeletedObjects());
-        $this->assertEquals(
-            $deletable_ref_id,
-            $job->getDeletedObjects()[0]->getRefId()
-        );
-    }
-
-    public function testDeletedObjectsWithElapsedElongation() : void
-    {
-        $whitelisted_ref_id = 1;
-        $deletable_ref_id = 2;
-
-        $this->notification_repository->method('getByRoutine')->willReturn([]);
-        $this->notification_repository->method('getSentNotifications')->willReturn([]);
-        $this->whitelist_repository->method('get')->willReturnCallback(
-            static function ($routine, $ref_id) use ($whitelisted_ref_id) {
-                // return the whitelist entry only for the whitelisted test object.
-                if ($ref_id === $whitelisted_ref_id) {
-                    return new WhitelistEntry(
-                        1,
-                        $whitelisted_ref_id,
-                        false,
-                        (new DateTimeImmutable())->sub(new DateInterval("P11D")),
-                        10
-                    );
-                }
-
-                return null;
-            }
-        );
-
-        $job = $this->getTestableRoutineJob(
-            $this->notification_repository,
-            $this->routine_repository,
-            $this->whitelist_repository,
-            [
-                $this->getCourseMock($whitelisted_ref_id),
-                $this->getCourseMock($deletable_ref_id),
-            ]
-        );
-
-        $job->run();
-
-        $this->assertCount(2, $job->getDeletedObjects());
-        $this->assertEquals(
-            $whitelisted_ref_id,
-            $job->getDeletedObjects()[0]->getRefId()
-        );
-        $this->assertEquals(
-            $deletable_ref_id,
-            $job->getDeletedObjects()[1]->getRefId()
-        );
-    }
-
-    public function testDeletedObjectsWithOptOutAndActiveElongation() : void
-    {
-        $whitelisted_ref_id = 1;
-        $deletable_ref_id = 2;
-
-        $this->notification_repository->method('getByRoutine')->willReturn([]);
-        $this->notification_repository->method('getSentNotifications')->willReturn([]);
-        $this->whitelist_repository->method('get')->willReturnCallback(
-            static function ($routine, $ref_id) use ($whitelisted_ref_id) {
-                // return the whitelist entry only for the whitelisted test object.
-                if ($ref_id === $whitelisted_ref_id) {
-                    return new WhitelistEntry(
-                        1,
-                        $whitelisted_ref_id,
-                        true,
-                        new DateTimeImmutable(),
-                        10
-                    );
-                }
-
-                return null;
-            }
-        );
-
-        $job = $this->getTestableRoutineJob(
-            $this->notification_repository,
-            $this->routine_repository,
-            $this->whitelist_repository,
-            [
-                $this->getCourseMock($whitelisted_ref_id),
-                $this->getCourseMock($deletable_ref_id),
-            ]
-        );
-
-        $job->run();
-
-        $this->assertCount(1, $job->getDeletedObjects());
-        $this->assertEquals(
-            $deletable_ref_id,
-            $job->getDeletedObjects()[0]->getRefId()
-        );
     }
 
     public function testNotificationSendingBehaviour() : void
     {
         $test_ref_id = 1;
         $starting_date = DateTimeImmutable::createFromFormat('Y-m-d', "2022-01-01");
-        $initial_notification = new Notification(
+        $initial_notification = new Reminder(
             $this->pseudo_routine->getRoutineId(),
             "test 1",
             "content 1",
@@ -220,7 +79,7 @@ class RoutineCronJobTest extends TestCase
             1,
             $test_ref_id
         );
-        $second_notification = new Notification(
+        $second_notification = new Reminder(
             $this->pseudo_routine->getRoutineId(),
             "test 2",
             "content 2",
@@ -228,7 +87,7 @@ class RoutineCronJobTest extends TestCase
             2,
             $test_ref_id
         );
-        $third_notification = new Notification(
+        $third_notification = new Reminder(
             $this->pseudo_routine->getRoutineId(),
             "test 3",
             "content 3",
@@ -237,7 +96,6 @@ class RoutineCronJobTest extends TestCase
             $test_ref_id
         );
 
-        $this->whitelist_repository->method('get')->willReturn(null);
         // IMPORTANT: must be ordered by days_before_submission ASC
         $this->notification_repository->method('getByRoutine')->willReturn([
             $initial_notification,
@@ -246,19 +104,20 @@ class RoutineCronJobTest extends TestCase
         ]);
 
         $sent_notifications = [];
-        $this->notification_repository->method('getSentNotifications')->willReturnCallback(
-            static function() use (&$sent_notifications) : array {
+        $this->notification_repository->method('getSentByRoutineAndObject')->willReturnCallback(
+            static function () use (&$sent_notifications) : array {
                 return $sent_notifications;
             }
         );
 
+        $test_objects = [
+            $this->getCourseMock($test_ref_id),
+        ];
+
         $job = $this->getTestableRoutineJob(
             $this->notification_repository,
             $this->routine_repository,
-            $this->whitelist_repository,
-            [
-                $this->getCourseMock($test_ref_id),
-            ]
+            $test_objects
         );
 
         $job->setDate($starting_date);
@@ -273,13 +132,14 @@ class RoutineCronJobTest extends TestCase
         );
         $this->assertEquals(
             $initial_notification->getNotificationId(),
-            $job->getNotifiedObjects()[0][INotification::class]->getNotificationId()
+            $job->getNotifiedObjects()[0][IReminder::class]->getNotificationId()
         );
 
         $sent_notifications = [
             $initial_notification->setNotifiedDate($starting_date),
         ];
 
+        $job->rewind($this->getGeneratorMock($test_objects));
         $job->setDate($starting_date);
         $job->run();
 
@@ -289,6 +149,7 @@ class RoutineCronJobTest extends TestCase
         $this->assertCount(0, $job->getDeletedObjects());
 
         $date_of_second_notification = $starting_date->add(new DateInterval("P5D"));
+        $job->rewind($this->getGeneratorMock($test_objects));
         $job->setDate($date_of_second_notification);
         $job->run();
 
@@ -301,7 +162,7 @@ class RoutineCronJobTest extends TestCase
         );
         $this->assertEquals(
             $second_notification->getNotificationId(),
-            $job->getNotifiedObjects()[0][INotification::class]->getNotificationId()
+            $job->getNotifiedObjects()[0][IReminder::class]->getNotificationId()
         );
 
         $sent_notifications = [
@@ -310,6 +171,7 @@ class RoutineCronJobTest extends TestCase
         ];
 
         $date_of_third_notification = $date_of_second_notification->add(new DateInterval("P4D"));
+        $job->rewind($this->getGeneratorMock($test_objects));
         $job->setDate($date_of_third_notification);
         $job->run();
 
@@ -322,7 +184,7 @@ class RoutineCronJobTest extends TestCase
         );
         $this->assertEquals(
             $third_notification->getNotificationId(),
-            $job->getNotifiedObjects()[0][INotification::class]->getNotificationId()
+            $job->getNotifiedObjects()[0][IReminder::class]->getNotificationId()
         );
 
         $sent_notifications = [
@@ -332,6 +194,7 @@ class RoutineCronJobTest extends TestCase
         ];
 
         $date_of_deletion = $date_of_third_notification->add(new DateInterval("P1D"));
+        $job->rewind($this->getGeneratorMock($test_objects));
         $job->setDate($date_of_deletion);
         $job->run();
 
@@ -347,62 +210,63 @@ class RoutineCronJobTest extends TestCase
 
     /**
      * @param ilObject[] $objects
-     * @return IDeletableObjectProvider
+     * @return DeletableObjectProvider
      */
-    protected function getGeneratorMock(array $objects) : IDeletableObjectProvider
+    protected function getGeneratorMock(array $objects) : DeletableObjectProvider
     {
-        return new class($this->pseudo_routine, $objects) extends ArrayIterator implements IDeletableObjectProvider {
-            /** @var IRoutine */
-            protected $routine;
+        return new class($objects, $this->pseudo_routine) extends DeletableObjectProvider {
+            /**
+             * @var ilObject[]
+             */
+            protected $objects;
 
             /**
-             * @param IRoutine $routine
-             * @param array    $objects
+             * @var IRoutine
              */
-            public function __construct(IRoutine $routine, array $objects)
+            protected $pseudo_routine;
+
+            /**
+             * @param ilObject[] $objects
+             */
+            public function __construct(array $objects, IRoutine $routine)
             {
-                parent::__construct($objects);
-                $this->routine = $routine;
+                $this->objects = $objects;
+                $this->pseudo_routine = $routine;
             }
 
             /**
-             * @inheritdoc
+             * @inheritDoc
              */
-            public function current() : ?IDeletableObject
+            public function getDeletableObjects() : Generator
             {
-                $current = parent::current();
-                if ($current) {
-                    return new DeletableObject(
-                        $current,
-                        [$this->routine]
+                foreach ($this->objects as $object) {
+                    yield new DeletableObject(
+                        $object,
+                        [$this->pseudo_routine]
                     );
                 }
-
-                return null;
             }
         };
     }
 
     /**
-     * @param INotificationRepository $notifications
-     * @param IRoutineRepository      $routines
-     * @param IWhitelistRepository    $whitelist
-     * @param ilObject[]              $objects
-     * @return RoutineCronJobTestObject
+     * @param IReminderRepository $notifications
+     * @param IRoutineRepository  $routines
+     * @param ilObject[]          $objects
+     * @return TestableRoutineCronJob
      */
     protected function getTestableRoutineJob(
-        INotificationRepository $notifications,
+        IReminderRepository $notifications,
         IRoutineRepository $routines,
-        IWhitelistRepository $whitelist,
         array $objects
-    ) : RoutineCronJobTestObject {
-        return new RoutineCronJobTestObject(
+    ) : TestableRoutineCronJob {
+        return new TestableRoutineCronJob(
             $this->createMock(INotificationSender::class),
             $this->getGeneratorMock($objects),
             $this->result_builder,
+            $this->createMock(IObserver::class),
             $notifications,
             $routines,
-            $whitelist,
             $this->createMock(ilLogger::class)
         );
     }

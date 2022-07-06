@@ -377,3 +377,66 @@ if ($ilDB->tableExists($table_name)) {
     ]);
 }
 ?>
+<#13>
+<?php
+/** @var $ilDB ilDBInterface */
+$table_name = 'srlcm_reminder';
+$columns = [
+    'notification_id' => [
+        'notnull' => '1',
+        'length'  => '8',
+        'type'    => 'integer',
+    ],
+    'days_before_deletion' => [
+        'notnull' => '1',
+        'length'  => '8',
+        'type'    => 'integer',
+    ],
+];
+
+if (!$ilDB->tableExists($table_name)) {
+    $ilDB->createTable($table_name, $columns);
+    $ilDB->addPrimaryKey($table_name, [
+        'notification_id',
+    ]);
+}
+?>
+<#14>
+<?php
+/** @var $ilDB ilDBInterface */
+$table_name = 'srlcm_notification';
+
+if ($ilDB->tableColumnExists($table_name, 'days_before_submission')) {
+    $ilDB->manipulate("
+        INSERT INTO srlcm_reminder (notification_id, days_before_deletion)
+            SELECT notification_id, days_before_submission FROM srlcm_notification
+        ;
+    ");
+
+    $ilDB->dropTableColumn($table_name, 'days_before_submission');
+}
+?>
+<#15>
+<?php
+/** @var $ilDB ilDBInterface */
+$table_name = 'srlcm_confirmation';
+$columns = [
+    'notification_id' => [
+        'notnull' => '1',
+        'length'  => '8',
+        'type'    => 'integer',
+    ],
+    'event' => [
+        'notnull' => '1',
+        'length'  => '254',
+        'type'    => 'text',
+    ],
+];
+
+if (!$ilDB->tableExists($table_name)) {
+    $ilDB->createTable($table_name, $columns);
+    $ilDB->addPrimaryKey($table_name, [
+        'notification_id',
+    ]);
+}
+?>

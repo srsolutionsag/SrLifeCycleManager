@@ -6,7 +6,7 @@ use srag\Plugins\SrLifeCycleManager\Routine\Provider\RoutineProvider;
 use srag\Plugins\SrLifeCycleManager\Rule\Comparison\ComparisonFactory;
 use srag\Plugins\SrLifeCycleManager\Rule\Requirement\RequirementFactory;
 use srag\Plugins\SrLifeCycleManager\Rule\Attribute\AttributeFactory;
-use srag\Plugins\SrLifeCycleManager\Routine\Provider\ObjectProvider;
+use srag\Plugins\SrLifeCycleManager\Routine\Provider\DeletableObjectProvider;
 
 /**
  * @author Fabian Schmid <fabian@sr.solutions>
@@ -33,7 +33,7 @@ class ilSrRoutinePreviewGUI extends ilSrAbstractGUI
         parent::__construct();
 
         $this->preview_renderer = new ilSrRoutinePreviewRenderer(
-            new ObjectProvider(
+            new DeletableObjectProvider(
                 new RoutineProvider(
                     new ComparisonFactory(
                         new RequirementFactory($this->database),

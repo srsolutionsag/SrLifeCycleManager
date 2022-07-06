@@ -2,47 +2,35 @@
 
 /* Copyright (c) 2022 Thibeau Fuhrer <thibeau@sr.solutions> Extended GPL, see docs/LICENSE */
 
-use srag\Plugins\SrLifeCycleManager\Notification\INotification;
-use srag\Plugins\SrLifeCycleManager\Form\Notification\NotificationFormProcessor;
-use srag\Plugins\SrLifeCycleManager\Form\Notification\NotificationFormBuilder;
+use srag\Plugins\SrLifeCycleManager\Notification\Confirmation\IConfirmation;
+use srag\Plugins\SrLifeCycleManager\Form\Notification\ConfirmationFormBuilder;
+use srag\Plugins\SrLifeCycleManager\Form\Notification\ConfirmationFormProcessor;
 use srag\Plugins\SrLifeCycleManager\Form\IFormBuilder;
 
 /**
- * This GUI class is responsible for all actions regarding notifications.
+ * This GUI class is responsible for all actions regarding confirmations.
  *
  * @author Thibeau Fuhrer <thibeau@sr.solutions>
  *
  * @noinspection AutoloadingIssuesInspection
  */
-class ilSrNotificationGUI extends ilSrAbstractGUI
+class ilSrConfirmationGUI extends ilSrAbstractNotificationGUI
 {
-    // ilSrNotificationGUI GET-parameter names:
-    public const PARAM_NOTIFICATION_ID = 'notification_id';
-
-    // ilSrNotificationGUI command/method names:
-    public const CMD_NOTIFICATION_EDIT   = 'edit';
-    public const CMD_NOTIFICATION_SAVE   = 'save';
-    public const CMD_NOTIFICATION_DELETE = 'delete';
-
-    // ilSrNotificationGUI language variables:
-    protected const MSG_ROUTINE_NOT_FOUND = 'msg_routine_not_found';
-    protected const MSG_NOTIFICATION_SUCCESS = 'msg_notification_success';
-    protected const MSG_NOTIFICATION_ERROR = 'msg_notification_error';
-    protected const PAGE_TITLE = 'page_title_notifications';
-
     /**
      * @var IFormBuilder
      */
     protected $form_builder;
 
     /**
-     * @var INotification
+     * @var IConfirmation
      */
     protected $notification;
 
     /**
-     * Initializes the notification form-builder and fetches the requested
-     * notification from the current request.
+     * Initializes the confirmation form-builder and fetches the requested
+     * confirmation from the current request.
+     *
+     * @throws LogicException if no routine (id) has been requested.
      */
     public function __construct()
     {
@@ -52,15 +40,15 @@ class ilSrNotificationGUI extends ilSrAbstractGUI
 
         $this->notification =
             $this->getRequestedNotification() ??
-            $this->repository->notification()->empty($this->routine)
+            $this->repository->confirmation()->empty($this->routine)
         ;
 
-        $this->form_builder = new NotificationFormBuilder(
+        $this->form_builder = new ConfirmationFormBuilder(
             $this->translator,
             $this->ui_factory->input()->container()->form(),
             $this->ui_factory->input()->field(),
             $this->refinery,
-            $this->repository->notification(),
+            $this->repository->confirmation(),
             $this->notification,
             $this->getFormAction(
                 self::CMD_NOTIFICATION_SAVE,
@@ -94,26 +82,28 @@ class ilSrNotificationGUI extends ilSrAbstractGUI
     }
 
     /**
-     * Fetches the requested notification from the database if an id was provided.
+     * Fetches the requested confirmation from the database if an id was provided.
      *
-     * @return INotification|null
+     * @return IConfirmation|null
      */
-    protected function getRequestedNotification() : ?INotification
+    protected function getRequestedNotification() : ?IConfirmation
     {
         $notification_id = $this->getRequestParameter(self::PARAM_NOTIFICATION_ID);
         if (null !== $notification_id) {
-            return $this->repository->notification()->get((int) $notification_id);
+            return $this->repository->confirmation()->get((int) $notification_id);
         }
 
         return null;
     }
 
     /**
-      * Displays all existing notifications that are related to the requested routine.
+     * Displays all existing confirmations that are related to the requested routine.
+     *
+     * @inheritDoc
      */
     protected function index() : void
     {
-        $table = new ilSrNotificationTable(
+        $table = new ilSrConfirmationTable(
             $this->ui_factory,
             $this->renderer,
             $this->translator,
@@ -121,20 +111,16 @@ class ilSrNotificationGUI extends ilSrAbstractGUI
             $this->ctrl,
             $this,
             self::CMD_INDEX,
-            $this->repository->notification()->getByRoutine($this->routine, true)
+            $this->repository->confirmation()->getByRoutine($this->routine, true)
         );
 
         $this->tab_manager->addBackToRoutines();
-        $this->toolbar_manager->addNotificationToolbar();
+        $this->toolbar_manager->addConfirmationToolbar();
         $this->render($table->getTable());
     }
 
     /**
-     * Displays the notification form on the current page.
-     *
-     * If a notification is requested, the form-director already was
-     * initialized with the according data, therefore this method can
-     * be used for create AND update commands.
+     * @inheritDoc
      */
     protected function edit() : void
     {
@@ -142,18 +128,12 @@ class ilSrNotificationGUI extends ilSrAbstractGUI
     }
 
     /**
-     * Processes the submitted notification-form data.
-     *
-     * If the data is valid, the user is redirected back to
-     * @see ilSrNotificationGUI::index().
-     *
-     * If the data is invalid, the processed form including
-     * the error messages is shown.
+     * @inheritDoc
      */
     protected function save() : void
     {
-        $processor = new NotificationFormProcessor(
-            $this->repository->notification(),
+        $processor = new ConfirmationFormProcessor(
+            $this->repository->confirmation(),
             $this->request,
             $this->form_builder->getForm(),
             $this->notification
@@ -168,14 +148,13 @@ class ilSrNotificationGUI extends ilSrAbstractGUI
     }
 
     /**
-     * Deletes the requested routine and redirects the user back to
-     * @see ilSrNotificationGUI::index().
+     * @inheritDoc
      */
     protected function delete() : void
     {
         if (null !== $this->notification) {
             $this->sendSuccessMessage(self::MSG_NOTIFICATION_SUCCESS);
-            $this->repository->notification()->delete($this->notification);
+            $this->repository->confirmation()->delete($this->notification);
         } else {
             $this->sendErrorMessage(self::MSG_NOTIFICATION_ERROR);
         }

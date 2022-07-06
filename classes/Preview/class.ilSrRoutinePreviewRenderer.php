@@ -2,7 +2,7 @@
 
 /* Copyright (c) 2022 Fabian Schmid <fabian@sr.solutions> Extended GPL, see docs/LICENSE */
 
-use srag\Plugins\SrLifeCycleManager\Routine\Provider\ObjectProvider;
+use srag\Plugins\SrLifeCycleManager\Routine\Provider\DeletableObjectProvider;
 use srag\Plugins\SrLifeCycleManager\ITranslator;
 use ILIAS\UI\Factory as UIFactory;
 use ILIAS\UI\Renderer;
@@ -26,7 +26,7 @@ class ilSrRoutinePreviewRenderer
     protected const MSG_LOADING = 'msg_this_may_take_a_while';
 
     /**
-     * @var ObjectProvider
+     * @var DeletableObjectProvider
      */
     protected $object_provider;
 
@@ -51,14 +51,14 @@ class ilSrRoutinePreviewRenderer
     protected $ajax_action;
 
     /**
-     * @param ObjectProvider $object_provider
-     * @param ITranslator    $translator
-     * @param Renderer       $renderer
-     * @param UIFactory      $ui_factory
-     * @param string         $ajax_action
+     * @param DeletableObjectProvider $object_provider
+     * @param ITranslator             $translator
+     * @param Renderer                $renderer
+     * @param UIFactory               $ui_factory
+     * @param string                  $ajax_action
      */
     public function __construct(
-        ObjectProvider $object_provider,
+        DeletableObjectProvider $object_provider,
         ITranslator $translator,
         Renderer $renderer,
         UIFactory $ui_factory,

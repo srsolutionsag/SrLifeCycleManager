@@ -22,7 +22,8 @@ class ilSrToolbarManager
     // ilSrToolbarManager toolbar actions:
     public const ACTION_ASSIGNMENT_ADD = 'action_routine_assignment_add';
     public const ACTION_ROUTINE_ADD = 'action_routine_add';
-    public const ACTION_NOTIFICATION_ADD = 'action_notification_add';
+    public const ACTION_CONFIRMATION_ADD = 'action_confirmation_add';
+    public const ACTION_REMINDER_ADD = 'action_reminder_add';
     public const ACTION_RULE_ADD = 'action_rule_add';
 
     /**
@@ -164,17 +165,39 @@ class ilSrToolbarManager
      *
      * The toolbar is only added if the current user can manage routines.
      */
-    public function addNotificationToolbar() : void
+    public function addConfirmationToolbar() : void
     {
         if (!$this->access_handler->canManageRoutines()) {
             return;
         }
 
         $this->addPrimaryButton(
-            self::ACTION_NOTIFICATION_ADD,
+            self::ACTION_CONFIRMATION_ADD,
             $this->ctrl->getLinkTargetByClass(
-                ilSrNotificationGUI::class,
-                ilSrNotificationGUI::CMD_NOTIFICATION_EDIT
+                ilSrConfirmationGUI::class,
+                ilSrConfirmationGUI::CMD_NOTIFICATION_EDIT
+            )
+        );
+
+        $this->render();
+    }
+
+    /**
+     * Renders the reminder toolbar to the current page (global template).
+     *
+     * The toolbar is only added if the current user can manage routines.
+     */
+    public function addReminderToolbar() : void
+    {
+        if (!$this->access_handler->canManageRoutines()) {
+            return;
+        }
+
+        $this->addPrimaryButton(
+            self::ACTION_REMINDER_ADD,
+            $this->ctrl->getLinkTargetByClass(
+                ilSrReminderGUI::class,
+                ilSrReminderGUI::CMD_NOTIFICATION_EDIT
             )
         );
 

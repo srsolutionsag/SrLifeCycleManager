@@ -45,19 +45,19 @@ class ilSrNotificationSender implements INotificationSender
 
     /**
      * @param INotificationRepository $repository
-     * @param ilMailMimeSender        $mail_sender
+     * @param ilMailMimeSenderFactory $sender_factory
      * @param IConfig                 $config
      * @param ilCtrl                  $ctrl
      */
     public function __construct(
         INotificationRepository $repository,
-        ilMailMimeSender $mail_sender,
+        ilMailMimeSenderFactory $sender_factory,
         IConfig $config,
         ilCtrl $ctrl
     ) {
         $this->repository = $repository;
-        $this->mail_sender = $mail_sender;
         $this->config = $config;
+        $this->mail_sender = $this->getMailSender($sender_factory);
         $this->ctrl = $ctrl;
     }
 
@@ -93,7 +93,7 @@ class ilSrNotificationSender implements INotificationSender
             $this->sendIliasMail($recipient, $subject, $message);
         }
 
-        return $this->repository->notifyObject($notification, $object->getRefId());
+        return $this->repository->markObjectAsNotified($notification, $object->getRefId());
     }
 
     /**
@@ -176,5 +176,20 @@ class ilSrNotificationSender implements INotificationSender
             ],
             $notification->getContent()
         );
+    }
+
+    /**
+     * @param ilMailMimeSenderFactory $factory
+     * @return ilMailMimeSender
+     */
+    protected function getMailSender(ilMailMimeSenderFactory $factory) : ilMailMimeSender
+    {
+        if (!empty($this->config->getNotificationSenderAddress())) {
+            return $factory->userByEmailAddress(
+                $this->config->getNotificationSenderAddress()
+            );
+        }
+
+        return $factory->system();
     }
 }

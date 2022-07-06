@@ -2,12 +2,13 @@
 
 namespace srag\Plugins\SrLifeCycleManager\Repository;
 
-use srag\Plugins\SrLifeCycleManager\Config\IConfigRepository;
-use srag\Plugins\SrLifeCycleManager\Routine\IRoutineRepository;
+use srag\Plugins\SrLifeCycleManager\Notification\Confirmation\IConfirmationRepository;
+use srag\Plugins\SrLifeCycleManager\Notification\Reminder\IReminderRepository;
 use srag\Plugins\SrLifeCycleManager\Assignment\IRoutineAssignmentRepository;
-use srag\Plugins\SrLifeCycleManager\Rule\IRuleRepository;
-use srag\Plugins\SrLifeCycleManager\Notification\INotificationRepository;
 use srag\Plugins\SrLifeCycleManager\Whitelist\IWhitelistRepository;
+use srag\Plugins\SrLifeCycleManager\Routine\IRoutineRepository;
+use srag\Plugins\SrLifeCycleManager\Config\IConfigRepository;
+use srag\Plugins\SrLifeCycleManager\Rule\IRuleRepository;
 
 /**
  * @author Thibeau Fuhrer <thibeau@sr.solutions>
@@ -40,9 +41,14 @@ class RepositoryFactory
     protected $rule_repository;
 
     /**
-     * @var INotificationRepository
+     * @var IConfirmationRepository
      */
-    protected $notification_repository;
+    protected $confirmation_repository;
+
+    /**
+     * @var IReminderRepository
+     */
+    protected $reminder_repository;
 
     /**
      * @var IWhitelistRepository
@@ -50,13 +56,14 @@ class RepositoryFactory
     protected $whitelist_repository;
 
     /**
-     * @param IGeneralRepository $general_repository
-     * @param IConfigRepository $config_repository
-     * @param IRoutineRepository $routine_repository
+     * @param IGeneralRepository           $general_repository
+     * @param IConfigRepository            $config_repository
+     * @param IRoutineRepository           $routine_repository
      * @param IRoutineAssignmentRepository $assignment_repository
-     * @param IRuleRepository $rule_repository
-     * @param INotificationRepository $notification_repository
-     * @param IWhitelistRepository $whitelist_repository
+     * @param IRuleRepository              $rule_repository
+     * @param IConfirmationRepository      $confirmation_repository
+     * @param IReminderRepository          $reminder_repository
+     * @param IWhitelistRepository         $whitelist_repository
      */
     public function __construct(
         IGeneralRepository $general_repository,
@@ -64,7 +71,8 @@ class RepositoryFactory
         IRoutineRepository $routine_repository,
         IRoutineAssignmentRepository $assignment_repository,
         IRuleRepository $rule_repository,
-        INotificationRepository $notification_repository,
+        IConfirmationRepository $confirmation_repository,
+        IReminderRepository $reminder_repository,
         IWhitelistRepository $whitelist_repository
     ) {
         $this->general_repository = $general_repository;
@@ -72,7 +80,8 @@ class RepositoryFactory
         $this->routine_repository = $routine_repository;
         $this->assignment_repository = $assignment_repository;
         $this->rule_repository = $rule_repository;
-        $this->notification_repository = $notification_repository;
+        $this->confirmation_repository = $confirmation_repository;
+        $this->reminder_repository = $reminder_repository;
         $this->whitelist_repository = $whitelist_repository;
     }
 
@@ -117,11 +126,19 @@ class RepositoryFactory
     }
 
     /**
-     * @return INotificationRepository
+     * @return IConfirmationRepository
      */
-    public function notification() : INotificationRepository
+    public function confirmation() : IConfirmationRepository
     {
-        return $this->notification_repository;
+        return $this->confirmation_repository;
+    }
+
+    /**
+     * @return IReminderRepository
+     */
+    public function reminder() : IReminderRepository
+    {
+        return $this->reminder_repository;
     }
 
     /**

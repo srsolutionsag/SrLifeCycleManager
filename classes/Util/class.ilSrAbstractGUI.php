@@ -163,7 +163,8 @@ abstract class ilSrAbstractGUI
             new ilSrRoutineRepository($this->database, $DIC->repositoryTree()),
             new ilSrAssignmentRepository($this->database, $DIC->repositoryTree()),
             new ilSrRuleRepository($this->database, $DIC->repositoryTree()),
-            new ilSrNotificationRepository($this->database),
+            new ilSrConfirmationRepository($this->database),
+            new ilSrReminderRepository($this->database),
             new ilSrWhitelistRepository($this->database)
         );
 
@@ -459,7 +460,7 @@ abstract class ilSrAbstractGUI
         $this->ctrl->saveParameterByClass(ilSrRoutineAssignmentGUI::class, self::PARAM_OBJECT_REF_ID);
         $this->ctrl->saveParameterByClass(ilSrObjectAssignmentGUI::class, self::PARAM_OBJECT_REF_ID);
         $this->ctrl->saveParameterByClass(ilSrRuleGUI::class, self::PARAM_OBJECT_REF_ID);
-        $this->ctrl->saveParameterByClass(ilSrNotificationGUI::class, self::PARAM_OBJECT_REF_ID);
+        $this->ctrl->saveParameterByClass(ilSrConfirmationGUI::class, self::PARAM_OBJECT_REF_ID);
         $this->ctrl->saveParameterByClass(ilSrWhitelistGUI::class, self::PARAM_OBJECT_REF_ID);
         $this->ctrl->saveParameterByClass(ilSrRoutinePreviewGUI::class, self::PARAM_OBJECT_REF_ID);
 

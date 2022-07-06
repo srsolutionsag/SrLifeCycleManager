@@ -2,7 +2,8 @@
 
 /* Copyright (c) 2022 Thibeau Fuhrer <thibeau@sr.solutions> Extended GPL, see docs/LICENSE */
 
-use srag\Plugins\SrLifeCycleManager\Notification\INotification;
+use srag\Plugins\SrLifeCycleManager\Notification\Reminder\Reminder\IReminder;
+use srag\Plugins\SrLifeCycleManager\Routine\IRoutine;
 
 /**
  * This cron-job "simulates" what would happen if the actual routine
@@ -64,7 +65,7 @@ class ilSrDryRoutineCronJob extends ilSrRoutineCronJob
     /**
      * @inheritDoc
      */
-    protected function deleteObject(ilObject $object) : void
+    protected function deleteObject(IRoutine $routine, ilObject $object) : void
     {
         $this->deleted_objects[] = $object;
     }
@@ -72,7 +73,7 @@ class ilSrDryRoutineCronJob extends ilSrRoutineCronJob
     /**
      * @inheritDoc
      */
-    protected function notifyObject(INotification $notification, ilObject $object) : void
+    protected function notifyObject(IReminder $notification, ilObject $object) : void
     {
         $this->notified_objects[] = [
             $notification,

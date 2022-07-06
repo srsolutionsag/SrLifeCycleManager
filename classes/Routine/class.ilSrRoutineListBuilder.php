@@ -137,6 +137,12 @@ class ilSrRoutineListBuilder
             );
         }
 
+        // if the current object is the ILIAS repository root, don't show
+        // postpone- and opt-out-action (since the object cannot be deleted).
+        if (1 === $this->object->getRefId()) {
+            return $actions;
+        }
+
         if (1 <= $routine->getElongation()) {
             $actions[] = $this->ui_factory->button()->shy(
                 sprintf(

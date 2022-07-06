@@ -30,11 +30,12 @@ msg_routine_already_extended#:#The deletion of this object was already postponed
 msg_routine_cant_opt_out#:#This routine cannot be opted out.
 msg_routine_opted_out#:#This object has been successfully whitelisted.
 msg_routine_already_opted_out#:#This object was already been whitelisted.
-msg_days_before_submission_error#:#A notification for this amount of days before submission already exists.
+msg_days_before_deletion_error#:#A notification for this amount of days before submission already exists.
 msg_assignment_success#:#Assignment(s) successfully updated.
 msg_no_unassigned_routines#:#There are no routines available that don't already affect this object.
 msg_this_may_take_a_while#:#Collecting Data, this may take a while ...
 msg_invalid_email#:#The submitted email address is invalid.
+msg_confirmation_event_error#:#A notification for this event already exists.
 
 page_title_rules#:#Life-Cycle Rules
 page_title_config#:#Life-Cycle Configuration
@@ -83,7 +84,8 @@ col_rule_lhs_type#:#LHS type
 col_rule_lhs_value#:#LHS value
 col_notification_title#:#Notification title
 col_notification_content#:#Notification content
-col_notification_days_before_submission#:#Sent (days before deletion)
+col_reminder_days_before_deletion#:#Sent (days before deletion)
+col_confirmation_event#:#Event
 col_whitelist_ref_id#:#Ref-ID
 col_whitelist_user_name#:#User
 col_whitelist_opt_out#:#Opt-out
@@ -102,7 +104,8 @@ input_name_routine_assignment_active#:#Active
 input_name_notification_title#:#Notification title
 input_name_notification_content#:#Notification content
 input_name_notification_content_info#:#Type [EXTENSION_LINK] where recipients can postpone the deletion by your routines configured amount. <br /> Type [OPT_OUT_LINK] where recipients can opt-out the deletion by your routine. <br /> Type [OBJECT_LINK] where recipients can go to the object that is about to be deleted. <br /> Type [OBJECT_TITLE] to display recipients the object-title that is about to be deleted.
-input_name_notification_days_before_submission#:#Sent (in days before deletion)
+input_name_reminder_days_before_deletion#:#Sent (in days before deletion)
+input_name_confirmation_event#:#Event
 
 routine_origin_type_admin#:#Administration
 routine_origin_type_repo#:#Repository
@@ -124,7 +127,8 @@ action_routine_manage#:#Manage routines
 action_whitelist_postpone#:#Postpone
 action_whitelist_opt_out#:#Opt-out
 action_routine_rules#:#Rules
-action_routine_notifications#:#Notifications
+action_routine_reminders#:#Reminders
+action_routine_confirmations#:#Confirmations
 action_routine_whitelist#:#Whitelist
 action_routine_assignments#:#Assignments
 action_routine_assignment_manage#:#Manage assignments
@@ -137,10 +141,15 @@ action_routine_opt_out#:#Opt-Out from deletion
 action_rule_add#:#Add rule
 action_rule_edit#:#Edit
 action_rule_delete#:#Remove
-action_notification_add#:#Add notification
+action_confirmation_add#:#Add confirmation
+action_reminder_add#:#Add reminder
 action_notification_edit#:#Edit
 action_notification_delete#:#Remove
 action_object_view#:#View object
+
+onPostpone#:#Postponement
+onOptOut#:#Opt-out
+onDelete#:#Deletion
 
 lhs_value#:#LHS Value
 rhs_value#:#RHS Value

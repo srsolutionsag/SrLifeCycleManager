@@ -8,10 +8,9 @@ namespace srag\Plugins\SrLifeCycleManager\Notification;
 interface INotification
 {
     // INotification attributes:
-    public const F_CONTENT = 'content';
-    public const F_DAYS_BEFORE_SUBMISSION = 'days_before_submission';
     public const F_NOTIFICATION_ID = 'notification_id';
     public const F_ROUTINE_ID = 'routine_id';
+    public const F_CONTENT = 'content';
     public const F_TITLE = 'title';
 
     /**
@@ -57,15 +56,4 @@ interface INotification
      * @return INotification
      */
     public function setContent(string $content) : INotification;
-
-    /**
-     * @return int
-     */
-    public function getDaysBeforeSubmission() : int;
-
-    /**
-     * @param int $amount
-     * @return INotification
-     */
-    public function setDaysBeforeSubmission(int $amount) : INotification;
 }
