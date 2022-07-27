@@ -3,7 +3,7 @@
 /* Copyright (c) 2022 Thibeau Fuhrer <thibeau@sr.solutions> Extended GPL, see docs/LICENSE */
 
 use srag\Plugins\SrLifeCycleManager\Whitelist\WhitelistEntry;
-use srag\Plugins\SrLifeCycleManager\Notification\Reminder\Reminder\IReminder;
+use srag\Plugins\SrLifeCycleManager\Notification\Reminder\IReminder;
 use srag\Plugins\SrLifeCycleManager\Routine\RoutineEvent;
 use srag\Plugins\SrLifeCycleManager\Routine\IRoutine;
 use srag\Plugins\SrLifeCycleManager\Event\IObserver;

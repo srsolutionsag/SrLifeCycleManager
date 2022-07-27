@@ -6,10 +6,10 @@ require_once __DIR__ . '/../../../vendor/autoload.php';
 
 use srag\Plugins\SrLifeCycleManager\Routine\Provider\DeletableObjectProvider;
 use srag\Plugins\SrLifeCycleManager\Notification\INotificationSender;
-use srag\Plugins\SrLifeCycleManager\Notification\Reminder\Reminder\IReminderRepository;
-use srag\Plugins\SrLifeCycleManager\Notification\Reminder\Reminder\IReminder;
+use srag\Plugins\SrLifeCycleManager\Notification\Reminder\IReminderRepository;
+use srag\Plugins\SrLifeCycleManager\Notification\Reminder\IReminder;
 use srag\Plugins\SrLifeCycleManager\Notification\Reminder\Reminder;
-use srag\Plugins\SrLifeCycleManager\Whitelist\IWhitelistRepository;
+use srag\Plugins\SrLifeCycleManager\Routine\Provider\DeletableObject;
 use srag\Plugins\SrLifeCycleManager\Routine\IRoutineRepository;
 use srag\Plugins\SrLifeCycleManager\Routine\IRoutine;
 use srag\Plugins\SrLifeCycleManager\Cron\ResultBuilder;
@@ -21,7 +21,6 @@ use ilLogger;
 use DateTimeImmutable;
 use DateInterval;
 use Generator;
-use srag\Plugins\SrLifeCycleManager\Routine\Provider\DeletableObject;
 
 /**
  * @author Thibeau Fuhrer <thibeau@sr.solutions>

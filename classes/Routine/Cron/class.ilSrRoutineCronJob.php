@@ -2,16 +2,15 @@
 
 /* Copyright (c) 2022 Thibeau Fuhrer <thibeau@sr.solutions> Extended GPL, see docs/LICENSE */
 
-use srag\Plugins\SrLifeCycleManager\Routine\Provider\IDeletableObjectProvider;
-use srag\Plugins\SrLifeCycleManager\Notification\Reminder\Reminder\IReminderRepository;
+use srag\Plugins\SrLifeCycleManager\Routine\Provider\DeletableObjectProvider;
+use srag\Plugins\SrLifeCycleManager\Notification\Reminder\IReminderRepository;
+use srag\Plugins\SrLifeCycleManager\Notification\Reminder\IReminder;
 use srag\Plugins\SrLifeCycleManager\Notification\INotificationSender;
 use srag\Plugins\SrLifeCycleManager\Routine\IRoutineRepository;
 use srag\Plugins\SrLifeCycleManager\Cron\ResultBuilder;
 use srag\Plugins\SrLifeCycleManager\Routine\RoutineEvent;
 use srag\Plugins\SrLifeCycleManager\Event\IObserver;
 use srag\Plugins\SrLifeCycleManager\Routine\IRoutine;
-use srag\Plugins\SrLifeCycleManager\Notification\Reminder\Reminder\IReminder;
-use srag\Plugins\SrLifeCycleManager\Routine\Provider\DeletableObjectProvider;
 
 /**
  * This cron job will delete repository objects that are affected by

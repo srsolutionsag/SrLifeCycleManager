@@ -4,14 +4,13 @@
 
 namespace srag\Plugins\SrLifeCycleManager\Tests\Cron\Routine;
 
-use srag\Plugins\SrLifeCycleManager\Notification\Reminder\Reminder\IReminder;
+use srag\Plugins\SrLifeCycleManager\Notification\Reminder\IReminder;
+use srag\Plugins\SrLifeCycleManager\Routine\Provider\DeletableObjectProvider;
 use srag\Plugins\SrLifeCycleManager\Routine\IRoutine;
 use ilSrRoutineCronJob;
 use ilObject;
 use DateTimeImmutable;
 use LogicException;
-use Generator;
-use srag\Plugins\SrLifeCycleManager\Routine\Provider\DeletableObjectProvider;
 
 /**
  * @author Thibeau Fuhrer <thibeau@sr.solutions>
