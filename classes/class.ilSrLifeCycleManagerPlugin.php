@@ -57,7 +57,7 @@ class ilSrLifeCycleManagerPlugin extends ilCronHookPlugin implements IObserver, 
     protected $event_listeners = [];
 
     /**
-     * @var ilSrCronJobFactory
+     * @var ilSrRoutineJobFactory
      */
     protected $job_factory;
 
@@ -127,8 +127,8 @@ class ilSrLifeCycleManagerPlugin extends ilCronHookPlugin implements IObserver, 
     public function getCronJobInstances() : array
     {
         return [
-            $this->job_factory->routine(),
-            $this->job_factory->dryRoutine(),
+            $this->job_factory->standard(),
+            $this->job_factory->dryRun(),
         ];
     }
 
@@ -138,7 +138,7 @@ class ilSrLifeCycleManagerPlugin extends ilCronHookPlugin implements IObserver, 
      */
     public function getCronJobInstance($a_job_id) : ilCronJob
     {
-        return $this->job_factory->getCronJob($a_job_id);
+        return $this->job_factory->getJob($a_job_id);
     }
 
     /**
