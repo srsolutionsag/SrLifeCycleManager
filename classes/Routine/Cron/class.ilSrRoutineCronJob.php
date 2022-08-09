@@ -125,7 +125,7 @@ class ilSrRoutineCronJob extends ilSrAbstractCronJob
                 // deleted immediately.
                 if (empty($notifications)) {
                     $this->deleteObject($routine, $object_instance);
-                    break 2;
+                    continue 2;
                 }
 
                 $sent_reminders = $this->reminder_repository->getSentByRoutineAndObject($routine, $object_ref_id);
@@ -148,7 +148,7 @@ class ilSrRoutineCronJob extends ilSrAbstractCronJob
                     $last_reminder->isElapsed($this->getDate())
                 ) {
                     $this->deleteObject($routine, $object_instance);
-                    break 2;
+                    continue 2;
                 }
 
                 // if all notification have been sent at this point, there's nothing
