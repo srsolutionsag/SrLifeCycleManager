@@ -1,5 +1,9 @@
 # SrLifeCycleManager Changelog
 
+## 1.6.2
+
+- Fixed routine cron-job, so it deletes more than just one object per iteration.
+
 ## 1.6.1
 
 - Fixed routine cron-jobs and unit-tests which contained wrong importations of reminder- and notifications-classes.

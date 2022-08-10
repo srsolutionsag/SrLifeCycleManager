@@ -207,6 +207,27 @@ class RoutineCronJobTest extends TestCase
         );
     }
 
+    public function testIfMultipleRoutinesAreDeleted() : void
+    {
+        $course_one = $this->getCourseMock(1);
+        $course_two = $this->getCourseMock(2);
+
+        $cron_job = $this->getTestableRoutineJob(
+            $this->notification_repository,
+            $this->routine_repository,
+            [
+                $course_one,
+                $course_two,
+            ]
+        );
+
+        $cron_job->run();
+
+        $this->assertCount(2, $cron_job->getDeletedObjects());
+        $this->assertEquals(1, $cron_job->getDeletedObjects()[0]->getRefId());
+        $this->assertEquals(2, $cron_job->getDeletedObjects()[1]->getRefId());
+    }
+
     /**
      * @param ilObject[] $objects
      * @return DeletableObjectProvider
