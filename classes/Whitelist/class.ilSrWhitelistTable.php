@@ -19,7 +19,7 @@ class ilSrWhitelistTable extends ilSrAbstractTable
     // ilSrWhitelistTable language variables:
     protected const STATUS_IS_OPT_OUT = 'status_is_opt_out';
     protected const STATUS_IS_NOT_OPT_OUT = 'status_is_not_opt_out';
-    protected const ACTION_VIEW_OBJECT = 'action_view_object';
+    protected const ACTION_VIEW_OBJECT = 'action_object_view';
 
     /**
      * @inheritDoc

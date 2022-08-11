@@ -1,5 +1,10 @@
 # SrLifeCycleManager Changelog
 
+## 1.6.3
+
+- Reminder repository can now handle stored mysql datetime values.
+- Fixed lang-var reference in `ilSrWhitelistTable` (action_object_view).
+
 ## 1.6.2
 
 - Fixed routine cron-job, so it deletes more than just one object per iteration.

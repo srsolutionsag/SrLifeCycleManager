@@ -148,10 +148,10 @@ abstract class ilSrAbstractNotificationRepository implements INotificationReposi
      */
     protected function getNotifiedDate(array $query_result) : ?DateTimeImmutable
     {
-        $notified_date = (isset($query_result[ISentNotification::F_NOTIFIED_REF_ID])) ?
+        $notified_date = (isset($query_result[ISentNotification::F_NOTIFIED_DATE])) ?
             DateTimeImmutable::createFromFormat(
                 self::MYSQL_DATETIME_FORMAT,
-                $query_result[ISentNotification::F_NOTIFIED_REF_ID]
+                $query_result[ISentNotification::F_NOTIFIED_DATE]
             ) : null;
 
         if (false === $notified_date) {
