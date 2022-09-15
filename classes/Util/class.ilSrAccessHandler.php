@@ -123,6 +123,16 @@ class ilSrAccessHandler
     }
 
     /**
+     * Checks if the current user is not logged in (anonymous).
+     *
+     * @return bool
+     */
+    public function isAnonymous() : bool
+    {
+        return (ANONYMOUS_USER_ID === $this->user->getId());
+    }
+
+    /**
      * Checks if the given user id matches the current user id.
      *
      * @param int $user_id

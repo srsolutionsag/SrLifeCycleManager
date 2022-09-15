@@ -4,13 +4,15 @@
 
 namespace srag\Plugins\SrLifeCycleManager\Rule\Attribute\Course;
 
-use DateTime;
+use srag\Plugins\SrLifeCycleManager\DateTimeHelper;
 
 /**
  * @author Thibeau Fuhrer <thibeau@sr.solutions>
  */
 class CourseStart extends CourseAttribute
 {
+    use DateTimeHelper;
+
     /**
      * @inheritDoc
      */
@@ -33,18 +35,20 @@ class CourseStart extends CourseAttribute
             return null;
         }
 
+        $end_date = $this->getDate($course_start->get(IL_CAL_DATE));
+        if (null === $end_date) {
+            return null;
+        }
+
         switch ($type) {
             case self::COMPARABLE_VALUE_TYPE_DATE:
-                return (DateTime::createFromFormat(
-                    self::COMPARABLE_DATETIME_FORMAT,
-                    $course_start->get(IL_CAL_DATE)
-                )) ?: null;
-
-            case self::COMPARABLE_VALUE_TYPE_INT:
-                return $course_start->get(IL_CAL_UNIX);
+                return $end_date;
 
             case self::COMPARABLE_VALUE_TYPE_STRING:
-                return $course_start->get(IL_CAL_DATETIME);
+                return $this->getMysqlDateString($end_date);
+
+            case self::COMPARABLE_VALUE_TYPE_INT:
+                return $end_date->getTimestamp();
 
             default:
                 return null;

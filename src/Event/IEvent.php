@@ -10,10 +10,5 @@ interface IEvent
     /**
      * @return string
      */
-    public function getAction() : string;
-
-    /**
-     * @return string
-     */
-    public function getSource() : string;
+    public function getName() : string;
 }

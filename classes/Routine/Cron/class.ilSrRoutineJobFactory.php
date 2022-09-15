@@ -1,11 +1,10 @@
 <?php declare(strict_types=1);
 
-use srag\Plugins\SrLifeCycleManager\Notification\INotificationSender;
-use srag\Plugins\SrLifeCycleManager\Cron\ResultBuilder;
-use srag\Plugins\SrLifeCycleManager\Notification\Reminder\IReminderRepository;
-use srag\Plugins\SrLifeCycleManager\Routine\IRoutineRepository;
-use srag\Plugins\SrLifeCycleManager\Event\IObserver;
 use srag\Plugins\SrLifeCycleManager\Routine\Provider\DeletableObjectProvider;
+use srag\Plugins\SrLifeCycleManager\Notification\INotificationSender;
+use srag\Plugins\SrLifeCycleManager\Repository\RepositoryFactory;
+use srag\Plugins\SrLifeCycleManager\Cron\ResultBuilder;
+use srag\Plugins\SrLifeCycleManager\Event\IObserver;
 
 /**
  * @author Thibeau Fuhrer <thibeau@sr.solutions>
@@ -24,14 +23,9 @@ class ilSrRoutineJobFactory
     protected $result_builder;
 
     /**
-     * @var IReminderRepository
+     * @var RepositoryFactory
      */
-    protected $reminder_repository;
-
-    /**
-     * @var IRoutineRepository
-     */
-    protected $routine_repository;
+    protected $repository;
 
     /**
      * @var IObserver
@@ -51,8 +45,7 @@ class ilSrRoutineJobFactory
     /**
      * @param INotificationSender     $notification_sender
      * @param ResultBuilder           $result_builder
-     * @param IReminderRepository     $reminder_repository
-     * @param IRoutineRepository      $routine_repository
+     * @param RepositoryFactory       $repositories
      * @param IObserver               $event_observer
      * @param DeletableObjectProvider $objects_provider
      * @param ilLogger                $logger
@@ -60,16 +53,14 @@ class ilSrRoutineJobFactory
     public function __construct(
         INotificationSender $notification_sender,
         ResultBuilder $result_builder,
-        IReminderRepository $reminder_repository,
-        IRoutineRepository $routine_repository,
+        RepositoryFactory $repositories,
         IObserver $event_observer,
         DeletableObjectProvider $objects_provider,
         ilLogger $logger
     ) {
         $this->notification_sender = $notification_sender;
         $this->result_builder = $result_builder;
-        $this->reminder_repository = $reminder_repository;
-        $this->routine_repository = $routine_repository;
+        $this->repository = $repositories;
         $this->event_observer = $event_observer;
         $this->objects_provider = $objects_provider;
         $this->logger = $logger;
@@ -103,8 +94,10 @@ class ilSrRoutineJobFactory
             $this->objects_provider,
             $this->result_builder,
             $this->event_observer,
-            $this->reminder_repository,
-            $this->routine_repository,
+            $this->repository->reminder(),
+            $this->repository->token(),
+            $this->repository->whitelist(),
+            $this->repository->general(),
             $this->logger
         );
     }
@@ -119,8 +112,10 @@ class ilSrRoutineJobFactory
             $this->objects_provider,
             $this->result_builder,
             $this->event_observer,
-            $this->reminder_repository,
-            $this->routine_repository,
+            $this->repository->reminder(),
+            $this->repository->token(),
+            $this->repository->whitelist(),
+            $this->repository->general(),
             $this->logger
         );
     }

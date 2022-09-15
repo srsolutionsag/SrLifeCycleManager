@@ -50,4 +50,14 @@ interface IWhitelistRepository
      * @return bool
      */
     public function delete(int $ref_id) : bool;
+
+    /**
+     * Returns an empty instance of a whitelist entry for the given information.
+     *
+     * @param IRoutine $routine
+     * @param int      $ref_id
+     * @param int      $user_id
+     * @return IWhitelistEntry
+     */
+    public function empty(IRoutine $routine, int $ref_id, int $user_id) : IWhitelistEntry;
 }

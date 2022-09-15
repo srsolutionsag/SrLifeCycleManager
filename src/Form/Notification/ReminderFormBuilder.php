@@ -79,7 +79,7 @@ class ReminderFormBuilder extends NotificationFormBuilder
                     return false;
                 }
 
-                $existing_notification = $this->repository->getByRoutineAndDaysBeforeDeletion(
+                $existing_notification = $this->repository->getWithDaysBeforeDeletion(
                     $this->notification->getRoutineId(),
                     (int) $days_before_deletion
                 );

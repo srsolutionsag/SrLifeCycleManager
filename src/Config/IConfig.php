@@ -49,6 +49,12 @@ interface IConfig
      */
     public const CNF_MAILING_BLACKLIST = 'cnf_mailing_blacklist';
 
+    /**
+     * @var string config primary key to force mail-forwarding even though the user might
+     *             have disabled it.
+     */
+    public const CNF_FORCE_MAIL_FORWARDING = 'cnf_force_mail_forwarding';
+
     // IConfig attribute names:
     public const F_IDENTIFIER = 'identifier';
     public const F_CONFIG = 'configuration';
@@ -118,6 +124,17 @@ interface IConfig
      * @return IConfig
      */
     public function setNotificationSenderAddress(string $email) : IConfig;
+
+    /**
+     * @return bool
+     */
+    public function isMailForwardingForced() : bool;
+
+    /**
+     * @param bool $is_forced
+     * @return IConfig
+     */
+    public function setMailForwardingForced(bool $is_forced) : IConfig;
 
     /**
      * @return int[]

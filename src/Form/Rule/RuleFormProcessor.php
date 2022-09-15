@@ -54,7 +54,7 @@ class RuleFormProcessor extends AbstractFormProcessor
         // ensure that LHS value is only empty if the type is CommonNull.
         if ($this->isSideCommonAttribute(RuleFormBuilder::KEY_LHS_VALUE, $post_data) &&
             $this->getValueTypeBySide(RuleFormBuilder::KEY_LHS_VALUE, $post_data) !== CommonNull::class &&
-            ('0' === $lhs_value || empty($lhs_value))
+            ('0' === $lhs_value || empty($lhs_value)) // it's important we check '0' before empty, since empty would be true
         ) {
             return false;
         }
@@ -63,7 +63,7 @@ class RuleFormProcessor extends AbstractFormProcessor
         // ensure that RHS value is only empty if the type is CommonNull.
         if ($this->isSideCommonAttribute(RuleFormBuilder::KEY_RHS_VALUE, $post_data) &&
             $this->getValueTypeBySide(RuleFormBuilder::KEY_RHS_VALUE, $post_data) !== CommonNull::class &&
-            ('0' === $rhs_value || empty($rhs_value))
+            ('0' === $rhs_value || empty($rhs_value)) // it's important we check '0' before empty, since empty would be true
         ) {
             return false;
         }

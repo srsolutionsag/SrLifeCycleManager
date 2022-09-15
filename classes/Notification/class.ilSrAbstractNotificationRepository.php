@@ -6,6 +6,7 @@ use srag\Plugins\SrLifeCycleManager\Notification\INotificationRepository;
 use srag\Plugins\SrLifeCycleManager\Notification\ISentNotification;
 use srag\Plugins\SrLifeCycleManager\Notification\INotification;
 use srag\Plugins\SrLifeCycleManager\Repository\DTOHelper;
+use srag\Plugins\SrLifeCycleManager\DateTimeHelper;
 
 /**
  * This repository is responsible for all notification CRUD operations.
@@ -16,12 +17,8 @@ use srag\Plugins\SrLifeCycleManager\Repository\DTOHelper;
  */
 abstract class ilSrAbstractNotificationRepository implements INotificationRepository
 {
+    use DateTimeHelper;
     use DTOHelper;
-
-    /**
-     * @var string mysql datetime format string.
-     */
-    protected const MYSQL_DATETIME_FORMAT = 'Y-m-d';
 
     /**
      * @var ilDBInterface
@@ -39,23 +36,10 @@ abstract class ilSrAbstractNotificationRepository implements INotificationReposi
     /**
      * @inheritDoc
      */
-    public function markObjectAsNotified(INotification $notification, int $ref_id) : ISentNotification
-    {
-        if ($this->hasObjectBeenNotified($notification, $ref_id)) {
-            return $this->updateObjectReference($notification, $ref_id);
-        }
-
-        return $this->insertObjectReference($notification, $ref_id);
-    }
-
-    /**
-     * @inheritDoc
-     */
     public function hasObjectBeenNotified(INotification $notification, int $ref_id) : bool
     {
         $query = "
-            SELECT reference.routine_id, reference.ref_id, reference.date, reference.notification_id,
-                   notification.title, notification.content
+            SELECT COUNT(*) AS count
                 FROM srlcm_notified_objects AS reference
                 INNER JOIN srlcm_notification AS notification ON reference.notification_id = notification.notification_id
                 WHERE reference.notification_id = %s
@@ -76,7 +60,63 @@ abstract class ilSrAbstractNotificationRepository implements INotificationReposi
             )
         );
 
-        return (!empty($results));
+        $count = (int) $results[0]['count'];
+
+        return (1 >= $count);
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function markObjectAsNotified(INotification $notification, int $ref_id) : ISentNotification
+    {
+        if ($this->hasObjectBeenNotified($notification, $ref_id)) {
+            return $this->updateObjectReference($notification, $ref_id);
+        }
+
+        return $this->insertObjectReference($notification, $ref_id);
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function markObjectAsDeleted(int $ref_id): void
+    {
+        $query = "DELETE FROM srlcm_notified_objects WHERE ref_id = %s";
+
+        $this->database->manipulateF(
+            $query,
+            ['integer'],
+            [$ref_id]
+        );
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function getSentInformation(INotification $notification, int $ref_id) : ?ISentNotification
+    {
+        $query = "
+            SELECT date FROM srlcm_notified_objects
+                WHERE notification_id = %s
+                AND routine_id = %s
+                AND ref_id = %s
+            ;
+        ";
+
+        return $this->returnSingleQueryResult(
+            $this->database->fetchAll(
+                $this->database->queryF(
+                    $query,
+                    ['integer', 'integer', 'integer'],
+                    [
+                        $notification->getNotificationId(),
+                        $notification->getRoutineId(),
+                        $ref_id,
+                    ]
+                )
+            )
+        );
     }
 
     /**
@@ -87,20 +127,21 @@ abstract class ilSrAbstractNotificationRepository implements INotificationReposi
     protected function updateObjectReference(INotification $notification, int $ref_id) : ISentNotification
     {
         $query = "
-            UPDATE srlcm_notified_objects SET date = %s
+            UPDATE srlcm_notified_objects
+                SET date = %s
                 WHERE notification_id = %s
                 AND routine_id = %s
                 AND ref_id = %s
             ;
         ";
 
-        $now = new DateTimeImmutable();
+        $today = $this->getCurrentDate();
 
         $this->database->manipulateF(
             $query,
             ['date', 'integer', 'integer', 'integer'],
             [
-                $now->format(self::MYSQL_DATETIME_FORMAT),
+                $this->getMysqlDateString($today),
                 $notification->getNotificationId(),
                 $notification->getRoutineId(),
                 $ref_id,
@@ -108,7 +149,7 @@ abstract class ilSrAbstractNotificationRepository implements INotificationReposi
         );
 
         /** @var $notification ISentNotification */
-        return $notification->setNotifiedDate($now);
+        return $notification->setNotifiedDate($today);
     }
 
     /**
@@ -124,7 +165,7 @@ abstract class ilSrAbstractNotificationRepository implements INotificationReposi
             ;
         ";
 
-        $now = new DateTimeImmutable();
+        $today = $this->getCurrentDate();
 
         $this->database->manipulateF(
             $query,
@@ -133,13 +174,13 @@ abstract class ilSrAbstractNotificationRepository implements INotificationReposi
                 $notification->getRoutineId(),
                 $notification->getNotificationId(),
                 $ref_id,
-                $now->format(self::MYSQL_DATETIME_FORMAT),
+                $this->getMysqlDateString($today),
             ]
         );
 
         return $notification
             ->setNotifiedRefId($ref_id)
-            ->setNotifiedDate($now);
+            ->setNotifiedDate($today);
     }
 
     /**
@@ -148,17 +189,7 @@ abstract class ilSrAbstractNotificationRepository implements INotificationReposi
      */
     protected function getNotifiedDate(array $query_result) : ?DateTimeImmutable
     {
-        $notified_date = (isset($query_result[ISentNotification::F_NOTIFIED_DATE])) ?
-            DateTimeImmutable::createFromFormat(
-                self::MYSQL_DATETIME_FORMAT,
-                $query_result[ISentNotification::F_NOTIFIED_DATE]
-            ) : null;
-
-        if (false === $notified_date) {
-            throw new LogicException("Could not create datetime object from mysql format.");
-        }
-
-        return $notified_date;
+        return $this->getDateByQueryResult($query_result, ISentNotification::F_NOTIFIED_DATE);
     }
 
     /**

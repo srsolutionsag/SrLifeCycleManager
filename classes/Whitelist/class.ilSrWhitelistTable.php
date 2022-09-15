@@ -13,7 +13,7 @@ class ilSrWhitelistTable extends ilSrAbstractTable
     protected const COL_REF_ID = 'col_whitelist_ref_id';
     protected const COL_USER_NAME = 'col_whitelist_user_name';
     protected const COL_IS_OPT_OUT = 'col_whitelist_opt_out';
-    protected const COL_ELONGATION = 'col_whitelist_elongation';
+    protected const COL_EXPIRY_DATE = 'col_whitelist_expiry_date';
     protected const COL_DATE = 'col_whitelist_date';
 
     // ilSrWhitelistTable language variables:
@@ -37,7 +37,7 @@ class ilSrWhitelistTable extends ilSrAbstractTable
         $this->addColumn($this->translator->txt(self::COL_REF_ID));
         $this->addColumn($this->translator->txt(self::COL_USER_NAME));
         $this->addColumn($this->translator->txt(self::COL_IS_OPT_OUT));
-        $this->addColumn($this->translator->txt(self::COL_ELONGATION));
+        $this->addColumn($this->translator->txt(self::COL_EXPIRY_DATE));
         $this->addColumn($this->translator->txt(self::COL_DATE));
         $this->addActionColumn();
     }
@@ -61,7 +61,7 @@ class ilSrWhitelistTable extends ilSrAbstractTable
         $template->setVariable(self::COL_REF_ID, $data[IWhitelistEntry::F_REF_ID]);
         $template->setVariable(self::COL_USER_NAME, $user_name);
         $template->setVariable(self::COL_IS_OPT_OUT, $status_opt_out);
-        $template->setVariable(self::COL_ELONGATION, $data[IWhitelistEntry::F_ELONGATION]);
+        $template->setVariable(self::COL_EXPIRY_DATE, $data[IWhitelistEntry::F_EXPIRY_DATE]);
         $template->setVariable(self::COL_DATE, $data[IWhitelistEntry::F_DATE]);
 
         $template->setVariable(

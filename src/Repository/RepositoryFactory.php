@@ -9,6 +9,7 @@ use srag\Plugins\SrLifeCycleManager\Whitelist\IWhitelistRepository;
 use srag\Plugins\SrLifeCycleManager\Routine\IRoutineRepository;
 use srag\Plugins\SrLifeCycleManager\Config\IConfigRepository;
 use srag\Plugins\SrLifeCycleManager\Rule\IRuleRepository;
+use srag\Plugins\SrLifeCycleManager\Token\ITokenRepository;
 
 /**
  * @author Thibeau Fuhrer <thibeau@sr.solutions>
@@ -56,6 +57,11 @@ class RepositoryFactory
     protected $whitelist_repository;
 
     /**
+     * @var ITokenRepository
+     */
+    protected $token_repository;
+
+    /**
      * @param IGeneralRepository           $general_repository
      * @param IConfigRepository            $config_repository
      * @param IRoutineRepository           $routine_repository
@@ -64,6 +70,7 @@ class RepositoryFactory
      * @param IConfirmationRepository      $confirmation_repository
      * @param IReminderRepository          $reminder_repository
      * @param IWhitelistRepository         $whitelist_repository
+     * @param ITokenRepository             $token_repository
      */
     public function __construct(
         IGeneralRepository $general_repository,
@@ -73,7 +80,8 @@ class RepositoryFactory
         IRuleRepository $rule_repository,
         IConfirmationRepository $confirmation_repository,
         IReminderRepository $reminder_repository,
-        IWhitelistRepository $whitelist_repository
+        IWhitelistRepository $whitelist_repository,
+        ITokenRepository $token_repository
     ) {
         $this->general_repository = $general_repository;
         $this->config_repository = $config_repository;
@@ -83,6 +91,7 @@ class RepositoryFactory
         $this->confirmation_repository = $confirmation_repository;
         $this->reminder_repository = $reminder_repository;
         $this->whitelist_repository = $whitelist_repository;
+        $this->token_repository = $token_repository;
     }
 
     /**
@@ -147,5 +156,10 @@ class RepositoryFactory
     public function whitelist() : IWhitelistRepository
     {
         return $this->whitelist_repository;
+    }
+
+    public function token() : ITokenRepository
+    {
+        return $this->token_repository;
     }
 }

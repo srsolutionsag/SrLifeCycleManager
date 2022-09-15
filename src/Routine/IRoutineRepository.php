@@ -2,6 +2,8 @@
 
 namespace srag\Plugins\SrLifeCycleManager\Routine;
 
+use DateTimeImmutable;
+
 /**
  * Describes the CRUD operations of a routine.
  *
@@ -68,6 +70,19 @@ interface IRoutineRepository
      * @return IRoutine[]
      */
     public function getAllUnassigned(int $ref_id, bool $array_data = false) : array;
+
+    /**
+     * Calculates and returns the deletion date of the given routine and object
+     * (ref-id) by considering the registered reminders.
+     *
+     * NOTE that this method DOES NOT check if there is an active whitelist entry,
+     * so please consider this beforehand if required.
+     *
+     * @param IRoutine $routine
+     * @param int      $ref_id
+     * @return DateTimeImmutable
+     */
+    public function getDeletionDate(IRoutine $routine, int $ref_id) : DateTimeImmutable;
 
     /**
      * Creates or updates the given routine in the database.

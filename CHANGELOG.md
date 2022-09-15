@@ -1,5 +1,29 @@
 # SrLifeCycleManager Changelog
 
+## 1.7.0
+
+- Added a token-system which is used when generating link targets for elongations or opt-outs. This prevents multiple
+  object administrators from postponing the object with the same link more than once.
+  - IMPORTANT: this also means, any previously sent reminders now contain invalid links for elongations and opt-outs.
+- Added a `cooldown` property to routines that will be considered when making elongations (or postponements). The
+  cooldown for all existing routines has been defaulted to 1, which means after an elongation has been made it cannot be
+  postponed again for the amount of days the `cooldown` property holds.
+- Added a new configuration to enforce mail-forwarding, even though users might have disabled it. This config will be
+  considered in `ilSrNotificationSender` which will only forward mails if the user has disabled it.
+- Improved the overall UI of the repository tool, which now lists routines as items within an item group.
+    - The repository tool will now also display the owner, deletion-date and expiry-date (of whitelists) for affecting
+      routines.
+    - The repository tool does also contain a new action for un-doing previously made opt-outs.
+- Several things have been refactored:
+    - Routine cron-job will now send reminders for the correct amount of days before an object deletion if it has been
+      whitelisted.
+    - Whitelist elongations (or postponements) will now be appended to the relatively calculated deletion date instead
+      of being added to the current date.
+    - The whitelist table does now store an absolute expiry-date instead of the relative elongation.
+    - A new `DateTimeHelper` trait is available that should be used for clean creation of `DateTime` objects. It's
+      already integrated in several repositories, dynamic attributes and GUI classes.
+    - PHPUnit tests due to the adjusted behaviour of the routine cron-job.
+
 ## 1.6.3
 
 - Reminder repository can now handle stored mysql datetime values.
@@ -16,11 +40,12 @@
 ## 1.6.0
 
 - Refactored notifications and split them up into `reminders` and `confirmations`, whereas
-  - reminders are sent for the configured amount of days before an object deletion.
-  - confirmations are sent whenever certain events occur (postponements, opt-outs, deletions).
+    - reminders are sent for the configured amount of days before an object deletion.
+    - confirmations are sent whenever certain events occur (postponements, opt-outs, deletions).
 - Fixed an issue where postponements and opt-outs were possible for the ILIAS root (ref-id 1).
 - Changed wording from `days_before_submission` to `days_before_deletion` to be more accurate.
-- Introduced new event-system which can be used via plugin-instance [`ilSrLifeCycleManagerPlugin`](./classes/class.ilSrLifeCycleManagerPlugin.php).
+- Introduced new event-system which can be used via
+  plugin-instance [`ilSrLifeCycleManagerPlugin`](./classes/class.ilSrLifeCycleManagerPlugin.php).
 - Added event-listener which sends confirmations for certain actions.
 
 ## 1.5.0

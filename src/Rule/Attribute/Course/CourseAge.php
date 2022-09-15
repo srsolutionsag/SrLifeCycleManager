@@ -2,13 +2,15 @@
 
 namespace srag\Plugins\SrLifeCycleManager\Rule\Attribute\Course;
 
-use DateTime;
+use srag\Plugins\SrLifeCycleManager\DateTimeHelper;
 
 /**
  * @author Thibeau Fuhrer <thibeau@sr.solutions>
  */
 class CourseAge extends CourseAttribute
 {
+    use DateTimeHelper;
+
     /**
      * @inheritDoc
      */
@@ -25,21 +27,19 @@ class CourseAge extends CourseAttribute
      */
     public function getComparableValue(string $type)
     {
-        $creation_string = $this->course->getCreateDate();
-        $creation_date = DateTime::createFromFormat(self::ILIAS_DATETIME_FORMAT, $creation_string);
-        if (false === $creation_date) {
+        $creation_date = $this->getDateTime($this->course->getCreateDate());
+        if (null === $creation_date) {
             return null;
         }
 
-        // get amount of days elapsed since $creation_date.
-        $elapsed_days = $creation_date->diff((new DateTime()))->format("%r%a");
+        $elapsed_days = $this->getGap($creation_date, $this->getCurrentDate());
 
         switch ($type) {
             case self::COMPARABLE_VALUE_TYPE_INT:
-                return (int) $elapsed_days;
+                return $elapsed_days;
 
             case self::COMPARABLE_VALUE_TYPE_STRING:
-                return $elapsed_days;
+                return (string) $elapsed_days;
 
             default:
                 return null;

@@ -60,16 +60,6 @@ class RoutineProvider
     }
 
     /**
-     * @return IRoutine[]
-     */
-    public function getRoutinesForLocation(ilObject $object) : array
-    {
-        return $this->routine_repository->getAllByRefId(
-            $object->getRefId()
-        );
-    }
-
-    /**
      * @param IRoutine $routine
      * @param ilObject $object
      * @return bool

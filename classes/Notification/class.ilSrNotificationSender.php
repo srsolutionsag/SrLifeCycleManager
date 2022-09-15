@@ -6,13 +6,14 @@ use srag\Plugins\SrLifeCycleManager\Notification\INotification;
 use srag\Plugins\SrLifeCycleManager\Notification\INotificationSender;
 use srag\Plugins\SrLifeCycleManager\Notification\ISentNotification;
 use srag\Plugins\SrLifeCycleManager\Notification\INotificationRepository;
+use srag\Plugins\SrLifeCycleManager\Routine\IRoutineRepository;
 use srag\Plugins\SrLifeCycleManager\Config\IConfig;
 
 /**
  * This class is responsible for sending notifications to object
  * administrators.
  *
- * @author Thibeau Fuhrer <thibeau@sr.solutions>
+ * @author       Thibeau Fuhrer <thibeau@sr.solutions>
  *
  * Whenever notifications must be sent, this class should be used,
  * for it notifies all existing administrators of an object and
@@ -26,7 +27,17 @@ class ilSrNotificationSender implements INotificationSender
     /**
      * @var INotificationRepository
      */
-    protected $repository;
+    protected $notification_repository;
+
+    /**
+     * @var IRoutineRepository
+     */
+    protected $routine_repository;
+
+    /**
+     * @var ilSrWhitelistLinkGenerator
+     */
+    protected $whitelist_link_generator;
 
     /**
      * @var ilMailMimeSender
@@ -39,61 +50,120 @@ class ilSrNotificationSender implements INotificationSender
     protected $config;
 
     /**
-     * @var ilCtrl
-     */
-    protected $ctrl;
-
-    /**
-     * @param INotificationRepository $repository
-     * @param ilMailMimeSenderFactory $sender_factory
-     * @param IConfig                 $config
-     * @param ilCtrl                  $ctrl
+     * @param INotificationRepository    $notification_repository
+     * @param IRoutineRepository         $routine_repository
+     * @param ilSrWhitelistLinkGenerator $whitelist_link_generator
+     * @param ilMailMimeSender           $mail_sender
+     * @param IConfig                    $config
      */
     public function __construct(
-        INotificationRepository $repository,
-        ilMailMimeSenderFactory $sender_factory,
-        IConfig $config,
-        ilCtrl $ctrl
+        INotificationRepository $notification_repository,
+        IRoutineRepository $routine_repository,
+        ilSrWhitelistLinkGenerator $whitelist_link_generator,
+        ilMailMimeSender $mail_sender,
+        IConfig $config
     ) {
-        $this->repository = $repository;
+        $this->notification_repository = $notification_repository;
+        $this->routine_repository = $routine_repository;
+        $this->whitelist_link_generator = $whitelist_link_generator;
+        $this->mail_sender = $mail_sender;
         $this->config = $config;
-        $this->mail_sender = $this->getMailSender($sender_factory);
-        $this->ctrl = $ctrl;
     }
 
     /**
      * @inheritDoc
      */
-    public function sendNotification(INotification $notification, ilObject $object) : ISentNotification
+    public function sendNotification(INotification $notification, ilObject $object): ISentNotification
     {
+        /** @var $administrators string[] */
         $administrators = ilParticipants::getInstance($object->getRefId())->getAdmins();
+
+        // it's important the message is parsed outside the loop, otherwise
+        // the whitelist-tokens will be overwritten each iteration.
         $message = $this->getNotificationBody($object, $notification);
         $subject = $notification->getTitle();
 
-        /** @var $administrators string[] */
         foreach ($administrators as $user_id) {
             $user_id = (int) $user_id;
 
-            // it's possible that participants are delivered whose user
-            // accounts were deleted.
-            // In this case, or if the user_id is contained within the
-            // configured mailing-whitelist, the iteration is skipped.
-            if (!ilObjUser::_exists($user_id) ||
-                in_array($user_id, $this->config->getMailingBlacklist(), true)
+            // only send notifications to users that still exist and are not contained
+            // on the configured blacklist.
+            if (ilObjUser::_exists($user_id) &&
+                !in_array($user_id, $this->config->getMailingBlacklist(), true)
             ) {
-                continue;
+                $this->sendNotificationToUser(new ilObjUser($user_id), $subject, $message);
             }
-
-            $recipient = new ilObjUser($user_id);
-
-            // We decided to only rely on ILIAS mails because if users have enabled
-            // mail-forwarding, the notification would've been sent twice.
-            // $this->sendMimeMail($recipient, $subject, $message);
-
-            $this->sendIliasMail($recipient, $subject, $message);
         }
 
-        return $this->repository->markObjectAsNotified($notification, $object->getRefId());
+        return $this->notification_repository->markObjectAsNotified($notification, $object->getRefId());
+    }
+
+    /**
+     * Replaces the notifications placeholders with their supposed values.
+     *
+     * @TODO: this method could be replaced by some more general "blocks"
+     *        service (name in progress).
+     *
+     * @param ilObject      $object
+     * @param INotification $notification
+     * @return string
+     */
+    protected function getNotificationBody(ilObject $object, INotification $notification): string
+    {
+        $message = $notification->getContent();
+        $routine = null;
+
+        if (strpos($message, '[EXTENSION_LINK]')) {
+            $routine = $this->routine_repository->get($notification->getRoutineId());
+
+            // link defaults to 'unavailable' if the routine doesn't support elongations.
+            $link = (null !== $routine && 0 < $routine->getElongation()) ?
+                $this->whitelist_link_generator->getElongationLink(
+                    $notification->getRoutineId(),
+                    $object->getRefId()
+                ) : 'unavailable';
+
+            $message = str_replace('[EXTENSION_LINK]', $link, $message);
+        }
+
+        if (strpos($message, '[OPT_OUT_LINK]')) {
+            // use the previously fetched routine if possible.
+            $routine = $routine ?? $this->routine_repository->get($notification->getRoutineId());
+
+            // link defaults to 'unavailable' if the routine doesn't support opt-outs.
+            $link = (null !== $routine && $routine->hasOptOut()) ?
+                $this->whitelist_link_generator->getOptOutLink(
+                    $notification->getRoutineId(),
+                    $object->getRefId()
+                ) : 'unavailable';
+
+            $message = str_replace('[OPT_OUT_LINK]', $link, $message);
+        }
+
+        return str_replace([
+            '[OBJECT_LINK]',
+            '[OBJECT_TITLE]',
+        ], [
+            ilLink::_getStaticLink($object->getRefId()),
+            $object->getTitle(),
+        ], $message);
+    }
+
+    /**
+     * @param ilObjUser $recipient
+     * @param string    $subject
+     * @param string    $message
+     * @return void
+     */
+    protected function sendNotificationToUser(ilObjUser $recipient, string $subject, string $message): void
+    {
+        $this->sendIliasMail($recipient, $subject, $message);
+
+        if ($this->config->isMailForwardingForced() &&
+            !$this->hasUserEnabledForwarding($recipient)
+        ) {
+            $this->sendMimeMail($recipient, $subject, $message);
+        }
     }
 
     /**
@@ -103,7 +173,7 @@ class ilSrNotificationSender implements INotificationSender
      * @param string    $subject
      * @param string    $message
      */
-    protected function sendMimeMail(ilObjUser $recipient, string $subject, string $message) : void
+    protected function sendMimeMail(ilObjUser $recipient, string $subject, string $message): void
     {
         $mail = new ilMimeMail();
         $mail->From($this->mail_sender);
@@ -120,7 +190,7 @@ class ilSrNotificationSender implements INotificationSender
      * @param string    $subject
      * @param string    $message
      */
-    protected function sendIliasMail(ilObjUser $recipient, string $subject, string $message) : void
+    protected function sendIliasMail(ilObjUser $recipient, string $subject, string $message): void
     {
         $mail = new ilMail(ANONYMOUS_USER_ID);
         $mail->setSaveInSentbox(true);
@@ -135,61 +205,11 @@ class ilSrNotificationSender implements INotificationSender
     }
 
     /**
-     * Replaces the notifications placeholders with their supposed values.
-     *
-     * @param ilObject      $object
-     * @param INotification $notification
-     * @return string
+     * @param ilObject $user
+     * @return bool
      */
-    protected function getNotificationBody(ilObject $object, INotification $notification) : string
+    protected function hasUserEnabledForwarding(ilObject $user): bool
     {
-        $this->ctrl->setParameterByClass(
-            ilSrWhitelistGUI::class,
-            ilSrWhitelistGUI::PARAM_ROUTINE_ID,
-            $notification->getRoutineId()
-        );
-
-        $this->ctrl->setParameterByClass(
-            ilSrWhitelistGUI::class,
-            ilSrWhitelistGUI::PARAM_OBJECT_REF_ID,
-            $object->getRefId()
-        );
-
-        return str_replace(
-            [
-                '[OBJECT_TITLE]',
-                '[OBJECT_LINK]',
-                '[EXTENSION_LINK]',
-                '[OPT_OUT_LINK]',
-            ],
-            [
-                $object->getTitle(),
-                ilLink::_getStaticLink($object->getRefId()),
-                ILIAS_HTTP_PATH . '/' . ilSrLifeCycleManagerDispatcher::getLinkTarget(
-                    ilSrWhitelistGUI::class,
-                    ilSrWhitelistGUI::CMD_WHITELIST_POSTPONE
-                ),
-                ILIAS_HTTP_PATH . '/' . ilSrLifeCycleManagerDispatcher::getLinkTarget(
-                    ilSrWhitelistGUI::class,
-                    ilSrWhitelistGUI::CMD_WHITELIST_OPT_OUT
-                ),
-            ],
-            $notification->getContent()
-        );
-    }
-
-    /**
-     * @param ilMailMimeSenderFactory $factory
-     * @return ilMailMimeSender
-     */
-    protected function getMailSender(ilMailMimeSenderFactory $factory) : ilMailMimeSender
-    {
-        if (!empty($this->config->getNotificationSenderAddress())) {
-            return $factory->userByEmailAddress(
-                $this->config->getNotificationSenderAddress()
-            );
-        }
-
-        return $factory->system();
+        return (ilMailOptions::INCOMING_LOCAL !== ((new ilMailOptions($user->getId()))->getIncomingType()));
     }
 }

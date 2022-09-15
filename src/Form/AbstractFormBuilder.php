@@ -21,6 +21,7 @@ abstract class AbstractFormBuilder implements IFormBuilder
     private const MSG_INVALID_RED_IDS = 'msg_invalid_ref_ids';
     private const MSG_INVALID_REF_ID = 'msg_invalid_ref_id';
     private const MSG_INVALID_EMAIL = 'msg_invalid_email';
+    private const MSG_NEGATIVE_INTEGER = 'msg_negative_integer';
 
     /**
      * @var ITranslator
@@ -66,6 +67,22 @@ abstract class AbstractFormBuilder implements IFormBuilder
         $this->fields = $fields;
         $this->refinery = $refinery;
         $this->form_action = $form_action;
+    }
+
+    /**
+     * Validates submitted numeric inputs, if the value is greater or equal
+     * to zero (0).
+     *
+     * @return Constraint
+     */
+    protected function getPositiveIntegerValidationConstraint(): Constraint
+    {
+        return $this->refinery->custom()->constraint(
+            static function (int $number) : bool {
+                return (0 <= $number);
+            },
+            $this->translator->txt(self::MSG_NEGATIVE_INTEGER)
+        );
     }
 
     /**

@@ -41,12 +41,12 @@ abstract class Notification implements ISentNotification
     protected $content;
 
     /**
-     * @param int|null $notification_id
-     * @param int $routine_id
-     * @param int|null $notified_ref_id
+     * @param int                    $routine_id
+     * @param string                 $title
+     * @param string                 $content
+     * @param int|null               $notification_id
+     * @param int|null               $notified_ref_id
      * @param DateTimeImmutable|null $notified_date
-     * @param string $title
-     * @param string $content
      */
     public function __construct(
         int $routine_id,
@@ -139,6 +139,14 @@ abstract class Notification implements ISentNotification
     /**
      * @inheritDoc
      */
+    public function hasBeenSent(): bool
+    {
+        return (null === $this->notified_ref_id || null === $this->notified_date);
+    }
+
+    /**
+     * @inheritDoc
+     */
     public function getTitle() : string
     {
         return $this->title;
@@ -176,7 +184,7 @@ abstract class Notification implements ISentNotification
      */
     protected function abortIfNotSent() : void
     {
-        if (null === $this->notified_ref_id || null === $this->notified_date) {
+        if (!$this->hasBeenSent()) {
             throw new LogicException("Notification has not been sent yet");
         }
     }

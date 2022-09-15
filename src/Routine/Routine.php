@@ -3,7 +3,7 @@
 namespace srag\Plugins\SrLifeCycleManager\Routine;
 
 use srag\Plugins\SrLifeCycleManager\Rule\IRule;
-use DateTime;
+use DateTimeImmutable;
 
 /**
  * @author Thibeau Fuhrer <thibeau@sr.solutions>
@@ -46,19 +46,25 @@ class Routine implements IRoutine
     protected $elongation;
 
     /**
-     * @var DateTime
+     * @var int|null
+     */
+    protected $elongation_cooldown;
+
+    /**
+     * @var DateTimeImmutable
      */
     protected $creation_date;
 
     /**
-     * @param int      $owner_id
-     * @param string   $routine_type
-     * @param int      $origin
-     * @param string   $title
-     * @param bool     $has_opt_out
-     * @param DateTime $creation_date
-     * @param int|null $elongation
-     * @param int|null $routine_id
+     * @param int               $owner_id
+     * @param string            $routine_type
+     * @param int               $origin
+     * @param string            $title
+     * @param bool              $has_opt_out
+     * @param DateTimeImmutable $creation_date
+     * @param int|null          $elongation
+     * @param int|null          $elongation_cooldown
+     * @param int|null          $routine_id
      */
     public function __construct(
         int $owner_id,
@@ -66,8 +72,9 @@ class Routine implements IRoutine
         int $origin,
         string $title,
         bool $has_opt_out,
-        DateTime $creation_date,
+        DateTimeImmutable $creation_date,
         int $elongation = null,
+        int $elongation_cooldown = null,
         int $routine_id = null
     ) {
         $this->routine_id = $routine_id;
@@ -77,6 +84,7 @@ class Routine implements IRoutine
         $this->title = $title;
         $this->has_opt_out = $has_opt_out;
         $this->elongation = $elongation;
+        $this->elongation_cooldown = $elongation_cooldown;
         $this->creation_date = $creation_date;
     }
 
@@ -202,7 +210,24 @@ class Routine implements IRoutine
     /**
      * @inheritDoc
      */
-    public function getCreationDate() : DateTime
+    public function getElongationCooldown(): ?int
+    {
+        return $this->elongation_cooldown;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function setElongationCooldown(?int $amount_in_days): IRoutine
+    {
+        $this->elongation_cooldown = $amount_in_days;
+        return $this;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function getCreationDate() : DateTimeImmutable
     {
         return $this->creation_date;
     }
@@ -210,7 +235,7 @@ class Routine implements IRoutine
     /**
      * @inheritDoc
      */
-    public function setCreationDate(DateTime $creation_date) : IRoutine
+    public function setCreationDate(DateTimeImmutable $creation_date) : IRoutine
     {
         $this->creation_date = $creation_date;
         return $this;

@@ -70,8 +70,10 @@ class RoutineFormProcessor extends AbstractFormProcessor
         // value to null instead.
         if (!empty($post_data[RoutineFormBuilder::INPUT_ELONGATION_POSSIBLE])) {
             $this->routine->setElongation((int) $post_data[RoutineFormBuilder::INPUT_ELONGATION_POSSIBLE][RoutineFormBuilder::INPUT_ELONGATION]);
+            $this->routine->setElongationCooldown((int) $post_data[RoutineFormBuilder::INPUT_ELONGATION_POSSIBLE][RoutineFormBuilder::INPUT_ELONGATION_COOLDOWN]);
         } else {
             $this->routine->setElongation(null);
+            $this->routine->setElongationCooldown(null);
         }
 
         $this->repository->store($this->routine);

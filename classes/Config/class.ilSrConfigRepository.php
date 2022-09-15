@@ -88,6 +88,10 @@ class ilSrConfigRepository implements IConfigRepository
                         array_map('intval', $this->stringToArray($query_result[IConfig::F_CONFIG]))
                     );
                     break;
+
+                case IConfig::CNF_FORCE_MAIL_FORWARDING:
+                    $config->setMailForwardingForced((bool) $query_result[IConfig::F_CONFIG]);
+                    break;
             }
         }
 
@@ -106,6 +110,7 @@ class ilSrConfigRepository implements IConfigRepository
         $this->updateConfig(IConfig::CNF_TOOL_SHOW_CONTROLS, (string) $config->shouldToolShowControls());
         $this->updateConfig(IConfig::CNF_CUSTOM_FROM_EMAIL, $config->getNotificationSenderAddress());
         $this->updateConfig(IConfig::CNF_MAILING_BLACKLIST, $this->arrayToString($config->getMailingBlacklist()));
+        $this->updateConfig(IConfig::CNF_FORCE_MAIL_FORWARDING, (string) $config->isMailForwardingForced());
 
         return $config;
     }

@@ -146,6 +146,8 @@ class ilSrLifeCycleManagerPlugin extends ilCronHookPlugin implements IObserver, 
      * ILIAS>=7 where the setup-mechanism will require an instance of this object
      * but cannot provide all ILIAS dependencies.
      *
+     * @TODO: this should probably be replaced by a local DIC implementation of sorts.
+     *
      * @param Container $dic
      */
     protected function safelyInitDependencies(Container $dic) : void
@@ -160,22 +162,44 @@ class ilSrLifeCycleManagerPlugin extends ilCronHookPlugin implements IObserver, 
             }
         }
 
+        $reminder_repository = new ilSrReminderRepository($dic->database());
+        $whitelist_repository = new ilSrWhitelistRepository($dic->database());
+
         $repository_factory = new RepositoryFactory(
             new ilSrGeneralRepository($dic->database(), $dic->repositoryTree(), $dic->rbac()),
             new ilSrConfigRepository($dic->database(), $dic->rbac()),
-            new ilSrRoutineRepository($dic->database(), $dic->repositoryTree()),
+            new ilSrRoutineRepository(
+                $reminder_repository,
+                $whitelist_repository,
+                $dic->database(),
+                $dic->repositoryTree()
+            ),
             new ilSrAssignmentRepository($dic->database(), $dic->repositoryTree()),
             new ilSrRuleRepository($dic->database(), $dic->repositoryTree()),
             new ilSrConfirmationRepository($dic->database()),
-            new ilSrReminderRepository($dic->database()),
-            new ilSrWhitelistRepository($dic->database())
+            $reminder_repository,
+            $whitelist_repository,
+            new ilSrTokenRepository($dic->database())
         );
+
+        /** @var $sender_factory ilMailMimeSenderFactory */
+        $sender_factory = $dic['mail.mime.sender.factory'];
+
+        $config = $repository_factory->config()->get();
+        $sender = (!empty(($sender = $config->getNotificationSenderAddress()))) ?
+            $sender_factory->userByEmailAddress($sender) :
+            $sender_factory->system()
+        ;
 
         $notification_sender = new ilSrNotificationSender(
             $repository_factory->reminder(),
-            $dic['mail.mime.sender.factory'],
-            $repository_factory->config()->get(),
-            $dic->ctrl()
+            $repository_factory->routine(),
+            new ilSrWhitelistLinkGenerator(
+                $repository_factory->token(),
+                $dic->ctrl()
+            ),
+            $sender,
+            $config
         );
 
         $deletable_object_provider = new DeletableObjectProvider(
@@ -195,8 +219,7 @@ class ilSrLifeCycleManagerPlugin extends ilCronHookPlugin implements IObserver, 
             new ResultBuilder(
                 new ilCronJobResult()
             ),
-            $repository_factory->reminder(),
-            $repository_factory->routine(),
+            $repository_factory,
             $this,
             $deletable_object_provider,
             $dic->logger()->root()

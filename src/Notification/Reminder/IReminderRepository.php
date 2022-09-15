@@ -35,6 +35,38 @@ interface IReminderRepository extends INotificationRepository
     public function getByRoutine(IRoutine $routine, bool $array_data = false) : array;
 
     /**
+     * Fetches the next reminder that needs to be sent for the given routine.
+     * If a previous reminder is provided, it returns the next in order.
+     *
+     * @param IRoutine       $routine
+     * @param IReminder|null $previous_reminder
+     * @return IReminder|null
+     */
+    public function getNextReminder(IRoutine $routine, IReminder $previous_reminder = null) : ?IReminder;
+
+    /**
+     * Fetches the most recently sent reminder which is related to the given routine
+     * and sent to the given object (ref-id).
+     *
+     * @param IRoutine $routine
+     * @param int      $ref_id
+     * @return IReminder|null
+     */
+    public function getRecentlySent(IRoutine $routine, int $ref_id) : ?IReminder;
+
+    /**
+     * Fetches an existing reminder with less than the given amount of days before
+     * deletion from the database that is related to the given routine.
+     *
+     * NOTE that the result will be ordered by days before deletion DESC (e.g. 3 to 1).
+     *
+     * @param IRoutine $routine
+     * @param int      $days_before_deletion
+     * @return IReminder[]
+     */
+    public function getWithLessDaysBeforeDeletion(IRoutine $routine, int $days_before_deletion) : array;
+
+    /**
      * Fetches an existing reminder for the given amount of days before deletion
      * from the database that is related to the given routine.
      *
@@ -45,7 +77,31 @@ interface IReminderRepository extends INotificationRepository
      * @param int $days_before_deletion
      * @return IReminder|null
      */
-    public function getByRoutineAndDaysBeforeDeletion(int $routine_id, int $days_before_deletion) : ?IReminder;
+    public function getWithDaysBeforeDeletion(int $routine_id, int $days_before_deletion) : ?IReminder;
+
+    /**
+     * Fetches the first or earliest reminder that needs to be sent for the
+     * given routine.
+     *
+     * The earliest is considered to be the one with the highest amount of
+     * days before deletion.
+     *
+     * @param IRoutine $routine
+     * @return IReminder|null
+     */
+    public function getFirstByRoutine(IRoutine $routine) : ?IReminder;
+
+    /**
+     * Fetches the last or latest reminder that needs to be sent for the
+     * given routine.
+     *
+     * The latest is considered to be the one with the highest amount of
+     * days before deletion.
+     *
+     * @param IRoutine $routine
+     * @return IReminder|null
+     */
+    public function getLastByRoutine(IRoutine $routine) : ?IReminder;
 
     /**
      * Fetches all reminders from the database that are related to the given

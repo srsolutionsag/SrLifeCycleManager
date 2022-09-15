@@ -4,17 +4,18 @@
 
 namespace srag\Plugins\SrLifeCycleManager\Rule\Attribute\Common;
 
-use ilDateTimeException;
-use ilDateTime;
-use DateTime;
+use srag\Plugins\SrLifeCycleManager\DateTimeHelper;
+use DateTimeImmutable;
 
 /**
  * @author Thibeau Fuhrer <thibeau@sr.solutions>
  */
 class CommonDateTime extends CommonAttribute
 {
+    use DateTimeHelper;
+
     /**
-     * @var ilDateTime|null
+     * @var DateTimeImmutable|null
      */
     protected $value;
 
@@ -23,14 +24,7 @@ class CommonDateTime extends CommonAttribute
      */
     public function __construct($value)
     {
-        try {
-            // the datetime must be appended by 'H:i:s', otherwise PHP will
-            // automatically use the current 'H:i:s' which leads to false-
-            // positives when comparing <= or >=.
-            $this->value = new ilDateTime($value . " 00:00:00", IL_CAL_DATETIME);
-        } catch (ilDateTimeException $e) {
-            $this->value = null;
-        }
+        $this->value = $this->getDate($value);
     }
 
     /**
@@ -56,16 +50,13 @@ class CommonDateTime extends CommonAttribute
 
         switch ($type) {
             case self::COMPARABLE_VALUE_TYPE_DATE:
-                return (DateTime::createFromFormat(
-                    self::ILIAS_DATETIME_FORMAT,
-                    $this->value->get(IL_CAL_DATETIME)
-                )) ?: null;
+                return $this->value;
 
             case self::COMPARABLE_VALUE_TYPE_STRING:
-                return $this->value->get(IL_CAL_DATETIME);
+                return $this->getMysqlDateString($this->value);
 
             case self::COMPARABLE_VALUE_TYPE_INT:
-                return $this->value->get(IL_CAL_UNIX);
+                return $this->value->getTimestamp();
 
             default:
                 return null;

@@ -4,8 +4,6 @@
 
 namespace srag\Plugins\SrLifeCycleManager\Whitelist;
 
-use DateInterval;
-use DateTime;
 use DateTimeImmutable;
 
 /**
@@ -34,9 +32,9 @@ class WhitelistEntry implements IWhitelistEntry
     protected $is_opt_out;
 
     /**
-     * @var int|null
+     * @var DateTimeImmutable|null
      */
-    protected $elongation;
+    protected $expiry_date;
 
     /**
      * @var DateTimeImmutable
@@ -44,12 +42,12 @@ class WhitelistEntry implements IWhitelistEntry
     protected $date;
 
     /**
-     * @param int               $routine_id
-     * @param int               $ref_id
-     * @param int               $user_id
-     * @param bool              $is_opt_out
-     * @param DateTimeImmutable $date
-     * @param int|null          $elongation
+     * @param int                    $routine_id
+     * @param int                    $ref_id
+     * @param int                    $user_id
+     * @param bool                   $is_opt_out
+     * @param DateTimeImmutable      $date
+     * @param DateTimeImmutable|null $expiry_date
      */
     public function __construct(
         int $routine_id,
@@ -57,20 +55,20 @@ class WhitelistEntry implements IWhitelistEntry
         int $user_id,
         bool $is_opt_out,
         DateTimeImmutable $date,
-        int $elongation = null
+        DateTimeImmutable $expiry_date = null
     ) {
         $this->routine_id = $routine_id;
         $this->ref_id = $ref_id;
         $this->user_id = $user_id;
         $this->is_opt_out = $is_opt_out;
-        $this->elongation = $elongation;
+        $this->expiry_date = $expiry_date;
         $this->date = $date;
     }
 
     /**
      * @inheritdoc
      */
-    public function getRoutineId() : int
+    public function getRoutineId(): int
     {
         return $this->routine_id;
     }
@@ -78,7 +76,7 @@ class WhitelistEntry implements IWhitelistEntry
     /**
      * @inheritdoc
      */
-    public function setRoutineId(int $routine_id) : IWhitelistEntry
+    public function setRoutineId(int $routine_id): IWhitelistEntry
     {
         $this->routine_id = $routine_id;
         return $this;
@@ -87,7 +85,7 @@ class WhitelistEntry implements IWhitelistEntry
     /**
      * @inheritdoc
      */
-    public function getRefId() : int
+    public function getRefId(): int
     {
         return $this->ref_id;
     }
@@ -95,7 +93,7 @@ class WhitelistEntry implements IWhitelistEntry
     /**
      * @inheritdoc
      */
-    public function setRefId(int $ref_id) : IWhitelistEntry
+    public function setRefId(int $ref_id): IWhitelistEntry
     {
         $this->ref_id = $ref_id;
         return $this;
@@ -104,7 +102,7 @@ class WhitelistEntry implements IWhitelistEntry
     /**
      * @inheritdoc
      */
-    public function getUserId() : int
+    public function getUserId(): int
     {
         return $this->user_id;
     }
@@ -112,7 +110,7 @@ class WhitelistEntry implements IWhitelistEntry
     /**
      * @inheritdoc
      */
-    public function setUserId(int $user_id) : IWhitelistEntry
+    public function setUserId(int $user_id): IWhitelistEntry
     {
         $this->user_id = $user_id;
         return $this;
@@ -121,7 +119,7 @@ class WhitelistEntry implements IWhitelistEntry
     /**
      * @inheritdoc
      */
-    public function isOptOut() : bool
+    public function isOptOut(): bool
     {
         return $this->is_opt_out;
     }
@@ -129,41 +127,41 @@ class WhitelistEntry implements IWhitelistEntry
     /**
      * @inheritdoc
      */
-    public function setOptOut(bool $is_opt_out) : IWhitelistEntry
+    public function setOptOut(bool $is_opt_out): IWhitelistEntry
     {
         $this->is_opt_out = $is_opt_out;
         return $this;
     }
 
     /**
-     * @inheritdoc
+     * @inheritDoc
      */
-    public function getElongation() : ?int
+    public function getExpiryDate(): ?DateTimeImmutable
     {
-        return $this->elongation;
+        return $this->expiry_date;
     }
 
     /**
-     * @inheritdoc
+     * @inheritDoc
      */
-    public function setElongation(int $elongation) : IWhitelistEntry
+    public function setExpiryDate(DateTimeImmutable $date): IWhitelistEntry
     {
-        $this->elongation = $elongation;
+        $this->expiry_date = $date;
         return $this;
     }
 
     /**
      * @inheritdoc
      */
-    public function getDate() : DateTimeImmutable
+    public function getDate(): DateTimeImmutable
     {
         return $this->date;
     }
 
     /**
-     * @inheritdoc 
+     * @inheritdoc
      */
-    public function setDate(DateTimeImmutable $date) : IWhitelistEntry
+    public function setDate(DateTimeImmutable $date): IWhitelistEntry
     {
         $this->date = $date;
         return $this;
@@ -172,14 +170,16 @@ class WhitelistEntry implements IWhitelistEntry
     /**
      * @inheritDoc
      */
-    public function isElapsed($when) : bool
+    public function isExpired($when): bool
     {
-        if ($this->isOptOut() || null === $this->getElongation()) {
+        if ($this->is_opt_out) {
             return false;
         }
 
-        $elapsed_date = $this->getDate()->add(new DateInterval("P{$this->getElongation()}D"));
+        if (null === $this->expiry_date) {
+            return true;
+        }
 
-        return ($when > $elapsed_date);
+        return ($when > $this->expiry_date);
     }
 }

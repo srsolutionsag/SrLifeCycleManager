@@ -4,13 +4,15 @@
 
 namespace srag\Plugins\SrLifeCycleManager\Rule\Attribute\Group;
 
-use DateTime;
+use srag\Plugins\SrLifeCycleManager\DateTimeHelper;
 
 /**
  * @author Thibeau Fuhrer <thibeau@sr.solutions>
  */
 class GroupCreation extends GroupAttribute
 {
+    use DateTimeHelper;
+
     /**
      * @inheritDoc
      */
@@ -28,9 +30,8 @@ class GroupCreation extends GroupAttribute
      */
     public function getComparableValue(string $type)
     {
-        $creation_string = $this->group->getCreateDate();
-        $creation_date = DateTime::createFromFormat(self::ILIAS_DATETIME_FORMAT, $creation_string);
-        if (false === $creation_date) {
+        $creation_date = $this->getDateTime($this->group->getCreateDate());
+        if (null === $creation_date) {
             return null;
         }
 
@@ -42,7 +43,7 @@ class GroupCreation extends GroupAttribute
                 return $creation_date->getTimestamp();
 
             case self::COMPARABLE_VALUE_TYPE_STRING:
-                return $creation_date->format(self::COMPARABLE_DATETIME_FORMAT);
+                return $this->getMysqlDateString($creation_date);
 
             default:
                 return null;

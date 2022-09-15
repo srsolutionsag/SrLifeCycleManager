@@ -4,6 +4,15 @@ tool_main_entry#:#Routines
 crs#:#Course
 grp#:#Group
 
+label_routine_owner#:#Owner
+label_routine_creation_date#:#Created at
+label_routine_deletion_date#:#Deletion date
+label_whitelist_expiry_date#:#Postponed until
+label_postponed_indefinitely#:#Indefinitely
+label_affecting_routines#:#Deleting routines
+label_assigned_routines#:#Assigned routines
+label_routine_owner_unknown#:#Unknown
+
 msg_permission_denied#:#Permission denied.
 msg_object_not_found#:#Requested object not found.
 msg_invalid_ref_id#:#Invalid ref-id provided.
@@ -25,7 +34,7 @@ msg_privileged_user#:#You are allowed to manage your own routines at this positi
 msg_affected_routines#:#There are routines that affect this object:
 msg_assigned_routines#:#There are routines assigned to this object:
 msg_routine_cant_extend#:#This routine cannot be extended.
-msg_routine_extended#:#This object has been successfully whitelisted for [ELONGATION] days.
+msg_routine_extended#:#This object has been successfully whitelisted for %s days.
 msg_routine_already_extended#:#The deletion of this object was already postponed.
 msg_routine_cant_opt_out#:#This routine cannot be opted out.
 msg_routine_opted_out#:#This object has been successfully whitelisted.
@@ -36,6 +45,12 @@ msg_no_unassigned_routines#:#There are no routines available that don't already 
 msg_this_may_take_a_while#:#Collecting Data, this may take a while ...
 msg_invalid_email#:#The submitted email address is invalid.
 msg_confirmation_event_error#:#A notification for this event already exists.
+msg_whitelist_invalid_token#:#Your whitelist token isn't valid anymore.
+msg_whitelist_not_cool#:#The current object cannot be postponed again, yet.
+msg_routine_cant_undo_opt_out#:#The current object is not opted-out.
+msg_routine_undid_opt_out#:#The current object is no longer opted-out.
+msg_negative_integer#:#The submitted number must be greater or equal to 0.
+msg_no_available_routines#:#There are no further routines for this object.
 
 page_title_rules#:#Life-Cycle Rules
 page_title_config#:#Life-Cycle Configuration
@@ -60,11 +75,10 @@ cnf_tool_is_enabled#:#Enable Tool
 cnf_tool_show_routines#:#Show active routines
 cnf_tool_show_controls#:#Show controls
 cnf_tool_controls#:#Controls
-cnf_tool_routines_header#:#Routines for this Location
-cnf_tool_routines_triggered_header#:#Affecting Routines
 cnf_custom_from_email#:#Notification email
 cnf_mailing_blacklist#:#Mailing Blacklist
 cnf_mailing_blacklist_info#:#Comma-separated list of user IDs that should not receive notifications about routines. This is suitable, for example, for system accounts that are administrators in a large number of courses because they have created the courses automatically.
+cnf_force_mail_forwarding#:#Force mail-forwarding
 
 col_actions#:#Actions
 col_routine_title#:#Name
@@ -72,6 +86,7 @@ col_routine_type#:#Routine type
 col_routine_usr_id#:#Owner
 col_routine_has_opt_out#:#Opt-out
 col_routine_elongation#:#Elongaition (days)
+col_routine_elongation_cooldown#:#Cooldown (days)
 col_object_assignment_ref_id#:#Ref-ID
 col_object_assignment_title#:#Object title
 col_assignment_recursive#:#Recursive
@@ -89,13 +104,14 @@ col_confirmation_event#:#Event
 col_whitelist_ref_id#:#Ref-ID
 col_whitelist_user_name#:#User
 col_whitelist_opt_out#:#Opt-out
-col_whitelist_elongation#:#Elongation
+col_whitelist_expiry_date#:#Elongation
 col_whitelist_date#:#Date
 
 input_name_routine_title#:#Name
 input_name_routine_type#:#Routine type
 input_name_routine_has_opt_out#:#Opt-out possible
 input_name_routine_elongation#:#Elongation (in days)
+input_name_routine_elongation_cooldown#:#Cooldown (in days)
 input_name_routine_elongation_possible#:#Elongation possible
 input_name_routine_assignment_routine#:#Routine
 input_name_routine_assignment_ref_id#:#Object (ref-id)
@@ -122,6 +138,7 @@ status_is_not_opt_out#:#No
 
 action_routine_add#:#Add routine
 action_routine_edit#:#Edit
+action_list_routine_edit#:#Edit Routine
 action_routine_delete#:#Delete
 action_routine_manage#:#Manage routines
 action_whitelist_postpone#:#Postpone
@@ -136,8 +153,10 @@ action_routine_assignment_add#:#Add assignment
 action_routine_assignment_edit#:#Edit
 action_routine_assignment_delete#:#Delete
 action_routine_assignment_remove#:#Remove
-action_routine_extend#:#Postpone deletion (for %s days from now)
+action_list_routine_assignment_remove#:#Unassign from this object
+action_routine_extend#:#Postpone deletion (for %s days)
 action_routine_opt_out#:#Opt-Out from deletion
+action_routine_opt_out_undo#:#Undo Opt-Out
 action_rule_add#:#Add rule
 action_rule_edit#:#Edit
 action_rule_delete#:#Remove
@@ -147,9 +166,9 @@ action_notification_edit#:#Edit
 action_notification_delete#:#Remove
 action_object_view#:#View object
 
-onPostpone#:#Postponement
-onOptOut#:#Opt-out
-onDelete#:#Deletion
+routine_postpone#:#Postponement
+routine_opt_out#:#Opt-out
+routine_delete#:#Deletion
 
 lhs_value#:#LHS Value
 rhs_value#:#RHS Value

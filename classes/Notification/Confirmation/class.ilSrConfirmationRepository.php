@@ -121,8 +121,8 @@ class ilSrConfirmationRepository extends ilSrAbstractNotificationRepository impl
                     $query,
                     ['integer', 'integer'],
                     [
-                        $routine->getRoutineId() ?? 0,
-                        $ref_id
+                        $event->getRoutine()->getRoutineId() ?? 0,
+                        $event->getObject()->getRefId(),
                     ]
                 )
             )

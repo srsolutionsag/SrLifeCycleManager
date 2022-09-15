@@ -8,6 +8,16 @@ namespace srag\Plugins\SrLifeCycleManager\Notification;
 interface INotificationRepository
 {
     /**
+     * Returns whether the given notification (regardless of the type) has already
+     * been sent to the given object (ref-id).
+     *
+     * @param INotification $notification
+     * @param int           $ref_id
+     * @return bool
+     */
+    public function hasObjectBeenNotified(INotification $notification, int $ref_id) : bool;
+
+    /**
      * Creates a relation between the given notification (regardless of the type)
      * and given object (ref-id), which marks the notification as sent.
      *
@@ -18,12 +28,20 @@ interface INotificationRepository
     public function markObjectAsNotified(INotification $notification, int $ref_id) : ISentNotification;
 
     /**
-     * Returns whether the given notification (regardless of the type) has already
-     * been sent to the given object (ref-id).
+     * Retrieves the sent-information of the given notification for the given object
+     * (ref-id).
      *
      * @param INotification $notification
      * @param int           $ref_id
-     * @return bool
+     * @return ISentNotification|null
      */
-    public function hasObjectBeenNotified(INotification $notification, int $ref_id) : bool;
+    public function getSentInformation(INotification $notification, int $ref_id) : ?ISentNotification;
+
+    /**
+     * Removes the relation between any notification and the given object (ref-id),
+     * which marks the object as deleted (and not notified anymore).
+     *
+     * @param int $ref_id
+     */
+    public function markObjectAsDeleted(int $ref_id) : void;
 }

@@ -14,6 +14,7 @@ class ilSrRoutineTable extends ilSrAbstractTable
 {
     // ilSrRoutineTable table columns:
     public const COL_ROUTINE_ELONGATION = 'col_routine_elongation';
+    public const COL_ROUTINE_ELONGATION_COOLDOWN = 'col_routine_elongation_cooldown';
     public const COL_ROUTINE_HAS_OPT_OUT = 'col_routine_has_opt_out';
     public const COL_ROUTINE_TYPE = 'col_routine_type';
     public const COL_ROUTINE_TITLE = 'col_routine_title';
@@ -49,6 +50,7 @@ class ilSrRoutineTable extends ilSrAbstractTable
         $this->addColumn($this->translator->txt(self::COL_ROUTINE_USER_ID));
         $this->addColumn($this->translator->txt(self::COL_ROUTINE_TYPE));
         $this->addColumn($this->translator->txt(self::COL_ROUTINE_ELONGATION));
+        $this->addColumn($this->translator->txt(self::COL_ROUTINE_ELONGATION_COOLDOWN));
         $this->addColumn($this->translator->txt(self::COL_ROUTINE_HAS_OPT_OUT));
         $this->addActionColumn();
     }
@@ -76,6 +78,7 @@ class ilSrRoutineTable extends ilSrAbstractTable
         $template->setVariable(self::COL_ROUTINE_USER_ID, $owner_name);
         $template->setVariable(self::COL_ROUTINE_TYPE, $routine_type);
         $template->setVariable(self::COL_ROUTINE_ELONGATION, $data[IRoutine::F_ELONGATION]);
+        $template->setVariable(self::COL_ROUTINE_ELONGATION_COOLDOWN, $data[IRoutine::F_COOLDOWN]);
         $template->setVariable(self::COL_ROUTINE_HAS_OPT_OUT, $status_opt_out);
 
         $template->setVariable(

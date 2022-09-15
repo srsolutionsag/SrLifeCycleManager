@@ -440,3 +440,97 @@ if (!$ilDB->tableExists($table_name)) {
     ]);
 }
 ?>
+<#16>
+<?php
+/** @var $ilDB ilDBInterface */
+$table_name = 'srlcm_whitelist';
+$legacy_column_name = 'elongation';
+$column_name = 'expiry_date';
+
+if (!$ilDB->tableColumnExists($table_name, $column_name)) {
+    $ilDB->addTableColumn($table_name, $column_name, [
+        'notnull' => '0',
+        'type'    => 'date',
+    ]);
+
+    // migrate existing elongations to an expiry date by calculating it
+    // like it was done up till v1.7.0.
+    $ilDB->manipulate("
+        UPDATE srlcm_whitelist
+            SET expiry_date = DATE_ADD(date, INTERVAL elongation DAY)
+            WHERE elongation IS NOT NULL
+        ;
+    ");
+
+    // remove legacy column after migration.
+    $ilDB->dropTableColumn($table_name, $legacy_column_name);
+}
+?>
+<#17>
+<?php
+/** @var $ilDB ilDBInterface */
+$table_name = 'srlcm_tokens';
+$columns = [
+    'routine_id' => [
+        'notnull' => '1',
+        'length'  => '8',
+        'type'    => 'integer',
+    ],
+    'ref_id' => [
+        'notnull' => '1',
+        'length'  => '8',
+        'type'    => 'integer',
+    ],
+    'event' => [
+        'notnull' => '1',
+        'length'  => '254',
+        'type'    => 'text',
+    ],
+    'token' => [
+        'notnull' => '1',
+        'length'  => '64',
+        'type'    => 'text',
+    ],
+];
+
+if (!$ilDB->tableExists($table_name)) {
+    $ilDB->createTable($table_name, $columns);
+    $ilDB->addPrimaryKey($table_name, [
+        'routine_id',
+        'ref_id',
+        'event',
+        'token',
+    ]);
+}
+?>
+<#18>
+<?php
+/** @var $ilDB ilDBInterface */
+$table_name = 'srlcm_routine';
+$column_name = 'elongation_cooldown';
+
+if (!$ilDB->tableColumnExists($table_name, $column_name)) {
+    $ilDB->addTableColumn($table_name, $column_name, [
+        'notnull' => '1',
+        'length'  => '8',
+        'type'    => 'integer',
+    ]);
+
+    // set the default cooldown of all existing routines with elongations
+    // to exactly one day.
+    $ilDB->manipulate("
+        UPDATE srlcm_routine SET elongation_cooldown = 1 WHERE elongation IS NOT NULL;
+    ");
+}
+?>
+<#19>
+<?php
+/** @var $ilDB ilDBInterface */
+$table_name = 'srlcm_configuration';
+if ($ilDB->tableExists($table_name)) {
+    $ilDB->insert($table_name, [
+        'identifier' => ['text', 'cnf_force_mail_forwarding'],
+        'configuration' => ['text', '0'],
+    ]);
+}
+?>

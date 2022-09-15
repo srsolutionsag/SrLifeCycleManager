@@ -6,6 +6,7 @@ use srag\Plugins\SrLifeCycleManager\Routine\IRoutine;
 use srag\Plugins\SrLifeCycleManager\Rule\Requirement\RequirementFactory;
 use srag\Plugins\SrLifeCycleManager\Rule\Attribute\AttributeFactory;
 use srag\Plugins\SrLifeCycleManager\Rule\Comparison\ComparisonFactory;
+use srag\Plugins\SrLifeCycleManager\Whitelist\IWhitelistRepository;
 use srag\Plugins\SrLifeCycleManager\Config\IConfig;
 use srag\Plugins\SrLifeCycleManager\ITranslator;
 use ILIAS\GlobalScreen\Scope\Tool\Provider\AbstractDynamicToolPluginProvider;
@@ -41,6 +42,11 @@ class ilSrToolProvider extends AbstractDynamicToolPluginProvider
      * @var ilSrAssignmentRepository
      */
     protected $assignment_repository;
+
+    /**
+     * @var IWhitelistRepository
+     */
+    protected $whitelist_repository;
 
     /**
      * @var IRoutineRepository
@@ -109,7 +115,13 @@ class ilSrToolProvider extends AbstractDynamicToolPluginProvider
             $this->dic->repositoryTree()
         );
 
+        $this->whitelist_repository = new ilSrWhitelistRepository(
+            $this->dic->database()
+        );
+
         $this->routine_repository = new ilSrRoutineRepository(
+            new ilSrReminderRepository($this->dic->database()),
+            $this->whitelist_repository,
             $this->dic->database(),
             $this->dic->repositoryTree()
         );
@@ -172,55 +184,52 @@ class ilSrToolProvider extends AbstractDynamicToolPluginProvider
         /** @var $translator ITranslator */
         $translator = $this->plugin;
 
-        $panels = [];
-
-        $list_builder = new ilSrRoutineListBuilder(
+        $affecting_routine_list = new ilSrAffectingRoutineList(
             $this->assignment_repository,
-            $this->access_handler,
+            $this->whitelist_repository,
+            $this->routine_repository,
+            $this->routine_provider,
             $translator,
+            $this->access_handler,
+            $object,
             $this->dic->ui()->factory(),
             $this->dic->ui()->renderer(),
-            $object,
             $this->dic->ctrl()
         );
 
-        $affecting_routines = $this->routine_provider->getAffectingRoutines($object);
+        $html = $affecting_routine_list->getHtml();
 
-        if (!empty($affecting_routines)) {
-            $panels[] = $this->dic->ui()->factory()->panel()->secondary()->legacy(
-                $translator->txt(self::ROUTINES_TRIGGERED_HEADER),
-                $this->dic->ui()->factory()->legacy(
-                    $this->dic->ui()->renderer()->render(
-                        $list_builder->getList($affecting_routines)
-                    )
-                )
-            );
-        }
-
-        $routines_for_location = $this->routine_provider->getRoutinesForLocation($object);
-
-        $diff_routines = array_udiff(
-            $routines_for_location,
-            $affecting_routines,
-            static function (IRoutine $one, IRoutine $two) : bool {
-                return $one->getRoutineId() !== $two->getRoutineId();
-            }
+        $assigned_routine_list = new ilSrAssignedRoutineList(
+            $this->assignment_repository,
+            $this->whitelist_repository,
+            $this->routine_repository,
+            $this->routine_provider,
+            $translator,
+            $this->access_handler,
+            $object,
+            $this->dic->ui()->factory(),
+            $this->dic->ui()->renderer(),
+            $this->dic->ctrl()
         );
 
-        if (!empty($diff_routines)) {
-            $panels[] = $this->dic->ui()->factory()->panel()->secondary()->legacy(
-                $translator->txt(self::ROUTINES_HEADER),
-                $this->dic->ui()->factory()->legacy(
-                    $this->dic->ui()->renderer()->render(
-                        $list_builder->getList($diff_routines)
-                    )
-                )
-            );
-        }
+        $html .= $assigned_routine_list->getHtml();
 
-        return $this->dic->ui()->renderer()->render(
-            $panels
-        );
+        return "
+            <div id=\"srlcm-item-group\">
+                <style>
+                    /**
+                     * makes columns of item properties within this container
+                     * to appear as row(ish). this needs to be done because
+                     * text is displayed too small within the tool context.
+                     */
+                    #srlcm-item-group .col-md-6 {
+                        padding-bottom: 2px;
+                        width: 100%;
+                    }
+                </style>
+                $html
+            </div>
+        ";
     }
 
     /**

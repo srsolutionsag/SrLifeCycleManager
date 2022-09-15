@@ -157,15 +157,24 @@ abstract class ilSrAbstractGUI
         $this->user = $DIC->user();
         $this->database = $DIC->database();
 
+        $reminder_repository = new ilSrReminderRepository($this->database);
+        $whitelist_repository = new ilSrWhitelistRepository($this->database);
+
         $this->repository = new RepositoryFactory(
             new ilSrGeneralRepository($this->database, $DIC->repositoryTree(), $DIC->rbac()),
             new ilSrConfigRepository($this->database, $DIC->rbac()),
-            new ilSrRoutineRepository($this->database, $DIC->repositoryTree()),
+            new ilSrRoutineRepository(
+                $reminder_repository,
+                $whitelist_repository,
+                $this->database,
+                $DIC->repositoryTree()
+            ),
             new ilSrAssignmentRepository($this->database, $DIC->repositoryTree()),
             new ilSrRuleRepository($this->database, $DIC->repositoryTree()),
             new ilSrConfirmationRepository($this->database),
-            new ilSrReminderRepository($this->database),
-            new ilSrWhitelistRepository($this->database)
+            $reminder_repository,
+            $whitelist_repository,
+            new ilSrTokenRepository($this->database)
         );
 
         $this->access_handler = new ilSrAccessHandler(
@@ -279,7 +288,7 @@ abstract class ilSrAbstractGUI
         $routine_id = $this->getRequestParameter(self::PARAM_ROUTINE_ID);
         $routine = null;
 
-        if (null !== $routine_id) {
+        if (!empty($routine_id)) {
             $routine = $this->repository->routine()->get((int) $routine_id);
         }
 
@@ -302,7 +311,7 @@ abstract class ilSrAbstractGUI
         }
 
         $requested_object = $this->getRequestParameter(self::PARAM_OBJECT_REF_ID);
-        if (null !== $requested_object) {
+        if (!empty($requested_object)) {
             return (int) $requested_object;
         }
 

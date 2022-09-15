@@ -50,6 +50,7 @@ class ConfigFormProcessor extends AbstractFormProcessor
      */
     protected function processData(array $post_data) : void
     {
+        $is_mail_forwarding_forced = $post_data[IConfig::CNF_FORCE_MAIL_FORWARDING];
         $is_tool_enabled = (null !== $post_data[IConfig::CNF_TOOL_IS_ENABLED]);
         $show_routines = ($is_tool_enabled) ? $post_data[IConfig::CNF_TOOL_IS_ENABLED][IConfig::CNF_TOOL_SHOW_ROUTINES] : false;
         $show_controls = ($is_tool_enabled) ? $post_data[IConfig::CNF_TOOL_IS_ENABLED][IConfig::CNF_TOOL_SHOW_CONTROLS] : false;
@@ -63,7 +64,8 @@ class ConfigFormProcessor extends AbstractFormProcessor
                 $show_routines,
                 $show_controls,
                 $post_data[IConfig::CNF_CUSTOM_FROM_EMAIL],
-                $user_ids
+                $user_ids,
+                $is_mail_forwarding_forced
             )
         );
     }

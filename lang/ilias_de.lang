@@ -4,6 +4,15 @@ tool_main_entry#:#Routinen
 crs#:#Kurse
 grp#:#Gruppen
 
+label_routine_owner#:#Besitzer
+label_routine_creation_date#:#Erstellt am
+label_routine_deletion_date#:#Löschdatum
+label_whitelist_expiry_date#:#Verlängert bis
+label_postponed_indefinitely#:#Unbestimmt
+label_affecting_routines#:#Löschende Routinen
+label_assigned_routines#:#Zugewiesene Routinen
+label_routine_owner_unknown#:#Unbekannt
+
 msg_permission_denied#:#Sie haben nicht ausreichende Berechtigung.
 msg_object_not_found#:#Das angefragte Object wurde nicht gefunden.
 msg_invalid_ref_id#:#Diese Ref-id ist ungültig.
@@ -25,7 +34,7 @@ msg_privileged_user#:#Sie sind berechtigt, eigene Routinen an dieser Stelle zu v
 msg_affected_routines#:#Es gibt Routinen die das aktuelle Objekt löschen könnten:
 msg_assigned_routines#:#Es gibt Routinen die dem aktuellen Objekt zugewiesen sind:
 msg_routine_cant_extend#:#Objekte können von dieser Routine nicht verlängert werden.
-msg_routine_extended#:#Das Objekt wurde erfolgreich für [ELONGATION] Tage verlängert.
+msg_routine_extended#:#Das Objekt wurde erfolgreich für %s Tage verlängert.
 msg_routine_extend_error#:#Das Objekt konnte nicht verlängert werden, ggf. haben Sie das bereits getan.
 msg_routine_cant_opt_out#:#Objekte können von dieser Routine nicht ignoriert werden.
 msg_routine_opted_out#:#Das Objekt wurde erfolgreich von dieser Routine ausgeschlossen.
@@ -36,6 +45,10 @@ msg_no_unassigned_routines#:#Es gibt keine Routinen mehr die diesem Objekt zugew
 msg_this_may_take_a_while#:#Sammle Daten, dies könnte eine Weile dauern ...
 msg_invalid_email#:#Die eingegebene E-Mail Adresse ist ungültig.
 msg_confirmation_event_error#:#Eine Benachrichtigung für dieses Event existiert bereits.
+msg_whitelist_invalid_token#:#Ihr Whitelist-Token ist nicht mehr gültig.
+msg_whitelist_not_cool#:#Das aktuelle Objekt kann noch nicht wieder verlängert werden.
+msg_negative_integer#:#Die eingegebene Zahl muss grösser oder gleich wie 0 sein.
+msg_no_available_routines#:#Es gibt keine weiteren Routinen für dieses Objekt.
 
 page_title_rules#:#Life-Cycle Regeln
 page_title_config#:#Life-Cycle Einstellungen
@@ -60,11 +73,10 @@ cnf_tool_is_enabled#:#Tool anzeigen
 cnf_tool_show_routines#:#Aktive routinen anzeigen
 cnf_tool_show_controls#:#Verwaltung anzeigen
 cnf_tool_controls#:#Verwaltung
-cnf_tool_routines_header#:#Routinen für diesen Ort
-cnf_tool_routines_triggered_header#:#Zutreffende Routinen
 cnf_custom_from_email#:#Email für Benachrichtigungen
 cnf_mailing_blacklist#:#Mailing Blacklist
 cnf_mailing_blacklist_info#:#Kommaseparierte Liste von Benutzer-IDs, die keine Benachrichtigungen über Routinen erhalten sollen. Dies eignet sich bspw. für System-Accounts, die in sehr vielen Kursen Administrator sind, weil sie die Kurse automatisiert angelegt haben.
+cnf_force_mail_forwarding#:#Mail-Weiterleitung forcieren
 
 col_actions#:#Aktionen
 col_routine_title#:#Name
@@ -72,6 +84,7 @@ col_routine_type#:#Routinen Typ
 col_routine_usr_id#:#Besitzer
 col_routine_has_opt_out#:#Opt-out
 col_routine_elongation#:#Verlängerung (Tage)
+col_routine_elongation_cooldown#:#Cooldown (Tage)
 col_object_assignment_ref_id#:#Ref-ID
 col_object_assignment_title#:#Objekttitel
 col_assignment_recursive#:#Rekursiv
@@ -89,13 +102,14 @@ col_confirmation_event#:#Event
 col_whitelist_ref_id#:#Ref-ID
 col_whitelist_user_name#:#Benutzer
 col_whitelist_opt_out#:#Opt-out
-col_whitelist_elongation#:#Verlängerung
+col_whitelist_expiry_date#:#Verlängerung
 col_whitelist_date#:#Datum
 
 input_name_routine_title#:#Name
 input_name_routine_type#:#Routinen Typ
 input_name_routine_has_opt_out#:#Opt-out aktivieren
 input_name_routine_elongation#:#Verlängerung (in Tage)
+input_name_routine_elongation_cooldown#:#Cooldown (in Tage)
 input_name_routine_elongation_possible#:#Verlängerung aktivieren
 input_name_routine_assignment_routine#:#Routine
 input_name_routine_assignment_ref_id#:#Objekt (ref-id)
@@ -122,6 +136,7 @@ status_is_not_opt_out#:#Nein
 
 action_routine_add#:#Routine hinzufügen
 action_routine_edit#:#Bearbeiten
+action_list_routine_edit#:#Routine bearbeiten
 action_routine_delete#:#Löschen
 action_routine_manage#:#Routinen verwalten
 action_whitelist_postpone#:#Verlängern
@@ -136,8 +151,10 @@ action_routine_assignment_add#:#Zuweisung hinzufügen
 action_routine_assignment_edit#:#Bearbeiten
 action_routine_assignment_delete#:#Löschen
 action_routine_assignment_remove#:#Entfernen
-action_routine_extend#:#Verlängerung aktivieren (%s Tage ab jetzt)
+action_list_routine_assignment_remove#:#Von diesem Objekt entfernen
+action_routine_extend#:#Objekt verlängern (für %s Tage)
 action_routine_opt_out#:#Automatische Löschung dauerhaft verhindern
+action_routine_opt_out_undo#:#Opt-Out aufheben
 action_rule_add#:#Regel hinzufügen
 action_rule_edit#:#Bearbeiten
 action_rule_delete#:#Enfernen
@@ -147,9 +164,9 @@ action_notification_edit#:#Bearbeiten
 action_notification_delete#:#Löschen
 action_view_object#:#Objekt anzeigen
 
-onPostpone#:#Verlängerung
-onOptOut#:#Opt-out
-onDelete#:#Löschung
+routine_postpone#:#Verlängerung
+routine_opt_out#:#Opt-out
+routine_delete#:#Löschung
 
 lhs_value#:#LHS Wert
 rhs_value#:#RHS Wert

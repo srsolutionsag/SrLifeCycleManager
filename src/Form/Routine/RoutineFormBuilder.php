@@ -19,6 +19,7 @@ class RoutineFormBuilder extends AbstractFormBuilder
 {
     // RoutineFormBuilder inputs:
     public const INPUT_ELONGATION = 'input_name_routine_elongation';
+    public const INPUT_ELONGATION_COOLDOWN = 'input_name_routine_elongation_cooldown';
     public const INPUT_ELONGATION_POSSIBLE = 'input_name_routine_elongation_possible';
     public const INPUT_HAS_OPT_OUT = 'input_name_routine_has_opt_out';
     public const INPUT_ROUTINE_TYPE = 'input_name_routine_type';
@@ -84,7 +85,16 @@ class RoutineFormBuilder extends AbstractFormBuilder
                     self::INPUT_ELONGATION => $this->fields
                         ->numeric($this->translator->txt(self::INPUT_ELONGATION))
                         ->withValue($this->routine->getElongation())
+                        ->withAdditionalTransformation(
+                            $this->getPositiveIntegerValidationConstraint()
+                        )
                     ,
+                    self::INPUT_ELONGATION_COOLDOWN => $this->fields
+                        ->numeric($this->translator->txt(self::INPUT_ELONGATION_COOLDOWN))
+                        ->withValue($this->routine->getElongationCooldown())
+                        ->withAdditionalTransformation(
+                            $this->getPositiveIntegerValidationConstraint()
+                        )
                 ],
                 $this->translator->txt(self::INPUT_ELONGATION_POSSIBLE)
             )

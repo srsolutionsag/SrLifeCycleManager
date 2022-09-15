@@ -93,7 +93,7 @@ class ilSrRoutineGUI extends ilSrAbstractGUI
         );
 
         // set back-to object target in repository context.
-        if (IRoutine::ORIGIN_TYPE_REPOSITORY === $this->origin) {
+        if (IRoutine::ORIGIN_TYPE_REPOSITORY === $this->origin && null !== $this->object_ref_id) {
             $this->tab_manager->addBackToObject($this->object_ref_id);
         }
 
@@ -110,7 +110,13 @@ class ilSrRoutineGUI extends ilSrAbstractGUI
      */
     protected function edit() : void
     {
-        $this->tab_manager->addBackToRoutines();
+        // set back-to object target in repository context.
+        if (IRoutine::ORIGIN_TYPE_REPOSITORY === $this->origin && null !== $this->object_ref_id) {
+            $this->tab_manager->addBackToObject($this->object_ref_id);
+        } else {
+            $this->tab_manager->addBackToRoutines();
+        }
+
         $this->render($this->routine_form_builder->getForm());
     }
 

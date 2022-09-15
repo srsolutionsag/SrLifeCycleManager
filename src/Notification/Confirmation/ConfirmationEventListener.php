@@ -45,7 +45,7 @@ class ConfirmationEventListener implements IEventListener
 
         $confirmation = $this->confirmation_repository->getByRoutineAndEvent(
             $event->getRoutine()->getRoutineId(),
-            $event->getAction()
+            $event->getName()
         );
 
         if (null === $confirmation) {

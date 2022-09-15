@@ -85,8 +85,11 @@ class ilSrLifeCycleManagerDispatcher
                 $this->safelyForward(ilSrRoutinePreviewGUI::class);
                 break;
 
-            default:
+            case strtolower(self::class):
                 throw new LogicException(self::class . " MUST never be the executing class.");
+
+            default:
+                throw new LogicException(self::class . " is not a known command class.");
         }
 
         // if requests have other classes than the ilAdministrationGUI as
@@ -167,7 +170,7 @@ class ilSrLifeCycleManagerDispatcher
                 'failure',
                 (DEVMODE || DEBUG) ?
                     $this->getExceptionString($exception) :
-                    "Whoops, something went wrong!"
+                    $exception->getMessage()
             );
         }
     }

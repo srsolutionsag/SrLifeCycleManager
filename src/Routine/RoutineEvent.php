@@ -2,26 +2,26 @@
 
 namespace srag\Plugins\SrLifeCycleManager\Routine;
 
-use srag\Plugins\SrLifeCycleManager\Event\NamedEvent;
+use srag\Plugins\SrLifeCycleManager\Event\Event;
 use ilObject;
 
 /**
  * @author Thibeau Fuhrer <thibeau@sr.solutions>
  */
-class RoutineEvent extends NamedEvent
+class RoutineEvent extends Event
 {
-    // RoutineEvent actions:
-    public const POSTPONE = 'onPostpone';
-    public const OPT_OUT = 'onOptOut';
-    public const DELETE = 'onDelete';
+    // RoutineEvent events:
+    public const EVENT_POSTPONE = 'routine_postpone';
+    public const EVENT_OPT_OUT = 'routine_opt_out';
+    public const EVENT_DELETE = 'routine_delete';
 
     /**
      * @var string possible event-actions.
      */
-    public const ACTIONS = [
-        self::POSTPONE,
-        self::OPT_OUT,
-        self::DELETE,
+    public const EVENT_NAMES = [
+        self::EVENT_POSTPONE,
+        self::EVENT_OPT_OUT,
+        self::EVENT_DELETE,
     ];
 
     /**
@@ -37,16 +37,15 @@ class RoutineEvent extends NamedEvent
     /**
      * @param IRoutine $routine
      * @param ilObject $object
-     * @param string   $source
      * @param string   $name
      */
     public function __construct(
         IRoutine $routine,
         ilObject $object,
-        string $source,
         string $name
     ) {
-        parent::__construct($source, $name);
+        parent::__construct($name);
+
         $this->routine = $routine;
         $this->object = $object;
     }
@@ -68,12 +67,14 @@ class RoutineEvent extends NamedEvent
     }
 
     /**
-     * Returns whether the current event-action is repeatable.
+     * Returns whether the current event is a repeatable one.
      *
      * @return bool
      */
     public function isRepeatable() : bool
     {
-        return ($this->getAction() === self::POSTPONE);
+        // since v1.7.0 opt-out's can be undone, therefore the
+        // only unrepeatable event is the deletion.
+        return (self::EVENT_DELETE !== $this->getName());
     }
 }

@@ -98,4 +98,17 @@ class ilSrGeneralRepository implements IGeneralRepository
 
         return $role_options;
     }
+
+    /**
+     * @inheritDoc
+     */
+    public function deleteObject(int $ref_id): bool
+    {
+        try {
+            ilRepUtil::deleteObjects(null, [$ref_id]);
+            return true;
+        } catch (ilRepositoryException $e) {
+            return false;
+        }
+    }
 }

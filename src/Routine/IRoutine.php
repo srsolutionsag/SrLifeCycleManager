@@ -2,7 +2,7 @@
 
 namespace srag\Plugins\SrLifeCycleManager\Routine;
 
-use DateTime;
+use DateTimeImmutable;
 
 /**
  * IRoutine describes the DAO of a routine.
@@ -14,6 +14,7 @@ interface IRoutine
     // IRoutine attributes:
     public const F_CREATION_DATE = 'creation_date';
     public const F_ELONGATION    = 'elongation';
+    public const F_COOLDOWN      = 'elongation_cooldown';
     public const F_HAS_OPT_OUT   = 'has_opt_out';
     public const F_ORIGIN_TYPE   = 'origin_type';
     public const F_ROUTINE_TYPE  = 'routine_type';
@@ -117,13 +118,24 @@ interface IRoutine
     public function setElongation(?int $amount) : IRoutine;
 
     /**
-     * @return DateTime
+     * @return int|null
      */
-    public function getCreationDate() : DateTime;
+    public function getElongationCooldown() : ?int;
 
     /**
-     * @param DateTime $creation_date
+     * @param int|null $amount_in_days
      * @return IRoutine
      */
-    public function setCreationDate(DateTime $creation_date) : IRoutine;
+    public function setElongationCooldown(?int $amount_in_days) : IRoutine;
+
+    /**
+     * @return DateTimeImmutable
+     */
+    public function getCreationDate() : DateTimeImmutable;
+
+    /**
+     * @param DateTimeImmutable $creation_date
+     * @return IRoutine
+     */
+    public function setCreationDate(DateTimeImmutable $creation_date) : IRoutine;
 }

@@ -76,7 +76,7 @@ class ConfirmationFormBuilder extends NotificationFormBuilder
     protected function getConfirmationEventOptions() : array
     {
         $options = [];
-        foreach (RoutineEvent::ACTIONS as $action) {
+        foreach (RoutineEvent::EVENT_NAMES as $action) {
             // only provide the current notification's event or events which
             // aren't already related to another confirmation.
             $confirmation = $this->repository->getByRoutineAndEvent($this->notification->getRoutineId(), $action);
@@ -104,7 +104,7 @@ class ConfirmationFormBuilder extends NotificationFormBuilder
                 }
 
                 // the constraint fails if the submitted event is unknown.
-                if (!in_array($event, RoutineEvent::ACTIONS, true)) {
+                if (!in_array($event, RoutineEvent::EVENT_NAMES, true)) {
                     return false;
                 }
 

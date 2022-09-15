@@ -97,6 +97,11 @@ class ConfigFormBuilder extends AbstractFormBuilder
             )
         ;
 
+        $inputs[IConfig::CNF_FORCE_MAIL_FORWARDING] = $this->fields
+            ->checkbox($this->translator->txt(IConfig::CNF_FORCE_MAIL_FORWARDING))
+            ->withValue($this->config->isMailForwardingForced())
+        ;
+
         $inputs[IConfig::CNF_TOOL_IS_ENABLED] = $this->fields->optionalGroup([
 
             IConfig::CNF_TOOL_SHOW_ROUTINES => $this->fields

@@ -33,7 +33,7 @@ class DeletableObject
     }
 
     /**
-     * @inheritDoc
+     * @return ilObject
      */
     public function getInstance() : ilObject
     {
@@ -41,7 +41,7 @@ class DeletableObject
     }
 
     /**
-     * @inheritDoc
+     * @return IRoutine[]
      */
     public function getAffectingRoutines() : array
     {

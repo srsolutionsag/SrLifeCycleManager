@@ -48,4 +48,15 @@ interface IGeneralRepository
      * @return array<int, string>
      */
     public function getAvailableGlobalRoles() : array;
+
+    /**
+     * Deletes an existing repository object for the given ref-id.
+     *
+     * This method primarily exists in order for PHPUnit to create a mock,
+     * so the static method call to the ilRepUtil class can be emulated.
+     *
+     * @param int $ref_id
+     * @return bool
+     */
+    public function deleteObject(int $ref_id) : bool;
 }

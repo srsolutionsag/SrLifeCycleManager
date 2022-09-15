@@ -62,6 +62,6 @@ class Reminder extends Notification implements IReminder
     {
         $elapsed_date = $this->getNotifiedDate()->add(new DateInterval("P{$this->getDaysBeforeDeletion()}D"));
 
-        return ($when >= $elapsed_date);
+        return ($when > $elapsed_date);
     }
 }

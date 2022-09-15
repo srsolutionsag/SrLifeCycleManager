@@ -37,4 +37,9 @@ interface ISentNotification extends INotification
      * @return ISentNotification
      */
     public function setNotifiedDate(DateTimeImmutable $date) : ISentNotification;
+
+    /**
+     * @return bool
+     */
+    public function hasBeenSent() : bool;
 }

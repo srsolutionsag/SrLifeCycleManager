@@ -70,7 +70,68 @@ class ilSrReminderRepository extends ilSrAbstractNotificationRepository implemen
     /**
      * @inheritDoc
      */
-    public function getByRoutineAndDaysBeforeDeletion(
+    public function getWithLessDaysBeforeDeletion(IRoutine $routine, int $days_before_deletion): array
+    {
+        $query = "
+            SELECT notification.notification_id, notification.routine_id, notification.title, notification.content,
+                   reminder.days_before_deletion
+                FROM srlcm_reminder AS reminder
+                LEFT JOIN srlcm_notification AS notification ON notification.notification_id = reminder.notification_id
+                WHERE notification.routine_id = %s
+                AND reminder.days_before_deletion > %s
+                ORDER BY reminder.days_before_deletion DESC
+            ;
+        ";
+
+        return $this->returnSingleQueryResult(
+            $this->database->fetchAll(
+                $this->database->queryF(
+                    $query,
+                    ['integer', 'integer'],
+                    [
+                        $routine->getRoutineId(),
+                        $days_before_deletion,
+                    ]
+                )
+            )
+        );
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function getNextReminder(IRoutine $routine, IReminder $previous_reminder = null): ?IReminder
+    {
+        if (null === $previous_reminder) {
+            return $this->getFirstByRoutine($routine);
+        }
+
+        return $this->getWithDaysBeforeDeletion(
+            $routine->getRoutineId(),
+            $previous_reminder->getDaysBeforeDeletion()
+        );
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function getFirstByRoutine(IRoutine $routine): ?IReminder
+    {
+        return $this->getByDirection($routine, SORT_DESC);
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function getLastByRoutine(IRoutine $routine): ?IReminder
+    {
+        return $this->getByDirection($routine, SORT_ASC);
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function getWithDaysBeforeDeletion(
         int $routine_id,
         int $days_before_deletion,
         bool $array_data = false
@@ -112,11 +173,43 @@ class ilSrReminderRepository extends ilSrAbstractNotificationRepository implemen
                 INNER JOIN srlcm_notified_objects AS reference ON reference.notification_id = reminder.notification_id
                 WHERE reference.routine_id = %s
                 AND reference.ref_id = %s
-                ORDER BY reminder.days_before_deletion
+                ORDER BY reminder.days_before_deletion DESC, reference.date
             ;
         ";
 
         return $this->returnAllQueryResults(
+            $this->database->fetchAll(
+                $this->database->queryF(
+                    $query,
+                    ['integer', 'integer'],
+                    [
+                        $routine->getRoutineId() ?? 0,
+                        $ref_id
+                    ]
+                )
+            )
+        );
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function getRecentlySent(IRoutine $routine, int $ref_id) : ?IReminder
+    {
+        $query = "
+            SELECT notification.notification_id, notification.routine_id, notification.title, notification.content,
+                   reminder.days_before_deletion, reference.ref_id, reference.date
+                FROM srlcm_reminder AS reminder
+                INNER JOIN srlcm_notification AS notification ON notification.notification_id = reminder.notification_id
+                INNER JOIN srlcm_notified_objects AS reference ON reference.notification_id = reminder.notification_id
+                WHERE reference.routine_id = %s
+                AND reference.ref_id = %s
+                ORDER BY reference.date DESC
+                LIMIT 1
+            ;
+        ";
+
+        return $this->returnSingleQueryResult(
             $this->database->fetchAll(
                 $this->database->queryF(
                     $query,
@@ -148,9 +241,10 @@ class ilSrReminderRepository extends ilSrAbstractNotificationRepository implemen
     public function delete(IReminder $notification) : bool
     {
         $query = "
-            DELETE notification, reminder
+            DELETE notification, reminder, reference
                 FROM srlcm_reminder AS reminder
                 INNER JOIN srlcm_notification AS notification ON reminder.notification_id = notification.notification_id
+                LEFT JOIN srlcm_notified_objects AS reference ON reference.notification_id = notification.notification_id
                 WHERE reminder.notification_id = %s
             ;
         ";
@@ -248,6 +342,39 @@ class ilSrReminderRepository extends ilSrAbstractNotificationRepository implemen
         $notification->setNotificationId($notification_id);
 
         return $notification;
+    }
+
+    /**
+     * @param IRoutine $routine
+     * @param int      $direction (SORT_ASC|SORT_DESC)
+     * @return IReminder|null
+     */
+    protected function getByDirection(IRoutine $routine, int $direction) : ?IReminder
+    {
+        $sort = (SORT_ASC === $direction) ? 'ASC' : 'DESC';
+
+        $query = "
+            SELECT notification.notification_id, notification.routine_id, notification.title, notification.content,
+                   reminder.days_before_deletion
+                FROM srlcm_reminder AS reminder
+                LEFT JOIN srlcm_notification AS notification ON notification.notification_id = reminder.notification_id
+                WHERE notification.routine_id = %s
+                ORDER BY reminder.days_before_deletion $sort
+                LIMIT 1
+            ;
+        ";
+
+        return $this->returnSingleQueryResult(
+            $this->database->fetchAll(
+                $this->database->queryF(
+                    $query,
+                    ['integer'],
+                    [
+                        $routine->getRoutineId() ?? 0,
+                    ]
+                )
+            )
+        );
     }
 
     /**
