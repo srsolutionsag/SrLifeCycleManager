@@ -23,6 +23,7 @@ class ilSrRoutinePreviewRenderer
     protected const PREVIEW_REF_ID = 'preview_ref_id';
     protected const PREVIEW_ROUTINES = 'preview_routines';
     protected const PREVIEW_OBJECT_LINK = 'preview_link_goto_object';
+    protected const LABEL_DELETED_OBJECTS = 'label_preview_deleted_objects';
     protected const MSG_LOADING = 'msg_this_may_take_a_while';
 
     /**
@@ -132,8 +133,14 @@ class ilSrRoutinePreviewRenderer
             ;
         }
 
-        return $this->renderer->renderAsync(
-            array_merge([$this->ui_factory->messageBox()->info(count($items) . ' Item(s)')], $items)
+        $item_group = $this->ui_factory->item()->group(
+            $this->translator->txt(self::LABEL_DELETED_OBJECTS),
+            $items
         );
+
+        return $this->renderer->renderAsync([
+            $this->ui_factory->messageBox()->info(count($items) . ' Item(s)'),
+            $item_group
+        ]);
     }
 }

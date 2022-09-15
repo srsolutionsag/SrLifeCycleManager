@@ -7,6 +7,8 @@ use srag\Plugins\SrLifeCycleManager\Rule\Comparison\ComparisonFactory;
 use srag\Plugins\SrLifeCycleManager\Routine\IRoutineRepository;
 use srag\Plugins\SrLifeCycleManager\Routine\IRoutine;
 use ilObject;
+use srag\Plugins\SrLifeCycleManager\Whitelist\WhitelistEntry;
+use srag\Plugins\SrLifeCycleManager\Whitelist\IWhitelistEntry;
 
 /**
  * @author Thibeau Fuhrer <thibeau@sr.solutions>
@@ -44,16 +46,35 @@ class RoutineProvider
     }
 
     /**
+     * Returns all routines that are assigned to the given object
+     * and are applicable, whereas whitelisted routines are ignored.
+     *
      * @return IRoutine[]
      */
-    public function getAffectingRoutines(ilObject $object) : array
+    public function getDeletingRoutines(ilObject $object): array
     {
         return array_filter(
             $this->routine_repository->getAllForComparison(
                 $object->getRefId(),
                 $object->getType()
             ),
-            function (IRoutine $routine) use ($object) : bool {
+            function (IRoutine $routine) use ($object): bool {
+                return $this->isApplicable($routine, $object);
+            }
+        );
+    }
+
+    /**
+     * Returns all routines that are assigned to the given object
+     * and are applicable, regardless of any whitelist entries.
+     *
+     * @return IRoutine[]
+     */
+    public function getAffectingRoutines(ilObject $object): array
+    {
+        return array_filter(
+            $this->routine_repository->getAllByRefId($object->getRefId()),
+            function (IRoutine $routine) use ($object): bool {
                 return $this->isApplicable($routine, $object);
             }
         );
@@ -64,7 +85,7 @@ class RoutineProvider
      * @param ilObject $object
      * @return bool
      */
-    protected function isApplicable(IRoutine $routine, ilObject $object) : bool
+    protected function isApplicable(IRoutine $routine, ilObject $object): bool
     {
         if (!in_array($object->getType(), IRoutine::ROUTINE_TYPES, true)) {
             return false;

@@ -12,6 +12,7 @@ label_postponed_indefinitely#:#Indefinitely
 label_affecting_routines#:#Deleting routines
 label_assigned_routines#:#Assigned routines
 label_routine_owner_unknown#:#Unknown
+label_preview_deleted_objects#:#Preview of deleted objects
 
 msg_permission_denied#:#Permission denied.
 msg_object_not_found#:#Requested object not found.
@@ -49,7 +50,7 @@ msg_whitelist_invalid_token#:#Your whitelist token isn't valid anymore.
 msg_whitelist_not_cool#:#The current object cannot be postponed again, yet.
 msg_routine_cant_undo_opt_out#:#The current object is not opted-out.
 msg_routine_undid_opt_out#:#The current object is no longer opted-out.
-msg_negative_integer#:#The submitted number must be greater or equal to 0.
+msg_number_less_than#:#The submitted number must be greater or equal to %s.
 msg_no_available_routines#:#There are no further routines for this object.
 
 page_title_rules#:#Life-Cycle Rules
@@ -153,10 +154,10 @@ action_routine_assignment_add#:#Add assignment
 action_routine_assignment_edit#:#Edit
 action_routine_assignment_delete#:#Delete
 action_routine_assignment_remove#:#Remove
-action_list_routine_assignment_remove#:#Unassign from this object
-action_routine_extend#:#Postpone deletion (for %s days)
-action_routine_opt_out#:#Opt-Out from deletion
-action_routine_opt_out_undo#:#Undo Opt-Out
+action_list_routine_assignment_remove#:#Remove assignment
+action_routine_extend#:#Postpone (%s days)
+action_routine_opt_out#:#Opt-Out (ignore)
+action_routine_opt_out_undo#:#Opt-Out Undo
 action_rule_add#:#Add rule
 action_rule_edit#:#Edit
 action_rule_delete#:#Remove

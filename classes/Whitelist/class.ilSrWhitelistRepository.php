@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 /* Copyright (c) 2022 Thibeau Fuhrer <thibeau@sr.solutions> Extended GPL, see docs/LICENSE */
 
@@ -65,7 +67,8 @@ class ilSrWhitelistRepository implements IWhitelistRepository
                         $routine->getRoutineId() ?? 0,
                     ]
                 )
-            ), $array_data
+            ),
+            $array_data
         );
     }
 
@@ -102,7 +105,7 @@ class ilSrWhitelistRepository implements IWhitelistRepository
      * @param int      $user_id
      * @return IWhitelistEntry
      */
-    public function empty(IRoutine $routine, int $ref_id, int $user_id) : IWhitelistEntry
+    public function empty(IRoutine $routine, int $ref_id, int $user_id): IWhitelistEntry
     {
         return new WhitelistEntry(
             $routine->getRoutineId() ?? 0,
@@ -136,7 +139,9 @@ class ilSrWhitelistRepository implements IWhitelistRepository
             [
                 $entry->getUserId(),
                 (int) $entry->isOptOut(),
-                $this->getMysqlDateString($entry->getExpiryDate()),
+                (null !== $entry->getExpiryDate()) ?
+                    $this->getMysqlDateString($entry->getExpiryDate()) :
+                    null,
                 $this->getMysqlDateString($entry->getDate()),
                 $entry->getRoutineId(),
                 $entry->getRefId(),
@@ -166,7 +171,9 @@ class ilSrWhitelistRepository implements IWhitelistRepository
                 $entry->getRefId(),
                 $entry->getUserId(),
                 (int) $entry->isOptOut(),
-                $this->getMysqlDateString($entry->getExpiryDate()),
+                (null !== $entry->getExpiryDate()) ?
+                    $this->getMysqlDateString($entry->getExpiryDate()) :
+                    null,
                 $this->getMysqlDateString($entry->getDate()),
             ]
         );

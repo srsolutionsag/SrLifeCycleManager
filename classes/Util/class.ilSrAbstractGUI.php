@@ -356,6 +356,16 @@ abstract class ilSrAbstractGUI
     }
 
     /**
+     * Helper function that redirects to the given object (ref-id).
+     *
+     * @param int $ref_id
+     */
+    protected function redirectToRefId(int $ref_id): void
+    {
+        $this->ctrl->redirectToURL(ilLink::_getLink($ref_id));
+    }
+
+    /**
      * Returns a form-action for the given command of the derived class.
      *
      * If a query-parameter is provided, the method checks if a value has been

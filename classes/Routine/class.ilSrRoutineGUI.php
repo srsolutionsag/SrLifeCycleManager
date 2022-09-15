@@ -162,4 +162,20 @@ class ilSrRoutineGUI extends ilSrAbstractGUI
 
         $this->cancel();
     }
+
+    /**
+     * Redirects back to the requested object (ref-id) if one has
+     * been provided.
+     *
+     * @inheritDoc
+     */
+    protected function cancel(): void
+    {
+        if (null !== $this->object_ref_id) {
+            $this->redirectToRefId($this->object_ref_id);
+        }
+
+        parent::cancel();
+    }
+
 }

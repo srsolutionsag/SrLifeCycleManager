@@ -21,7 +21,7 @@ abstract class AbstractFormBuilder implements IFormBuilder
     private const MSG_INVALID_RED_IDS = 'msg_invalid_ref_ids';
     private const MSG_INVALID_REF_ID = 'msg_invalid_ref_id';
     private const MSG_INVALID_EMAIL = 'msg_invalid_email';
-    private const MSG_NEGATIVE_INTEGER = 'msg_negative_integer';
+    private const MSG_NUMBER_LESS_THAN = 'msg_number_less_than';
 
     /**
      * @var ITranslator
@@ -70,18 +70,26 @@ abstract class AbstractFormBuilder implements IFormBuilder
     }
 
     /**
-     * Validates submitted numeric inputs, if the value is greater or equal
-     * to zero (0).
+     * Validates submitted numeric inputs, if the number is less than the
+     * provided $minimum an according message is displayed in the form.
      *
+     * @param bool $allow_zero
      * @return Constraint
      */
-    protected function getPositiveIntegerValidationConstraint(): Constraint
+    protected function getAboveMinimumIntegerValidationConstraint(int $minimum): Constraint
     {
         return $this->refinery->custom()->constraint(
-            static function (int $number) : bool {
-                return (0 <= $number);
+            static function ($number) use ($minimum) : bool {
+                if (!is_numeric($number)) {
+                    return false;
+                }
+
+                return ($minimum <= $number);
             },
-            $this->translator->txt(self::MSG_NEGATIVE_INTEGER)
+            sprintf(
+                $this->translator->txt(self::MSG_NUMBER_LESS_THAN),
+                $minimum
+            )
         );
     }
 

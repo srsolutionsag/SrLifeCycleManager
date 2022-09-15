@@ -4,6 +4,7 @@ namespace srag\Plugins\SrLifeCycleManager;
 
 use DateTimeImmutable;
 use LogicException;
+use Sabre\VObject\Property\VCard\Date;
 
 /**
  * This trait is responsible for managing datetime objects.
@@ -135,7 +136,12 @@ trait DateTimeHelper
      */
     protected function getGap(DateTimeImmutable $before, DateTimeImmutable $after): int
     {
-        return (int) $before->diff($after)->format("%r%a");
+        // set each datetime object's H:i:s to 00:00:00 in order to
+        // return an accurate gap.
+        $comparable_before = ($before->setTime(0, 0, 0)) ?: $before;
+        $comparable_after = ($after->setTime(0, 0, 0)) ?: $after;
+
+        return (int) $comparable_before->diff($comparable_after)->format("%r%a");
     }
 
     /**

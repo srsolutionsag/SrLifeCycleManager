@@ -17,7 +17,7 @@ use ILIAS\UI\Component\Component;
 /**
  * Class ilSrToolProvider provides ILIAS with the plugin's tools.
  *
- * @author Thibeau Fuhrer <thibeau@sr.solutions>
+ * @author       Thibeau Fuhrer <thibeau@sr.solutions>
  *
  * The provider is currently only interested in the repository context, as we want
  * to allow our tools to appear just within repository objects, if configured.
@@ -29,8 +29,8 @@ class ilSrToolProvider extends AbstractDynamicToolPluginProvider
     // ilSrToolProvider language variables:
     protected const ACTION_ASSIGNMENTS_MANAGE = 'action_routine_assignment_manage';
     protected const ACTION_ROUTINE_MANAGE = 'action_routine_manage';
-    protected const ROUTINES_HEADER = 'cnf_tool_routines_header';
-    protected const ROUTINES_TRIGGERED_HEADER = 'cnf_tool_routines_triggered_header';
+    protected const LABEL_AFFECTING_ROUTINES = 'label_affecting_routines';
+    protected const LABEL_ASSIGNED_ROUTINES = 'label_assigned_routines';
     protected const CNF_TOOL_CONTROLS = 'cnf_tool_controls';
 
     /**
@@ -71,7 +71,7 @@ class ilSrToolProvider extends AbstractDynamicToolPluginProvider
     /**
      * @inheritDoc
      */
-    public function isInterestedInContexts() : ContextCollection
+    public function isInterestedInContexts(): ContextCollection
     {
         return $this->context_collection->repository();
     }
@@ -79,7 +79,7 @@ class ilSrToolProvider extends AbstractDynamicToolPluginProvider
     /**
      * @inheritDoc
      */
-    public function getToolsForContextStack(CalledContexts $called_contexts) : array
+    public function getToolsForContextStack(CalledContexts $called_contexts): array
     {
         $this->initDependencies();
 
@@ -98,7 +98,7 @@ class ilSrToolProvider extends AbstractDynamicToolPluginProvider
      * Helper function that initializes dependencies on request, because
      * the class cannot override the constructor.
      */
-    protected function initDependencies() : void
+    protected function initDependencies(): void
     {
         $this->request_object = $this->getRequestedObject();
         if (null !== $this->request_object) {
@@ -107,7 +107,8 @@ class ilSrToolProvider extends AbstractDynamicToolPluginProvider
 
         $this->config = (new ilSrConfigRepository(
             $this->dic->database(),
-            $this->dic->rbac())
+            $this->dic->rbac()
+        )
         )->get();
 
         $this->assignment_repository = new ilSrAssignmentRepository(
@@ -150,9 +151,9 @@ class ilSrToolProvider extends AbstractDynamicToolPluginProvider
      *
      * @return Closure
      */
-    protected function getContentWrapper() : Closure
+    protected function getContentWrapper(): Closure
     {
-        return function () : Component {
+        return function (): Component {
             $html = '';
             if ($this->shouldRenderRoutineLists()) {
                 $html .= $this->renderRoutineLists($this->request_object);
@@ -173,7 +174,7 @@ class ilSrToolProvider extends AbstractDynamicToolPluginProvider
      * @param int $ref_id
      * @return string
      */
-    protected function renderRoutineLists(int $ref_id) : string
+    protected function renderRoutineLists(int $ref_id): string
     {
         try {
             $object = ilObjectFactory::getInstanceByRefId($ref_id);
@@ -181,38 +182,55 @@ class ilSrToolProvider extends AbstractDynamicToolPluginProvider
             return '';
         }
 
+        if (false === $object) {
+            return '';
+        }
+
         /** @var $translator ITranslator */
         $translator = $this->plugin;
 
-        $affecting_routine_list = new ilSrAffectingRoutineList(
+        $affecting_routines = $this->routine_provider->getAffectingRoutines($object);
+        $assigned_routines = $this->routine_repository->getAllByRefId($object->getRefId());
+
+        // array_udiff() didn't seem to work in certain scenarios if the
+        // array sizes of both arrays were different, therefore I've used
+        // this stupid loop now. this is definitely a performance killer,
+        // maybe someone smart can figure this out :(.
+        $assigned_but_unaffecting_routines = [];
+        foreach ($assigned_routines as $assigned_routine) {
+            $assigned_routine_id = $assigned_routine->getRoutineId();
+            foreach ($affecting_routines as $affecting_routine) {
+                if ($assigned_routine_id === $affecting_routine->getRoutineId()) {
+                    continue 2;
+                }
+            }
+
+            $assigned_but_unaffecting_routines[] = $assigned_routine;
+        }
+
+        $list_builder = new ilSrRoutineListBuilder(
+            $this->dic->ui()->factory(),
             $this->assignment_repository,
-            $this->whitelist_repository,
             $this->routine_repository,
-            $this->routine_provider,
+            $this->whitelist_repository,
             $translator,
             $this->access_handler,
-            $object,
-            $this->dic->ui()->factory(),
-            $this->dic->ui()->renderer(),
             $this->dic->ctrl()
         );
 
-        $html = $affecting_routine_list->getHtml();
+        $affecting_routine_list = $list_builder
+            ->reset()
+            ->withTitle($translator->txt(self::LABEL_AFFECTING_ROUTINES))
+            ->withAffectingRoutines($affecting_routines)
+            ->withCurrentObject($object)
+            ->getList();
 
-        $assigned_routine_list = new ilSrAssignedRoutineList(
-            $this->assignment_repository,
-            $this->whitelist_repository,
-            $this->routine_repository,
-            $this->routine_provider,
-            $translator,
-            $this->access_handler,
-            $object,
-            $this->dic->ui()->factory(),
-            $this->dic->ui()->renderer(),
-            $this->dic->ctrl()
-        );
-
-        $html .= $assigned_routine_list->getHtml();
+        $assigned_routine_list = $list_builder
+            ->reset()
+            ->withTitle($translator->txt(self::LABEL_ASSIGNED_ROUTINES))
+            ->withAssignedRoutines($assigned_but_unaffecting_routines)
+            ->withCurrentObject($object)
+            ->getList();
 
         return "
             <div id=\"srlcm-item-group\">
@@ -226,8 +244,20 @@ class ilSrToolProvider extends AbstractDynamicToolPluginProvider
                         padding-bottom: 2px;
                         width: 100%;
                     }
+                    
+                    /**
+                     * this fixes a presentation bug where long titles lead to
+                     * a wrong break if an action dropdown was displayed aside.
+                     * (26px is the default width of the action-dropdown)
+                     */
+                    #srlcm-item-group .il-item-title {
+                        max-width: calc(100% - 26px);
+                    }
                 </style>
-                $html
+                {$this->dic->ui()->renderer()->render([
+                    $affecting_routine_list,
+                    $assigned_routine_list
+                ])}
             </div>
         ";
     }
@@ -238,7 +268,7 @@ class ilSrToolProvider extends AbstractDynamicToolPluginProvider
      *
      * @return string
      */
-    protected function renderRoutineControls() : string
+    protected function renderRoutineControls(): string
     {
         $controls = [];
         if ($this->access_handler->canManageAssignments()) {
@@ -276,7 +306,7 @@ class ilSrToolProvider extends AbstractDynamicToolPluginProvider
      *
      * @return int|null
      */
-    protected function getRequestedObject() : ?int
+    protected function getRequestedObject(): ?int
     {
         $target = $this->dic->http()->request()->getQueryParams()['target'] ?? null;
         $ref_id = $this->dic->http()->request()->getQueryParams()['ref_id'] ?? null;
@@ -308,7 +338,7 @@ class ilSrToolProvider extends AbstractDynamicToolPluginProvider
      * @param int $ref_id
      * @return void
      */
-    protected function keepObjectAlive(int $ref_id) : void
+    protected function keepObjectAlive(int $ref_id): void
     {
         $this->dic->ctrl()->setParameterByClass(
             ilSrRoutineAssignmentGUI::class,
@@ -340,9 +370,9 @@ class ilSrToolProvider extends AbstractDynamicToolPluginProvider
      *
      * @return Closure
      */
-    protected function getToolAvailabilityClosure() : Closure
+    protected function getToolAvailabilityClosure(): Closure
     {
-        return function() : bool {
+        return function (): bool {
             // the availability of the tool depends on the
             // active state of the plugin.
             return (bool) $this->plugin->isActive();
@@ -354,11 +384,11 @@ class ilSrToolProvider extends AbstractDynamicToolPluginProvider
      *
      * @return Closure
      */
-    protected function getToolVisibilityClosure() : Closure
+    protected function getToolVisibilityClosure(): Closure
     {
         // the tool should be visible if an object was requested,
         // and at least one of the tool components should be rendered.
-        return function() : bool {
+        return function (): bool {
             return (
                 null !== $this->request_object && (
                     $this->shouldRenderRoutineControls() ||
@@ -373,7 +403,7 @@ class ilSrToolProvider extends AbstractDynamicToolPluginProvider
      *
      * @return bool
      */
-    protected function shouldRenderRoutineControls() : bool
+    protected function shouldRenderRoutineControls(): bool
     {
         return (
             $this->config->shouldToolShowControls() &&
@@ -389,7 +419,7 @@ class ilSrToolProvider extends AbstractDynamicToolPluginProvider
      *
      * @return bool
      */
-    protected function shouldRenderRoutineLists() : bool
+    protected function shouldRenderRoutineLists(): bool
     {
         return (
             null !== $this->request_object &&

@@ -347,6 +347,7 @@ if (!$ilDB->tableExists($table_name)) {
 <?php
 /** @var $ilDB ilDBInterface */
 $table_name = 'srlcm_configuration';
+
 if ($ilDB->tableExists($table_name)) {
     $ilDB->insert($table_name, [
         'identifier' => ['text', 'cnf_custom_from_email'],
@@ -358,6 +359,7 @@ if ($ilDB->tableExists($table_name)) {
 <?php
 /** @var $ilDB ilDBInterface */
 $table_name = 'srlcm_configuration';
+
 if ($ilDB->tableExists($table_name)) {
     $ilDB->insert($table_name, [
         'identifier' => ['text', 'cnf_mailing_whitelist'],
@@ -369,6 +371,7 @@ if ($ilDB->tableExists($table_name)) {
 <?php
 /** @var $ilDB ilDBInterface */
 $table_name = 'srlcm_configuration';
+
 if ($ilDB->tableExists($table_name)) {
     $ilDB->update($table_name, [
         'identifier' => ['text', 'cnf_mailing_blacklist']
@@ -527,10 +530,23 @@ if (!$ilDB->tableColumnExists($table_name, $column_name)) {
 <?php
 /** @var $ilDB ilDBInterface */
 $table_name = 'srlcm_configuration';
+
 if ($ilDB->tableExists($table_name)) {
     $ilDB->insert($table_name, [
         'identifier' => ['text', 'cnf_force_mail_forwarding'],
         'configuration' => ['text', '0'],
+    ]);
+}
+?>
+<#20>
+<?php
+/** @var $ilDB ilDBInterface */
+$table_name = 'srlcm_routine';
+$column_name = 'elongation_cooldown';
+
+if ($ilDB->tableColumnExists($table_name, $column_name)) {
+    $ilDB->modifyTableColumn($table_name, $column_name, [
+        'notnull' => '0',
     ]);
 }
 ?>

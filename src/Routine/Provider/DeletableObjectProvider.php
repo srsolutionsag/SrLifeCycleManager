@@ -38,7 +38,7 @@ class DeletableObjectProvider
     public function getDeletableObjects() : Generator
     {
         foreach ($this->general_repository->getRepositoryObjects() as $object) {
-            $routines = $this->routine_provider->getAffectingRoutines($object);
+            $routines = $this->routine_provider->getDeletingRoutines($object);
             if (!empty($routines)) {
                 yield new DeletableObject(
                     $object,

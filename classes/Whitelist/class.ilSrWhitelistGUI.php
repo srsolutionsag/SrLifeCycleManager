@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 use srag\Plugins\SrLifeCycleManager\Routine\RoutineEvent;
 use srag\Plugins\SrLifeCycleManager\Event\IObserver;
@@ -120,7 +122,7 @@ class ilSrWhitelistGUI extends ilSrAbstractGUI
     protected function postpone(): void
     {
         $request_token = $this->getRequestParameter(self::PARAM_WHITELIST_TOKEN);
-        $stored_token = $this->repository->token()->getByToken($request_token);
+        $stored_token = (null !== $request_token) ? $this->repository->token()->getByToken($request_token) : null;
 
         // abort if the provided whitelist token doesn't exist or
         // is not intended for this action.
@@ -169,7 +171,7 @@ class ilSrWhitelistGUI extends ilSrAbstractGUI
 
             // abort if there is a cooldown which is not yet elapsed.
             if (null !== ($cooldown = $routine->getElongationCooldown()) &&
-                $this->getCurrentDate() <= $whitelist_entry->getDate()->add(new DateInterval("P{$cooldown}D"))
+                $this->getCurrentDate() < $whitelist_entry->getDate()->add(new DateInterval("P{$cooldown}D"))
             ) {
                 $this->sendErrorMessage(self::MSG_WHITELIST_UNCOOL);
                 $this->cancel();
@@ -221,7 +223,8 @@ class ilSrWhitelistGUI extends ilSrAbstractGUI
             sprintf(
                 $this->translator->txt(self::MSG_ROUTINE_EXTENDED),
                 $routine->getElongation()
-            ), true
+            ),
+            true
         );
 
         $this->redirectToRefId($object_instance->getRefId());
@@ -244,7 +247,7 @@ class ilSrWhitelistGUI extends ilSrAbstractGUI
     protected function optOut(): void
     {
         $request_token = $this->getRequestParameter(self::PARAM_WHITELIST_TOKEN);
-        $stored_token = $this->repository->token()->getByToken($request_token);
+        $stored_token = (null !== $request_token) ? $this->repository->token()->getByToken($request_token) : null;
 
         // abort if the provided whitelist token doesn't exist or
         // is not intended for this action.
@@ -377,7 +380,7 @@ class ilSrWhitelistGUI extends ilSrAbstractGUI
      * @param IToken|null $token
      * @return ilObject|null
      */
-    protected function getObjectByTokenOrRequest(IToken $token = null) : ?ilObject
+    protected function getObjectByTokenOrRequest(IToken $token = null): ?ilObject
     {
         if (null !== $token) {
             return $this->getObjectInstance($token->getRefId());
@@ -397,7 +400,7 @@ class ilSrWhitelistGUI extends ilSrAbstractGUI
      * @param IToken|null $token
      * @return IRoutine|null
      */
-    protected function getRoutineByTokenOrRequest(IToken $token = null) : ?IRoutine
+    protected function getRoutineByTokenOrRequest(IToken $token = null): ?IRoutine
     {
         if (null !== $token) {
             return $this->repository->routine()->get($token->getRoutineId());
@@ -438,16 +441,5 @@ class ilSrWhitelistGUI extends ilSrAbstractGUI
         }
 
         parent::cancel();
-    }
-
-    /**
-     * Helper function that redirects to the given object (ref-id).
-     *
-     * @param int $ref_id
-     * @return void
-     */
-    protected function redirectToRefId(int $ref_id) : void
-    {
-        $this->ctrl->redirectToURL(ilLink::_getLink($ref_id));
     }
 }

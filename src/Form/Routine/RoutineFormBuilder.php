@@ -84,16 +84,18 @@ class RoutineFormBuilder extends AbstractFormBuilder
                 [
                     self::INPUT_ELONGATION => $this->fields
                         ->numeric($this->translator->txt(self::INPUT_ELONGATION))
+                        ->withRequired(true)
                         ->withValue($this->routine->getElongation())
                         ->withAdditionalTransformation(
-                            $this->getPositiveIntegerValidationConstraint()
+                            $this->getAboveMinimumIntegerValidationConstraint(1)
                         )
                     ,
                     self::INPUT_ELONGATION_COOLDOWN => $this->fields
                         ->numeric($this->translator->txt(self::INPUT_ELONGATION_COOLDOWN))
+                        ->withRequired(true)
                         ->withValue($this->routine->getElongationCooldown())
                         ->withAdditionalTransformation(
-                            $this->getPositiveIntegerValidationConstraint()
+                            $this->getAboveMinimumIntegerValidationConstraint(0)
                         )
                 ],
                 $this->translator->txt(self::INPUT_ELONGATION_POSSIBLE)

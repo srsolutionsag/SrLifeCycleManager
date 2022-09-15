@@ -1,5 +1,17 @@
 # SrLifeCycleManager Changelog
 
+## 1.7.1
+
+- Fixed several issues, where:
+  - elongations and opt-outs via repository tool lead to a fatal error because the token was missing.
+  - the elongation action was still available after an object has already been opted-out.
+  - routines were displayed in both, affecting- and assigned-routine-lists.
+  - storing a routine without an elongation cooldown lead to a database exception.
+  - long titles of a routine lead to shifted action-dropdowns in the repository tool lists.
+- Elongations and cooldowns are now required if optional form-group has been checked.
+- Improved the calculation of gaps between datetime objects, so it now returns 1 if a new day has began.
+- Adjusted action names (language variables) in both routine lists, that lead to an "overcrowded" action-dropdown.
+
 ## 1.7.0
 
 - Added a token-system which is used when generating link targets for elongations or opt-outs. This prevents multiple
