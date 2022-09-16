@@ -155,6 +155,7 @@ action_routine_assignment_edit#:#Edit
 action_routine_assignment_delete#:#Delete
 action_routine_assignment_remove#:#Remove
 action_list_routine_assignment_remove#:#Remove assignment
+action_list_routine_assignment_edit#:#Edit Assigmnent
 action_routine_extend#:#Postpone (%s days)
 action_routine_opt_out#:#Opt-Out (ignore)
 action_routine_opt_out_undo#:#Opt-Out Undo

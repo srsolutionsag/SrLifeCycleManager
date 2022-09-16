@@ -171,6 +171,20 @@ abstract class ilSrAbstractAssignmentGUI extends ilSrAbstractGUI
     }
 
     /**
+     * Redirects back to the current object if one has been provided.
+     *
+     * @inheritDoc
+     */
+    protected function cancel(): void
+    {
+        if (null !== $this->object_ref_id) {
+            $this->redirectToRefId($this->object_ref_id);
+        }
+
+        parent::cancel();
+    }
+
+    /**
      * Fetches an assignment from the database for the requested routine
      * and object (ref-id) if it exists.
      *

@@ -81,26 +81,6 @@ class ilSrRoutineAssignmentTable extends ilSrAbstractAssignmentTable
             return $actions;
         }
 
-        if ($data[IRoutine::F_HAS_OPT_OUT]) {
-            $actions[] = $this->ui_factory->button()->shy(
-                $this->translator->txt(self::ACTION_WHITELIST_OPT_OUT),
-                $this->ctrl->getLinkTargetByClass(
-                    ilSrWhitelistGUI::class,
-                    ilSrWhitelistGUI::CMD_WHITELIST_OPT_OUT
-                )
-            );
-        }
-
-        if (0 < (int) $data[IRoutine::F_ELONGATION]) {
-            $actions[] = $this->ui_factory->button()->shy(
-                $this->translator->txt(self::ACTION_WHITELIST_POSTPONE),
-                $this->ctrl->getLinkTargetByClass(
-                    ilSrWhitelistGUI::class,
-                    ilSrWhitelistGUI::CMD_WHITELIST_POSTPONE
-                )
-            );
-        }
-
         return $actions;
     }
 

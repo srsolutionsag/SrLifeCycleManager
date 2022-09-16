@@ -155,6 +155,7 @@ action_routine_assignment_edit#:#Bearbeiten
 action_routine_assignment_delete#:#Löschen
 action_routine_assignment_remove#:#Entfernen
 action_list_routine_assignment_remove#:#Zuweisung entfernen
+action_list_routine_assignment_edit#:#Zuweisung bearbeiten
 action_routine_extend#:#Verlängern (%s Tage)
 action_routine_opt_out#:#Opt-Out (ignorieren)
 action_routine_opt_out_undo#:#Opt-Out aufheben

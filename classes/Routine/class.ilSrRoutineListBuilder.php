@@ -21,6 +21,7 @@ class ilSrRoutineListBuilder
 
     // ilSrRoutineListBuilder language variables:
     protected const ACTION_ROUTINE_ASSIGNMENT_REMOVE = 'action_list_routine_assignment_remove';
+    protected const ACTION_ROUTINE_ASSIGNMENT_EDIT = 'action_list_routine_assignment_edit';
     protected const ACTION_ROUTINE_EDIT = 'action_list_routine_edit';
     protected const ACTION_ROUTINE_EXTEND = 'action_routine_extend';
     protected const ACTION_ROUTINE_OPT_OUT = 'action_routine_opt_out';
@@ -293,19 +294,24 @@ class ilSrRoutineListBuilder
         // wouldn't make sens because the object will or cannot be
         // deleted.
         if (!$this->are_routines_affected || 1 === $this->object->getRefId()) {
-            $actions[self::ACTION_ROUTINE_ASSIGNMENT_REMOVE] = $this->ui_factory->button()->shy(
-                $this->translator->txt(self::ACTION_ROUTINE_ASSIGNMENT_REMOVE),
-                ilSrLifeCycleManagerDispatcher::getLinkTarget(
-                    ilSrRoutineAssignmentGUI::class,
-                    ilSrRoutineAssignmentGUI::CMD_ASSIGNMENT_DELETE
-                )
-            );
-
             $exact_assignment = $this->assignment_repository->get($routine->getRoutineId(), $this->object->getRefId());
 
-            if (null === $exact_assignment) {
-                $actions[self::ACTION_ROUTINE_ASSIGNMENT_REMOVE] =
-                    $actions[self::ACTION_ROUTINE_ASSIGNMENT_REMOVE]->withUnavailableAction();
+            if (null !== $exact_assignment) {
+                $actions[self::ACTION_ROUTINE_ASSIGNMENT_REMOVE] = $this->ui_factory->button()->shy(
+                    $this->translator->txt(self::ACTION_ROUTINE_ASSIGNMENT_REMOVE),
+                    ilSrLifeCycleManagerDispatcher::getLinkTarget(
+                        ilSrRoutineAssignmentGUI::class,
+                        ilSrRoutineAssignmentGUI::CMD_ASSIGNMENT_DELETE
+                    )
+                );
+
+                $actions[self::ACTION_ROUTINE_ASSIGNMENT_EDIT] = $this->ui_factory->button()->shy(
+                    $this->translator->txt(self::ACTION_ROUTINE_ASSIGNMENT_EDIT),
+                    ilSrLifeCycleManagerDispatcher::getLinkTarget(
+                        ilSrRoutineAssignmentGUI::class,
+                        ilSrRoutineAssignmentGUI::CMD_ASSIGNMENT_EDIT
+                    )
+                );
             }
 
             return $actions;
