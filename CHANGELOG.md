@@ -1,5 +1,9 @@
 # SrLifeCycleManager Changelog
 
+## 1.7.3
+
+- Fixed an issue where sent reminders weren't marked which lead to objects never being deleted.
+
 ## 1.7.2
 
 - Removed postpone- and opt-out-action from `ilSrRoutineAssignmentTable` because the visibility of these actions got

@@ -62,7 +62,7 @@ abstract class ilSrAbstractNotificationRepository implements INotificationReposi
 
         $count = (int) $results[0]['count'];
 
-        return (1 >= $count);
+        return (0 < $count);
     }
 
     /**
