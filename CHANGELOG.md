@@ -1,5 +1,12 @@
 # SrLifeCycleManager Changelog
 
+## 1.7.4
+
+- Introduced a new configuration to enable/disable debug mode. If enabled, any exception thrown by a command class (GUI)
+  of this plugin will be printed with it's stacktrace. This will help reproducing issues on a local machine.
+- Fixed an issue where confirmations which have been created before the renaming of events lead to an error when
+  editing.
+
 ## 1.7.3
 
 - Fixed an issue where sent reminders weren't marked which lead to objects never being deleted.

@@ -80,6 +80,7 @@ cnf_custom_from_email#:#Notification email
 cnf_mailing_blacklist#:#Mailing Blacklist
 cnf_mailing_blacklist_info#:#Comma-separated list of user IDs that should not receive notifications about routines. This is suitable, for example, for system accounts that are administrators in a large number of courses because they have created the courses automatically.
 cnf_force_mail_forwarding#:#Force mail-forwarding
+cnf_debug_mode#:#Debug Mode
 
 col_actions#:#Actions
 col_routine_title#:#Name

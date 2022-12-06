@@ -120,6 +120,11 @@ class ConfigFormBuilder extends AbstractFormBuilder
             $inputs[IConfig::CNF_TOOL_IS_ENABLED] = $inputs[IConfig::CNF_TOOL_IS_ENABLED]->withValue(null);
         }
 
+        $inputs[IConfig::CNF_DEBUG_MODE] = $this->fields
+            ->checkbox($this->translator->txt(IConfig::CNF_DEBUG_MODE))
+            ->withValue($this->config->isDebugModeEnabled())
+        ;
+
         return $this->forms->standard(
             $this->form_action,
             $inputs

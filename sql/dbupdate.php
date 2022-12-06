@@ -550,3 +550,37 @@ if ($ilDB->tableColumnExists($table_name, $column_name)) {
     ]);
 }
 ?>
+<#21>
+<?php
+/** @var $ilDB ilDBInterface */
+$table_name = 'srlcm_confirmation';
+$column_name = 'event';
+
+if ($ilDB->tableColumnExists($table_name, $column_name)) {
+    $legacy_event_name_mapping = [
+        'onPostpone' => 'routine_postpone',
+        'onOptOut' => 'routine_opt_out',
+        'onDelete' => 'routine_delete',
+    ];
+
+    foreach ($legacy_event_name_mapping as $legacy_event => $new_event) {
+        $ilDB->update(
+            $table_name,
+            ['event' => ['text', $new_event]],
+            ['event' => ['text', $legacy_event]]
+        );
+    }
+}
+?>
+<#22>
+<?php
+/** @var $ilDB ilDBInterface */
+$table_name = 'srlcm_configuration';
+
+if ($ilDB->tableExists($table_name)) {
+    $ilDB->insert($table_name, [
+        'identifier' => ['text', 'cnf_debug_mode'],
+        'configuration' => ['text', '0'],
+    ]);
+}
+?>

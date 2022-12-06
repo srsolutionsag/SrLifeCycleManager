@@ -50,6 +50,11 @@ class Config implements IConfig
     protected $force_mail_forwarding;
 
     /**
+     * @var bool
+     */
+    protected $is_debug_mode_enabled;
+
+    /**
      * @param int[]       $manage_routines
      * @param int[]       $manage_assignments
      * @param bool        $is_tool_enabled
@@ -58,6 +63,7 @@ class Config implements IConfig
      * @param string|null $custom_email
      * @param array       $mailing_blacklist
      * @param bool        $force_mail_forwarding
+     * @param bool        $is_debug_mode_enabled
      */
     public function __construct(
         array $manage_routines = [],
@@ -67,7 +73,8 @@ class Config implements IConfig
         bool $tool_show_controls = false,
         string $custom_email = null,
         array $mailing_blacklist = [],
-        bool $force_mail_forwarding = false
+        bool $force_mail_forwarding = false,
+        bool $is_debug_mode_enabled = false
     ) {
         $this->manage_routine_roles = $manage_routines;
         $this->manage_assignment_roles = $manage_assignments;
@@ -77,6 +84,7 @@ class Config implements IConfig
         $this->custom_email = $custom_email;
         $this->mailing_blacklist = $mailing_blacklist;
         $this->force_mail_forwarding = $force_mail_forwarding;
+        $this->is_debug_mode_enabled = $is_debug_mode_enabled;
     }
 
     /**
@@ -212,6 +220,23 @@ class Config implements IConfig
     public function setMailingBlacklist(array $user_ids) : IConfig
     {
         $this->mailing_blacklist = $user_ids;
+        return $this;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function isDebugModeEnabled() : bool
+    {
+        return $this->is_debug_mode_enabled;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function setDebugModeEnabled(bool $is_enabled) : IConfig
+    {
+        $this->is_debug_mode_enabled = $is_enabled;
         return $this;
     }
 }

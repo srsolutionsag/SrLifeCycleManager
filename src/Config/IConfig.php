@@ -55,6 +55,11 @@ interface IConfig
      */
     public const CNF_FORCE_MAIL_FORWARDING = 'cnf_force_mail_forwarding';
 
+    /**
+     * @var string config primary key to enable or disable the debugging of this plugin.
+     */
+    public const CNF_DEBUG_MODE = 'cnf_debug_mode';
+
     // IConfig attribute names:
     public const F_IDENTIFIER = 'identifier';
     public const F_CONFIG = 'configuration';
@@ -146,4 +151,15 @@ interface IConfig
      * @return IConfig
      */
     public function setMailingBlacklist(array $user_ids) : IConfig;
+
+    /**
+     * @return bool
+     */
+    public function isDebugModeEnabled() : bool;
+
+    /**
+     * @var bool $is_enabled
+     * @return IConfig
+     */
+    public function setDebugModeEnabled(bool $is_enabled) : IConfig;
 }

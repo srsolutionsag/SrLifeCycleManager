@@ -3,6 +3,8 @@
 /* Copyright (c) 2022 Thibeau Fuhrer <thibeau@sr.solutions> Extended GPL, see docs/LICENSE */
 
 use srag\Plugins\SrLifeCycleManager\Routine\IRoutine;
+use srag\Plugins\SrLifeCycleManager\Config\IConfig;
+use srag\Plugins\SrLifeCycleManager\ITranslator;
 
 /**
  * Handles all requests of this plugin and dispatches them to the responsible class.
@@ -32,6 +34,11 @@ class ilSrLifeCycleManagerDispatcher
     protected $global_template;
 
     /**
+     * @var IConfig
+     */
+    protected $config;
+
+    /**
      * @var ilCtrl
      */
     protected $ctrl;
@@ -43,6 +50,7 @@ class ilSrLifeCycleManagerDispatcher
     {
         global $DIC;
         $this->global_template = $DIC->ui()->mainTemplate();
+        $this->config = (new ilSrConfigRepository($DIC->database(), $DIC->rbac()))->get();
         $this->ctrl = $DIC->ctrl();
     }
 
@@ -168,7 +176,7 @@ class ilSrLifeCycleManagerDispatcher
         } catch (LogicException|ilCtrlException $exception) {
             $this->global_template->setOnScreenMessage(
                 'failure',
-                (DEVMODE || DEBUG) ?
+                ($this->config->isDebugModeEnabled()) ?
                     $this->getExceptionString($exception) :
                     $exception->getMessage()
             );
