@@ -1,5 +1,10 @@
 # SrLifeCycleManager Changelog
 
+## 1.7.6
+
+- Fixed an issue where too long whitelist tokens were generated, which lead to tokens not being found eventhough they
+  should have been valid.
+
 ## 1.7.5
 
 - Fixed an issue where the routine cron-job deleted objects too soon because the amount of days before deletion wasn't
@@ -14,6 +19,10 @@
 - Fixed an issue where confirmations which have been created before the renaming of events lead to an error when
   editing.
 
+<<<<<<< HEAD
+>>>>>>> Stashed changes
+=======
+>>>>>>> da4bf9b46816e9477e2e6238645ff0baa2a6bd8d
 ## 1.7.3
 
 - Fixed an issue where sent reminders weren't marked which lead to objects never being deleted.

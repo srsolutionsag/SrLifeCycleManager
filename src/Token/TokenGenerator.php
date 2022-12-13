@@ -22,7 +22,10 @@ trait TokenGenerator
         // that is available for sure.
 
         try {
-            $token = bin2hex(random_bytes(64));
+            // the hexadecimal representation will need 2 characters for
+            // every byte, therefore we have to cut the random-bytes in
+            // half.
+            $token = bin2hex(random_bytes(32));
         } catch (Throwable $t) {
             $token = hash('sha256', uniqid((string) time(), true));
         }
