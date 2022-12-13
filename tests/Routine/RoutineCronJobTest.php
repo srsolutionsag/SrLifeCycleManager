@@ -170,6 +170,7 @@ class RoutineCronJobTest extends TestCase
             }
         );
 
+        // assertion-logic will be handled in this callback.
         $this->notification_sender->method('sendNotification')->willReturnCallback(
             function ($reminder, $object) use (&$next_reminder, &$test_object) {
                 $this->assertInstanceOf(IReminder::class, $reminder);
@@ -250,6 +251,97 @@ class RoutineCronJobTest extends TestCase
         $provider->rewind();
         $cron_job = $this->getCronJob($date_25_02_2000, $provider);
         $cron_job->run();
+    }
+
+    /**
+     * The cron job must take the configured amount of days a reminder is sent before
+     * the deletion into account when calculation the actual deletion-date. Therefore,
+     * if we have one reminder:
+     *
+     *      - reminder_1: 30 days before deletion
+     *
+     * The cron job should send this reminder on the initial run and only delete the
+     * object if 30 days have passed, even though the cron-job runs daily.
+     *
+     * This test will not cover actions that could occurr during this process (like
+     * postponements or opt-outs).
+     */
+    public function testBehaviourOfDeletions(): void
+    {
+        $this->whitelist_repository->method('get')->willReturn(null);
+
+        $test_object = $this->getObjectMock(1);
+        $reminder_1 = $this->getReminderMock(1, 30);
+        $date_when_reminder_1_should_be_sent = DateTimeImmutable::createFromFormat('m.d.Y', '01.01.2000');
+        $date_when_object_should_be_deleted = $date_when_reminder_1_should_be_sent->add(new DateInterval("P31D"));
+        $date_when_object_should_not_be_deleted = $date_when_reminder_1_should_be_sent->add(new DateInterval("P10D"));
+
+        // please test these variables instead of the according repository-method-calls.
+        $has_object_been_deleted = false;
+        $has_reminder_been_sent = false;
+
+        // please update these variables instead of re-configuring the repository mock.
+        $previous_reminder = null;
+        $next_reminder = $reminder_1;
+
+        $this->reminder_repository->method('getByRoutine')->willReturn([$reminder_1]);
+        $this->reminder_repository->method('getLastByRoutine')->willReturn($reminder_1);
+        $this->reminder_repository->method('getRecentlySent')->willReturnCallback(
+            static function () use (&$previous_reminder) {
+                return $previous_reminder;
+            }
+        );
+        $this->reminder_repository->method('getNextReminder')->willReturnCallback(
+            static function () use (&$next_reminder) {
+                return $next_reminder;
+            }
+        );
+
+        $this->notification_sender->method('sendNotification')->willReturnCallback(
+            function () use (&$has_reminder_been_sent) {
+                $has_reminder_been_sent = true;
+                return $this->createMock(ISentNotification::class);
+            }
+        );
+
+        $this->general_repository->method('deleteObject')->willReturnCallback(
+            function () use (&$has_object_been_deleted) {
+                $has_object_been_deleted = true;
+                return true;
+            }
+        );
+
+        $provider = $this->getDeletableObjectsProvider([$test_object]);
+        $cron_job = $this->getCronJob($date_when_reminder_1_should_be_sent, $provider);
+        $cron_job->run();
+
+        $this->assertTrue($has_reminder_been_sent);
+        $this->assertFalse($has_object_been_deleted);
+
+        // update the reminder variables to emulate that reminder_1 has been sent on the correct date.
+        $reminder_1->method('getNotifiedDate')->willReturn($date_when_reminder_1_should_be_sent);
+        $reminder_1->method('isElapsed')->willReturnCallback(
+            // emulates the same logic as to the original method.
+            static function ($when) use ($reminder_1, $date_when_reminder_1_should_be_sent) {
+                $elapsed_date = $date_when_reminder_1_should_be_sent->add(new DateInterval("P{$reminder_1->getDaysBeforeDeletion()}D"));
+
+                return ($when > $elapsed_date);
+            }
+        );
+        $previous_reminder = $reminder_1;
+        $next_reminder = null;
+
+        $provider->rewind();
+        $cron_job = $this->getCronJob($date_when_object_should_not_be_deleted, $provider);
+        $cron_job->run();
+
+        $this->assertFalse($has_object_been_deleted);
+
+        $provider->rewind();
+        $cron_job = $this->getCronJob($date_when_object_should_be_deleted, $provider);
+        $cron_job->run();
+
+        $this->assertTrue($has_object_been_deleted);
     }
 
     /**
@@ -440,7 +532,6 @@ class RoutineCronJobTest extends TestCase
             }
 
             /**
-             *
              * Since the cron-job must be run on different dates we have to override
              * the function used to get the current date.
              *

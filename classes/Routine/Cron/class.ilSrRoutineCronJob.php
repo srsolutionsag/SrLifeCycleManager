@@ -153,9 +153,9 @@ class ilSrRoutineCronJob extends ilSrAbstractCronJob
                         $previous_reminder->getNotificationId() === $last_reminder->getNotificationId()
                     );
 
-                    // if all registered reminders have been sent and the object
-                    // isn't whitelisted it can be deleted today.
-                    if (empty($reminders) || $is_last_reminder_sent) {
+                    // if there are reminders and the last one has elapsed today, the
+                    // object can be deleted if it's not whitelisted.
+                    if (empty($reminders) || ($is_last_reminder_sent && $last_reminder->isElapsed($this->getCurrentDate()))) {
                         $this->deleteObject($routine, $object_instance);
                         continue 2;
                     }

@@ -1,5 +1,12 @@
 # SrLifeCycleManager Changelog
 
+## 1.7.5
+
+- Fixed an issue where the routine cron-job deleted objects too soon because the amount of days before deletion wasn't
+  taken into account.
+- Fixed an issue where tokens which have been created before the renaming of events lead to invalid whitelist requests,
+  due to them not being found anymore.
+
 ## 1.7.4
 
 - Introduced a new configuration to enable/disable debug mode. If enabled, any exception thrown by a command class (GUI)
