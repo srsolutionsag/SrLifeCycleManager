@@ -46,7 +46,7 @@ msg_no_unassigned_routines#:#There are no routines available that don't already 
 msg_this_may_take_a_while#:#Collecting Data, this may take a while ...
 msg_invalid_email#:#The submitted email address is invalid.
 msg_confirmation_event_error#:#A notification for this event already exists.
-msg_whitelist_invalid_token#:#Your whitelist token isn't valid anymore.
+msg_whitelist_invalid_token#:#Your whitelist token isn't valid anymore. It may have expired or has already been used.
 msg_whitelist_not_cool#:#The current object cannot be postponed again, yet.
 msg_routine_cant_undo_opt_out#:#The current object is not opted-out.
 msg_routine_undid_opt_out#:#The current object is no longer opted-out.

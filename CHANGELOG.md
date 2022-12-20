@@ -1,5 +1,13 @@
 # SrLifeCycleManager Changelog
 
+## 1.7.7
+
+- Fixed an issue where redirects with the wrong ref-id were made during the opt-out or postponement process.
+- Fixed an issue where objects which have been opted-out from deletion could still be postponed via whitelist token.
+- Fixed an issue where opt-out whitelist tokens were always invalid due to the wrong event-check.
+- Improved whitelist entries to allow `NULL` as the date, because opt-outs should not affect postponements when undone.
+- Improved language variable that informs the user about an invalid whitelist token.
+
 ## 1.7.6
 
 - Fixed an issue where too long whitelist tokens were generated, which lead to tokens not being found eventhough they
@@ -19,10 +27,6 @@
 - Fixed an issue where confirmations which have been created before the renaming of events lead to an error when
   editing.
 
-<<<<<<< HEAD
->>>>>>> Stashed changes
-=======
->>>>>>> da4bf9b46816e9477e2e6238645ff0baa2a6bd8d
 ## 1.7.3
 
 - Fixed an issue where sent reminders weren't marked which lead to objects never being deleted.

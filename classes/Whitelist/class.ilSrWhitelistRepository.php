@@ -111,8 +111,7 @@ class ilSrWhitelistRepository implements IWhitelistRepository
             $routine->getRoutineId() ?? 0,
             $ref_id,
             $user_id,
-            false,
-            $this->getCurrentDate()
+            false
         );
     }
 
@@ -142,7 +141,9 @@ class ilSrWhitelistRepository implements IWhitelistRepository
                 (null !== $entry->getExpiryDate()) ?
                     $this->getMysqlDateString($entry->getExpiryDate()) :
                     null,
-                $this->getMysqlDateString($entry->getDate()),
+                (null !== $entry->getDate()) ?
+                    $this->getMysqlDateString($entry->getDate()) :
+                    null,
                 $entry->getRoutineId(),
                 $entry->getRefId(),
             ]
@@ -174,7 +175,9 @@ class ilSrWhitelistRepository implements IWhitelistRepository
                 (null !== $entry->getExpiryDate()) ?
                     $this->getMysqlDateString($entry->getExpiryDate()) :
                     null,
-                $this->getMysqlDateString($entry->getDate()),
+                (null !== $entry->getDate()) ?
+                    $this->getMysqlDateString($entry->getDate()) :
+                    null,
             ]
         );
 
@@ -221,7 +224,7 @@ class ilSrWhitelistRepository implements IWhitelistRepository
             (int) $query_result[IWhitelistEntry::F_REF_ID],
             (int) $query_result[IWhitelistEntry::F_USER_ID],
             (bool) $query_result[IWhitelistEntry::F_IS_OPT_OUT],
-            $this->getRequiredDateByQueryResult($query_result, IWhitelistEntry::F_DATE),
+            $this->getDateByQueryResult($query_result, IWhitelistEntry::F_DATE),
             $this->getDateByQueryResult($query_result, IWhitelistEntry::F_EXPIRY_DATE)
         );
     }

@@ -380,7 +380,8 @@ class ilSrRoutineListBuilder
     {
         return (
             null !== ($cooldown = $routine->getElongationCooldown()) &&
-            $this->getCurrentDate() < $whitelist_entry->getDate()->add(
+            null !== ($whitelist_date = $whitelist_entry->getDate()) &&
+            $this->getCurrentDate() < $whitelist_date->add(
                 new DateInterval("P{$cooldown}D")
             )
         );

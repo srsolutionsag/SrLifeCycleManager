@@ -46,7 +46,7 @@ msg_no_unassigned_routines#:#Es gibt keine Routinen mehr die diesem Objekt zugew
 msg_this_may_take_a_while#:#Sammle Daten, dies könnte eine Weile dauern ...
 msg_invalid_email#:#Die eingegebene E-Mail Adresse ist ungültig.
 msg_confirmation_event_error#:#Eine Benachrichtigung für dieses Event existiert bereits.
-msg_whitelist_invalid_token#:#Ihr Whitelist-Token ist nicht mehr gültig.
+msg_whitelist_invalid_token#:#Ihr Whitelist-Token ist nicht mehr gültig. Der Token ist entweder abgelaufen oder wurde bereits eingelöst.
 msg_routine_cant_undo_opt_out#:#Das aktuelle Objekt wurde nicht von der Löschung ausgeschlossen.
 msg_routine_undid_opt_out#:#Das aktuelle Objekt wird nicht mehr von der Löschung ausgeschlossen.
 msg_whitelist_not_cool#:#Das aktuelle Objekt kann noch nicht wieder verlängert werden.

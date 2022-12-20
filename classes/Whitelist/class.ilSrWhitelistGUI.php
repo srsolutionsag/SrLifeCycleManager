@@ -155,26 +155,27 @@ class ilSrWhitelistGUI extends ilSrAbstractGUI
         // abort if the requested routine doesn't support elongations.
         if (1 > $routine->getElongation()) {
             $this->sendErrorMessage(self::MSG_ROUTINE_CANT_EXTEND);
-            $this->cancel();
+            $this->cancel($object_instance->getRefId());
             return;
         }
 
-        $whitelist_entry = $this->repository->whitelist()->get($this->routine, $object_instance->getRefId());
+        $whitelist_entry = $this->repository->whitelist()->get($routine, $object_instance->getRefId());
 
         if (null !== $whitelist_entry) {
             // abort if the whitelist entry is an opt-out.
             if ($whitelist_entry->isOptOut()) {
                 $this->sendInfoMessage(self::MSG_ROUTINE_ALREADY_OPTED_OUT);
-                $this->cancel();
+                $this->cancel($object_instance->getRefId());
                 return;
             }
 
             // abort if there is a cooldown which is not yet elapsed.
             if (null !== ($cooldown = $routine->getElongationCooldown()) &&
-                $this->getCurrentDate() < $whitelist_entry->getDate()->add(new DateInterval("P{$cooldown}D"))
+                null !== ($whitelist_date = $whitelist_entry->getDate()) &&
+                $this->getCurrentDate() < $whitelist_date->add(new DateInterval("P{$cooldown}D"))
             ) {
                 $this->sendErrorMessage(self::MSG_WHITELIST_UNCOOL);
-                $this->cancel();
+                $this->cancel($object_instance->getRefId());
                 return;
             }
         }
@@ -252,7 +253,7 @@ class ilSrWhitelistGUI extends ilSrAbstractGUI
         // abort if the provided whitelist token doesn't exist or
         // is not intended for this action.
         if ((null === $stored_token && !empty($request_token)) ||
-            (null !== $stored_token && RoutineEvent::EVENT_POSTPONE !== $stored_token->getEvent())
+            (null !== $stored_token && RoutineEvent::EVENT_OPT_OUT !== $stored_token->getEvent())
         ) {
             $this->displayErrorMessage(self::MSG_WHITELIST_INVALID_TOKEN);
             return;
@@ -281,16 +282,16 @@ class ilSrWhitelistGUI extends ilSrAbstractGUI
         // and the current user is no administrator.
         if (!$routine->hasOptOut() && !$this->access_handler->isAdministrator()) {
             $this->sendErrorMessage(self::MSG_ROUTINE_CANT_OPT_OUT);
-            $this->cancel();
+            $this->cancel($object_instance->getRefId());
             return;
         }
 
-        $whitelist_entry = $this->repository->whitelist()->get($this->routine, $object_instance->getRefId());
+        $whitelist_entry = $this->repository->whitelist()->get($routine, $object_instance->getRefId());
 
         // abort if the whitelist entry is an opt-out.
         if ((null !== $whitelist_entry) && $whitelist_entry->isOptOut()) {
             $this->sendInfoMessage(self::MSG_ROUTINE_ALREADY_OPTED_OUT);
-            $this->cancel();
+            $this->cancel($object_instance->getRefId());
             return;
         }
 
@@ -304,7 +305,6 @@ class ilSrWhitelistGUI extends ilSrAbstractGUI
         // store the existing or a new entry with the updated information.
         $this->repository->whitelist()->store(
             $whitelist_entry
-                ->setDate($this->getCurrentDate())
                 ->setUserId($this->user->getId())
                 ->setOptOut(true)
         );
@@ -364,7 +364,6 @@ class ilSrWhitelistGUI extends ilSrAbstractGUI
 
         $this->repository->whitelist()->store(
             $whitelist_entry
-                ->setDate($this->getCurrentDate())
                 ->setUserId($this->user->getId())
                 ->setOptOut(false)
         );
@@ -432,12 +431,18 @@ class ilSrWhitelistGUI extends ilSrAbstractGUI
      * Redirects to the requested object (ref-id) if it was provided as
      * query parameter, instead of the index page.
      *
+     * Optionally, due to optOut() and postpone() having to use relative
+     * object instances because they could be retrieved by tokens as well,
+     * the ref-id can be provided to override the currently requested one.
+     *
      * @inheritDoc
      */
-    protected function cancel(): void
+    protected function cancel(?int $ref_id = null): void
     {
-        if (null !== $this->object_ref_id) {
-            $this->redirectToRefId($this->object_ref_id);
+        $ref_id = $ref_id ?? $this->object_ref_id;
+
+        if (null !== $ref_id) {
+            $this->redirectToRefId($ref_id);
         }
 
         parent::cancel();

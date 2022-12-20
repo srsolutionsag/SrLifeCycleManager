@@ -37,7 +37,7 @@ class WhitelistEntry implements IWhitelistEntry
     protected $expiry_date;
 
     /**
-     * @var DateTimeImmutable
+     * @var DateTimeImmutable|null
      */
     protected $date;
 
@@ -46,7 +46,7 @@ class WhitelistEntry implements IWhitelistEntry
      * @param int                    $ref_id
      * @param int                    $user_id
      * @param bool                   $is_opt_out
-     * @param DateTimeImmutable      $date
+     * @param DateTimeImmutable|null $date
      * @param DateTimeImmutable|null $expiry_date
      */
     public function __construct(
@@ -54,7 +54,7 @@ class WhitelistEntry implements IWhitelistEntry
         int $ref_id,
         int $user_id,
         bool $is_opt_out,
-        DateTimeImmutable $date,
+        DateTimeImmutable $date = null,
         DateTimeImmutable $expiry_date = null
     ) {
         $this->routine_id = $routine_id;
@@ -153,7 +153,7 @@ class WhitelistEntry implements IWhitelistEntry
     /**
      * @inheritdoc
      */
-    public function getDate(): DateTimeImmutable
+    public function getDate(): ?DateTimeImmutable
     {
         return $this->date;
     }

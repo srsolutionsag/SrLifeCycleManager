@@ -122,7 +122,7 @@ class ilSrTokenRepository implements ITokenRepository
 
         $this->database->manipulateF(
             $query,
-            ['integer'],
+            ['text'],
             [
                 $token->getToken(),
             ]

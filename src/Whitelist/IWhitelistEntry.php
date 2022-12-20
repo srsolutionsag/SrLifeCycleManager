@@ -78,7 +78,7 @@ interface IWhitelistEntry
     /**
      * @return DateTimeImmutable
      */
-    public function getDate(): DateTimeImmutable;
+    public function getDate(): ?DateTimeImmutable;
 
     /**
      * @param DateTimeImmutable $date
