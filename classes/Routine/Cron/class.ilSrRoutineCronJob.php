@@ -144,34 +144,39 @@ class ilSrRoutineCronJob extends ilSrAbstractCronJob
                 $reminders = $this->reminder_repository->getByRoutine($routine);
 
                 if (null === $whitelist_entry) {
-                    $previous_reminder = $this->reminder_repository->getRecentlySent($routine, $object_ref_id);
+                    $previously_sent_reminder = $this->reminder_repository->getRecentlySent($routine, $object_ref_id);
+
+                    // NOTE: this reminder will not contain information about being sent.
+                    // $last_reminder->isElapsed() cannot be used.
                     $last_reminder = $this->reminder_repository->getLastByRoutine($routine);
 
-                    $is_last_reminder_sent = (
-                        null !== $previous_reminder &&
+                    $has_last_reminder_been_sent = (
+                        null !== $previously_sent_reminder &&
                         null !== $last_reminder &&
-                        $previous_reminder->getNotificationId() === $last_reminder->getNotificationId()
+                        $previously_sent_reminder->getNotificationId() === $last_reminder->getNotificationId()
                     );
 
-                    // if there are reminders and the last one has elapsed today, the
-                    // object can be deleted if it's not whitelisted.
-                    if (empty($reminders) || ($is_last_reminder_sent && $last_reminder->isElapsed($this->getCurrentDate()))) {
+                    // if there are reminders and the last one has been sent, the object
+                    // can be deleted if the reminder is elapsed today.
+                    if (empty($reminders) ||
+                        ($has_last_reminder_been_sent && $previously_sent_reminder->isElapsed($this->getCurrentDate()))
+                    ) {
                         $this->deleteObject($routine, $object_instance);
                         continue 2;
                     }
 
-                    $next_reminder = $this->reminder_repository->getNextReminder($routine, $previous_reminder);
+                    $next_reminder = $this->reminder_repository->getNextReminder($routine, $previously_sent_reminder);
 
                     // send the reminder straight away if it's the first one.
-                    if (null === $previous_reminder && null !== $next_reminder) {
+                    if (null === $previously_sent_reminder && null !== $next_reminder) {
                         $this->notifyObject($next_reminder, $object_instance);
                     }
 
                     // send the reminder only for the correct amount of days before
                     // deletion if there are already sent reminders.
-                    if (null !== $previous_reminder && null !== $next_reminder) {
-                        $previous_interval = new DateInterval("P{$previous_reminder->getDaysBeforeDeletion()}D");
-                        $deletion_date = $previous_reminder->getNotifiedDate()->add($previous_interval);
+                    if (null !== $previously_sent_reminder && null !== $next_reminder) {
+                        $previous_interval = new DateInterval("P{$previously_sent_reminder->getDaysBeforeDeletion()}D");
+                        $deletion_date = $previously_sent_reminder->getNotifiedDate()->add($previous_interval);
 
                         if ($next_reminder->getDaysBeforeDeletion() === $this->getGap($this->getCurrentDate(), $deletion_date)) {
                             $this->notifyObject($next_reminder, $object_instance);

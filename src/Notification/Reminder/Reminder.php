@@ -60,6 +60,10 @@ class Reminder extends Notification implements IReminder
      */
     public function isElapsed($when) : bool
     {
+        if (!$this->hasBeenSent()) {
+            return false;
+        }
+
         $elapsed_date = $this->getNotifiedDate()->add(new DateInterval("P{$this->getDaysBeforeDeletion()}D"));
 
         return ($when > $elapsed_date);

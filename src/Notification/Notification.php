@@ -141,7 +141,7 @@ abstract class Notification implements ISentNotification
      */
     public function hasBeenSent(): bool
     {
-        return (null === $this->notified_ref_id || null === $this->notified_date);
+        return (null !== $this->notified_ref_id && null !== $this->notified_date);
     }
 
     /**
@@ -185,7 +185,7 @@ abstract class Notification implements ISentNotification
     protected function abortIfNotSent() : void
     {
         if (!$this->hasBeenSent()) {
-            throw new LogicException("Notification has not been sent yet");
+            throw new LogicException("Notification ({$this->getNotificationId()}) has not been sent to {$this->getNotifiedRefId()} yet");
         }
     }
 }

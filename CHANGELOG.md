@@ -1,5 +1,10 @@
 # SrLifeCycleManager Changelog
 
+## 1.7.8
+
+- Fixed an issue where the `ISentReminder::isElapsed()` lead to a type-error instead of the proper logic exception.
+- Fixed an issue where the routine cron job tried to check if an un-sent reminder has been elapsed yet.
+
 ## 1.7.7
 
 - Fixed an issue where redirects with the wrong ref-id were made during the opt-out or postponement process.
