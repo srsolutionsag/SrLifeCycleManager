@@ -606,3 +606,16 @@ if ($ilDB->tableColumnExists($table_name, $column_name)) {
     }
 }
 ?>
+<#24>
+<?php
+/** @var $ilDB ilDBInterface */
+$table_name = 'srlcm_whitelist';
+$column_name = 'date';
+
+if ($ilDB->tableColumnExists($table_name, $column_name)) {
+    $ilDB->modifyTableColumn($table_name, $column_name, [
+        'notnull' => '0',
+        'type' => 'date',
+    ]);
+}
+?>

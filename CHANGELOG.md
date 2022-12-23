@@ -1,5 +1,9 @@
 # SrLifeCycleManager Changelog
 
+## 1.7.9
+
+- Fixed an issue where whitelist requests lead to a database error, due to `date` still being `NOT NULL`.
+
 ## 1.7.8
 
 - Fixed an issue where the `ISentReminder::isElapsed()` lead to a type-error instead of the proper logic exception.
