@@ -1,5 +1,16 @@
 # SrLifeCycleManager Changelog
 
+## 1.8.0
+
+- Replaced the course-attribute `CourseMember` by one for each of the following categories: all participants, members,
+  tutors and administrators.
+- Replaced the group-attribute `GroupMember` by one for each of the following categories: all participants, members,
+  tutors and administrators.
+- Introduced new abstract `MetadataAttribute` which replaces the trait in `CourseMetadata` and `GroupMetadata`.
+- Introduced new abstract `TaxonomyAttribute` which replaces the trait in `CourseTaxonomy` and `GroupTaxonomy`.
+  the currently used trait.
+- Introduced new abstract `ParticipantAttribute` which can be used to implement attributes working with participants.
+
 ## 1.7.9
 
 - Fixed an issue where whitelist requests lead to a database error, due to `date` still being `NOT NULL`.

@@ -4,61 +4,45 @@
 
 namespace srag\Plugins\SrLifeCycleManager\Rule\Attribute\Group;
 
-use srag\Plugins\SrLifeCycleManager\Rule\Attribute\MetadataHelper;
+use srag\Plugins\SrLifeCycleManager\Rule\Attribute\MetadataAttribute;
 use ilDBInterface;
 use ilObjGroup;
+use ilObject;
 
 /**
  * @author Thibeau Fuhrer <thibeau@sr.solutions>
  */
-class GroupMetadata extends GroupAttribute
+class GroupMetadata extends MetadataAttribute
 {
-    use MetadataHelper;
+    /**
+     * @var ilDBInterface
+     */
+    private $database;
 
     /**
-     * @var array
+     * @var ilObjGroup
      */
-    protected $metadata;
+    private $object;
 
-    /**
-     * @param ilDBInterface $database
-     * @param ilObjGroup    $group
-     */
     public function __construct(ilDBInterface $database, ilObjGroup $group)
     {
-        parent::__construct($group);
-
-        $this->metadata = $this->getMetadata(
-            $database,
-            $group->getId()
-        );
+        $this->database = $database;
+        $this->object = $group;
     }
 
     /**
      * @inheritDoc
      */
-    public function getComparableValueTypes() : array
+    protected function getDatabase(): ilDBInterface
     {
-        return [
-            self::COMPARABLE_VALUE_TYPE_ARRAY,
-            self::COMPARABLE_VALUE_TYPE_STRING,
-        ];
+        return $this->database;
     }
 
     /**
      * @inheritDoc
      */
-    public function getComparableValue(string $type)
+    protected function getObject(): ilObject
     {
-        switch ($type) {
-            case self::COMPARABLE_VALUE_TYPE_ARRAY:
-                return $this->metadata;
-
-            case self::COMPARABLE_VALUE_TYPE_STRING:
-                return implode(',', $this->metadata);
-
-            default:
-                return null;
-        }
+        return $this->object;
     }
 }

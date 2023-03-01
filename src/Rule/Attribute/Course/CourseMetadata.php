@@ -4,61 +4,45 @@
 
 namespace srag\Plugins\SrLifeCycleManager\Rule\Attribute\Course;
 
-use srag\Plugins\SrLifeCycleManager\Rule\Attribute\MetadataHelper;
+use srag\Plugins\SrLifeCycleManager\Rule\Attribute\MetadataAttribute;
 use ilDBInterface;
 use ilObjCourse;
+use ilObject;
 
 /**
  * @author Thibeau Fuhrer <thibeau@sr.solutions>
  */
-class CourseMetadata extends CourseAttribute
+class CourseMetadata extends MetadataAttribute
 {
-    use MetadataHelper;
+    /**
+     * @var ilDBInterface
+     */
+    private $database;
 
     /**
-     * @var string[]
+     * @var ilObjCourse
      */
-    protected $metadata;
+    private $object;
 
-    /**
-     * @param ilDBInterface $database
-     * @param ilObjCourse    $course
-     */
     public function __construct(ilDBInterface $database, ilObjCourse $course)
     {
-        parent::__construct($course);
-
-        $this->metadata = $this->getMetadata(
-            $database,
-            $course->getId()
-        );
+        $this->database = $database;
+        $this->object = $course;
     }
 
     /**
      * @inheritDoc
      */
-    public function getComparableValueTypes() : array
+    protected function getDatabase(): ilDBInterface
     {
-        return [
-            self::COMPARABLE_VALUE_TYPE_ARRAY,
-            self::COMPARABLE_VALUE_TYPE_STRING,
-        ];
+        return $this->database;
     }
 
     /**
      * @inheritDoc
      */
-    public function getComparableValue(string $type)
+    protected function getObject(): ilObject
     {
-        switch ($type) {
-            case self::COMPARABLE_VALUE_TYPE_ARRAY:
-                return $this->metadata;
-
-            case self::COMPARABLE_VALUE_TYPE_STRING:
-                return implode(',', $this->metadata);
-
-            default:
-                return null;
-        }
+        return $this->object;
     }
 }

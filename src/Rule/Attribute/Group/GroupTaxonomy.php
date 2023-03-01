@@ -4,21 +4,25 @@
 
 namespace srag\Plugins\SrLifeCycleManager\Rule\Attribute\Group;
 
-use srag\Plugins\SrLifeCycleManager\Rule\Attribute\TaxonomyHelper;
+use srag\Plugins\SrLifeCycleManager\Rule\Attribute\TaxonomyAttribute;
 use ilDBInterface;
 use ilObjGroup;
+use ilObject;
 
 /**
  * @author Thibeau Fuhrer <thibeau@sr.solutions>
  */
-class GroupTaxonomy extends GroupAttribute
+class GroupTaxonomy extends TaxonomyAttribute
 {
-    use TaxonomyHelper;
+    /**
+     * @var ilDBInterface
+     */
+    private $database;
 
     /**
-     * @var string[]
+     * @var ilObjGroup
      */
-    protected $taxonomies;
+    private $object;
 
     /**
      * @param ilDBInterface $database
@@ -26,39 +30,23 @@ class GroupTaxonomy extends GroupAttribute
      */
     public function __construct(ilDBInterface $database, ilObjGroup $group)
     {
-        parent::__construct($group);
-
-        $this->taxonomies = $this->getTaxonomies(
-            $database,
-            $group->getId()
-        );
+        $this->database = $database;
+        $this->object = $group;
     }
 
     /**
      * @inheritDoc
      */
-    public function getComparableValueTypes() : array
+    protected function getDatabase(): ilDBInterface
     {
-        return [
-            self::COMPARABLE_VALUE_TYPE_ARRAY,
-            self::COMPARABLE_VALUE_TYPE_STRING,
-        ];
+        return $this->database;
     }
 
     /**
      * @inheritDoc
      */
-    public function getComparableValue(string $type)
+    protected function getObject(): ilObject
     {
-        switch ($type) {
-            case self::COMPARABLE_VALUE_TYPE_ARRAY:
-                return $this->taxonomies;
-
-            case self::COMPARABLE_VALUE_TYPE_STRING:
-                return implode(',', $this->taxonomies);
-
-            default:
-                return null;
-        }
+        return $this->object;
     }
 }

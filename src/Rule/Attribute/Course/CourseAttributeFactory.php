@@ -36,8 +36,17 @@ class CourseAttributeFactory
             case CourseActive::class:
                 return new CourseActive($requirement->getCourse());
 
-            case CourseMember::class:
-                return new CourseMember($requirement->getCourse());
+            case CourseParticipants::class:
+                return new CourseParticipants($requirement->getCourse());
+
+            case CourseMembers::class:
+                return new CourseMembers($requirement->getCourse());
+
+            case CourseTutors::class:
+                return new CourseTutors($requirement->getCourse());
+
+            case CourseAdmins::class:
+                return new CourseAdmins($requirement->getCourse());
 
             case CourseCreation::class:
                 return new CourseCreation($requirement->getCourse());
@@ -63,7 +72,10 @@ class CourseAttributeFactory
             CourseTitle::class,
             CourseStart::class,
             CourseEnd::class,
-            CourseMember::class,
+            CourseParticipants::class,
+            CourseMembers::class,
+            CourseTutors::class,
+            CourseAdmins::class,
             CourseTaxonomy::class,
             CourseMetadata::class,
             CourseCreation::class,

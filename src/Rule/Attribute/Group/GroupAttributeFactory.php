@@ -24,8 +24,17 @@ class GroupAttributeFactory
             case GroupTitle::class:
                 return new GroupTitle($requirement->getGroup());
 
-            case GroupMember::class:
-                return new GroupMember($requirement->getGroup());
+            case GroupParticipants::class:
+                return new GroupParticipants($requirement->getGroup());
+
+            case GroupMembers::class:
+                return new GroupMembers($requirement->getGroup());
+
+            case GroupTutors::class:
+                return new GroupTutors($requirement->getGroup());
+
+            case GroupAdmins::class:
+                return new GroupAdmins($requirement->getGroup());
 
             case GroupCreation::class:
                 return new GroupCreation($requirement->getGroup());
@@ -51,7 +60,10 @@ class GroupAttributeFactory
     {
         return [
             GroupTitle::class,
-            GroupMember::class,
+            GroupParticipants::class,
+            GroupMembers::class,
+            GroupTutors::class,
+            GroupAdmins::class,
             GroupMetadata::class,
             GroupTaxonomy::class,
             GroupCreation::class,

@@ -200,7 +200,10 @@ srag\Plugins\SrLifeCycleManager\Rule\Attribute\Course\CourseAttribute#:#course a
 srag\Plugins\SrLifeCycleManager\Rule\Attribute\Course\CourseActive#:#course active
 srag\Plugins\SrLifeCycleManager\Rule\Attribute\Course\CourseEnd#:#course end
 srag\Plugins\SrLifeCycleManager\Rule\Attribute\Course\CourseStart#:#course start
-srag\Plugins\SrLifeCycleManager\Rule\Attribute\Course\CourseMember#:#course member
+srag\Plugins\SrLifeCycleManager\Rule\Attribute\Course\CourseParticipants#:#all course participants
+srag\Plugins\SrLifeCycleManager\Rule\Attribute\Course\CourseMembers#:#course members
+srag\Plugins\SrLifeCycleManager\Rule\Attribute\Course\CourseTutors#:#course tutors
+srag\Plugins\SrLifeCycleManager\Rule\Attribute\Course\CourseAdmins#:#course admins
 srag\Plugins\SrLifeCycleManager\Rule\Attribute\Course\CourseMetadata#:#course metadata
 srag\Plugins\SrLifeCycleManager\Rule\Attribute\Course\CourseTaxonomy#:#course taxonomy
 srag\Plugins\SrLifeCycleManager\Rule\Attribute\Course\CourseTitle#:#course title
@@ -209,7 +212,10 @@ srag\Plugins\SrLifeCycleManager\Rule\Attribute\Course\CourseAge#:#course age (in
 
 srag\Plugins\SrLifeCycleManager\Rule\Attribute\Group\GroupAttribute#:#group attribute
 srag\Plugins\SrLifeCycleManager\Rule\Attribute\Group\GroupTitle#:#group title
-srag\Plugins\SrLifeCycleManager\Rule\Attribute\Group\GroupMember#:#group member
+srag\Plugins\SrLifeCycleManager\Rule\Attribute\Group\GroupParticipants#:#all group participants
+srag\Plugins\SrLifeCycleManager\Rule\Attribute\Group\GroupMembers#:#group members
+srag\Plugins\SrLifeCycleManager\Rule\Attribute\Group\GroupTutors#:#group tutors
+srag\Plugins\SrLifeCycleManager\Rule\Attribute\Group\GroupAdmins#:#group admins
 srag\Plugins\SrLifeCycleManager\Rule\Attribute\Group\GroupMetadata#:#group metadata
 srag\Plugins\SrLifeCycleManager\Rule\Attribute\Group\GroupTaxonomy#:#group taxonomy
 srag\Plugins\SrLifeCycleManager\Rule\Attribute\Group\GroupCreation#:#group creation
