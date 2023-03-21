@@ -1,6 +1,6 @@
-<?php declare(strict_types=1);
+<?php
 
-/* Copyright (c) 2022 Thibeau Fuhrer <thibeau@sr.solutions> Extended GPL, see docs/LICENSE */
+declare(strict_types=1);
 
 use srag\Plugins\SrLifeCycleManager\Routine\Provider\DeletableObjectProvider;
 use srag\Plugins\SrLifeCycleManager\Routine\RoutineEvent;
@@ -12,8 +12,9 @@ use srag\Plugins\SrLifeCycleManager\Whitelist\IWhitelistRepository;
 use srag\Plugins\SrLifeCycleManager\Repository\IGeneralRepository;
 use srag\Plugins\SrLifeCycleManager\Token\ITokenRepository;
 use srag\Plugins\SrLifeCycleManager\Cron\ResultBuilder;
-use srag\Plugins\SrLifeCycleManager\Event\IObserver;
+use srag\Plugins\SrLifeCycleManager\Event\Observer;
 use srag\Plugins\SrLifeCycleManager\DateTimeHelper;
+use srag\Plugins\SrLifeCycleManager\Notification\IRecipientRetriever;
 
 /**
  * This cron job will delete repository objects that are affected by
@@ -46,7 +47,12 @@ class ilSrRoutineCronJob extends ilSrAbstractCronJob
     use DateTimeHelper;
 
     /**
-     * @var IObserver
+     * @var IRecipientRetriever
+     */
+    protected $recipient_retriever;
+
+    /**
+     * @var Observer
      */
     protected $event_observer;
 
@@ -80,22 +86,12 @@ class ilSrRoutineCronJob extends ilSrAbstractCronJob
      */
     protected $object_provider;
 
-    /**
-     * @param INotificationSender     $notification_sender
-     * @param DeletableObjectProvider $object_provider
-     * @param ResultBuilder           $result_builder
-     * @param IObserver               $event_observer
-     * @param IReminderRepository     $notification_repository
-     * @param ITokenRepository        $token_repository
-     * @param IWhitelistRepository    $whitelist_repository
-     * @param IGeneralRepository      $general_repository
-     * @param ilLogger                $logger
-     */
     public function __construct(
         INotificationSender $notification_sender,
+        IRecipientRetriever $recipient_retriever,
         DeletableObjectProvider $object_provider,
         ResultBuilder $result_builder,
-        IObserver $event_observer,
+        Observer $event_observer,
         IReminderRepository $notification_repository,
         ITokenRepository $token_repository,
         IWhitelistRepository $whitelist_repository,
@@ -104,6 +100,7 @@ class ilSrRoutineCronJob extends ilSrAbstractCronJob
     ) {
         parent::__construct($result_builder, $logger);
 
+        $this->recipient_retriever = $recipient_retriever;
         $this->event_observer = $event_observer;
         $this->reminder_repository = $notification_repository;
         $this->token_repository = $token_repository;
@@ -244,7 +241,10 @@ class ilSrRoutineCronJob extends ilSrAbstractCronJob
      */
     protected function notifyObject(IReminder $notification, ilObject $object): void
     {
-        $this->info("Sending administrators of object {$object->getRefId()} notification {$notification->getNotificationId()}");
-        $this->notification_sender->sendNotification($notification, $object);
+        $this->info(
+            "Sending administrators of object {$object->getRefId()} notification {$notification->getNotificationId()}"
+        );
+
+        $this->notification_sender->sendNotification($this->recipient_retriever, $notification, $object);
     }
 }

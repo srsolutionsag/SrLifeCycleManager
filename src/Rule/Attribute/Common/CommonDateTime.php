@@ -1,9 +1,10 @@
-<?php declare(strict_types=1);
+<?php
 
-/* Copyright (c) 2022 Thibeau Fuhrer <thibeau@sr.solutions> Extended GPL, see docs/LICENSE */
+declare(strict_types=1);
 
 namespace srag\Plugins\SrLifeCycleManager\Rule\Attribute\Common;
 
+use srag\Plugins\SrLifeCycleManager\Rule\Attribute\IAttribute;
 use srag\Plugins\SrLifeCycleManager\DateTimeHelper;
 use DateTimeImmutable;
 
@@ -19,18 +20,15 @@ class CommonDateTime extends CommonAttribute
      */
     protected $value;
 
-    /**
-     * @param mixed $value
-     */
-    public function __construct($value)
+    public function __construct(DateTimeImmutable $value)
     {
-        $this->value = $this->getDate($value);
+        $this->value = $value;
     }
 
     /**
      * @inheritDoc
      */
-    public function getComparableValueTypes() : array
+    public function getComparableValueTypes(): array
     {
         return [
             self::COMPARABLE_VALUE_TYPE_DATE,
@@ -44,10 +42,6 @@ class CommonDateTime extends CommonAttribute
      */
     public function getComparableValue(string $type)
     {
-        if (null === $this->value) {
-            return null;
-        }
-
         switch ($type) {
             case self::COMPARABLE_VALUE_TYPE_DATE:
                 return $this->value;

@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace srag\Plugins\SrLifeCycleManager\Tests\Routine;
 
@@ -17,7 +19,7 @@ use srag\Plugins\SrLifeCycleManager\Repository\IGeneralRepository;
 use srag\Plugins\SrLifeCycleManager\Whitelist\IWhitelistEntry;
 use srag\Plugins\SrLifeCycleManager\Token\ITokenRepository;
 use srag\Plugins\SrLifeCycleManager\Cron\ResultBuilder;
-use srag\Plugins\SrLifeCycleManager\Event\IObserver;
+use srag\Plugins\SrLifeCycleManager\Event\Observer;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use DateTimeImmutable;
@@ -27,6 +29,7 @@ use ilSrRoutineCronJob;
 use ilCronJobResult;
 use ilObject;
 use ilLogger;
+use srag\Plugins\SrLifeCycleManager\Notification\IRecipientRetriever;
 
 /**
  * @author Thibeau Fuhrer <thibeau@sr.solutions>
@@ -37,6 +40,11 @@ class RoutineCronJobTest extends TestCase
      * @var MockObject|INotificationSender
      */
     protected $notification_sender;
+
+    /**
+     * @var MockObject|IRecipientRetriever
+     */
+    protected $recipient_retriever;
 
     /**
      * @var MockObject|IWhitelistRepository
@@ -74,7 +82,7 @@ class RoutineCronJobTest extends TestCase
     protected $routine;
 
     /**
-     * @var MockObject|IObserver
+     * @var MockObject|Observer
      */
     protected $observer;
 
@@ -84,12 +92,13 @@ class RoutineCronJobTest extends TestCase
     protected function setUp(): void
     {
         $this->notification_sender = $this->createMock(INotificationSender::class);
+        $this->recipient_retriever = $this->createMock(IRecipientRetriever::class);
         $this->whitelist_repository = $this->createMock(IWhitelistRepository::class);
         $this->token_repository = $this->createMock(ITokenRepository::class);
         $this->reminder_repository = $this->createMock(IReminderRepository::class);
         $this->general_repository = $this->createMock(IGeneralRepository::class);
 
-        $this->observer = $this->createMock(IObserver::class);
+        $this->observer = $this->createMock(Observer::class);
         $this->observer->method('broadcast')->willReturnSelf();
 
         $this->routine = $this->createMock(IRoutine::class);
@@ -172,7 +181,7 @@ class RoutineCronJobTest extends TestCase
 
         // assertion-logic will be handled in this callback.
         $this->notification_sender->method('sendNotification')->willReturnCallback(
-            function ($reminder, $object) use (&$next_reminder, &$test_object) {
+            function ($retriever, $reminder, $object) use (&$next_reminder, &$test_object) {
                 $this->assertInstanceOf(IReminder::class, $reminder);
                 $this->assertInstanceOf(ilObject::class, $object);
                 $this->assertEquals($next_reminder->getNotificationId(), $reminder->getNotificationId());
@@ -321,9 +330,11 @@ class RoutineCronJobTest extends TestCase
         // update the reminder variables to emulate that reminder_1 has been sent on the correct date.
         $reminder_1->method('getNotifiedDate')->willReturn($date_when_reminder_1_should_be_sent);
         $reminder_1->method('isElapsed')->willReturnCallback(
-            // emulates the same logic as to the original method.
+        // emulates the same logic as to the original method.
             static function ($when) use ($reminder_1, $date_when_reminder_1_should_be_sent) {
-                $elapsed_date = $date_when_reminder_1_should_be_sent->add(new DateInterval("P{$reminder_1->getDaysBeforeDeletion()}D"));
+                $elapsed_date = $date_when_reminder_1_should_be_sent->add(
+                    new DateInterval("P{$reminder_1->getDaysBeforeDeletion()}D")
+                );
 
                 return ($when > $elapsed_date);
             }
@@ -353,7 +364,7 @@ class RoutineCronJobTest extends TestCase
      *      (b) there is no whitelist entry and no reminder.
      *      (c) there is no whitelist entry all reminders have been sent.
      */
-    public function testDeletionOfObjects() : void
+    public function testDeletionOfObjects(): void
     {
         $object_1 = $this->getObjectMock(1);
         $object_2 = $this->getObjectMock(2);
@@ -482,8 +493,9 @@ class RoutineCronJobTest extends TestCase
         DateTimeImmutable $execution_date,
         DeletableObjectProvider $provider
     ): ilSrRoutineCronJob {
-        return new class(
+        return new class (
             $this->notification_sender,
+            $this->recipient_retriever,
             $provider,
             $this->createMock(ResultBuilder::class),
             $this->observer,
@@ -500,9 +512,10 @@ class RoutineCronJobTest extends TestCase
 
             public function __construct(
                 INotificationSender $notification_sender,
+                IRecipientRetriever $recipient_retriever,
                 DeletableObjectProvider $object_provider,
                 ResultBuilder $result_builder,
-                IObserver $event_observer,
+                Observer $event_observer,
                 IReminderRepository $notification_repository,
                 ITokenRepository $token_repository,
                 IWhitelistRepository $whitelist_repository,
@@ -512,8 +525,16 @@ class RoutineCronJobTest extends TestCase
                 ilCronJobResult $result
             ) {
                 parent::__construct(
-                    $notification_sender, $object_provider, $result_builder, $event_observer, $notification_repository,
-                    $token_repository, $whitelist_repository, $general_repository, $logger
+                    $notification_sender,
+                    $recipient_retriever,
+                    $object_provider,
+                    $result_builder,
+                    $event_observer,
+                    $notification_repository,
+                    $token_repository,
+                    $whitelist_repository,
+                    $general_repository,
+                    $logger
                 );
                 $this->current_date = $execution_date;
                 $this->result = $result;
@@ -562,7 +583,7 @@ class RoutineCronJobTest extends TestCase
             $deletable_objects[] = $deletable_object;
         }
 
-        return new class($deletable_objects) extends DeletableObjectProvider {
+        return new class ($deletable_objects) extends DeletableObjectProvider {
             /**
              * @param DeletableObject[] $objects
              */

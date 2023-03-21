@@ -4,46 +4,76 @@
 
 namespace srag\Plugins\SrLifeCycleManager\Rule\Attribute\Common;
 
+use srag\Plugins\SrLifeCycleManager\Rule\Attribute\IAttributeValueProvider;
 use srag\Plugins\SrLifeCycleManager\Rule\Attribute\IAttribute;
+use srag\Plugins\SrLifeCycleManager\Rule\Attribute\IDynamicAttributeProvider;
+use srag\Plugins\SrLifeCycleManager\Rule\Ressource\IRessource;
+use srag\Plugins\SrLifeCycleManager\DateTimeHelper;
+use ILIAS\Refinery\Factory as Refinery;
 
 /**
  * @author Thibeau Fuhrer <thibeau@sr.solutions>
  */
-class CommonAttributeFactory
+class CommonAttributeFactory implements IAttributeValueProvider
 {
+    use DateTimeHelper;
+
     /**
-     * @param string $type
-     * @param mixed  $value
-     * @return IAttribute
+     * @var Refinery
      */
-    public function getAttribute(string $type, $value) : IAttribute
+    protected $refinery;
+
+    public function __construct(Refinery $refinery)
     {
-        switch ($type) {
-            case CommonBoolean::class:
-                return new CommonBoolean($value);
-
-            case CommonInteger::class:
-                return new CommonInteger($value);
-
-            case CommonString::class:
-                return new CommonString($value);
-
-            case CommonList::class:
-                return new CommonList($value);
-
-            case CommonDateTime::class:
-                return new CommonDateTime($value);
-
-            default:
-                return new CommonNull($value);
-        }
+        $this->refinery = $refinery;
     }
 
     /**
-     * @return string[]
+     * @inheritDoc
      */
-    public function getAttributeList() : array
+    public function getAttributeType(): string
     {
-        return CommonAttribute::COMMON_ATTRIBUTES;
+        return CommonAttribute::class;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function getAttributeValues(): array
+    {
+        return [
+            CommonBoolean::class,
+            CommonInteger::class,
+            CommonString::class,
+            CommonList::class,
+            CommonDateTime::class,
+            CommonNull::class,
+        ];
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function getAttribute(string $type, string $value): IAttribute
+    {
+        switch ($type) {
+            case CommonBoolean::class:
+                return new CommonBoolean($this->refinery->kindlyTo()->bool()->transform($value));
+            case CommonInteger::class:
+                return new CommonInteger($this->refinery->kindlyTo()->int()->transform($value));
+            case CommonDateTime::class:
+                return new CommonDateTime($this->getDate($value));
+            case CommonList::class:
+                return new CommonList(
+                    $this->refinery->kindlyTo()->listOf(
+                        $this->refinery->kindlyTo()->string()
+                    )->transform($value)
+                );
+            case CommonString::class:
+                return new CommonString($value);
+
+            default:
+                return new CommonNull();
+        }
     }
 }

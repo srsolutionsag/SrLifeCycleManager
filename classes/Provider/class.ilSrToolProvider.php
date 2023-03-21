@@ -1,9 +1,10 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 use srag\Plugins\SrLifeCycleManager\Routine\Provider\RoutineProvider;
 use srag\Plugins\SrLifeCycleManager\Routine\IRoutineRepository;
 use srag\Plugins\SrLifeCycleManager\Routine\IRoutine;
-use srag\Plugins\SrLifeCycleManager\Rule\Requirement\RequirementFactory;
 use srag\Plugins\SrLifeCycleManager\Rule\Attribute\AttributeFactory;
 use srag\Plugins\SrLifeCycleManager\Rule\Comparison\ComparisonFactory;
 use srag\Plugins\SrLifeCycleManager\Whitelist\IWhitelistRepository;
@@ -105,39 +106,13 @@ class ilSrToolProvider extends AbstractDynamicToolPluginProvider
             $this->keepObjectAlive($this->request_object);
         }
 
-        $this->config = (new ilSrConfigRepository(
-            $this->dic->database(),
-            $this->dic->rbac()
-        )
-        )->get();
+        $container = ilSrLifeCycleManagerPlugin::getInstance()->getContainer();
 
-        $this->assignment_repository = new ilSrAssignmentRepository(
-            $this->dic->database(),
-            $this->dic->repositoryTree()
-        );
-
-        $this->whitelist_repository = new ilSrWhitelistRepository(
-            $this->dic->database()
-        );
-
-        $this->routine_repository = new ilSrRoutineRepository(
-            new ilSrReminderRepository($this->dic->database()),
-            $this->whitelist_repository,
-            $this->dic->database(),
-            $this->dic->repositoryTree()
-        );
-
-        $this->routine_provider = new RoutineProvider(
-            new ComparisonFactory(
-                new RequirementFactory($this->dic->database()),
-                new AttributeFactory()
-            ),
-            $this->routine_repository,
-            new ilSrRuleRepository(
-                $this->dic->database(),
-                $this->dic->repositoryTree()
-            )
-        );
+        $this->config = $container->getRepositoryFactory()->config()->get();
+        $this->assignment_repository = $container->getRepositoryFactory()->assignment();
+        $this->whitelist_repository = $container->getRepositoryFactory()->whitelist();
+        $this->routine_repository = $container->getRepositoryFactory()->routine();
+        $this->routine_provider = $container->getRoutineProvider();
 
         $this->access_handler = new ilSrAccessHandler(
             $this->dic->rbac(),

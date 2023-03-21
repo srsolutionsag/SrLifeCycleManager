@@ -8,7 +8,12 @@ namespace srag\Plugins\SrLifeCycleManager\Event;
 interface IEventListener
 {
     /**
+     * Must return the event listeners unique identification.
+     */
+    public function getId(): string;
+
+    /**
      * @param IEvent $event
      */
-    public function handle(IEvent $event) : void;
+    public function handle(IEvent $event): void;
 }

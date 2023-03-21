@@ -1,73 +1,40 @@
-<?php declare(strict_types=1);
+<?php
 
-/* Copyright (c) 2022 Thibeau Fuhrer <thibeau@sr.solutions> Extended GPL, see docs/LICENSE */
+declare(strict_types=1);
 
 namespace srag\Plugins\SrLifeCycleManager\Rule\Attribute\Group;
 
-use srag\Plugins\SrLifeCycleManager\Rule\Requirement\Group\IGroupRequirement;
-use srag\Plugins\SrLifeCycleManager\Rule\Attribute\Common\CommonNull;
+use srag\Plugins\SrLifeCycleManager\Rule\Attribute\IDynamicAttributeProvider;
+use srag\Plugins\SrLifeCycleManager\Rule\Ressource\IRessource;
 use srag\Plugins\SrLifeCycleManager\Rule\Attribute\IAttribute;
+use srag\Plugins\SrLifeCycleManager\Rule\Attribute\Common\CommonNull;
 
 /**
  * @author Thibeau Fuhrer <thibeau@sr.solutions>
  */
-class GroupAttributeFactory
+class GroupAttributeFactory implements IDynamicAttributeProvider
 {
     /**
-     * @param IGroupRequirement $requirement
-     * @param string            $value
-     * @return IAttribute
+     * @inheritDoc
      */
-    public function getAttribute(IGroupRequirement $requirement, string $value) : IAttribute
+    public function getAttributeType(): string
     {
-        switch ($value) {
-            case GroupTitle::class:
-                return new GroupTitle($requirement->getGroup());
-
-            case GroupParticipants::class:
-                return new GroupParticipants($requirement->getGroup());
-
-            case GroupMembers::class:
-                return new GroupMembers($requirement->getGroup());
-
-            case GroupTutors::class:
-                return new GroupTutors($requirement->getGroup());
-
-            case GroupAdmins::class:
-                return new GroupAdmins($requirement->getGroup());
-
-            case GroupCreation::class:
-                return new GroupCreation($requirement->getGroup());
-
-            case GroupAge::class:
-                return new GroupAge($requirement->getGroup());
-
-            case GroupMetadata::class:
-                return new GroupMetadata($requirement->getDatabase(), $requirement->getGroup());
-
-            case GroupTaxonomy::class:
-                return new GroupTaxonomy($requirement->getDatabase(), $requirement->getGroup());
-
-            default:
-                return new CommonNull($value);
-        }
+        return GroupAttribute::class;
     }
 
     /**
-     * @return string[]
+     * @inheritDoc
      */
-    public function getAttributeList() : array
+    public function getAttributeValues(): array
     {
-        return [
-            GroupTitle::class,
-            GroupParticipants::class,
-            GroupMembers::class,
-            GroupTutors::class,
-            GroupAdmins::class,
-            GroupMetadata::class,
-            GroupTaxonomy::class,
-            GroupCreation::class,
-            GroupAge::class,
-        ];
+        return [];
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function getAttribute(IRessource $ressource, string $value): IAttribute
+    {
+        return new CommonNull();
     }
 }

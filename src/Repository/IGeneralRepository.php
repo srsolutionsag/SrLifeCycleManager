@@ -16,7 +16,7 @@ interface IGeneralRepository
      * @param int $ref_id
      * @return int
      */
-    public function getParentId(int $ref_id) : int;
+    public function getParentId(int $ref_id): int;
 
     /**
      * Returns all repository objects that can be deleted by a routine
@@ -24,15 +24,14 @@ interface IGeneralRepository
      *
      * @return Generator|ilObject[]
      */
-    public function getRepositoryObjects() : Generator;
+    public function getRepositoryObjects(): Generator;
 
     /**
      * Returns all repository objects that relate to the given term.
      *
-     * @param string $term
      * @return array<int, array<string, string>>
      */
-    public function getObjectsByTerm(string $term) : array;
+    public function getObjectsByTypeAndTerm(string $type, string $term): array;
 
     /**
      * Returns all ILIAS users that match the given term (username, email, or other data).
@@ -40,14 +39,14 @@ interface IGeneralRepository
      * @param string $term
      * @return array<int, array<string, string>>
      */
-    public function getUsersByTerm(string $term) : array;
+    public function getUsersByTerm(string $term): array;
 
     /**
      * Returns all available global roles as id => title pairs.
      *
      * @return array<int, string>
      */
-    public function getAvailableGlobalRoles() : array;
+    public function getAvailableGlobalRoles(): array;
 
     /**
      * Deletes an existing repository object for the given ref-id.
@@ -58,5 +57,5 @@ interface IGeneralRepository
      * @param int $ref_id
      * @return bool
      */
-    public function deleteObject(int $ref_id) : bool;
+    public function deleteObject(int $ref_id): bool;
 }

@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 /* Copyright (c) 2022 Thibeau Fuhrer <thibeau@sr.solutions> Extended GPL, see docs/LICENSE */
 
@@ -100,7 +102,8 @@ class ilSrRoutineRepository implements IRoutineRepository
         return $this->returnAllQueryResults(
             $this->database->fetchAll(
                 $this->database->query($query)
-            ), $array_data
+            ),
+            $array_data
         );
     }
 
@@ -133,7 +136,8 @@ class ilSrRoutineRepository implements IRoutineRepository
                         $ref_id,
                     ]
                 )
-            ), $array_data
+            ),
+            $array_data
         );
     }
 
@@ -175,7 +179,8 @@ class ilSrRoutineRepository implements IRoutineRepository
                         $ref_id,
                     ]
                 )
-            ), $array_data
+            ),
+            $array_data
         );
     }
 
@@ -255,7 +260,8 @@ class ilSrRoutineRepository implements IRoutineRepository
                         $ref_id,
                     ]
                 )
-            ), $array_data
+            ),
+            $array_data
         );
     }
 
@@ -327,7 +333,7 @@ class ilSrRoutineRepository implements IRoutineRepository
                 LEFT OUTER JOIN srlcm_notification AS notification ON notification.routine_id = deletable.routine_id
                 LEFT OUTER JOIN srlcm_whitelist AS whitelist ON whitelist.routine_id = deletable.routine_id
                 LEFT OUTER JOIN srlcm_assigned_routine AS assignment ON assignment.routine_id = deletable.routine_id
-                LEFT OUTER JOIN srlcm_token AS token ON token.routine_id = deletable.routine_id
+                LEFT OUTER JOIN srlcm_tokens AS token ON token.routine_id = deletable.routine_id
             ;
         ";
 

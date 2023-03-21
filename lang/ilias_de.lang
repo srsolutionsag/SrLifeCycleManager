@@ -3,6 +3,7 @@ tool_main_entry#:#Routinen
 
 crs#:#Kurse
 grp#:#Gruppen
+svy#:#Umfragen
 
 label_routine_owner#:#Besitzer
 label_routine_creation_date#:#Erstellt am
@@ -196,30 +197,30 @@ course_attribute_value#:#Dynamisches Attribut
 group_attribute#:#Gruppen Attribut
 group_attribute_value#:#Dynamisches Attribut
 
+srag\Plugins\SrLifeCycleManager\Rule\Attribute\Participant\ParticipantAttribute#:#Teilnehmer Attribut
+srag\Plugins\SrLifeCycleManager\Rule\Attribute\Participant\ParticipantAll#:#Alle Objektteilnehmer
+srag\Plugins\SrLifeCycleManager\Rule\Attribute\Participant\ParticipantMembers#:#Objekt-Mitglieder
+srag\Plugins\SrLifeCycleManager\Rule\Attribute\Participant\ParticipantTutors#:#Objekt-Tutoren
+srag\Plugins\SrLifeCycleManager\Rule\Attribute\Participant\ParticipantAdmins#:#Objekt-Admins
+
+srag\Plugins\SrLifeCycleManager\Rule\Attribute\Object\ObjectAttribute#:#Objektattribut
+srag\Plugins\SrLifeCycleManager\Rule\Attribute\Object\ObjectMetadata#:#Objekt Metadata
+srag\Plugins\SrLifeCycleManager\Rule\Attribute\Object\ObjectTaxonomy#:#Objekt Taxonomie
+srag\Plugins\SrLifeCycleManager\Rule\Attribute\Object\ObjectTitle#:#Objekttitel
+srag\Plugins\SrLifeCycleManager\Rule\Attribute\Object\ObjectCreation#:#Objekt Erstelldatum
+srag\Plugins\SrLifeCycleManager\Rule\Attribute\Object\ObjectAge#:#Objektalter (in Tagen)
+
 srag\Plugins\SrLifeCycleManager\Rule\Attribute\Course\CourseAttribute#:#Kursattribut
 srag\Plugins\SrLifeCycleManager\Rule\Attribute\Course\CourseActive#:#Kurs aktiv
 srag\Plugins\SrLifeCycleManager\Rule\Attribute\Course\CourseEnd#:#Kursende
 srag\Plugins\SrLifeCycleManager\Rule\Attribute\Course\CourseStart#:#Kursstart
-srag\Plugins\SrLifeCycleManager\Rule\Attribute\Course\CourseParticipants#:#Alle Kursteilnehmer
-srag\Plugins\SrLifeCycleManager\Rule\Attribute\Course\CourseMembers#:#Kurs-Mitglieder
-srag\Plugins\SrLifeCycleManager\Rule\Attribute\Course\CourseTutors#:#Kurs-Tutoren
-srag\Plugins\SrLifeCycleManager\Rule\Attribute\Course\CourseAdmins#:#Kurs-Admins
-srag\Plugins\SrLifeCycleManager\Rule\Attribute\Course\CourseMetadata#:#Kurs Metadata
-srag\Plugins\SrLifeCycleManager\Rule\Attribute\Course\CourseTaxonomy#:#Kurs Taxonomie
-srag\Plugins\SrLifeCycleManager\Rule\Attribute\Course\CourseTitle#:#Kurstitel
-srag\Plugins\SrLifeCycleManager\Rule\Attribute\Course\CourseCreation#:#Kurs Erstelldatum
-srag\Plugins\SrLifeCycleManager\Rule\Attribute\Course\CourseAge#:#Kursalter (in Tagen)
 
 srag\Plugins\SrLifeCycleManager\Rule\Attribute\Group\GroupAttribute#:#Gruppenattribut
-srag\Plugins\SrLifeCycleManager\Rule\Attribute\Group\GroupTitle#:#Gruppentitel
-srag\Plugins\SrLifeCycleManager\Rule\Attribute\Group\GroupParticipants#:#Alle Gruppenteilnehmer
-srag\Plugins\SrLifeCycleManager\Rule\Attribute\Group\GroupMembers#:#Gruppen-Mitglieder
-srag\Plugins\SrLifeCycleManager\Rule\Attribute\Group\GroupTutors#:#Gruppen-Tutoren
-srag\Plugins\SrLifeCycleManager\Rule\Attribute\Group\GroupAdmins#:#Gruppen-Admins
-srag\Plugins\SrLifeCycleManager\Rule\Attribute\Group\GroupMetadata#:#Gruppen Metadata
-srag\Plugins\SrLifeCycleManager\Rule\Attribute\Group\GroupTaxonomy#:#Gruppen Taxonomie
-srag\Plugins\SrLifeCycleManager\Rule\Attribute\Group\GroupCreation#:#Gruppe Erstelldatum
-srag\Plugins\SrLifeCycleManager\Rule\Attribute\Group\GroupAge#:#Gruppenalter (in Tagen)
+
+srag\Plugins\SrLifeCycleManager\Rule\Attribute\Survey\SurveyAttribute#:#Umfrage-Attribut
+srag\Plugins\SrLifeCycleManager\Rule\Attribute\Survey\SurveyParticipants#:#Umfrage-Teilnehmer
+srag\Plugins\SrLifeCycleManager\Rule\Attribute\Survey\SurveyResults#:#Umfrage-Resultate
+srag\Plugins\SrLifeCycleManager\Rule\Attribute\Survey\SurveyQuestions#:#Umfrage-Fragen
 
 srag\Plugins\SrLifeCycleManager\Rule\Attribute\Common\CommonAttribute#:#Gewöhnliches Attribut
 srag\Plugins\SrLifeCycleManager\Rule\Attribute\Common\CommonBoolean#:#wahr/falsch (1 oder 0)

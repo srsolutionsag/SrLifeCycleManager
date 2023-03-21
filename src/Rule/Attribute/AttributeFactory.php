@@ -1,17 +1,14 @@
-<?php declare(strict_types=1);
+<?php
 
-/* Copyright (c) 2022 Thibeau Fuhrer <thibeau@sr.solutions> Extended GPL, see docs/LICENSE */
+declare(strict_types=1);
 
 namespace srag\Plugins\SrLifeCycleManager\Rule\Attribute;
 
-use srag\Plugins\SrLifeCycleManager\Rule\Requirement\IRequirement;
-use srag\Plugins\SrLifeCycleManager\Rule\Requirement\Course\ICourseRequirement;
-use srag\Plugins\SrLifeCycleManager\Rule\Requirement\Group\IGroupRequirement;
-use srag\Plugins\SrLifeCycleManager\Rule\Attribute\Course\CourseAttributeFactory;
-use srag\Plugins\SrLifeCycleManager\Rule\Attribute\Group\GroupAttributeFactory;
 use srag\Plugins\SrLifeCycleManager\Rule\Attribute\Common\CommonAttributeFactory;
-use srag\Plugins\SrLifeCycleManager\Rule\Attribute\Course\CourseAttribute;
-use srag\Plugins\SrLifeCycleManager\Rule\Attribute\Group\GroupAttribute;
+use srag\Plugins\SrLifeCycleManager\Rule\Attribute\Object\ObjectAttributeFactory;
+use srag\Plugins\SrLifeCycleManager\Rule\Attribute\Group\SurveyAttributeFactory;
+use srag\Plugins\SrLifeCycleManager\Rule\Attribute\Course\CourseAttributeFactory;
+use srag\Plugins\SrLifeCycleManager\Rule\Ressource\IRessource;
 
 /**
  * @author Thibeau Fuhrer <thibeau@sr.solutions>
@@ -24,41 +21,41 @@ class AttributeFactory
     protected $common_factory;
 
     /**
+     * @var ObjectAttributeFactory
+     */
+    protected $object_factory;
+
+    /**
+     * @var SurveyAttributeFactory
+     */
+    protected $survey_factory;
+
+    /**
      * @var CourseAttributeFactory
      */
     protected $course_factory;
 
-    /**
-     * @var GroupAttributeFactory
-     */
-    protected $group_factory;
-
-    /**
-     * AttributeFactory constructor
-     */
-    public function __construct()
-    {
-        $this->common_factory = new CommonAttributeFactory();
-        $this->course_factory = new CourseAttributeFactory();
-        $this->group_factory = new GroupAttributeFactory();
+    public function __construct(
+        CommonAttributeFactory $common_factory,
+        ObjectAttributeFactory $object_factory,
+        SurveyAttributeFactory $survey_factory,
+        CourseAttributeFactory $course_factory
+    ) {
+        $this->common_factory = $common_factory;
+        $this->object_factory = $object_factory;
+        $this->survey_factory = $survey_factory;
+        $this->course_factory = $course_factory;
     }
 
-    /**
-     * @param IRequirement $requirement
-     * @param string       $type
-     * @param mixed        $value
-     * @return IAttribute
-     */
-    public function getAttribute(IRequirement $requirement, string $type, $value) : IAttribute
+    public function getAttribute(IRessource $ressource, string $type, string $value): IAttribute
     {
         switch ($type) {
-            case CourseAttribute::class:
-                /** @var $requirement ICourseRequirement */
-                return $this->course_factory->getAttribute($requirement, $value);
-
-            case GroupAttribute::class:
-                /** @var $requirement IGroupRequirement */
-                return $this->group_factory->getAttribute($requirement, $value);
+            case $this->object_factory->getAttributeType():
+                return $this->object_factory->getAttribute($ressource, $value);
+            case $this->course_factory->getAttributeType():
+                return $this->course_factory->getAttribute($ressource, $value);
+            case $this->survey_factory->getAttributeType():
+                return $this->survey_factory->getAttribute($ressource, $value);
 
             default:
                 return $this->common_factory->getAttribute($type, $value);
@@ -66,26 +63,22 @@ class AttributeFactory
     }
 
     /**
-     * @return CourseAttributeFactory
+     * @return string[]
      */
-    public function course() : CourseAttributeFactory
+    public function getAttributeValues(string $type): array
     {
-        return $this->course_factory;
-    }
+        switch ($type) {
+            case $this->object_factory->getAttributeType():
+                return $this->object_factory->getAttributeValues();
+            case $this->course_factory->getAttributeType():
+                return $this->course_factory->getAttributeValues();
+            case $this->survey_factory->getAttributeType():
+                return $this->survey_factory->getAttributeValues();
 
-    /**
-     * @return GroupAttributeFactory
-     */
-    public function group() : GroupAttributeFactory
-    {
-        return $this->group_factory;
-    }
+            case $this->common_factory->getAttributeType():
 
-    /**
-     * @return CommonAttributeFactory
-     */
-    public function common() : CommonAttributeFactory
-    {
-        return $this->common_factory;
+            default:
+                return $this->common_factory->getAttributeValues();
+        }
     }
 }

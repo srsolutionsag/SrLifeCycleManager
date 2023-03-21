@@ -19,8 +19,8 @@ interface IRoutine
     public const F_ORIGIN_TYPE   = 'origin_type';
     public const F_ROUTINE_TYPE  = 'routine_type';
     public const F_ROUTINE_ID    = 'routine_id';
-    public const F_TITLE         = 'title';
-    public const F_USER_ID       = 'usr_id';
+    public const F_TITLE = 'title';
+    public const F_USER_ID = 'usr_id';
 
     // IRoutine origin types:
     public const ORIGIN_TYPE_ADMINISTRATION = 1;
@@ -30,13 +30,15 @@ interface IRoutine
 
     // IRoutine routine types:
     public const ROUTINE_TYPE_COURSE = 'crs';
-    public const ROUTINE_TYPE_GROUP  = 'grp';
+    public const ROUTINE_TYPE_SURVEY = 'svy';
+    public const ROUTINE_TYPE_GROUP = 'grp';
 
     /**
      * @var string[] list of supported routine-types.
      */
     public const ROUTINE_TYPES = [
         self::ROUTINE_TYPE_COURSE,
+        self::ROUTINE_TYPE_SURVEY,
         self::ROUTINE_TYPE_GROUP,
     ];
 

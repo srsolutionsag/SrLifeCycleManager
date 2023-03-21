@@ -1,6 +1,6 @@
-<?php declare(strict_types=1);
+<?php
 
-/* Copyright (c) 2022 Thibeau Fuhrer <thibeau@sr.solutions> Extended GPL, see docs/LICENSE */
+declare(strict_types=1);
 
 use srag\Plugins\SrLifeCycleManager\Repository\RepositoryFactory;
 use srag\Plugins\SrLifeCycleManager\Routine\IRoutine;
@@ -14,7 +14,7 @@ use ILIAS\UI\Factory;
 /**
  * This is an abstraction for ILIAS command-class implementations.
  *
- * @author Thibeau Fuhrer <thibeau@sr.solutions>
+ * @author       Thibeau Fuhrer <thibeau@sr.solutions>
  *
  * The gui-class wraps common dependencies, so that derived classes can
  * slim down their constructor.
@@ -136,7 +136,7 @@ abstract class ilSrAbstractGUI
      * @var ilGlobalTemplateInterface
      */
     private $global_template;
-    
+
     /**
      * Initializes common dependencies which are used in every derived GUI class.
      *
@@ -146,8 +146,10 @@ abstract class ilSrAbstractGUI
     {
         global $DIC;
 
+        $container = ilSrLifeCycleManagerPlugin::getInstance()->getContainer();
+
         $this->origin = ilSrLifeCycleManagerDispatcher::getOriginType();
-        $this->translator = ilSrLifeCycleManagerPlugin::getInstance();
+        $this->translator = $container->getTranslator();
         $this->global_template = $DIC->ui()->mainTemplate();
         $this->ui_factory = $DIC->ui()->factory();
         $this->renderer = $DIC->ui()->renderer();
@@ -157,25 +159,7 @@ abstract class ilSrAbstractGUI
         $this->user = $DIC->user();
         $this->database = $DIC->database();
 
-        $reminder_repository = new ilSrReminderRepository($this->database);
-        $whitelist_repository = new ilSrWhitelistRepository($this->database);
-
-        $this->repository = new RepositoryFactory(
-            new ilSrGeneralRepository($this->database, $DIC->repositoryTree(), $DIC->rbac()),
-            new ilSrConfigRepository($this->database, $DIC->rbac()),
-            new ilSrRoutineRepository(
-                $reminder_repository,
-                $whitelist_repository,
-                $this->database,
-                $DIC->repositoryTree()
-            ),
-            new ilSrAssignmentRepository($this->database, $DIC->repositoryTree()),
-            new ilSrRuleRepository($this->database, $DIC->repositoryTree()),
-            new ilSrConfirmationRepository($this->database),
-            $reminder_repository,
-            $whitelist_repository,
-            new ilSrTokenRepository($this->database)
-        );
+        $this->repository = $container->getRepositoryFactory();
 
         $this->access_handler = new ilSrAccessHandler(
             $DIC->rbac(),
@@ -212,11 +196,11 @@ abstract class ilSrAbstractGUI
      * class in the control flow, and must therefore dispatch ilCtrl's
      * command.
      */
-    public function executeCommand() : void
+    public function executeCommand(): void
     {
         $command = $this->ctrl->getCmd(self::CMD_INDEX);
         if (!method_exists(static::class, $command)) {
-            throw new LogicException(static::class ." does not implement method '$command'.");
+            throw new LogicException(static::class . " does not implement method '$command'.");
         }
 
         $this->setupGlobalTemplate(
@@ -238,7 +222,7 @@ abstract class ilSrAbstractGUI
      * @param ilGlobalTemplateInterface $template
      * @param ilSrTabManager            $tabs
      */
-    abstract protected function setupGlobalTemplate(ilGlobalTemplateInterface $template, ilSrTabManager $tabs) : void;
+    abstract protected function setupGlobalTemplate(ilGlobalTemplateInterface $template, ilSrTabManager $tabs): void;
 
     /**
      * This method MUST check if the given user can execute the command.
@@ -251,7 +235,7 @@ abstract class ilSrAbstractGUI
      * @param string            $command
      * @return bool
      */
-    abstract protected function canUserExecute(ilSrAccessHandler $access_handler, string $command) : bool;
+    abstract protected function canUserExecute(ilSrAccessHandler $access_handler, string $command): bool;
 
     /**
      * This method is the entry point of the command class.
@@ -262,14 +246,14 @@ abstract class ilSrAbstractGUI
      * @see ilSrAbstractGUI::cancel() can also be used within
      * the same GUI class.
      */
-    abstract protected function index() : void;
+    abstract protected function index(): void;
 
     /**
      * Redirects back to the derived classes index method.
      *
      * @see ilSrAbstractGUI::index()
      */
-    protected function cancel() : void
+    protected function cancel(): void
     {
         $this->ctrl->redirectByClass(
             static::class,
@@ -283,7 +267,7 @@ abstract class ilSrAbstractGUI
      *
      * @return IRoutine
      */
-    protected function getRequestedRoutine() : IRoutine
+    protected function getRequestedRoutine(): IRoutine
     {
         $routine_id = $this->getRequestParameter(self::PARAM_ROUTINE_ID);
         $routine = null;
@@ -301,7 +285,7 @@ abstract class ilSrAbstractGUI
      *
      * @return int|null
      */
-    protected function getRequestedObject() : ?int
+    protected function getRequestedObject(): ?int
     {
         // only consider request objects from the repository. for example
         // the configuration context also provides a ref-id, which doesn't
@@ -325,7 +309,7 @@ abstract class ilSrAbstractGUI
      * @param string $parameter
      * @return string|null
      */
-    protected function getRequestParameter(string $parameter) : ?string
+    protected function getRequestParameter(string $parameter): ?string
     {
         return $this->request->getQueryParams()[$parameter] ?? null;
     }
@@ -335,7 +319,7 @@ abstract class ilSrAbstractGUI
      *
      * @param Component $component
      */
-    protected function render(Component $component) : void
+    protected function render(Component $component): void
     {
         $this->global_template->setContent(
             $this->renderer->render($component)
@@ -348,7 +332,7 @@ abstract class ilSrAbstractGUI
      *
      * @throws LogicException
      */
-    protected function panicOnMissingRoutine() : void
+    protected function panicOnMissingRoutine(): void
     {
         if (null === $this->routine->getRoutineId()) {
             throw new LogicException($this->translator->txt(self::MSG_ROUTINE_NOT_FOUND));
@@ -376,11 +360,11 @@ abstract class ilSrAbstractGUI
      * @param string|null $query_parameter
      * @return string
      */
-    protected function getFormAction(string $command, string $query_parameter = null) : string
+    protected function getFormAction(string $command, string $query_parameter = null): string
     {
         // temporarily safe the parameter value if it has been requested.
         if (null !== $query_parameter &&
-            null !==($query_value = $this->getRequestParameter($query_parameter))
+            null !== ($query_value = $this->getRequestParameter($query_parameter))
         ) {
             $this->ctrl->setParameterByClass(static::class, $query_parameter, $query_value);
         }
@@ -404,7 +388,7 @@ abstract class ilSrAbstractGUI
      *
      * @param string $lang_var
      */
-    protected function sendErrorMessage(string $lang_var) : void
+    protected function sendErrorMessage(string $lang_var): void
     {
         ilUtil::sendFailure($this->translator->txt($lang_var), true);
     }
@@ -414,7 +398,7 @@ abstract class ilSrAbstractGUI
      *
      * @param string $lang_var
      */
-    protected function displayErrorMessage(string $lang_var) : void
+    protected function displayErrorMessage(string $lang_var): void
     {
         $this->displayMessageToast($lang_var, 'failure');
     }
@@ -424,7 +408,7 @@ abstract class ilSrAbstractGUI
      *
      * @param string $lang_var
      */
-    protected function sendSuccessMessage(string $lang_var) : void
+    protected function sendSuccessMessage(string $lang_var): void
     {
         ilUtil::sendSuccess($this->translator->txt($lang_var), true);
     }
@@ -434,7 +418,7 @@ abstract class ilSrAbstractGUI
      *
      * @param string $lang_var
      */
-    protected function displaySuccessMessage(string $lang_var) : void
+    protected function displaySuccessMessage(string $lang_var): void
     {
         $this->displayMessageToast($lang_var, 'success');
     }
@@ -444,7 +428,7 @@ abstract class ilSrAbstractGUI
      *
      * @param string $lang_var
      */
-    protected function sendInfoMessage(string $lang_var) : void
+    protected function sendInfoMessage(string $lang_var): void
     {
         ilUtil::sendInfo($this->translator->txt($lang_var), true);
     }
@@ -454,7 +438,7 @@ abstract class ilSrAbstractGUI
      *
      * @param string $lang_var
      */
-    protected function displayInfoMessage(string $lang_var) : void
+    protected function displayInfoMessage(string $lang_var): void
     {
         $this->displayMessageToast($lang_var, 'info');
     }
@@ -468,7 +452,7 @@ abstract class ilSrAbstractGUI
      * this function will append the most used parameters to each possible
      * target class, so you don't have to do that every time :).
      */
-    private function keepNecessaryParametersAlive() : void
+    private function keepNecessaryParametersAlive(): void
     {
         // the request object must be saved individually for each derived class
         // and cannot be saved via 'static::class', because then ilCtrl would only
@@ -504,7 +488,7 @@ abstract class ilSrAbstractGUI
      * @param string $lang_var
      * @param string $type (info|success|failure)
      */
-    private function displayMessageToast(string $lang_var, string $type) : void
+    private function displayMessageToast(string $lang_var, string $type): void
     {
         $this->render(
             $this->ui_factory->messageBox()->{$type}(

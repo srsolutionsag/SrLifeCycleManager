@@ -2,14 +2,19 @@
 
 ## 1.8.0
 
-- Replaced the course-attribute `CourseMember` by one for each of the following categories: all participants, members,
-  tutors and administrators.
-- Replaced the group-attribute `GroupMember` by one for each of the following categories: all participants, members,
-  tutors and administrators.
-- Introduced new abstract `MetadataAttribute` which replaces the trait in `CourseMetadata` and `GroupMetadata`.
-- Introduced new abstract `TaxonomyAttribute` which replaces the trait in `CourseTaxonomy` and `GroupTaxonomy`.
-  the currently used trait.
-- Introduced new abstract `ParticipantAttribute` which can be used to implement attributes working with participants.
+- Implemented a `IRecipientRetriever` which provides the `INotificationSender` with the corresponding recipients
+  of the object which should be notified.
+- Migrated course and group attributes generic to an ILIAS object to new dynamic attributes. This allows to easily adopt
+  new object-types in the future, since these dynamic attributes are available for ALL objects.
+- Migrated course and group member attributes to new dynamic attributes. This allows to easily adopt new object-types
+  which support memberships in the future.
+- Added new dynamic attributes for surveys:
+  - Survey participants (not the same as memberships)
+  - Survey questions
+  - Survey results
+- Fixed an issue where the assignment-form would provide other ILIAS data as well when searching for objects.
+- Fixed a typo in the delete-clause of a routine which lead to routines not being deleted.
+- Applied PSR-12 to adjusted PHP files.
 
 ## 1.7.9
 

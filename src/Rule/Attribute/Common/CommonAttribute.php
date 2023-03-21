@@ -1,6 +1,6 @@
-<?php declare(strict_types=1);
+<?php
 
-/* Copyright (c) 2022 Thibeau Fuhrer <thibeau@sr.solutions> Extended GPL, see docs/LICENSE */
+declare(strict_types=1);
 
 namespace srag\Plugins\SrLifeCycleManager\Rule\Attribute\Common;
 
@@ -11,15 +11,4 @@ use srag\Plugins\SrLifeCycleManager\Rule\Attribute\IAttribute;
  */
 abstract class CommonAttribute implements IAttribute
 {
-    /**
-     * @var string[]
-     */
-    public const COMMON_ATTRIBUTES = [
-        CommonBoolean::class,
-        CommonInteger::class,
-        CommonString::class,
-        CommonList::class,
-        CommonDateTime::class,
-        CommonNull::class,
-    ];
 }

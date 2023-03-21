@@ -1,15 +1,19 @@
-<?php declare(strict_types=1);
+<?php
 
-/* Copyright (c) 2022 Fabian Schmid <fabian@sr.solutions> Extended GPL, see docs/LICENSE */
+declare(strict_types=1);
 
 use srag\Plugins\SrLifeCycleManager\Routine\Provider\RoutineProvider;
 use srag\Plugins\SrLifeCycleManager\Rule\Comparison\ComparisonFactory;
-use srag\Plugins\SrLifeCycleManager\Rule\Requirement\RequirementFactory;
 use srag\Plugins\SrLifeCycleManager\Rule\Attribute\AttributeFactory;
 use srag\Plugins\SrLifeCycleManager\Routine\Provider\DeletableObjectProvider;
+use srag\Plugins\SrLifeCycleManager\Rule\Ressource\RessourceFactory;
+use srag\Plugins\SrLifeCycleManager\Rule\Attribute\Common\CommonAttributeFactory;
+use srag\Plugins\SrLifeCycleManager\Rule\Attribute\Object\ObjectAttributeFactory;
+use srag\Plugins\SrLifeCycleManager\Rule\Attribute\Group\SurveyAttributeFactory;
+use srag\Plugins\SrLifeCycleManager\Rule\Attribute\Course\CourseAttributeFactory;
 
 /**
- * @author Fabian Schmid <fabian@sr.solutions>
+ * @author       Fabian Schmid <fabian@sr.solutions>
  * @noinspection AutoloadingIssuesInspection
  */
 class ilSrRoutinePreviewGUI extends ilSrAbstractGUI
@@ -33,28 +37,18 @@ class ilSrRoutinePreviewGUI extends ilSrAbstractGUI
         parent::__construct();
 
         $this->preview_renderer = new ilSrRoutinePreviewRenderer(
-            new DeletableObjectProvider(
-                new RoutineProvider(
-                    new ComparisonFactory(
-                        new RequirementFactory($this->database),
-                        new AttributeFactory()
-                    ),
-                    $this->repository->routine(),
-                    $this->repository->rule()
-                ),
-                $this->repository->general()
-            ),
+            ilSrLifeCycleManagerPlugin::getInstance()->getContainer()->getDeletableObjectProvider(),
             $this->translator,
             $this->renderer,
             $this->ui_factory,
             $this->getAjaxAction()
         );
     }
-    
+
     /**
      * @inheritDoc
      */
-    protected function setupGlobalTemplate(ilGlobalTemplateInterface $template, ilSrTabManager $tabs) : void
+    protected function setupGlobalTemplate(ilGlobalTemplateInterface $template, ilSrTabManager $tabs): void
     {
         $this->preview_renderer->registerResources($template);
 
@@ -62,26 +56,25 @@ class ilSrRoutinePreviewGUI extends ilSrAbstractGUI
         $tabs
             ->addConfigurationTab()
             ->addRoutineTab()
-            ->addPreviewTab(true)
-        ;
+            ->addPreviewTab(true);
     }
-    
+
     /**
      * @inheritDoc
      */
-    protected function canUserExecute(ilSrAccessHandler $access_handler, string $command) : bool
+    protected function canUserExecute(ilSrAccessHandler $access_handler, string $command): bool
     {
         // only routine-managers can execute commands in this gui.
         return $this->access_handler->canManageRoutines();
     }
-    
+
     /**
      * Displays a loader (moving circle) on the current page, that renders
      * list items  asynchronously.
      *
      * @see ilSrRoutinePreviewGUI::renderAsync()
      */
-    protected function index() : void
+    protected function index(): void
     {
         $this->render($this->preview_renderer->getLoader());
     }
@@ -89,7 +82,7 @@ class ilSrRoutinePreviewGUI extends ilSrAbstractGUI
     /**
      * Displays the preview items asynchronously on the current page.
      */
-    protected function renderAsync() : void
+    protected function renderAsync(): void
     {
         echo $this->preview_renderer->getPreview();
         exit;
@@ -98,7 +91,7 @@ class ilSrRoutinePreviewGUI extends ilSrAbstractGUI
     /**
      * @return string
      */
-    protected function getAjaxAction() : string
+    protected function getAjaxAction(): string
     {
         return $this->ctrl->getLinkTargetByClass(
             self::class,

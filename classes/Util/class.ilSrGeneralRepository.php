@@ -37,16 +37,20 @@ class ilSrGeneralRepository implements IGeneralRepository
     /**
      * @inheritDoc
      */
-    public function getObjectsByTerm(string $term) : array
+    public function getObjectsByTypeAndTerm(string $type, string $term): array
     {
-        $term  = htmlspecialchars($term);
-        $term  = $this->database->quote("%$term%", 'text');
+        $term = htmlspecialchars($term);
+        $type = htmlspecialchars($type);
+        $term = $this->database->quote("%$term%", 'text');
         $query = "
             SELECT ref.ref_id AS value, obj.title AS display, obj.title AS searchby FROM object_data AS obj
 		        LEFT JOIN object_translation AS trans ON trans.obj_id = obj.obj_id
                 LEFT JOIN object_reference AS ref ON ref.obj_id = obj.obj_id
-		        WHERE obj.title LIKE $term 
-		        OR trans.title LIKE $term
+		        WHERE obj.type = '$type'
+		        AND (
+                    obj.title LIKE $term 
+		            OR trans.title LIKE $term		        
+		        )
             ;
 		";
 
