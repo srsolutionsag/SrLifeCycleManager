@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace srag\Plugins\SrLifeCycleManager\Rule\Attribute;
 
+use srag\Plugins\SrLifeCycleManager\Rule\Attribute\Participant\ParticipantAttributeFactory;
 use srag\Plugins\SrLifeCycleManager\Rule\Attribute\Common\CommonAttributeFactory;
 use srag\Plugins\SrLifeCycleManager\Rule\Attribute\Object\ObjectAttributeFactory;
 use srag\Plugins\SrLifeCycleManager\Rule\Attribute\Group\SurveyAttributeFactory;
@@ -19,6 +20,11 @@ class AttributeFactory
      * @var CommonAttributeFactory
      */
     protected $common_factory;
+
+    /**
+     * @var ParticipantAttributeFactory
+     */
+    protected $participant_factory;
 
     /**
      * @var ObjectAttributeFactory
@@ -37,11 +43,13 @@ class AttributeFactory
 
     public function __construct(
         CommonAttributeFactory $common_factory,
+        ParticipantAttributeFactory $participant_factory,
         ObjectAttributeFactory $object_factory,
         SurveyAttributeFactory $survey_factory,
         CourseAttributeFactory $course_factory
     ) {
         $this->common_factory = $common_factory;
+        $this->participant_factory = $participant_factory;
         $this->object_factory = $object_factory;
         $this->survey_factory = $survey_factory;
         $this->course_factory = $course_factory;
@@ -50,6 +58,8 @@ class AttributeFactory
     public function getAttribute(IRessource $ressource, string $type, string $value): IAttribute
     {
         switch ($type) {
+            case $this->participant_factory->getAttributeType():
+                return $this->participant_factory->getAttribute($ressource, $value);
             case $this->object_factory->getAttributeType():
                 return $this->object_factory->getAttribute($ressource, $value);
             case $this->course_factory->getAttributeType():
@@ -74,6 +84,8 @@ class AttributeFactory
                 return $this->course_factory->getAttributeValues();
             case $this->survey_factory->getAttributeType():
                 return $this->survey_factory->getAttributeValues();
+            case $this->participant_factory->getAttributeType():
+                return $this->participant_factory->getAttributeValues();
 
             case $this->common_factory->getAttributeType():
 

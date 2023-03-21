@@ -19,6 +19,7 @@ use srag\Plugins\SrLifeCycleManager\Event\Observer;
 use srag\Plugins\SrLifeCycleManager\ITranslator;
 use ILIAS\DI\Container;
 use srag\Plugins\SrLifeCycleManager\Notification\IRecipientRetriever;
+use srag\Plugins\SrLifeCycleManager\Rule\Attribute\Participant\ParticipantAttributeFactory;
 
 /**
  * @author       Thibeau Fuhrer <thibeau@sr.solutions>
@@ -148,6 +149,7 @@ class ilSrLifeCycleManagerContainer
 
             $this->attribute_factory = new AttributeFactory(
                 new CommonAttributeFactory($this->dic->refinery()),
+                new ParticipantAttributeFactory(),
                 new ObjectAttributeFactory(),
                 new SurveyAttributeFactory(),
                 new CourseAttributeFactory()
