@@ -622,8 +622,20 @@ if ($ilDB->tableColumnExists($table_name, $column_name)) {
 <#25>
 <?php
 /** @var $ilDB ilDBInterface */
+$new_participant_attribute_value = 'srag\Plugins\SrLifeCycleManager\Rule\Attribute\Participant\ParticipantAll';
+
+$legacy_course_value_mapping = [
+    'srag\Plugins\SrLifeCycleManager\Rule\Attribute\Course\CourseMember' => $new_participant_attribute_value,
+];
+
+$legacy_group_value_mapping = [
+    'srag\Plugins\SrLifeCycleManager\Rule\Attribute\Group\GroupMember' => $new_participant_attribute_value,
+];
+
+$new_attribute_type = 'srag\Plugins\SrLifeCycleManager\Rule\Attribute\Participant\ParticipantAttribute';
+
 $value_migration = new srag\Plugins\SrLifeCycleManager\Rule\Attribute\Migration\ValueMigration(
-    $ilDB, 'srlcm_rule', 'lhs_value', 'rhs_value'
+    $ilDB, 'srlcm_rule', 'lhs_type', 'rhs_type'
 );
 
 $type_migration = new srag\Plugins\SrLifeCycleManager\Rule\Attribute\Migration\TypeMigration(
@@ -635,16 +647,23 @@ $type_migration = new srag\Plugins\SrLifeCycleManager\Rule\Attribute\Migration\T
     'rhs_type'
 );
 
-$value_migration->migrateAll(
-    'srag\Plugins\SrLifeCycleManager\Rule\Attribute\Course\CourseMember',
-    'srag\Plugins\SrLifeCycleManager\Rule\Attribute\Participant\ParticipantAll'
-);
+foreach ($legacy_course_value_mapping as $legacy_value => $new_value) {
+    $value_migration->migrateAll($legacy_value, $new_value);
+    $type_migration->migrateForValue(
+        'srag\Plugins\SrLifeCycleManager\Rule\Attribute\Course\CourseAttribute',
+        $new_attribute_type,
+        $new_value
+    );
+}
 
-$value_migration->migrateAll(
-    'srag\Plugins\SrLifeCycleManager\Rule\Attribute\Group\GroupMember',
-    'srag\Plugins\SrLifeCycleManager\Rule\Attribute\Participant\ParticipantAll'
-);
-
+foreach ($legacy_group_value_mapping as $legacy_value => $new_value) {
+    $value_migration->migrateAll($legacy_value, $new_value);
+    $type_migration->migrateForValue(
+        'srag\Plugins\SrLifeCycleManager\Rule\Attribute\Group\GroupAttribute',
+        $new_attribute_type,
+        $new_value
+    );
+}
 ?>
 <#26>
 <?php
