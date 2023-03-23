@@ -115,6 +115,7 @@ input_name_routine_type#:#Routinen Typ
 input_name_routine_has_opt_out#:#Opt-out aktivieren
 input_name_routine_elongation#:#Verlängerung (in Tage)
 input_name_routine_elongation_cooldown#:#Cooldown (in Tage)
+input_name_routine_elongation_cooldown_info#:#Ein Cooldown definiert die Anzahl Tage die vergehen müssen, bis ein Objekt erneut von dieser Routine verlängert werden kann. Beim Wert 0 kann die Verlängerung unendlich getätigt werden an einem Tag.
 input_name_routine_elongation_possible#:#Verlängerung aktivieren
 input_name_routine_assignment_routine#:#Routine
 input_name_routine_assignment_ref_id#:#Objekt (ref-id)

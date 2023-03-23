@@ -89,7 +89,10 @@ class RoutineFormBuilder extends AbstractFormBuilder
                         )
                     ,
                     self::INPUT_ELONGATION_COOLDOWN => $this->fields
-                        ->numeric($this->translator->txt(self::INPUT_ELONGATION_COOLDOWN))
+                        ->numeric(
+                            $this->translator->txt(self::INPUT_ELONGATION_COOLDOWN),
+                            $this->translator->txt(self::INPUT_ELONGATION_COOLDOWN . '_info')
+                        )
                         ->withRequired(true)
                         ->withValue($this->routine->getElongationCooldown())
                         ->withAdditionalTransformation(

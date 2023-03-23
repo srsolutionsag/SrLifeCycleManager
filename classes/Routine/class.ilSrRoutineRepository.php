@@ -275,33 +275,34 @@ class ilSrRoutineRepository implements IRoutineRepository
 
         $today = $this->getCurrentDate();
 
-        // if there is no reminder, the deletion day is today.
+        // if there is no last reminder, there is no reminder at all,
+        // therefore the deletion day is today.
         if (null === $last_reminder) {
             return $today;
         }
 
-        // if the last reminder has been sent, the deletion day is today.
+        // if the last reminder has been sent and it is elapsed today,
+        // then the deletion day is today as well.
         if (null !== $previous_reminder &&
+            $previous_reminder->isElapsed($today) &&
             $previous_reminder->getNotificationId() === $last_reminder->getNotificationId()
         ) {
             return $today;
         }
 
-        // if there is no previous reminder, the amount of days before
-        // deletion of the first reminder can be added to today.
-        if (null === $previous_reminder) {
-            $first_reminder = $this->reminder_repository->getFirstByRoutine($routine) ?? $last_reminder;
-
-            return $today->add(
-                new DateInterval("P{$first_reminder->getDaysBeforeDeletion()}D")
+        // if there is a previously sent reminder, the amount of days
+        // before deletion can be added to its notified date.
+        if (null !== $previous_reminder) {
+            return $previous_reminder->getNotifiedDate()->add(
+                new DateInterval("P{$previous_reminder->getDaysBeforeDeletion()}D")
             );
         }
 
-        // if there is a previously sent reminder, the amount of days
-        // before deletion can be added to its notified date.
-        return $previous_reminder->getNotifiedDate()->add(
-            new DateInterval("P{$previous_reminder->getDaysBeforeDeletion()}D")
-        );
+        // if there is no presiously sent reminder, the deletion day
+        // will be today + the amount of days before deletion of the
+        // first reminder.
+        $first_reminder = $this->reminder_repository->getFirstByRoutine($routine) ?? $last_reminder;
+        return $today->add(new DateInterval("P{$first_reminder->getDaysBeforeDeletion()}D"));
     }
 
     /**

@@ -115,6 +115,7 @@ input_name_routine_type#:#Routine type
 input_name_routine_has_opt_out#:#Opt-out possible
 input_name_routine_elongation#:#Elongation (in days)
 input_name_routine_elongation_cooldown#:#Cooldown (in days)
+input_name_routine_elongation_cooldown_info#:#A cooldown defines the amount of days which need to elapse until an object can be postponed from this routine again. If set to 0, the elongation could be stacked infinitely.
 input_name_routine_elongation_possible#:#Elongation possible
 input_name_routine_assignment_routine#:#Routine
 input_name_routine_assignment_ref_id#:#Object (ref-id)

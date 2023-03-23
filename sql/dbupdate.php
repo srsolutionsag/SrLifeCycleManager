@@ -635,7 +635,7 @@ $legacy_group_value_mapping = [
 $new_attribute_type = 'srag\Plugins\SrLifeCycleManager\Rule\Attribute\Participant\ParticipantAttribute';
 
 $value_migration = new srag\Plugins\SrLifeCycleManager\Rule\Attribute\Migration\ValueMigration(
-    $ilDB, 'srlcm_rule', 'lhs_type', 'rhs_type'
+    $ilDB, 'srlcm_rule', 'lhs_value', 'rhs_value'
 );
 
 $type_migration = new srag\Plugins\SrLifeCycleManager\Rule\Attribute\Migration\TypeMigration(
@@ -693,7 +693,7 @@ $legacy_group_value_mapping = [
 $new_attribute_type = 'srag\Plugins\SrLifeCycleManager\Rule\Attribute\Object\ObjectAttribute';
 
 $value_migration = new srag\Plugins\SrLifeCycleManager\Rule\Attribute\Migration\ValueMigration(
-    $ilDB, 'srlcm_rule', 'lhs_type', 'rhs_type'
+    $ilDB, 'srlcm_rule', 'lhs_value', 'rhs_value'
 );
 
 $type_migration = new srag\Plugins\SrLifeCycleManager\Rule\Attribute\Migration\TypeMigration(

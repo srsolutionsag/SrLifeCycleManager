@@ -2,13 +2,14 @@
 
 declare(strict_types=1);
 
-/* Copyright (c) 2022 Thibeau Fuhrer <thibeau@sr.solutions> Extended GPL, see docs/LICENSE */
-
 namespace srag\Plugins\SrLifeCycleManager\Form\Rule;
 
 use srag\Plugins\SrLifeCycleManager\Form\AbstractFormBuilder;
 use srag\Plugins\SrLifeCycleManager\Rule\Attribute\Common\CommonAttribute;
+use srag\Plugins\SrLifeCycleManager\Rule\Attribute\Participant\ParticipantAttribute;
 use srag\Plugins\SrLifeCycleManager\Rule\Attribute\Course\CourseAttribute;
+use srag\Plugins\SrLifeCycleManager\Rule\Attribute\Object\ObjectAttribute;
+use srag\Plugins\SrLifeCycleManager\Rule\Attribute\Survey\SurveyAttribute;
 use srag\Plugins\SrLifeCycleManager\Rule\Attribute\AttributeFactory;
 use srag\Plugins\SrLifeCycleManager\Rule\IRule;
 use srag\Plugins\SrLifeCycleManager\ITranslator;
@@ -19,9 +20,6 @@ use ILIAS\UI\Component\Input\Field\SwitchableGroup;
 use ILIAS\UI\Component\Input\Field\Group;
 use ILIAS\UI\Component\Input\Field\Input;
 use ILIAS\Refinery\Factory as Refinery;
-use srag\Plugins\SrLifeCycleManager\Rule\Attribute\Object\ObjectAttribute;
-use srag\Plugins\SrLifeCycleManager\Rule\Attribute\Participant\ParticipantAttribute;
-use srag\Plugins\SrLifeCycleManager\Rule\Attribute\Survey\SurveyAttribute;
 
 /**
  * @author Thibeau Fuhrer <thibeau@sr.solutions>
@@ -75,12 +73,6 @@ class RuleFormBuilder extends AbstractFormBuilder
         parent::__construct($translator, $forms, $fields, $refinery, $form_action);
         $this->attributes = $attributes;
         $this->rule = $rule;
-    }
-
-    public function withObjectType(string $type): self
-    {
-        $this->object_type = $type;
-        return $this;
     }
 
     /**
@@ -228,7 +220,8 @@ class RuleFormBuilder extends AbstractFormBuilder
 
         return $this->fields
             ->group(
-                $inputs, $this->translator->txt($attribute_type)
+                $inputs,
+                $this->translator->txt($attribute_type)
             );
     }
 

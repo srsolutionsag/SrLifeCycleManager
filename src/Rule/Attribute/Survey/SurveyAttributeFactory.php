@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace srag\Plugins\SrLifeCycleManager\Rule\Attribute\Group;
+namespace srag\Plugins\SrLifeCycleManager\Rule\Attribute\Survey;
 
 use srag\Plugins\SrLifeCycleManager\Rule\Attribute\Common\CommonNull;
 use srag\Plugins\SrLifeCycleManager\Rule\Attribute\IDynamicAttributeProvider;

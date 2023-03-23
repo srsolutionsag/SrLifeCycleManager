@@ -15,6 +15,8 @@ use srag\Plugins\SrLifeCycleManager\Cron\ResultBuilder;
 use srag\Plugins\SrLifeCycleManager\Event\Observer;
 use srag\Plugins\SrLifeCycleManager\DateTimeHelper;
 use srag\Plugins\SrLifeCycleManager\Notification\IRecipientRetriever;
+use srag\Plugins\SrLifeCycleManager\Routine\IRoutineRepository;
+use srag\Plugins\SrLifeCycleManager\Whitelist\IWhitelistEntry;
 
 /**
  * This cron job will delete repository objects that are affected by
@@ -57,6 +59,11 @@ class ilSrRoutineCronJob extends ilSrAbstractCronJob
     protected $event_observer;
 
     /**
+     * @var IRoutineRepository
+     */
+    protected $routine_repository;
+
+    /**
      * @var IReminderRepository
      */
     protected $reminder_repository;
@@ -92,6 +99,7 @@ class ilSrRoutineCronJob extends ilSrAbstractCronJob
         DeletableObjectProvider $object_provider,
         ResultBuilder $result_builder,
         Observer $event_observer,
+        IRoutineRepository $routine_repository,
         IReminderRepository $notification_repository,
         ITokenRepository $token_repository,
         IWhitelistRepository $whitelist_repository,
@@ -102,6 +110,7 @@ class ilSrRoutineCronJob extends ilSrAbstractCronJob
 
         $this->recipient_retriever = $recipient_retriever;
         $this->event_observer = $event_observer;
+        $this->routine_repository = $routine_repository;
         $this->reminder_repository = $notification_repository;
         $this->token_repository = $token_repository;
         $this->whitelist_repository = $whitelist_repository;
@@ -138,63 +147,26 @@ class ilSrRoutineCronJob extends ilSrAbstractCronJob
 
             foreach ($object->getAffectingRoutines() as $routine) {
                 $whitelist_entry = $this->whitelist_repository->get($routine, $object_ref_id);
-                $reminders = $this->reminder_repository->getByRoutine($routine);
 
-                if (null === $whitelist_entry) {
-                    $previously_sent_reminder = $this->reminder_repository->getRecentlySent($routine, $object_ref_id);
+                $deletion_date = (null === $whitelist_entry) ?
+                    $this->routine_repository->getDeletionDate($routine, $object_ref_id) :
+                    $w = $whitelist_entry->getExpiryDate();
 
-                    // NOTE: this reminder will not contain information about being sent.
-                    // $last_reminder->isElapsed() cannot be used.
-                    $last_reminder = $this->reminder_repository->getLastByRoutine($routine);
-
-                    $has_last_reminder_been_sent = (
-                        null !== $previously_sent_reminder &&
-                        null !== $last_reminder &&
-                        $previously_sent_reminder->getNotificationId() === $last_reminder->getNotificationId()
-                    );
-
-                    // if there are reminders and the last one has been sent, the object
-                    // can be deleted if the reminder is elapsed today.
-                    if (empty($reminders) ||
-                        ($has_last_reminder_been_sent && $previously_sent_reminder->isElapsed($this->getCurrentDate()))
-                    ) {
-                        $this->deleteObject($routine, $object_instance);
-                        continue 2;
-                    }
-
-                    $next_reminder = $this->reminder_repository->getNextReminder($routine, $previously_sent_reminder);
-
-                    // send the reminder straight away if it's the first one.
-                    if (null === $previously_sent_reminder && null !== $next_reminder) {
-                        $this->notifyObject($next_reminder, $object_instance);
-                    }
-
-                    // send the reminder only for the correct amount of days before
-                    // deletion if there are already sent reminders.
-                    if (null !== $previously_sent_reminder && null !== $next_reminder) {
-                        $previous_interval = new DateInterval("P{$previously_sent_reminder->getDaysBeforeDeletion()}D");
-                        $deletion_date = $previously_sent_reminder->getNotifiedDate()->add($previous_interval);
-
-                        if ($next_reminder->getDaysBeforeDeletion() === $this->getGap($this->getCurrentDate(), $deletion_date)) {
-                            $this->notifyObject($next_reminder, $object_instance);
-                        }
-                    }
-
+                if (null === $deletion_date) {
+                    // if the deletion date is null at this point, the object has an
+                    // opt-out whitelist entry, so we continue to the next routine.
                     continue;
                 }
 
-                // if there is no reminder or the whitelist entry is expired
-                // the object can be deleted today.
-                if ($whitelist_entry->isExpired($this->getCurrentDate())) {
+                if (null !== $deletion_date && $deletion_date <= $x = $this->getCurrentDate()) {
                     $this->deleteObject($routine, $object_instance);
+                    // continue to the next object since this one no longer exists.
                     continue 2;
                 }
 
-                // get a reminder for the current amount of days before deletion
-                // (expiry date in this scenario).
                 $next_reminder = $this->reminder_repository->getWithDaysBeforeDeletion(
                     $routine->getRoutineId(),
-                    $this->getGap($this->getCurrentDate(), $whitelist_entry->getExpiryDate())
+                    $this->getGap($this->getCurrentDate(), $deletion_date)
                 );
 
                 if (null !== $next_reminder) {
