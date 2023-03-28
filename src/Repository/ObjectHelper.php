@@ -23,25 +23,27 @@ trait ObjectHelper
      */
     public function getRepositoryObjects(int $ref_id = 1) : Generator
     {
-        $container_objects = $this->tree->getChildsByTypeFilter(
+        $routine_candidates_and_container = $this->tree->getChildsByTypeFilter(
             $ref_id,
-            ['crs', 'cat', 'grp', 'fold', 'itgr']
+            ['crs', 'cat', 'grp', 'fold', 'itgr', 'svy']
         );
-
-        if (empty($container_objects)) {
+        
+        if (empty($routine_candidates_and_container)) {
             return;
         }
-
-        foreach ($container_objects as $container) {
-            $container_ref_id = (int) $container['ref_id'];
-            if (in_array($container['type'], IRoutine::ROUTINE_TYPES, true)) {
+        
+        foreach ($routine_candidates_and_container as $candidate_or_container) {
+            $candidate_or_container_ref_id = (int) $candidate_or_container['ref_id'];
+            if (in_array($candidate_or_container['type'], IRoutine::ROUTINE_TYPES, true)) {
                 try {
-                    yield $container_ref_id => ilObjectFactory::getInstanceByRefId($container_ref_id);
+                    yield $candidate_or_container_ref_id => ilObjectFactory::getInstanceByRefId(
+                        $candidate_or_container_ref_id
+                    );
                 } catch (Exception $exception) {
                     continue;
                 }
             } else {
-                yield from $this->getRepositoryObjects($container_ref_id);
+                yield from $this->getRepositoryObjects($candidate_or_container_ref_id);
             }
         }
     }
