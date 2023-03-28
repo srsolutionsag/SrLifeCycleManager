@@ -9,7 +9,7 @@ use srag\Plugins\SrLifeCycleManager\Routine\Provider\DeletableObjectProvider;
 use srag\Plugins\SrLifeCycleManager\Rule\Ressource\RessourceFactory;
 use srag\Plugins\SrLifeCycleManager\Rule\Attribute\Common\CommonAttributeFactory;
 use srag\Plugins\SrLifeCycleManager\Rule\Attribute\Object\ObjectAttributeFactory;
-use srag\Plugins\SrLifeCycleManager\Rule\Attribute\Group\SurveyAttributeFactory;
+use srag\Plugins\SrLifeCycleManager\Rule\Attribute\Survey\SurveyAttributeFactory;
 use srag\Plugins\SrLifeCycleManager\Rule\Attribute\Course\CourseAttributeFactory;
 
 /**
