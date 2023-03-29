@@ -150,7 +150,7 @@ class ilSrRoutineCronJob extends ilSrAbstractCronJob
 
                 $deletion_date = (null === $whitelist_entry) ?
                     $this->routine_repository->getDeletionDate($routine, $object_ref_id) :
-                    $w = $whitelist_entry->getExpiryDate();
+                    $whitelist_entry->getExpiryDate();
 
                 if (null === $deletion_date) {
                     // if the deletion date is null at this point, the object has an
@@ -158,7 +158,7 @@ class ilSrRoutineCronJob extends ilSrAbstractCronJob
                     continue;
                 }
 
-                if (null !== $deletion_date && $deletion_date <= $x = $this->getCurrentDate()) {
+                if ($deletion_date <= $this->getCurrentDate()) {
                     $this->deleteObject($routine, $object_instance);
                     // continue to the next object since this one no longer exists.
                     continue 2;

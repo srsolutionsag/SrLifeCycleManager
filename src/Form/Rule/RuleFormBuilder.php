@@ -43,6 +43,11 @@ class RuleFormBuilder extends AbstractFormBuilder
     protected $attribute_inputs = [];
 
     /**
+     * @var string[]
+     */
+    protected $common_attribute_list;
+
+    /**
      * @var AttributeFactory
      */
     protected $attributes;
@@ -71,6 +76,7 @@ class RuleFormBuilder extends AbstractFormBuilder
         string $form_action
     ) {
         parent::__construct($translator, $forms, $fields, $refinery, $form_action);
+        $this->common_attribute_list = $attributes->getAttributeValues(CommonAttribute::class);
         $this->attributes = $attributes;
         $this->rule = $rule;
     }
@@ -291,6 +297,6 @@ class RuleFormBuilder extends AbstractFormBuilder
      */
     protected function isCommonAttribute(string $attribute_type): bool
     {
-        return in_array($attribute_type, $this->attributes->getAttributeValues(CommonAttribute::class), true);
+        return in_array($attribute_type, $this->common_attribute_list, true);
     }
 }

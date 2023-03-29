@@ -8,6 +8,9 @@
   new object-types in the future, since these dynamic attributes are available for ALL objects.
 - Migrated course and group member attributes to new dynamic attributes. This allows to easily adopt new object-types
   which support memberships in the future.
+- Fixed an issue where only container repository objects were delivered for deletion.
+- Added info-byline for routine-elongation-cooldowns.
+- Improved routine cron-job and it's unit tests.
 - Added new dynamic attributes for surveys:
   - Survey participants (not the same as memberships)
   - Survey questions

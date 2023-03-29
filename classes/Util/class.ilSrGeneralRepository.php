@@ -1,8 +1,11 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 use srag\Plugins\SrLifeCycleManager\Repository\IGeneralRepository;
-use ILIAS\DI\RBACServices;
 use srag\Plugins\SrLifeCycleManager\Repository\ObjectHelper;
+use srag\Plugins\SrLifeCycleManager\Routine\IRoutine;
+use ILIAS\DI\RBACServices;
 
 /**
  * @author       Thibeau Fuhrer <thibeau@sr.solutions>
@@ -11,6 +14,15 @@ use srag\Plugins\SrLifeCycleManager\Repository\ObjectHelper;
 class ilSrGeneralRepository implements IGeneralRepository
 {
     use ObjectHelper;
+
+    /**
+     * This variable holds the merged object types of container
+     * objects and routine-types, due to the recursive object
+     * retrieval: @see self::getRepositoryObjects()
+     *
+     * @var string[]
+     */
+    protected $routine_candidate_and_container_types;
 
     /**
      * @var ilDBInterface
@@ -29,9 +41,46 @@ class ilSrGeneralRepository implements IGeneralRepository
      */
     public function __construct(ilDBInterface $database, ilTree $tree, RBACServices $rbac)
     {
+        $this->routine_candidate_and_container_types = array_unique(
+            array_merge(
+                $this->getContainerObjectTypes(),
+                IRoutine::ROUTINE_TYPES,
+            )
+        );
+
         $this->database = $database;
         $this->tree = $tree;
         $this->rbac = $rbac;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function getRepositoryObjects(int $ref_id = 1): Generator
+    {
+        $routine_candidates_and_container = $this->tree->getChildsByTypeFilter(
+            $ref_id,
+            $this->routine_candidate_and_container_types
+        );
+
+        if (empty($routine_candidates_and_container)) {
+            return;
+        }
+
+        foreach ($routine_candidates_and_container as $candidate_or_container) {
+            $candidate_or_container_ref_id = (int) $candidate_or_container['ref_id'];
+            if (in_array($candidate_or_container['type'], IRoutine::ROUTINE_TYPES, true)) {
+                try {
+                    yield $candidate_or_container_ref_id => ilObjectFactory::getInstanceByRefId(
+                        $candidate_or_container_ref_id
+                    );
+                } catch (Exception $e) {
+                    continue;
+                }
+            } else {
+                yield from $this->getRepositoryObjects($candidate_or_container_ref_id);
+            }
+        }
     }
 
     /**
