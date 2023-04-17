@@ -1,7 +1,8 @@
-<?php declare(strict_types=1);
+<?php
 
-/* Copyright (c) 2022 Thibeau Fuhrer <thibeau@sr.solutions> Extended GPL, see docs/LICENSE */
+declare(strict_types=1);
 
+use srag\Plugins\SrLifeCycleManager\Notification\IRecipientRetriever;
 use srag\Plugins\SrLifeCycleManager\Notification\INotification;
 use srag\Plugins\SrLifeCycleManager\Notification\INotificationSender;
 use srag\Plugins\SrLifeCycleManager\Notification\ISentNotification;
@@ -49,13 +50,6 @@ class ilSrNotificationSender implements INotificationSender
      */
     protected $config;
 
-    /**
-     * @param INotificationRepository    $notification_repository
-     * @param IRoutineRepository         $routine_repository
-     * @param ilSrWhitelistLinkGenerator $whitelist_link_generator
-     * @param ilMailMimeSender           $mail_sender
-     * @param IConfig                    $config
-     */
     public function __construct(
         INotificationRepository $notification_repository,
         IRoutineRepository $routine_repository,
@@ -73,19 +67,17 @@ class ilSrNotificationSender implements INotificationSender
     /**
      * @inheritDoc
      */
-    public function sendNotification(INotification $notification, ilObject $object): ISentNotification
-    {
-        /** @var $administrators string[] */
-        $administrators = ilParticipants::getInstance($object->getRefId())->getAdmins();
-
+    public function sendNotification(
+        IRecipientRetriever $recipient_retriever,
+        INotification $notification,
+        ilObject $object
+    ): ISentNotification {
         // it's important the message is parsed outside the loop, otherwise
         // the whitelist-tokens will be overwritten each iteration.
         $message = $this->getNotificationBody($object, $notification);
         $subject = $notification->getTitle();
 
-        foreach ($administrators as $user_id) {
-            $user_id = (int) $user_id;
-
+        foreach ($recipient_retriever->getRecipients($object) as $user_id) {
             // only send notifications to users that still exist and are not contained
             // on the configured blacklist.
             if (ilObjUser::_exists($user_id) &&

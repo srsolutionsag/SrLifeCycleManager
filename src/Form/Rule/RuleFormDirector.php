@@ -1,6 +1,6 @@
-<?php declare(strict_types=1);
+<?php
 
-/* Copyright (c) 2022 Thibeau Fuhrer <thibeau@sr.solutions> Extended GPL, see docs/LICENSE */
+declare(strict_types=1);
 
 namespace srag\Plugins\SrLifeCycleManager\Form\Rule;
 
@@ -33,7 +33,7 @@ class RuleFormDirector
      * @param IRoutine $routine
      * @return UIForm
      */
-    public function getFormByRoutine(IRoutine $routine) : UIForm
+    public function getFormByRoutine(IRoutine $routine): UIForm
     {
         switch ($routine->getRoutineType()) {
             case IRoutine::ROUTINE_TYPE_COURSE:
@@ -42,8 +42,13 @@ class RuleFormDirector
             case IRoutine::ROUTINE_TYPE_GROUP:
                 return $this->getGroupAttributeForm();
 
+            case IRoutine::ROUTINE_TYPE_SURVEY:
+                return $this->getSurveyAttributeForm();
+
             default:
-                throw new LogicException(self::class . " cannot yet build form for '" . $routine->getRoutineType() . "'.");
+                throw new LogicException(
+                    self::class . " cannot yet build form for '" . $routine->getRoutineType() . "'."
+                );
         }
     }
 
@@ -52,13 +57,14 @@ class RuleFormDirector
      *
      * @return UIForm
      */
-    public function getCourseAttributeForm() : UIForm
+    public function getCourseAttributeForm(): UIForm
     {
         return $this->form_builder
             ->addCommonAttributes()
             ->addCourseAttributes()
-            ->getForm()
-        ;
+            ->addObjectAttributes()
+            ->addParticipantAttributes()
+            ->getForm();
     }
 
     /**
@@ -66,12 +72,26 @@ class RuleFormDirector
      *
      * @return UIForm
      */
-    public function getGroupAttributeForm() : UIForm
+    public function getGroupAttributeForm(): UIForm
     {
         return $this->form_builder
             ->addCommonAttributes()
-            ->addGroupAttributes()
-            ->getForm()
-        ;
+            ->addObjectAttributes()
+            ->addParticipantAttributes()
+            ->getForm();
+    }
+
+    /**
+     * Returns a rule form for course- and common-attributes.
+     *
+     * @return UIForm
+     */
+    public function getSurveyAttributeForm(): UIForm
+    {
+        return $this->form_builder
+            ->addCommonAttributes()
+            ->addSurveyAttributes()
+            ->addObjectAttributes()
+            ->getForm();
     }
 }

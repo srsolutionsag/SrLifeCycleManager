@@ -3,6 +3,7 @@ tool_main_entry#:#Routines
 
 crs#:#Course
 grp#:#Group
+svy#:#Surveys
 
 label_routine_owner#:#Owner
 label_routine_creation_date#:#Created at
@@ -114,6 +115,7 @@ input_name_routine_type#:#Routine type
 input_name_routine_has_opt_out#:#Opt-out possible
 input_name_routine_elongation#:#Elongation (in days)
 input_name_routine_elongation_cooldown#:#Cooldown (in days)
+input_name_routine_elongation_cooldown_info#:#A cooldown defines the amount of days which need to elapse until an object can be postponed from this routine again. If set to 0, the elongation could be stacked infinitely.
 input_name_routine_elongation_possible#:#Elongation possible
 input_name_routine_assignment_routine#:#Routine
 input_name_routine_assignment_ref_id#:#Object (ref-id)
@@ -196,24 +198,30 @@ course_attribute_value#:#Dynamic Attribute
 group_attribute#:#Group attribute
 group_attribute_value#:#Dynamic Attribute
 
+srag\Plugins\SrLifeCycleManager\Rule\Attribute\Participant\ParticipantAttribute#:#participant attribute
+srag\Plugins\SrLifeCycleManager\Rule\Attribute\Participant\ParticipantAll#:#all object participants
+srag\Plugins\SrLifeCycleManager\Rule\Attribute\Participant\ParticipantMembers#:#object members
+srag\Plugins\SrLifeCycleManager\Rule\Attribute\Participant\ParticipantTutors#:#object tutors
+srag\Plugins\SrLifeCycleManager\Rule\Attribute\Participant\ParticipantAdmins#:#object admins
+
+srag\Plugins\SrLifeCycleManager\Rule\Attribute\Object\ObjectAttribute#:#object attribute
+srag\Plugins\SrLifeCycleManager\Rule\Attribute\Object\ObjectMetadata#:#object metadata
+srag\Plugins\SrLifeCycleManager\Rule\Attribute\Object\ObjectTaxonomy#:#object taxonomy
+srag\Plugins\SrLifeCycleManager\Rule\Attribute\Object\ObjectTitle#:#object title
+srag\Plugins\SrLifeCycleManager\Rule\Attribute\Object\ObjectCreation#:#object creation
+srag\Plugins\SrLifeCycleManager\Rule\Attribute\Object\ObjectAge#:#object age (in days)
+
 srag\Plugins\SrLifeCycleManager\Rule\Attribute\Course\CourseAttribute#:#course attribute
 srag\Plugins\SrLifeCycleManager\Rule\Attribute\Course\CourseActive#:#course active
 srag\Plugins\SrLifeCycleManager\Rule\Attribute\Course\CourseEnd#:#course end
 srag\Plugins\SrLifeCycleManager\Rule\Attribute\Course\CourseStart#:#course start
-srag\Plugins\SrLifeCycleManager\Rule\Attribute\Course\CourseMember#:#course member
-srag\Plugins\SrLifeCycleManager\Rule\Attribute\Course\CourseMetadata#:#course metadata
-srag\Plugins\SrLifeCycleManager\Rule\Attribute\Course\CourseTaxonomy#:#course taxonomy
-srag\Plugins\SrLifeCycleManager\Rule\Attribute\Course\CourseTitle#:#course title
-srag\Plugins\SrLifeCycleManager\Rule\Attribute\Course\CourseCreation#:#course creation
-srag\Plugins\SrLifeCycleManager\Rule\Attribute\Course\CourseAge#:#course age (in days)
 
 srag\Plugins\SrLifeCycleManager\Rule\Attribute\Group\GroupAttribute#:#group attribute
-srag\Plugins\SrLifeCycleManager\Rule\Attribute\Group\GroupTitle#:#group title
-srag\Plugins\SrLifeCycleManager\Rule\Attribute\Group\GroupMember#:#group member
-srag\Plugins\SrLifeCycleManager\Rule\Attribute\Group\GroupMetadata#:#group metadata
-srag\Plugins\SrLifeCycleManager\Rule\Attribute\Group\GroupTaxonomy#:#group taxonomy
-srag\Plugins\SrLifeCycleManager\Rule\Attribute\Group\GroupCreation#:#group creation
-srag\Plugins\SrLifeCycleManager\Rule\Attribute\Group\GroupAge#:#group age (in days)
+
+srag\Plugins\SrLifeCycleManager\Rule\Attribute\Survey\SurveyAttribute#:#survey attribute
+srag\Plugins\SrLifeCycleManager\Rule\Attribute\Survey\SurveyParticipants#:#survey participants
+srag\Plugins\SrLifeCycleManager\Rule\Attribute\Survey\SurveyResults#:#survey results
+srag\Plugins\SrLifeCycleManager\Rule\Attribute\Survey\SurveyQuestions#:#survey questions
 
 srag\Plugins\SrLifeCycleManager\Rule\Attribute\Common\CommonAttribute#:#common attribute
 srag\Plugins\SrLifeCycleManager\Rule\Attribute\Common\CommonBoolean#:#boolean (0 or 1)

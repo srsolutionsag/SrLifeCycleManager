@@ -4,22 +4,17 @@
 
 namespace srag\Plugins\SrLifeCycleManager\Rule\Attribute\Common;
 
+use srag\Plugins\SrLifeCycleManager\Rule\Attribute\IAttribute;
+
 /**
  * @author Thibeau Fuhrer <thibeau@sr.solutions>
  */
 class CommonNull extends CommonAttribute
 {
     /**
-     * @param mixed $value
-     */
-    public function __construct($value)
-    {
-    }
-
-    /**
      * @inheritDoc
      */
-    public function getComparableValueTypes() : array
+    public function getComparableValueTypes(): array
     {
         return [
             self::COMPARABLE_VALUE_TYPE_NULL,

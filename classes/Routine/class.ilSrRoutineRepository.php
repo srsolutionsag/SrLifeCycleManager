@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 /* Copyright (c) 2022 Thibeau Fuhrer <thibeau@sr.solutions> Extended GPL, see docs/LICENSE */
 
@@ -100,7 +102,8 @@ class ilSrRoutineRepository implements IRoutineRepository
         return $this->returnAllQueryResults(
             $this->database->fetchAll(
                 $this->database->query($query)
-            ), $array_data
+            ),
+            $array_data
         );
     }
 
@@ -133,7 +136,8 @@ class ilSrRoutineRepository implements IRoutineRepository
                         $ref_id,
                     ]
                 )
-            ), $array_data
+            ),
+            $array_data
         );
     }
 
@@ -175,7 +179,8 @@ class ilSrRoutineRepository implements IRoutineRepository
                         $ref_id,
                     ]
                 )
-            ), $array_data
+            ),
+            $array_data
         );
     }
 
@@ -255,7 +260,8 @@ class ilSrRoutineRepository implements IRoutineRepository
                         $ref_id,
                     ]
                 )
-            ), $array_data
+            ),
+            $array_data
         );
     }
 
@@ -269,33 +275,34 @@ class ilSrRoutineRepository implements IRoutineRepository
 
         $today = $this->getCurrentDate();
 
-        // if there is no reminder, the deletion day is today.
+        // if there is no last reminder, there is no reminder at all,
+        // therefore the deletion day is today.
         if (null === $last_reminder) {
             return $today;
         }
 
-        // if the last reminder has been sent, the deletion day is today.
+        // if the last reminder has been sent and it is elapsed today,
+        // then the deletion day is today as well.
         if (null !== $previous_reminder &&
+            $previous_reminder->isElapsed($today) &&
             $previous_reminder->getNotificationId() === $last_reminder->getNotificationId()
         ) {
             return $today;
         }
 
-        // if there is no previous reminder, the amount of days before
-        // deletion of the first reminder can be added to today.
-        if (null === $previous_reminder) {
-            $first_reminder = $this->reminder_repository->getFirstByRoutine($routine) ?? $last_reminder;
-
-            return $today->add(
-                new DateInterval("P{$first_reminder->getDaysBeforeDeletion()}D")
+        // if there is a previously sent reminder, the amount of days
+        // before deletion can be added to its notified date.
+        if (null !== $previous_reminder) {
+            return $previous_reminder->getNotifiedDate()->add(
+                new DateInterval("P{$previous_reminder->getDaysBeforeDeletion()}D")
             );
         }
 
-        // if there is a previously sent reminder, the amount of days
-        // before deletion can be added to its notified date.
-        return $previous_reminder->getNotifiedDate()->add(
-            new DateInterval("P{$previous_reminder->getDaysBeforeDeletion()}D")
-        );
+        // if there is no presiously sent reminder, the deletion day
+        // will be today + the amount of days before deletion of the
+        // first reminder.
+        $first_reminder = $this->reminder_repository->getFirstByRoutine($routine) ?? $last_reminder;
+        return $today->add(new DateInterval("P{$first_reminder->getDaysBeforeDeletion()}D"));
     }
 
     /**
@@ -327,7 +334,7 @@ class ilSrRoutineRepository implements IRoutineRepository
                 LEFT OUTER JOIN srlcm_notification AS notification ON notification.routine_id = deletable.routine_id
                 LEFT OUTER JOIN srlcm_whitelist AS whitelist ON whitelist.routine_id = deletable.routine_id
                 LEFT OUTER JOIN srlcm_assigned_routine AS assignment ON assignment.routine_id = deletable.routine_id
-                LEFT OUTER JOIN srlcm_token AS token ON token.routine_id = deletable.routine_id
+                LEFT OUTER JOIN srlcm_tokens AS token ON token.routine_id = deletable.routine_id
             ;
         ";
 

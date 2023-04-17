@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace srag\Plugins\SrLifeCycleManager\Repository;
 
@@ -19,37 +21,9 @@ trait ObjectHelper
     protected $tree;
 
     /**
-     * @inheritDoc
-     */
-    public function getRepositoryObjects(int $ref_id = 1) : Generator
-    {
-        $container_objects = $this->tree->getChildsByTypeFilter(
-            $ref_id,
-            ['crs', 'cat', 'grp', 'fold', 'itgr']
-        );
-
-        if (empty($container_objects)) {
-            return;
-        }
-
-        foreach ($container_objects as $container) {
-            $container_ref_id = (int) $container['ref_id'];
-            if (in_array($container['type'], IRoutine::ROUTINE_TYPES, true)) {
-                try {
-                    yield $container_ref_id => ilObjectFactory::getInstanceByRefId($container_ref_id);
-                } catch (Exception $exception) {
-                    continue;
-                }
-            } else {
-                yield from $this->getRepositoryObjects($container_ref_id);
-            }
-        }
-    }
-
-    /**
      * @inheritdoc
      */
-    public function getParentId(int $ref_id) : int
+    public function getParentId(int $ref_id): int
     {
         // type-cast is necessary, the phpdoc comment is wrong.
         return (int) $this->tree->getParentId($ref_id);
@@ -62,7 +36,7 @@ trait ObjectHelper
      * @param int $ref_id
      * @return array|null
      */
-    protected function getParentIdsRecursively(int $ref_id) : array
+    protected function getParentIdsRecursively(int $ref_id): array
     {
         if (1 === $ref_id) {
             return [];
@@ -102,8 +76,19 @@ trait ObjectHelper
      * @param int $ref_id
      * @return string
      */
-    protected function getParentIdForSqlComparison(int $ref_id) : string
+    protected function getParentIdForSqlComparison(int $ref_id): string
     {
         return (string) ($this->tree->getParentId($ref_id) ?? 0);
+    }
+
+    /**
+     * Returns all repository object types which can hold further
+     * objects (children).
+     *
+     * @return string[]
+     */
+    protected function getContainerObjectTypes(): array
+    {
+        return ['crs', 'cat', 'grp', 'fold', 'itgr'];
     }
 }

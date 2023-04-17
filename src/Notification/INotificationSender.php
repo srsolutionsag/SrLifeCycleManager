@@ -1,7 +1,5 @@
 <?php
 
-/* Copyright (c) 2021 Thibeau Fuhrer <thibeau@sr.solutions> Extended GPL, see docs/LICENSE */
-
 namespace srag\Plugins\SrLifeCycleManager\Notification;
 
 use ilObject;
@@ -12,12 +10,15 @@ use ilObject;
 interface INotificationSender
 {
     /**
-     * Sends the given notification (regardless of the type) to all administrators
-     * of the given object.
+     * Sends the given notification (regardless of the type) to the corresponding
+     * recipients of the given object.
      *
-     * @param INotification $notification
-     * @param ilObject      $object
-     * @return ISentNotification
+     * Note that this method should also mark the notification as sent, hence it
+     * should add an according with: @see INotificationRepository::markObjectAsNotified()
      */
-    public function sendNotification(INotification $notification, ilObject $object) : ISentNotification;
+    public function sendNotification(
+        IRecipientRetriever $recipient_retriever,
+        INotification $notification,
+        ilObject $object
+    ): ISentNotification;
 }

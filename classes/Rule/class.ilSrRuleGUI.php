@@ -1,17 +1,21 @@
-<?php declare(strict_types=1);
+<?php
 
-/* Copyright (c) 2022 Thibeau Fuhrer <thibeau@sr.solutions> Extended GPL, see docs/LICENSE */
+declare(strict_types=1);
 
 use srag\Plugins\SrLifeCycleManager\Form\Rule\RuleFormDirector;
 use srag\Plugins\SrLifeCycleManager\Form\Rule\RuleFormBuilder;
 use srag\Plugins\SrLifeCycleManager\Rule\IRule;
 use srag\Plugins\SrLifeCycleManager\Rule\Attribute\AttributeFactory;
 use srag\Plugins\SrLifeCycleManager\Form\Rule\RuleFormProcessor;
+use srag\Plugins\SrLifeCycleManager\Rule\Attribute\Common\CommonAttributeFactory;
+use srag\Plugins\SrLifeCycleManager\Rule\Attribute\Object\ObjectAttributeFactory;
+use srag\Plugins\SrLifeCycleManager\Rule\Attribute\Survey\SurveyAttributeFactory;
+use srag\Plugins\SrLifeCycleManager\Rule\Attribute\Course\CourseAttributeFactory;
 
 /**
  * This GUI class is responsible for all actions regarding rules.
  *
- * @author Thibeau Fuhrer <thibeau@sr.solutions>
+ * @author       Thibeau Fuhrer <thibeau@sr.solutions>
  *
  * @noinspection AutoloadingIssuesInspection
  */
@@ -21,8 +25,8 @@ class ilSrRuleGUI extends ilSrAbstractGUI
     public const PARAM_RULE_ID = 'rule_id';
 
     // ilSrRuleGUI command/method names:
-    public const CMD_RULE_EDIT   = 'edit';
-    public const CMD_RULE_SAVE   = 'save';
+    public const CMD_RULE_EDIT = 'edit';
+    public const CMD_RULE_SAVE = 'save';
     public const CMD_RULE_DELETE = 'delete';
 
     // ilSrRuleGUI language variables:
@@ -30,6 +34,11 @@ class ilSrRuleGUI extends ilSrAbstractGUI
     protected const MSG_RULE_SUCCESS = 'msg_rule_success';
     protected const MSG_RULE_ERROR = 'msg_rule_error';
     protected const PAGE_TITLE = 'page_title_rules';
+
+    /**
+     * @var AttributeFactory
+     */
+    protected $attribute_factory;
 
     /**
      * @var RuleFormDirector
@@ -55,8 +64,9 @@ class ilSrRuleGUI extends ilSrAbstractGUI
 
         $this->rule =
             $this->getRequestedRule() ??
-            $this->repository->rule()->empty($this->routine)
-        ;
+            $this->repository->rule()->empty($this->routine);
+
+        $this->attribute_factory = ilSrLifeCycleManagerPlugin::getInstance()->getContainer()->getAttributeFactory();
 
         $this->form_director = new RuleFormDirector(
             new RuleFormBuilder(
@@ -64,7 +74,7 @@ class ilSrRuleGUI extends ilSrAbstractGUI
                 $this->ui_factory->input()->container()->form(),
                 $this->ui_factory->input()->field(),
                 $this->refinery,
-                new AttributeFactory(),
+                $this->attribute_factory,
                 $this->rule,
                 $this->getFormAction(
                     self::CMD_RULE_SAVE,
@@ -77,7 +87,7 @@ class ilSrRuleGUI extends ilSrAbstractGUI
     /**
      * @inheritDoc
      */
-    protected function setupGlobalTemplate(ilGlobalTemplateInterface $template, ilSrTabManager $tabs) : void
+    protected function setupGlobalTemplate(ilGlobalTemplateInterface $template, ilSrTabManager $tabs): void
     {
         $template->setTitle($this->translator->txt(self::PAGE_TITLE));
         $tabs
@@ -85,14 +95,13 @@ class ilSrRuleGUI extends ilSrAbstractGUI
             ->addRoutineTab()
             ->addPreviewTab()
             ->deactivateTabs()
-            ->addBackToIndex(self::class)
-        ;
+            ->addBackToIndex(self::class);
     }
 
     /**
      * @inheritDoc
      */
-    protected function canUserExecute(ilSrAccessHandler $access_handler, string $command) : bool
+    protected function canUserExecute(ilSrAccessHandler $access_handler, string $command): bool
     {
         // only routine-managers can execute commands in this gui.
         return $this->access_handler->canManageRoutines();
@@ -101,12 +110,13 @@ class ilSrRuleGUI extends ilSrAbstractGUI
     /**
      * Displays all existing rules that are related to the requested routine.
      */
-    protected function index() : void
+    protected function index(): void
     {
         $table = new ilSrRuleTable(
             $this->ui_factory,
             $this->renderer,
             $this->translator,
+            $this->attribute_factory,
             $this->access_handler,
             $this->ctrl,
             $this,
@@ -126,7 +136,7 @@ class ilSrRuleGUI extends ilSrAbstractGUI
      * with the according data, therefore this method can be used for
      * create AND update commands.
      */
-    protected function edit() : void
+    protected function edit(): void
     {
         $this->render($this->form_director->getFormByRoutine($this->routine));
     }
@@ -140,7 +150,7 @@ class ilSrRuleGUI extends ilSrAbstractGUI
      * If the data is invalid, the processed form including
      * the error messages is shown.
      */
-    protected function save() : void
+    protected function save(): void
     {
         $processor = new RuleFormProcessor(
             $this->repository->rule(),
@@ -161,7 +171,7 @@ class ilSrRuleGUI extends ilSrAbstractGUI
      * Deletes the requested routine and redirects the user back to
      * @see ilSrRoutineGUI::index().
      */
-    protected function delete() : void
+    protected function delete(): void
     {
         if (null !== $this->rule->getRuleId()) {
             $this->sendSuccessMessage(self::MSG_RULE_SUCCESS);
@@ -178,7 +188,7 @@ class ilSrRuleGUI extends ilSrAbstractGUI
      *
      * @return IRule|null
      */
-    protected function getRequestedRule() : ?IRule
+    protected function getRequestedRule(): ?IRule
     {
         $rule_id = $this->getRequestParameter(self::PARAM_RULE_ID);
         if (null !== $rule_id) {

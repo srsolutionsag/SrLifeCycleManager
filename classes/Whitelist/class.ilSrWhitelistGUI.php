@@ -3,7 +3,7 @@
 declare(strict_types=1);
 
 use srag\Plugins\SrLifeCycleManager\Routine\RoutineEvent;
-use srag\Plugins\SrLifeCycleManager\Event\IObserver;
+use srag\Plugins\SrLifeCycleManager\Event\Observer;
 use srag\Plugins\SrLifeCycleManager\Token\IToken;
 use srag\Plugins\SrLifeCycleManager\DateTimeHelper;
 use srag\Plugins\SrLifeCycleManager\Routine\IRoutine;
@@ -37,7 +37,7 @@ class ilSrWhitelistGUI extends ilSrAbstractGUI
     protected const PAGE_TITLE = 'page_title_whitelist';
 
     /**
-     * @var IObserver
+     * @var Observer
      */
     protected $event_observer;
 
@@ -48,7 +48,7 @@ class ilSrWhitelistGUI extends ilSrAbstractGUI
     {
         parent::__construct();
 
-        $this->event_observer = ilSrLifeCycleManagerPlugin::getInstance();
+        $this->event_observer = Observer::getInstance();
     }
 
     /**

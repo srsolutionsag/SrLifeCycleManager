@@ -6,7 +6,7 @@ namespace srag\Plugins\SrLifeCycleManager\Rule\Comparison;
 
 use srag\Plugins\SrLifeCycleManager\Rule\Attribute\IAttribute;
 use srag\Plugins\SrLifeCycleManager\Rule\Attribute\AttributeFactory;
-use srag\Plugins\SrLifeCycleManager\Rule\Requirement\IRequirement;
+use srag\Plugins\SrLifeCycleManager\Rule\Ressource\IRessource;
 use srag\Plugins\SrLifeCycleManager\Rule\IRule;
 
 /**
@@ -29,39 +29,33 @@ abstract class AbstractComparison implements IComparison
      */
     protected $rule;
 
-    /**
-     * @param AttributeFactory $attribute_factory
-     * @param IRequirement     $requirement
-     * @param IRule            $rule
-     */
-    public function __construct(AttributeFactory $attribute_factory, IRequirement $requirement, IRule $rule)
+    public function __construct(AttributeFactory $attribute_factory, IRessource $ressource, IRule $rule)
     {
         $this->rule = $rule;
         $this->lhs_attribute = $attribute_factory->getAttribute(
-            $requirement,
+            $ressource,
             $rule->getLhsType(),
             $rule->getLhsValue()
         );
 
         $this->rhs_attribute = $attribute_factory->getAttribute(
-            $requirement,
+            $ressource,
             $rule->getRhsType(),
             $rule->getRhsValue()
         );
     }
 
-    /**
-     * @return string|null
-     */
     protected function getSimilarValueType() : ?string
     {
-        $similarities = array_values(array_intersect(
-            $this->lhs_attribute->getComparableValueTypes(),
-            $this->rhs_attribute->getComparableValueTypes()
-        ));
+        $similarities = array_values(
+            array_intersect(
+                $this->lhs_attribute->getComparableValueTypes(),
+                $this->rhs_attribute->getComparableValueTypes()
+            )
+        );
 
-        if ($similarities === []
-            || !in_array($similarities[0], IAttribute::COMPARABLE_VALUE_TYPES, true)
+        if (empty($similarities) ||
+            !in_array($similarities[0], IAttribute::COMPARABLE_VALUE_TYPES, true)
         ) {
             return null;
         }

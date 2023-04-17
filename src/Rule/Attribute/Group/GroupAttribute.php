@@ -1,11 +1,10 @@
-<?php declare(strict_types=1);
+<?php
 
-/* Copyright (c) 2022 Thibeau Fuhrer <thibeau@sr.solutions> Extended GPL, see docs/LICENSE */
+declare(strict_types=1);
 
 namespace srag\Plugins\SrLifeCycleManager\Rule\Attribute\Group;
 
 use srag\Plugins\SrLifeCycleManager\Rule\Attribute\IAttribute;
-use ilObjGroup;
 
 /**
  * @author Thibeau Fuhrer <thibeau@sr.solutions>
@@ -13,14 +12,11 @@ use ilObjGroup;
 abstract class GroupAttribute implements IAttribute
 {
     /**
-     * @var ilObjGroup
+     * @var \ilObjGroup
      */
     protected $group;
 
-    /**
-     * @param ilObjGroup $group
-     */
-    public function __construct(ilObjGroup $group)
+    public function __construct(\ilObjGroup $group)
     {
         $this->group = $group;
     }

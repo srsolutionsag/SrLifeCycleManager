@@ -1,6 +1,6 @@
-<?php declare(strict_types=1);
+<?php
 
-/* Copyright (c) 2022 Thibeau Fuhrer <thibeau@sr.solutions> Extended GPL, see docs/LICENSE */
+declare(strict_types=1);
 
 namespace srag\Plugins\SrLifeCycleManager\Whitelist;
 
@@ -165,21 +165,5 @@ class WhitelistEntry implements IWhitelistEntry
     {
         $this->date = $date;
         return $this;
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function isExpired($when): bool
-    {
-        if ($this->is_opt_out) {
-            return false;
-        }
-
-        if (null === $this->expiry_date) {
-            return true;
-        }
-
-        return ($when > $this->expiry_date);
     }
 }

@@ -1,13 +1,13 @@
-<?php declare(strict_types=1);
+<?php
 
-/* Copyright (c) 2022 Thibeau Fuhrer <thibeau@sr.solutions> Extended GPL, see docs/LICENSE */
+declare(strict_types=1);
 
 namespace srag\Plugins\SrLifeCycleManager\Rule\Comparison;
 
 use srag\Plugins\SrLifeCycleManager\Rule\Attribute\AttributeFactory;
-use srag\Plugins\SrLifeCycleManager\Rule\Requirement\IRequirement;
-use srag\Plugins\SrLifeCycleManager\Rule\IRule;
+use srag\Plugins\SrLifeCycleManager\Rule\Ressource\IRessource;
 use srag\Plugins\SrLifeCycleManager\Rule\Attribute\IAttribute;
+use srag\Plugins\SrLifeCycleManager\Rule\IRule;
 
 /**
  * @author Thibeau Fuhrer <thibeau@sr.solutions>
@@ -19,26 +19,20 @@ abstract class AbstractSizeComparison extends AbstractComparison
      */
     protected $strict;
 
-    /**
-     * @param AttributeFactory $attribute_factory
-     * @param IRequirement     $requirement
-     * @param IRule            $rule
-     * @param bool             $strict
-     */
     public function __construct(
         AttributeFactory $attribute_factory,
-        IRequirement $requirement,
+        IRessource $ressource,
         IRule $rule,
         bool $strict
     ) {
-        parent::__construct($attribute_factory, $requirement, $rule);
+        parent::__construct($attribute_factory, $ressource, $rule);
         $this->strict = $strict;
     }
 
     /**
      * @inheritDoc
      */
-    public function isApplicable() : bool
+    public function isApplicable(): bool
     {
         $comparable_type = $this->getSimilarValueType();
 
@@ -68,5 +62,5 @@ abstract class AbstractSizeComparison extends AbstractComparison
      * @param mixed $rhs_value
      * @return bool
      */
-    abstract protected function compare($lhs_value, $rhs_value) : bool;
+    abstract protected function compare($lhs_value, $rhs_value): bool;
 }

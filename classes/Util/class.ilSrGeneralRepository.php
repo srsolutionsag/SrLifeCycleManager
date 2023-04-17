@@ -1,8 +1,11 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 use srag\Plugins\SrLifeCycleManager\Repository\IGeneralRepository;
-use ILIAS\DI\RBACServices;
 use srag\Plugins\SrLifeCycleManager\Repository\ObjectHelper;
+use srag\Plugins\SrLifeCycleManager\Routine\IRoutine;
+use ILIAS\DI\RBACServices;
 
 /**
  * @author       Thibeau Fuhrer <thibeau@sr.solutions>
@@ -11,6 +14,15 @@ use srag\Plugins\SrLifeCycleManager\Repository\ObjectHelper;
 class ilSrGeneralRepository implements IGeneralRepository
 {
     use ObjectHelper;
+
+    /**
+     * This variable holds the merged object types of container
+     * objects and routine-types, due to the recursive object
+     * retrieval: @see self::getRepositoryObjects()
+     *
+     * @var string[]
+     */
+    protected $routine_candidate_and_container_types;
 
     /**
      * @var ilDBInterface
@@ -29,6 +41,13 @@ class ilSrGeneralRepository implements IGeneralRepository
      */
     public function __construct(ilDBInterface $database, ilTree $tree, RBACServices $rbac)
     {
+        $this->routine_candidate_and_container_types = array_unique(
+            array_merge(
+                $this->getContainerObjectTypes(),
+                IRoutine::ROUTINE_TYPES,
+            )
+        );
+
         $this->database = $database;
         $this->tree = $tree;
         $this->rbac = $rbac;
@@ -37,16 +56,50 @@ class ilSrGeneralRepository implements IGeneralRepository
     /**
      * @inheritDoc
      */
-    public function getObjectsByTerm(string $term) : array
+    public function getRepositoryObjects(int $ref_id = 1): Generator
     {
-        $term  = htmlspecialchars($term);
-        $term  = $this->database->quote("%$term%", 'text');
+        $routine_candidates_and_container = $this->tree->getChildsByTypeFilter(
+            $ref_id,
+            $this->routine_candidate_and_container_types
+        );
+
+        if (empty($routine_candidates_and_container)) {
+            return;
+        }
+
+        foreach ($routine_candidates_and_container as $candidate_or_container) {
+            $candidate_or_container_ref_id = (int) $candidate_or_container['ref_id'];
+            if (in_array($candidate_or_container['type'], IRoutine::ROUTINE_TYPES, true)) {
+                try {
+                    yield $candidate_or_container_ref_id => ilObjectFactory::getInstanceByRefId(
+                        $candidate_or_container_ref_id
+                    );
+                } catch (Exception $e) {
+                    continue;
+                }
+            } else {
+                yield from $this->getRepositoryObjects($candidate_or_container_ref_id);
+            }
+        }
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function getObjectsByTypeAndTerm(string $type, string $term): array
+    {
+        $term = htmlspecialchars($term);
+        $type = htmlspecialchars($type);
+        $term = $this->database->quote("%$term%", 'text');
         $query = "
             SELECT ref.ref_id AS value, obj.title AS display, obj.title AS searchby FROM object_data AS obj
 		        LEFT JOIN object_translation AS trans ON trans.obj_id = obj.obj_id
                 LEFT JOIN object_reference AS ref ON ref.obj_id = obj.obj_id
-		        WHERE obj.title LIKE $term 
-		        OR trans.title LIKE $term
+		        WHERE obj.type = '$type'
+		        AND (
+                    obj.title LIKE $term 
+		            OR trans.title LIKE $term		        
+		        )
             ;
 		";
 

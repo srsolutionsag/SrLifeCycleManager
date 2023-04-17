@@ -1,7 +1,5 @@
 <?php
 
-/* Copyright (c) 2021 Thibeau Fuhrer <thibeau@sr.solutions> Extended GPL, see docs/LICENSE */
-
 namespace srag\Plugins\SrLifeCycleManager\Whitelist;
 
 use DateTimeImmutable;
@@ -85,12 +83,4 @@ interface IWhitelistEntry
      * @return IWhitelistEntry
      */
     public function setDate(DateTimeImmutable $date): IWhitelistEntry;
-
-    /**
-     * Returns whether the whitelist-entry is expired on the given date.
-     *
-     * @param DateTimeImmutable|DateTime $when
-     * @return bool
-     */
-    public function isExpired($when): bool;
 }

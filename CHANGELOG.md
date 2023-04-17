@@ -1,5 +1,24 @@
 # SrLifeCycleManager Changelog
 
+## 1.8.0
+
+- Implemented a `IRecipientRetriever` which provides the `INotificationSender` with the corresponding recipients
+  of the object which should be notified.
+- Migrated course and group attributes generic to an ILIAS object to new dynamic attributes. This allows to easily adopt
+  new object-types in the future, since these dynamic attributes are available for ALL objects.
+- Migrated course and group member attributes to new dynamic attributes. This allows to easily adopt new object-types
+  which support memberships in the future.
+- Fixed an issue where only container repository objects were delivered for deletion.
+- Added info-byline for routine-elongation-cooldowns.
+- Improved routine cron-job and it's unit tests.
+- Added new dynamic attributes for surveys:
+  - Survey participants (not the same as memberships)
+  - Survey questions
+  - Survey results
+- Fixed an issue where the assignment-form would provide other ILIAS data as well when searching for objects.
+- Fixed a typo in the delete-clause of a routine which lead to routines not being deleted.
+- Applied PSR-12 to adjusted PHP files.
+
 ## 1.7.9
 
 - Fixed an issue where whitelist requests lead to a database error, due to `date` still being `NOT NULL`.

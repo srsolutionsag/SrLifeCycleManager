@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace srag\Plugins\SrLifeCycleManager\Notification\Confirmation;
 
@@ -6,6 +8,7 @@ use srag\Plugins\SrLifeCycleManager\Notification\INotificationSender;
 use srag\Plugins\SrLifeCycleManager\Routine\RoutineEvent;
 use srag\Plugins\SrLifeCycleManager\Event\IEventListener;
 use srag\Plugins\SrLifeCycleManager\Event\IEvent;
+use srag\Plugins\SrLifeCycleManager\Notification\IRecipientRetriever;
 
 /**
  * @author Thibeau Fuhrer <thibeau@sr.solutions>
@@ -23,21 +26,32 @@ class ConfirmationEventListener implements IEventListener
     protected $notification_sender;
 
     /**
-     * @param IConfirmationRepository $confirmation_repository
-     * @param INotificationSender     $notification_sender
+     * @var IRecipientRetriever
      */
+    protected $recipient_retriever;
+
     public function __construct(
         IConfirmationRepository $confirmation_repository,
-        INotificationSender $notification_sender
+        INotificationSender $notification_sender,
+        IRecipientRetriever $recipient_retriever
     ) {
         $this->confirmation_repository = $confirmation_repository;
         $this->notification_sender = $notification_sender;
+        $this->recipient_retriever = $recipient_retriever;
     }
 
     /**
      * @inheritDoc
      */
-    public function handle(IEvent $event) : void
+    public function getId(): string
+    {
+        return self::class;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function handle(IEvent $event): void
     {
         if (!$event instanceof RoutineEvent) {
             return;
@@ -58,6 +72,6 @@ class ConfirmationEventListener implements IEventListener
             return;
         }
 
-        $this->notification_sender->sendNotification($confirmation, $event->getObject());
+        $this->notification_sender->sendNotification($this->recipient_retriever, $confirmation, $event->getObject());
     }
 }

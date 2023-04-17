@@ -1,6 +1,6 @@
-<?php declare(strict_types=1);
+<?php
 
-/* Copyright (c) 2022 Thibeau Fuhrer <thibeau@sr.solutions> Extended GPL, see docs/LICENSE */
+declare(strict_types=1);
 
 namespace srag\Plugins\SrLifeCycleManager\Form\Routine;
 
@@ -53,31 +53,29 @@ class RoutineFormBuilder extends AbstractFormBuilder
     /**
      * @inheritDoc
      */
-    public function getForm() : UIForm
+    public function getForm(): UIForm
     {
         $inputs[self::INPUT_TITLE] = $this->fields
             ->text($this->translator->txt(self::INPUT_TITLE))
             ->withRequired(true)
             ->withAdditionalTransformation($this->refinery->string()->hasMinLength(1))
-            ->withValue($this->routine->getTitle())
-        ;
+            ->withValue($this->routine->getTitle());
 
         $inputs[self::INPUT_ROUTINE_TYPE] = $this->fields
             ->select($this->translator->txt(self::INPUT_ROUTINE_TYPE), [
                 IRoutine::ROUTINE_TYPE_COURSE => $this->translator->txt(IRoutine::ROUTINE_TYPE_COURSE),
-                IRoutine::ROUTINE_TYPE_GROUP  => $this->translator->txt(IRoutine::ROUTINE_TYPE_GROUP),
+                IRoutine::ROUTINE_TYPE_GROUP => $this->translator->txt(IRoutine::ROUTINE_TYPE_GROUP),
+                IRoutine::ROUTINE_TYPE_SURVEY => $this->translator->txt(IRoutine::ROUTINE_TYPE_SURVEY),
             ])
             ->withRequired(true)
             ->withValue($this->routine->getRoutineType())
             // the routine type cannot be changed after creation, because
             // rules are added considering by this attribute.
-            ->withDisabled(null !== $this->routine->getRoutineId())
-        ;
+            ->withDisabled(null !== $this->routine->getRoutineId());
 
         $inputs[self::INPUT_HAS_OPT_OUT] = $this->fields
             ->checkbox($this->translator->txt(self::INPUT_HAS_OPT_OUT))
-            ->withValue($this->routine->hasOptOut())
-        ;
+            ->withValue($this->routine->hasOptOut());
 
         $inputs[self::INPUT_ELONGATION_POSSIBLE] = $this->fields
             ->optionalGroup(
@@ -91,7 +89,10 @@ class RoutineFormBuilder extends AbstractFormBuilder
                         )
                     ,
                     self::INPUT_ELONGATION_COOLDOWN => $this->fields
-                        ->numeric($this->translator->txt(self::INPUT_ELONGATION_COOLDOWN))
+                        ->numeric(
+                            $this->translator->txt(self::INPUT_ELONGATION_COOLDOWN),
+                            $this->translator->txt(self::INPUT_ELONGATION_COOLDOWN . '_info')
+                        )
                         ->withRequired(true)
                         ->withValue($this->routine->getElongationCooldown())
                         ->withAdditionalTransformation(
@@ -99,8 +100,7 @@ class RoutineFormBuilder extends AbstractFormBuilder
                         )
                 ],
                 $this->translator->txt(self::INPUT_ELONGATION_POSSIBLE)
-            )
-        ;
+            );
 
         // if the routine doesn't support elongations and by default,
         // set the display value of INPUT_ELONGATION_POSSIBLE to null

@@ -18,6 +18,13 @@ This document holds ideas and improvements that could be implemented for this pl
   required in the `IObserver` implementation rather than manually registering them. For this the setup's interface
   collector can be used.
 
-- [ ] Alter the implementation of the token-system, so `IWhitelistRepository::redeem()` doesn't delete a token 
+- [ ] Alter the implementation of the token-system, so `IWhitelistRepository::redeem()` doesn't delete a token
   immediately but marks it as redeemed instead (with an additional column). This way, users can be shown a proper
   error message which clearly states that the token they used has already been redeemed.
+
+- [ ] Improve the `RuleFormBuilder` so common dynamic attributes (`CourseAttribute`, `ParticipantAttribute`) are shown
+  in the same select as the type-specific object attributes are. The translations can then also be edited, to show the
+  name of the object type instead of just "object".
+
+- [ ] Separate representation and logic of attributes into DTOs and e.g. `Resolver`s. This should ease the process of
+  providing attributes in a context, where no `IRessource` is being used.

@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 use srag\Plugins\SrLifeCycleManager\Form\Assignment\ObjectAssignmentFormBuilder;
 use srag\Plugins\SrLifeCycleManager\Form\IFormBuilder;
@@ -10,7 +12,7 @@ use ILIAS\DI\HTTPServices;
  * This class is responsible for assigning multiple or one object to
  * exactly one routine.
  *
- * @author Thibeau Fuhrer <thibeau@sr.solutions>
+ * @author       Thibeau Fuhrer <thibeau@sr.solutions>
  *
  * The GUI must therefore be provided with @see ilSrAbstractGUI::PARAM_ROUTINE_ID,
  * Otherwise the constructor will throw an exception.
@@ -70,7 +72,7 @@ class ilSrObjectAssignmentGUI extends ilSrAbstractAssignmentGUI
     /**
      * @inheritDoc
      */
-    public function getAssignmentRefIdParameter() : string
+    public function getAssignmentRefIdParameter(): string
     {
         return self::PARAM_ASSIGNED_REF_ID;
     }
@@ -78,7 +80,7 @@ class ilSrObjectAssignmentGUI extends ilSrAbstractAssignmentGUI
     /**
      * @inheritDoc
      */
-    protected function index() : void
+    protected function index(): void
     {
         $table = new ilSrObjectAssignmentTable(
             $this->ui_factory,
@@ -102,7 +104,7 @@ class ilSrObjectAssignmentGUI extends ilSrAbstractAssignmentGUI
      *
      * @see AbstractFormBuilder::getTagInputAutoCompleteBinder()
      */
-    protected function searchObjects() : void
+    protected function searchObjects(): void
     {
         $body = $this->request->getQueryParams();
         $term = $body['term'] ?? '';
@@ -110,9 +112,16 @@ class ilSrObjectAssignmentGUI extends ilSrAbstractAssignmentGUI
         $this->http->saveResponse(
             $this->http
                 ->response()
-                ->withBody(Streams::ofString(json_encode(
-                    $this->repository->general()->getObjectsByTerm($term)
-                )))
+                ->withBody(
+                    Streams::ofString(
+                        json_encode(
+                            $this->repository->general()->getObjectsByTypeAndTerm(
+                                $this->routine->getRoutineType(),
+                                $term
+                            )
+                        )
+                    )
+                )
                 ->withHeader('Content-Type', 'application/json; charset=utf-8')
         );
 
@@ -126,7 +135,7 @@ class ilSrObjectAssignmentGUI extends ilSrAbstractAssignmentGUI
      *
      * @return string
      */
-    protected function getAjaxSource() : string
+    protected function getAjaxSource(): string
     {
         return $this->ctrl->getLinkTargetByClass(
             self::class,
@@ -139,7 +148,7 @@ class ilSrObjectAssignmentGUI extends ilSrAbstractAssignmentGUI
     /**
      * @inheritDoc
      */
-    protected function getForm() : Form
+    protected function getForm(): Form
     {
         return $this->form_builder->getForm();
     }

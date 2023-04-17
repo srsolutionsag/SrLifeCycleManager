@@ -87,7 +87,7 @@ class RoutineProvider
      */
     protected function isApplicable(IRoutine $routine, ilObject $object): bool
     {
-        if (!in_array($object->getType(), IRoutine::ROUTINE_TYPES, true)) {
+        if ($routine->getRoutineType() !== $object->getType()) {
             return false;
         }
 

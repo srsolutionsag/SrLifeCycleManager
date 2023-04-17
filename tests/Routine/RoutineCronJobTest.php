@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace srag\Plugins\SrLifeCycleManager\Tests\Routine;
 
@@ -17,7 +19,7 @@ use srag\Plugins\SrLifeCycleManager\Repository\IGeneralRepository;
 use srag\Plugins\SrLifeCycleManager\Whitelist\IWhitelistEntry;
 use srag\Plugins\SrLifeCycleManager\Token\ITokenRepository;
 use srag\Plugins\SrLifeCycleManager\Cron\ResultBuilder;
-use srag\Plugins\SrLifeCycleManager\Event\IObserver;
+use srag\Plugins\SrLifeCycleManager\Event\Observer;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use DateTimeImmutable;
@@ -27,6 +29,10 @@ use ilSrRoutineCronJob;
 use ilCronJobResult;
 use ilObject;
 use ilLogger;
+use srag\Plugins\SrLifeCycleManager\Notification\IRecipientRetriever;
+use srag\Plugins\SrLifeCycleManager\Routine\IRoutineRepository;
+use ilTree;
+use ilDBInterface;
 
 /**
  * @author Thibeau Fuhrer <thibeau@sr.solutions>
@@ -37,6 +43,16 @@ class RoutineCronJobTest extends TestCase
      * @var MockObject|INotificationSender
      */
     protected $notification_sender;
+
+    /**
+     * @var MockObject|IRecipientRetriever
+     */
+    protected $recipient_retriever;
+
+    /**
+     * @var MockObject|IRoutineRepository
+     */
+    protected $routine_repository;
 
     /**
      * @var MockObject|IWhitelistRepository
@@ -74,7 +90,7 @@ class RoutineCronJobTest extends TestCase
     protected $routine;
 
     /**
-     * @var MockObject|IObserver
+     * @var MockObject|Observer
      */
     protected $observer;
 
@@ -84,12 +100,14 @@ class RoutineCronJobTest extends TestCase
     protected function setUp(): void
     {
         $this->notification_sender = $this->createMock(INotificationSender::class);
+        $this->recipient_retriever = $this->createMock(IRecipientRetriever::class);
         $this->whitelist_repository = $this->createMock(IWhitelistRepository::class);
         $this->token_repository = $this->createMock(ITokenRepository::class);
         $this->reminder_repository = $this->createMock(IReminderRepository::class);
         $this->general_repository = $this->createMock(IGeneralRepository::class);
+        $this->routine_repository = $this->getRoutineRepository();
 
-        $this->observer = $this->createMock(IObserver::class);
+        $this->observer = $this->createMock(Observer::class);
         $this->observer->method('broadcast')->willReturnSelf();
 
         $this->routine = $this->createMock(IRoutine::class);
@@ -172,7 +190,7 @@ class RoutineCronJobTest extends TestCase
 
         // assertion-logic will be handled in this callback.
         $this->notification_sender->method('sendNotification')->willReturnCallback(
-            function ($reminder, $object) use (&$next_reminder, &$test_object) {
+            function ($retriever, $reminder, $object) use (&$next_reminder, &$test_object) {
                 $this->assertInstanceOf(IReminder::class, $reminder);
                 $this->assertInstanceOf(ilObject::class, $object);
                 $this->assertEquals($next_reminder->getNotificationId(), $reminder->getNotificationId());
@@ -284,15 +302,15 @@ class RoutineCronJobTest extends TestCase
         $previous_reminder = null;
         $next_reminder = $reminder_1;
 
-        $this->reminder_repository->method('getByRoutine')->willReturn([$reminder_1]);
+        $this->reminder_repository->method('getFirstByRoutine')->willReturn($reminder_1);
         $this->reminder_repository->method('getLastByRoutine')->willReturn($reminder_1);
         $this->reminder_repository->method('getRecentlySent')->willReturnCallback(
             static function () use (&$previous_reminder) {
                 return $previous_reminder;
             }
         );
-        $this->reminder_repository->method('getNextReminder')->willReturnCallback(
-            static function () use (&$next_reminder) {
+        $this->reminder_repository->method('getWithDaysBeforeDeletion')->willReturnCallback(
+            static function ($routine_id, $days_before_deletion) use (&$next_reminder) {
                 return $next_reminder;
             }
         );
@@ -321,9 +339,11 @@ class RoutineCronJobTest extends TestCase
         // update the reminder variables to emulate that reminder_1 has been sent on the correct date.
         $reminder_1->method('getNotifiedDate')->willReturn($date_when_reminder_1_should_be_sent);
         $reminder_1->method('isElapsed')->willReturnCallback(
-            // emulates the same logic as to the original method.
+        // emulates the same logic as to the original method.
             static function ($when) use ($reminder_1, $date_when_reminder_1_should_be_sent) {
-                $elapsed_date = $date_when_reminder_1_should_be_sent->add(new DateInterval("P{$reminder_1->getDaysBeforeDeletion()}D"));
+                $elapsed_date = $date_when_reminder_1_should_be_sent->add(
+                    new DateInterval("P{$reminder_1->getDaysBeforeDeletion()}D")
+                );
 
                 return ($when > $elapsed_date);
             }
@@ -353,10 +373,11 @@ class RoutineCronJobTest extends TestCase
      *      (b) there is no whitelist entry and no reminder.
      *      (c) there is no whitelist entry all reminders have been sent.
      */
-    public function testDeletionOfObjects() : void
+    public function testDeletionOfObjects(): void
     {
         $object_1 = $this->getObjectMock(1);
         $object_2 = $this->getObjectMock(2);
+        $today = new DateTimeImmutable();
 
         // expect a total of 6 calls, two deletions for each scenario.
         $this->general_repository
@@ -374,12 +395,12 @@ class RoutineCronJobTest extends TestCase
         // test scenario (a):
 
         $whitelist_entry = $this->createMock(IWhitelistEntry::class);
-        $whitelist_entry->method('isExpired')->willReturn(true);
+        $whitelist_entry->method('getExpiryDate')->willReturn($today);
 
         $this->whitelist_repository->method('get')->willReturn($whitelist_entry);
 
         $provider = $this->getDeletableObjectsProvider([$object_1, $object_2]);
-        $cron_job = $this->getCronJob(new DateTimeImmutable(), $provider);
+        $cron_job = $this->getCronJob($today, $provider);
         $cron_job->run();
 
         // test scenario (b):
@@ -392,7 +413,7 @@ class RoutineCronJobTest extends TestCase
         );
 
         $provider->rewind();
-        $cron_job = $this->getCronJob(new DateTimeImmutable(), $provider);
+        $cron_job = $this->getCronJob($today, $provider);
         $cron_job->run();
 
         // test scenario (c):
@@ -403,8 +424,101 @@ class RoutineCronJobTest extends TestCase
         $this->reminder_repository->method('getRecentlySent')->willReturn($last_reminder);
 
         $provider->rewind();
-        $cron_job = $this->getCronJob(new DateTimeImmutable(), $provider);
+        $cron_job = $this->getCronJob($today, $provider);
         $cron_job->run();
+    }
+
+    /**
+     *
+     *
+     * chronological order of events:
+     *      - reminder:     10 days before deletion     day 1
+     *      - whitelist:    for 10 days after 5 days    day 5
+     *      - whitelist:    for 10 days after 6 days    day 6
+     *      - reminder:     10 days before deletion     day 20
+     *      - deletion:     after a total of 30 days    day 30
+     */
+    public function testDailyCronJobRunBehaviour(): void
+    {
+        $days_before_deletion = 10;
+
+        $latest_reminder = null;
+        $whitelist_entry = null;
+
+        $reminder = $this->getReminderMock(1, $days_before_deletion);
+        $object = $this->getObjectMock(1);
+
+        $this->whitelist_repository->method('get')->willReturnCallback(
+            static function () use (&$whitelist_entry) {
+                return $whitelist_entry;
+            }
+        );
+
+        $this->reminder_repository->method('getLastByRoutine')->willReturn($reminder);
+        $this->reminder_repository->method('getRecentlySent')->willReturnCallback(
+            static function () use (&$latest_reminder) {
+                return $latest_reminder;
+            }
+        );
+
+        $this->reminder_repository->method('getWithDaysBeforeDeletion')->willReturnCallback(
+            static function ($_, $with_days_before_deletion) use ($days_before_deletion, $reminder) {
+                if ($with_days_before_deletion === $days_before_deletion) {
+                    return $reminder;
+                }
+                return null;
+            }
+        );
+
+        $current_date = DateTimeImmutable::createFromFormat('m.d.Y', '01.01.2000');
+
+        $sent_reminders = [];
+        $this->notification_sender->method('sendNotification')->willReturnCallback(
+            function ($_, $reminder_to_send) use (&$sent_reminders, &$latest_reminder, &$current_date) {
+                $sent_reminders[] = $reminder_to_send;
+                $latest_reminder = $reminder_to_send;
+                $latest_reminder->method('getNotifiedDate')->willReturn($current_date);
+
+                return $this->createMock(ISentNotification::class);
+            }
+        );
+
+        $deleted_objects = [];
+        $this->general_repository->method('deleteObject')->willReturnCallback(
+            static function ($object) use (&$deleted_objects) {
+                $deleted_objects[] = $object;
+                return true;
+            }
+        );
+
+        $provider = $this->getDeletableObjectsProvider([$object]);
+
+        for ($day = 1, $last_day = 31; $day <= $last_day; $day++) {
+            $provider->rewind();
+            $cron_job = $this->getCronJob($current_date, $provider);
+            $cron_job->run();
+
+            if (5 === $day) {
+                $whitelist_entry = $this->createMock(IWhitelistEntry::class);
+                $whitelist_entry->method('getExpiryDate')->willReturn(
+                    $this->routine_repository->getDeletionDate(
+                        $this->routine,
+                        $object->getRefId()
+                    )->add(new DateInterval("P10D"))
+                );
+            }
+
+            if (6 === $day) {
+                $next_expiry_date = $whitelist_entry->getExpiryDate()->add(new DateInterval("P10D"));
+                $whitelist_entry = $this->createMock(IWhitelistEntry::class);
+                $whitelist_entry->method('getExpiryDate')->willReturn($next_expiry_date);
+            }
+
+            $current_date = $current_date->add(new DateInterval("P1D"));
+        }
+
+        $this->assertCount(2, $sent_reminders);
+        $this->assertCount(1, $deleted_objects);
     }
 
     /**
@@ -414,9 +528,10 @@ class RoutineCronJobTest extends TestCase
     public function testRemovalOfInternalData(): void
     {
         $object = $this->getObjectMock(1);
+        $today = new DateTimeImmutable();
 
         $whitelist_entry = $this->createMock(IWhitelistEntry::class);
-        $whitelist_entry->method('isExpired')->willReturn(true);
+        $whitelist_entry->method('getExpiryDate')->willReturn($today);
 
         $this->whitelist_repository->method('get')->willReturn($whitelist_entry);
 
@@ -435,11 +550,7 @@ class RoutineCronJobTest extends TestCase
             ->method('delete')
             ->with($object->getRefId());
 
-        $cron_job = $this->getCronJob(
-            new DateTimeImmutable(),
-            $this->getDeletableObjectsProvider([$object])
-        );
-
+        $cron_job = $this->getCronJob($today, $this->getDeletableObjectsProvider([$object]));
         $cron_job->run();
     }
 
@@ -450,9 +561,10 @@ class RoutineCronJobTest extends TestCase
     public function testBroadcastOfEvents(): void
     {
         $object = $this->getObjectMock(1);
+        $today = new DateTimeImmutable();
 
         $whitelist_entry = $this->createMock(IWhitelistEntry::class);
-        $whitelist_entry->method('isExpired')->willReturn(true);
+        $whitelist_entry->method('getExpiryDate')->willReturn($today);
 
         $this->whitelist_repository->method('get')->willReturn($whitelist_entry);
 
@@ -465,11 +577,7 @@ class RoutineCronJobTest extends TestCase
             }
         );
 
-        $cron_job = $this->getCronJob(
-            new DateTimeImmutable(),
-            $this->getDeletableObjectsProvider([$object])
-        );
-
+        $cron_job = $this->getCronJob($today, $this->getDeletableObjectsProvider([$object]));
         $cron_job->run();
     }
 
@@ -481,12 +589,17 @@ class RoutineCronJobTest extends TestCase
     protected function getCronJob(
         DateTimeImmutable $execution_date,
         DeletableObjectProvider $provider
-    ): ilSrRoutineCronJob {
-        return new class(
+    ): ilSrRoutineCronJob
+    {
+        $this->routine_repository->setExecutionDate($execution_date);
+
+        return new class (
             $this->notification_sender,
+            $this->recipient_retriever,
             $provider,
             $this->createMock(ResultBuilder::class),
             $this->observer,
+            $this->routine_repository,
             $this->reminder_repository,
             $this->token_repository,
             $this->whitelist_repository,
@@ -500,9 +613,11 @@ class RoutineCronJobTest extends TestCase
 
             public function __construct(
                 INotificationSender $notification_sender,
+                IRecipientRetriever $recipient_retriever,
                 DeletableObjectProvider $object_provider,
                 ResultBuilder $result_builder,
-                IObserver $event_observer,
+                Observer $event_observer,
+                IRoutineRepository $routine_repository,
                 IReminderRepository $notification_repository,
                 ITokenRepository $token_repository,
                 IWhitelistRepository $whitelist_repository,
@@ -512,8 +627,17 @@ class RoutineCronJobTest extends TestCase
                 ilCronJobResult $result
             ) {
                 parent::__construct(
-                    $notification_sender, $object_provider, $result_builder, $event_observer, $notification_repository,
-                    $token_repository, $whitelist_repository, $general_repository, $logger
+                    $notification_sender,
+                    $recipient_retriever,
+                    $object_provider,
+                    $result_builder,
+                    $event_observer,
+                    $routine_repository,
+                    $notification_repository,
+                    $token_repository,
+                    $whitelist_repository,
+                    $general_repository,
+                    $logger
                 );
                 $this->current_date = $execution_date;
                 $this->result = $result;
@@ -562,7 +686,7 @@ class RoutineCronJobTest extends TestCase
             $deletable_objects[] = $deletable_object;
         }
 
-        return new class($deletable_objects) extends DeletableObjectProvider {
+        return new class ($deletable_objects) extends DeletableObjectProvider {
             /**
              * @param DeletableObject[] $objects
              */
@@ -593,6 +717,45 @@ class RoutineCronJobTest extends TestCase
             public function rewind(): void
             {
                 reset($this->objects);
+            }
+        };
+    }
+
+    /**
+     * @param DateTimeImmutable $current_date
+     * @return IRoutineRepository
+     */
+    protected function getRoutineRepository(): IRoutineRepository
+    {
+        return new class (
+            $this->reminder_repository,
+            $this->whitelist_repository,
+            $this->createMock(ilDBInterface::class),
+            $this->createMock(ilTree::class)
+        ) extends \ilSrRoutineRepository {
+            /**
+             * @var DateTimeImmutable
+             */
+            protected $current_date;
+
+            /**
+             * This method can be used to set adjust the current date on the same
+             * instance.
+             */
+            public function setExecutionDate(DateTimeImmutable $current_date): void
+            {
+                $this->current_date = $current_date;
+            }
+
+            /**
+             * Since the cron-job must be run on different dates we have to override
+             * the function used to get the current date.
+             *
+             * @inheritDoc
+             */
+            protected function getCurrentDate(): DateTimeImmutable
+            {
+                return $this->current_date;
             }
         };
     }

@@ -619,3 +619,107 @@ if ($ilDB->tableColumnExists($table_name, $column_name)) {
     ]);
 }
 ?>
+<#25>
+<?php
+/** @var $ilDB ilDBInterface */
+$new_participant_attribute_value = 'srag\Plugins\SrLifeCycleManager\Rule\Attribute\Participant\ParticipantAll';
+
+$legacy_course_value_mapping = [
+    'srag\Plugins\SrLifeCycleManager\Rule\Attribute\Course\CourseMember' => $new_participant_attribute_value,
+];
+
+$legacy_group_value_mapping = [
+    'srag\Plugins\SrLifeCycleManager\Rule\Attribute\Group\GroupMember' => $new_participant_attribute_value,
+];
+
+$new_attribute_type = 'srag\Plugins\SrLifeCycleManager\Rule\Attribute\Participant\ParticipantAttribute';
+
+$value_migration = new srag\Plugins\SrLifeCycleManager\Rule\Attribute\Migration\ValueMigration(
+    $ilDB, 'srlcm_rule', 'lhs_value', 'rhs_value'
+);
+
+$type_migration = new srag\Plugins\SrLifeCycleManager\Rule\Attribute\Migration\TypeMigration(
+    $ilDB,
+    'srlcm_rule',
+    'lhs_value',
+    'lhs_type',
+    'rhs_value',
+    'rhs_type'
+);
+
+foreach ($legacy_course_value_mapping as $legacy_value => $new_value) {
+    $value_migration->migrateAll($legacy_value, $new_value);
+    $type_migration->migrateForValue(
+        'srag\Plugins\SrLifeCycleManager\Rule\Attribute\Course\CourseAttribute',
+        $new_attribute_type,
+        $new_value
+    );
+}
+
+foreach ($legacy_group_value_mapping as $legacy_value => $new_value) {
+    $value_migration->migrateAll($legacy_value, $new_value);
+    $type_migration->migrateForValue(
+        'srag\Plugins\SrLifeCycleManager\Rule\Attribute\Group\GroupAttribute',
+        $new_attribute_type,
+        $new_value
+    );
+}
+?>
+<#26>
+<?php
+/** @var $ilDB ilDBInterface */
+$new_age_attribute_value = 'srag\Plugins\SrLifeCycleManager\Rule\Attribute\Object\ObjectAge';
+$new_creation_attribute_value = 'srag\Plugins\SrLifeCycleManager\Rule\Attribute\Object\ObjectCreation';
+$new_title_attribute_value = 'srag\Plugins\SrLifeCycleManager\Rule\Attribute\Object\ObjectTitle';
+$new_metadata_attribute_value = 'srag\Plugins\SrLifeCycleManager\Rule\Attribute\Object\ObjectMetadata';
+$new_taxonomy_attribute_value = 'srag\Plugins\SrLifeCycleManager\Rule\Attribute\Object\ObjectTaxonomy';
+
+$legacy_course_value_mapping = [
+    'srag\Plugins\SrLifeCycleManager\Rule\Attribute\Course\CourseAge' => $new_age_attribute_value,
+    'srag\Plugins\SrLifeCycleManager\Rule\Attribute\Course\CourseCreation' => $new_creation_attribute_value,
+    'srag\Plugins\SrLifeCycleManager\Rule\Attribute\Course\CourseTitle' => $new_title_attribute_value,
+    'srag\Plugins\SrLifeCycleManager\Rule\Attribute\Course\CourseMetadata' => $new_metadata_attribute_value,
+    'srag\Plugins\SrLifeCycleManager\Rule\Attribute\Course\CourseTaxonomy' => $new_taxonomy_attribute_value,
+];
+
+$legacy_group_value_mapping = [
+    'srag\Plugins\SrLifeCycleManager\Rule\Attribute\Group\GroupAge' => $new_age_attribute_value,
+    'srag\Plugins\SrLifeCycleManager\Rule\Attribute\Group\GroupCreation' => $new_creation_attribute_value,
+    'srag\Plugins\SrLifeCycleManager\Rule\Attribute\Group\GroupTitle' => $new_title_attribute_value,
+    'srag\Plugins\SrLifeCycleManager\Rule\Attribute\Group\GroupMetadata' => $new_metadata_attribute_value,
+    'srag\Plugins\SrLifeCycleManager\Rule\Attribute\Group\GroupTaxonomy' => $new_taxonomy_attribute_value,
+];
+
+$new_attribute_type = 'srag\Plugins\SrLifeCycleManager\Rule\Attribute\Object\ObjectAttribute';
+
+$value_migration = new srag\Plugins\SrLifeCycleManager\Rule\Attribute\Migration\ValueMigration(
+    $ilDB, 'srlcm_rule', 'lhs_value', 'rhs_value'
+);
+
+$type_migration = new srag\Plugins\SrLifeCycleManager\Rule\Attribute\Migration\TypeMigration(
+    $ilDB,
+    'srlcm_rule',
+    'lhs_value',
+    'lhs_type',
+    'rhs_value',
+    'rhs_type'
+);
+
+foreach ($legacy_course_value_mapping as $legacy_value => $new_value) {
+    $value_migration->migrateAll($legacy_value, $new_value);
+    $type_migration->migrateForValue(
+        'srag\Plugins\SrLifeCycleManager\Rule\Attribute\Course\CourseAttribute',
+        $new_attribute_type,
+        $new_value
+    );
+}
+
+foreach ($legacy_group_value_mapping as $legacy_value => $new_value) {
+    $value_migration->migrateAll($legacy_value, $new_value);
+    $type_migration->migrateForValue(
+        'srag\Plugins\SrLifeCycleManager\Rule\Attribute\Group\GroupAttribute',
+        $new_attribute_type,
+        $new_value
+    );
+}
+?>
