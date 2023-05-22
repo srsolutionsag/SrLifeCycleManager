@@ -70,6 +70,11 @@ preview_ref_id#:#Ref-ID
 preview_type#:#Typ
 preview_routines#:#Angewendete Routines
 preview_link_goto_object#:#In Magazin öffnen
+choose_preview_mode#:#Vorschau-Modus wählen
+preview_mode_description#:#Wählen Sie einen Modus um die Vorschau zu erstellen. Bei grossen Installation kann die Erstellung der Vorschau lange dauern, in diesem Fall eignet sich der "Background-Task" Modus. In diesem Fall wird eine Datei mit dem Report erstellt und nach Abschluss im Notification-Center oben rechts zum Download angeboten. Der Modus "Asynchron" ist für kleine Installationen geeignet, da die Vorschau direkt im Browser erstellt wird.
+async_preview#:#Asynchron
+bgt_preview#:#Background-Task
+background_task_started#:#Background-Task gestartet
 
 cnf_role_manage_routines#:#Routinen verwalten
 cnf_role_manage_assignments#:#Zuweisungen verwalten

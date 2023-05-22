@@ -61,6 +61,7 @@ page_title_routine_assignment#:#Life-Cycle Routine Assignments
 page_title_notifications#:#Life-Cycle Notifications
 page_title_whitelist#:#Life-Cycle Whitelist
 page_title_routine_preview#:#Life-Cycle Preview
+background_task_started#:#Background-Task started
 
 tab_config_index#:#Configuration
 tab_routine_index#:#Routines
@@ -70,6 +71,10 @@ preview_ref_id#:#Ref-ID
 preview_type#:#Type
 preview_routines#:#Affected by Routines
 preview_link_goto_object#:#Open in Repository
+choose_preview_mode#:#Select preview mode
+preview_mode_description#:#Choose a mode to create the preview. With large installations, the creation of the preview can take a long time, in which case the "Background-Task" mode is suitable. In this case, a file with the report is created and offered for download in the Notification-Center at the top right after completion. The "Asynchronous" mode is suitable for small installations, as the preview is created directly in the browser.
+async_preview#:#Asynchronous
+bgt_preview#:#Background-Task
 
 cnf_role_manage_routines#:#Manage routines
 cnf_role_manage_assignments#:#Manage assignments
