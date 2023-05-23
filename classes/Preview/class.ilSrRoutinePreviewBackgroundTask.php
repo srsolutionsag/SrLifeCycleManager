@@ -18,17 +18,21 @@ class ilSrRoutinePreviewBackgroundTask extends AbstractJob
 {
     public function run(array $input, Observer $observer)
     {
+        $observer->notifyPercentage($this, 10);
         $path = new StringValue();
         
         $preview_builder = new ilSrRoutinePreviewAsFile(
             ilSrLifeCycleManagerPlugin::getInstance()->getContainer()->getDeletableObjectProvider()
         );
         
+        $observer->notifyPercentage($this, 30);
         $content = $preview_builder->getTxtFileContent();
         
+        $observer->notifyPercentage($this, 40);
         $tmpdir = ilUtil::ilTempnam();
+        $observer->notifyPercentage($this, 50);
         file_put_contents($tmpdir, $content);
-        
+        $observer->notifyPercentage($this, 60);
         $path->setValue($tmpdir);
         
         return $path;
