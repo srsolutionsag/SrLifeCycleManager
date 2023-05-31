@@ -2,12 +2,14 @@
 
 declare(strict_types=1);
 
-use srag\Plugins\SrLifeCycleManager\Routine\Provider\DeletableObjectProvider;
+use srag\Plugins\SrLifeCycleManager\Object\AffectedObjectProvider;
 use srag\Plugins\SrLifeCycleManager\Notification\INotificationSender;
 use srag\Plugins\SrLifeCycleManager\Repository\RepositoryFactory;
 use srag\Plugins\SrLifeCycleManager\Cron\ResultBuilder;
-use srag\Plugins\SrLifeCycleManager\Event\Observer;
 use srag\Plugins\SrLifeCycleManager\Notification\IRecipientRetriever;
+use srag\Plugins\SrLifeCycleManager\Event\EventSubject;
+use srag\Plugins\SrLifeCycleManager\Cron\INotifier;
+use srag\Plugins\SrLifeCycleManager\ITranslator;
 
 /**
  * @author       Thibeau Fuhrer <thibeau@sr.solutions>
@@ -36,14 +38,14 @@ class ilSrRoutineJobFactory
     protected $repository;
 
     /**
-     * @var Observer
+     * @var EventSubject
      */
-    protected $event_observer;
+    protected $event_subject;
 
     /**
-     * @var DeletableObjectProvider
+     * @var AffectedObjectProvider
      */
-    protected $objects_provider;
+    protected $affected_objects_provider;
 
     /**
      * @var ilLogger
@@ -53,25 +55,21 @@ class ilSrRoutineJobFactory
     public function __construct(
         INotificationSender $notification_sender,
         IRecipientRetriever $recipient_retriever,
-        ResultBuilder $result_builder,
         RepositoryFactory $repositories,
-        Observer $event_observer,
-        DeletableObjectProvider $objects_provider,
+        AffectedObjectProvider $affected_object_provider,
+        EventSubject $event_subject,
+        ResultBuilder $result_builder,
         ilLogger $logger
     ) {
         $this->notification_sender = $notification_sender;
         $this->recipient_retriever = $recipient_retriever;
         $this->result_builder = $result_builder;
         $this->repository = $repositories;
-        $this->event_observer = $event_observer;
-        $this->objects_provider = $objects_provider;
+        $this->event_subject = $event_subject;
+        $this->affected_objects_provider = $affected_object_provider;
         $this->logger = $logger;
     }
 
-    /**
-     * @param string $job_id
-     * @return ilCronJob
-     */
     public function getJob(string $job_id): ilCronJob
     {
         switch ($job_id) {
@@ -86,43 +84,42 @@ class ilSrRoutineJobFactory
         }
     }
 
-    /**
-     * @return ilSrRoutineCronJob
-     */
     public function standard(): ilSrRoutineCronJob
     {
         return new ilSrRoutineCronJob(
             $this->notification_sender,
             $this->recipient_retriever,
-            $this->objects_provider,
-            $this->result_builder,
-            $this->event_observer,
             $this->repository->routine(),
             $this->repository->reminder(),
             $this->repository->token(),
             $this->repository->whitelist(),
             $this->repository->general(),
-            $this->logger
+            $this->affected_objects_provider,
+            $this->event_subject,
+            $this->result_builder,
+            $this->getNotifier(ilSrRoutineCronJob::class)
         );
     }
 
-    /**
-     * @return ilSrDryRoutineCronJob
-     */
     public function dryRun(): ilSrDryRoutineCronJob
     {
         return new ilSrDryRoutineCronJob(
             $this->notification_sender,
             $this->recipient_retriever,
-            $this->objects_provider,
-            $this->result_builder,
-            $this->event_observer,
             $this->repository->routine(),
             $this->repository->reminder(),
             $this->repository->token(),
             $this->repository->whitelist(),
             $this->repository->general(),
-            $this->logger
+            $this->affected_objects_provider,
+            $this->event_subject,
+            $this->result_builder,
+            $this->getNotifier(ilSrDryRoutineCronJob::class)
         );
+    }
+
+    protected function getNotifier(string $job_id): INotifier
+    {
+        return new ilSrCronNotifier($this->logger, $job_id);
     }
 }

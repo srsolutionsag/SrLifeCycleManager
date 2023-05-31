@@ -5,15 +5,15 @@ declare(strict_types=1);
 namespace srag\Plugins\SrLifeCycleManager\Notification\Confirmation;
 
 use srag\Plugins\SrLifeCycleManager\Notification\INotificationSender;
-use srag\Plugins\SrLifeCycleManager\Routine\RoutineEvent;
-use srag\Plugins\SrLifeCycleManager\Event\IEventListener;
-use srag\Plugins\SrLifeCycleManager\Event\IEvent;
 use srag\Plugins\SrLifeCycleManager\Notification\IRecipientRetriever;
+use srag\Plugins\SrLifeCycleManager\Routine\IRoutineEvent;
+use srag\Plugins\SrLifeCycleManager\Event\IEventObserver;
+use srag\Plugins\SrLifeCycleManager\Object\AffectedObject;
 
 /**
  * @author Thibeau Fuhrer <thibeau@sr.solutions>
  */
-class ConfirmationEventListener implements IEventListener
+class ConfirmationEventObserver implements IEventObserver
 {
     /**
      * @var IConfirmationRepository
@@ -51,27 +51,39 @@ class ConfirmationEventListener implements IEventListener
     /**
      * @inheritDoc
      */
-    public function handle(IEvent $event): void
+    public function update(string $event, $data = null): void
     {
-        if (!$event instanceof RoutineEvent) {
+        if (!$data instanceof AffectedObject) {
             return;
         }
 
         $confirmation = $this->confirmation_repository->getByRoutineAndEvent(
-            $event->getRoutine()->getRoutineId(),
-            $event->getName()
+            $data->getRoutine()->getRoutineId(),
+            $event
         );
 
         if (null === $confirmation) {
             return;
         }
 
-        if (!$event->isRepeatable() &&
-            $this->confirmation_repository->hasObjectBeenNotified($confirmation, $event->getObject()->getRefId())
+        if (!$this->isEventRepeatable($event) &&
+            $this->confirmation_repository->hasObjectBeenNotified($confirmation, $data->getObject()->getRefId())
         ) {
             return;
         }
 
-        $this->notification_sender->sendNotification($this->recipient_retriever, $confirmation, $event->getObject());
+        $this->notification_sender->sendNotification($this->recipient_retriever, $confirmation, $data->getObject());
+    }
+
+    /**
+     * This observer must know about repeating events, because it should only
+     * notify a user once for any other event.
+     */
+    protected function isEventRepeatable(string $event): bool
+    {
+        return (
+            IRoutineEvent::EVENT_POSTPONE === $event ||
+            IRoutineEvent::EVENT_OPT_OUT === $event
+        );
     }
 }

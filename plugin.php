@@ -1,8 +1,8 @@
 <?php
 
-$id                 = "srlcm";
-$version            = "1.8.0";
-$ilias_min_version  = "6.000";
+$id = "srlcm";
+$version = "1.8.1";
+$ilias_min_version = "6.000";
 $ilias_max_version  = "7.999";
 
 $responsible        = "sr solutions ag";

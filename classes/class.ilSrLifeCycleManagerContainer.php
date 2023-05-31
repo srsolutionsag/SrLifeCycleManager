@@ -2,24 +2,25 @@
 
 declare(strict_types=1);
 
-use srag\Plugins\SrLifeCycleManager\Notification\Confirmation\ConfirmationEventListener;
+use srag\Plugins\SrLifeCycleManager\Notification\Confirmation\ConfirmationEventObserver;
 use srag\Plugins\SrLifeCycleManager\Notification\INotificationSender;
+use srag\Plugins\SrLifeCycleManager\Notification\IRecipientRetriever;
+use srag\Plugins\SrLifeCycleManager\Rule\Attribute\Participant\ParticipantAttributeFactory;
 use srag\Plugins\SrLifeCycleManager\Rule\Attribute\Common\CommonAttributeFactory;
 use srag\Plugins\SrLifeCycleManager\Rule\Attribute\Object\ObjectAttributeFactory;
 use srag\Plugins\SrLifeCycleManager\Rule\Attribute\Survey\SurveyAttributeFactory;
 use srag\Plugins\SrLifeCycleManager\Rule\Attribute\Course\CourseAttributeFactory;
 use srag\Plugins\SrLifeCycleManager\Rule\Attribute\AttributeFactory;
-use srag\Plugins\SrLifeCycleManager\Routine\Provider\DeletableObjectProvider;
-use srag\Plugins\SrLifeCycleManager\Routine\Provider\RoutineProvider;
 use srag\Plugins\SrLifeCycleManager\Rule\Comparison\ComparisonFactory;
 use srag\Plugins\SrLifeCycleManager\Rule\Ressource\RessourceFactory;
+use srag\Plugins\SrLifeCycleManager\Routine\AffectingRoutineProvider;
+use srag\Plugins\SrLifeCycleManager\Routine\ApplicabilityChecker;
+use srag\Plugins\SrLifeCycleManager\Object\AffectedObjectProvider;
 use srag\Plugins\SrLifeCycleManager\Repository\RepositoryFactory;
 use srag\Plugins\SrLifeCycleManager\Cron\ResultBuilder;
-use srag\Plugins\SrLifeCycleManager\Event\Observer;
+use srag\Plugins\SrLifeCycleManager\Event\EventSubject;
 use srag\Plugins\SrLifeCycleManager\ITranslator;
 use ILIAS\DI\Container;
-use srag\Plugins\SrLifeCycleManager\Notification\IRecipientRetriever;
-use srag\Plugins\SrLifeCycleManager\Rule\Attribute\Participant\ParticipantAttributeFactory;
 
 /**
  * @author       Thibeau Fuhrer <thibeau@sr.solutions>
@@ -43,14 +44,14 @@ class ilSrLifeCycleManagerContainer
     protected $repository_factory;
 
     /**
-     * @var DeletableObjectProvider
+     * @var AffectedObjectProvider
      */
-    protected $deletable_object_provider;
+    protected $affected_object_provider;
 
     /**
-     * @var RoutineProvider
+     * @var AffectingRoutineProvider
      */
-    protected $routine_provider;
+    protected $affecting_routine_provider;
 
     /**
      * @var AttributeFactory
@@ -63,9 +64,9 @@ class ilSrLifeCycleManagerContainer
     protected $notification_sender;
 
     /**
-     * @var ConfirmationEventListener
+     * @var ConfirmationEventObserver
      */
-    protected $confirmation_event_listener;
+    protected $confirmation_event_observer;
 
     /**
      * @var ilSrRoutineJobFactory
@@ -76,6 +77,21 @@ class ilSrLifeCycleManagerContainer
      * @var IRecipientRetriever
      */
     protected $recipient_retriever;
+
+    /**
+     * @var ApplicabilityChecker
+     */
+    protected $applicapbililty_checker;
+
+    /**
+     * @var ilSrAccessHandler
+     */
+    protected $access_handler;
+
+    /**
+     * @var EventSubject
+     */
+    protected $event_subject;
 
     public function __construct(ilSrLifeCycleManagerPlugin $plugin, Container $dic)
     {
@@ -112,34 +128,32 @@ class ilSrLifeCycleManagerContainer
         return $this->repository_factory;
     }
 
-    public function getRoutineProvider(): RoutineProvider
+    public function getAffectingRoutineProvider(): AffectingRoutineProvider
     {
-        if (null === $this->routine_provider) {
+        if (null === $this->affecting_routine_provider) {
             $this->abortIfDependenciesNotAvailable(['ilDB']);
 
-            $this->routine_provider = new RoutineProvider(
-                new ComparisonFactory(
-                    new RessourceFactory($this->dic->database()),
-                    $this->getAttributeFactory()
-                ),
+            $this->affecting_routine_provider = new AffectingRoutineProvider(
                 $this->getRepositoryFactory()->routine(),
-                $this->getRepositoryFactory()->rule()
+                $this->getApplicapbililtyChecker()
             );
         }
 
-        return $this->routine_provider;
+        return $this->affecting_routine_provider;
     }
 
-    public function getDeletableObjectProvider(): DeletableObjectProvider
+    public function getAffectedObjectProvider(): AffectedObjectProvider
     {
-        if (null === $this->deletable_object_provider) {
-            $this->deletable_object_provider = new DeletableObjectProvider(
-                $this->getRoutineProvider(),
-                $this->getRepositoryFactory()->general()
+        if (null === $this->affected_object_provider) {
+            $this->affected_object_provider = new AffectedObjectProvider(
+                $this->getRepositoryFactory()->assignment(),
+                $this->getRepositoryFactory()->general(),
+                $this->getRepositoryFactory()->routine(),
+                $this->getApplicapbililtyChecker(),
             );
         }
 
-        return $this->deletable_object_provider;
+        return $this->affected_object_provider;
     }
 
     public function getAttributeFactory(): AttributeFactory
@@ -196,30 +210,30 @@ class ilSrLifeCycleManagerContainer
             $this->routine_job_factory = new ilSrRoutineJobFactory(
                 $this->getNotificationSender(),
                 $this->getRecipientRetriever(),
+                $this->getRepositoryFactory(),
+                $this->getAffectedObjectProvider(),
+                $this->getEventSubject(),
                 new ResultBuilder(
                     new ilCronJobResult()
                 ),
-                $this->getRepositoryFactory(),
-                $this->getObserver(),
-                $this->getDeletableObjectProvider(),
-                $this->dic->logger()->root()
+                $this->dic->logger()->root(),
             );
         }
 
         return $this->routine_job_factory;
     }
 
-    public function getConfirmationEventListener(): ConfirmationEventListener
+    public function getConfirmationEventObserver(): ConfirmationEventObserver
     {
-        if (null === $this->confirmation_event_listener) {
-            $this->confirmation_event_listener = new ConfirmationEventListener(
+        if (null === $this->confirmation_event_observer) {
+            $this->confirmation_event_observer = new ConfirmationEventObserver(
                 $this->getRepositoryFactory()->confirmation(),
                 $this->getNotificationSender(),
                 $this->getRecipientRetriever()
             );
         }
 
-        return $this->confirmation_event_listener;
+        return $this->confirmation_event_observer;
     }
 
     public function getRecipientRetriever(): IRecipientRetriever
@@ -231,14 +245,49 @@ class ilSrLifeCycleManagerContainer
         return $this->recipient_retriever;
     }
 
+    public function getApplicapbililtyChecker(): ApplicabilityChecker
+    {
+        if (null === $this->applicapbililty_checker) {
+            $this->applicapbililty_checker = new ApplicabilityChecker(
+                new ComparisonFactory(
+                    new RessourceFactory($this->dic->database()),
+                    $this->getAttributeFactory()
+                ),
+                $this->getRepositoryFactory()->rule()
+            );
+        }
+
+        return $this->applicapbililty_checker;
+    }
+
+    public function getEventSubject(): EventSubject
+    {
+        if (null === $this->event_subject) {
+            $this->event_subject = new EventSubject();
+        }
+
+        return $this->event_subject;
+    }
+
+    public function getAccessHandler(): ilSrAccessHandler
+    {
+        if (null === $this->access_handler) {
+            $this->abortIfDependenciesNotAvailable(['rbacreview', 'ilUser']);
+
+            $this->access_handler = new ilSrAccessHandler(
+                $this->dic->rbac(),
+                $this->getRepositoryFactory()->general(),
+                $this->getRepositoryFactory()->config()->get(),
+                $this->dic->user()
+            );
+        }
+
+        return $this->access_handler;
+    }
+
     public function getTranslator(): ITranslator
     {
         return $this->plugin;
-    }
-
-    public function getObserver(): Observer
-    {
-        return Observer::getInstance();
     }
 
     protected function abortIfDependenciesNotAvailable(array $dependencies): void

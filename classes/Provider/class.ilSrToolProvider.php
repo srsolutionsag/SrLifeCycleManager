@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-use srag\Plugins\SrLifeCycleManager\Routine\Provider\RoutineProvider;
+use srag\Plugins\SrLifeCycleManager\Routine\AffectingRoutineProvider;
 use srag\Plugins\SrLifeCycleManager\Routine\IRoutineRepository;
 use srag\Plugins\SrLifeCycleManager\Routine\IRoutine;
 use srag\Plugins\SrLifeCycleManager\Rule\Attribute\AttributeFactory;
@@ -35,7 +35,7 @@ class ilSrToolProvider extends AbstractDynamicToolPluginProvider
     protected const CNF_TOOL_CONTROLS = 'cnf_tool_controls';
 
     /**
-     * @var int|null
+     * @var ilObject|null
      */
     protected $request_object;
 
@@ -55,7 +55,7 @@ class ilSrToolProvider extends AbstractDynamicToolPluginProvider
     protected $routine_repository;
 
     /**
-     * @var RoutineProvider
+     * @var AffectingRoutineProvider
      */
     protected $routine_provider;
 
@@ -101,24 +101,23 @@ class ilSrToolProvider extends AbstractDynamicToolPluginProvider
      */
     protected function initDependencies(): void
     {
-        $this->request_object = $this->getRequestedObject();
-        if (null !== $this->request_object) {
-            $this->keepObjectAlive($this->request_object);
-        }
-
         $container = ilSrLifeCycleManagerPlugin::getInstance()->getContainer();
+
+        $this->request_object = $container
+            ->getRepositoryFactory()
+            ->general()
+            ->getObject($this->getRequestedReferenceId());
+
+        if (null !== $this->request_object) {
+            $this->keepObjectAlive($this->request_object->getRefId());
+        }
 
         $this->config = $container->getRepositoryFactory()->config()->get();
         $this->assignment_repository = $container->getRepositoryFactory()->assignment();
         $this->whitelist_repository = $container->getRepositoryFactory()->whitelist();
         $this->routine_repository = $container->getRepositoryFactory()->routine();
-        $this->routine_provider = $container->getRoutineProvider();
-
-        $this->access_handler = new ilSrAccessHandler(
-            $this->dic->rbac(),
-            $this->config,
-            $this->dic->user()
-        );
+        $this->routine_provider = $container->getAffectingRoutineProvider();
+        $this->access_handler = $container->getAccessHandler();
     }
 
     /**
@@ -131,7 +130,7 @@ class ilSrToolProvider extends AbstractDynamicToolPluginProvider
         return function (): Component {
             $html = '';
             if ($this->shouldRenderRoutineLists()) {
-                $html .= $this->renderRoutineLists($this->request_object);
+                $html .= $this->renderRoutineLists($this->request_object->getRefId());
             }
 
             if ($this->shouldRenderRoutineControls()) {
@@ -145,9 +144,6 @@ class ilSrToolProvider extends AbstractDynamicToolPluginProvider
     /**
      * Returns the html for object administrators, that shows a list of routines
      * that currently apply to the requested object.
-     *
-     * @param int $ref_id
-     * @return string
      */
     protected function renderRoutineLists(int $ref_id): string
     {
@@ -239,9 +235,7 @@ class ilSrToolProvider extends AbstractDynamicToolPluginProvider
 
     /**
      * Returns the HTML for privileged users, that displays an info message
-     * and some routine-action buttons.
-     *
-     * @return string
+     * and some routine-action buttons.g
      */
     protected function renderRoutineControls(): string
     {
@@ -278,10 +272,8 @@ class ilSrToolProvider extends AbstractDynamicToolPluginProvider
 
     /**
      * Returns the ref-id or target provided in the current request.
-     *
-     * @return int|null
      */
-    protected function getRequestedObject(): ?int
+    protected function getRequestedReferenceId(): ?int
     {
         $target = $this->dic->http()->request()->getQueryParams()['target'] ?? null;
         $ref_id = $this->dic->http()->request()->getQueryParams()['ref_id'] ?? null;
@@ -309,9 +301,6 @@ class ilSrToolProvider extends AbstractDynamicToolPluginProvider
     /**
      * Keeps the given object (ref-id) alive for potential redirects to
      * GUI classes of this plugin.
-     *
-     * @param int $ref_id
-     * @return void
      */
     protected function keepObjectAlive(int $ref_id): void
     {
@@ -342,8 +331,6 @@ class ilSrToolProvider extends AbstractDynamicToolPluginProvider
 
     /**
      * Returns a closure that determines the availability of the tool.
-     *
-     * @return Closure
      */
     protected function getToolAvailabilityClosure(): Closure
     {
@@ -356,8 +343,6 @@ class ilSrToolProvider extends AbstractDynamicToolPluginProvider
 
     /**
      * Returns a closure that determines the visibility of the tool.
-     *
-     * @return Closure
      */
     protected function getToolVisibilityClosure(): Closure
     {
@@ -375,8 +360,6 @@ class ilSrToolProvider extends AbstractDynamicToolPluginProvider
 
     /**
      * Checks if the tool's routine-creation part should be rendered.
-     *
-     * @return bool
      */
     protected function shouldRenderRoutineControls(): bool
     {
@@ -391,8 +374,6 @@ class ilSrToolProvider extends AbstractDynamicToolPluginProvider
 
     /**
      * Checks if the tool's affected routine-list should be rendered.
-     *
-     * @return bool
      */
     protected function shouldRenderRoutineLists(): bool
     {

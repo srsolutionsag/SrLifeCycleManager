@@ -1,12 +1,12 @@
-<?php declare(strict_types=1);
+<?php
 
-/* Copyright (c) 2022 Thibeau Fuhrer <thibeau@sr.solutions> Extended GPL, see docs/LICENSE */
+declare(strict_types=1);
 
 namespace srag\Plugins\SrLifeCycleManager\Form\Notification;
 
 use srag\Plugins\SrLifeCycleManager\Notification\Confirmation\IConfirmationRepository;
 use srag\Plugins\SrLifeCycleManager\Notification\Confirmation\IConfirmation;
-use srag\Plugins\SrLifeCycleManager\Routine\RoutineEvent;
+use srag\Plugins\SrLifeCycleManager\Routine\IRoutineEvent;
 use srag\Plugins\SrLifeCycleManager\ITranslator;
 use ILIAS\UI\Component\Input\Container\Form\Factory as FormFactory;
 use ILIAS\UI\Component\Input\Field\Factory as FieldFactory;
@@ -30,13 +30,12 @@ class ConfirmationFormBuilder extends NotificationFormBuilder
     protected $repository;
 
     /**
-     * @param ITranslator             $translator
-     * @param FormFactory             $forms
-     * @param FieldFactory            $fields
-     * @param Refinery                $refinery
-     * @param IConfirmationRepository $repository
-     * @param IConfirmation           $notification
-     * @param string                  $form_action
+     * @var string[]
+     */
+    protected $event_options;
+
+    /**
+     * @param string[] $event_options
      */
     public function __construct(
         ITranslator $translator,
@@ -45,16 +44,18 @@ class ConfirmationFormBuilder extends NotificationFormBuilder
         Refinery $refinery,
         IConfirmationRepository $repository,
         IConfirmation $notification,
+        array $event_options,
         string $form_action
     ) {
         parent::__construct($translator, $forms, $fields, $refinery, $notification, $form_action);
+        $this->event_options = $event_options;
         $this->repository = $repository;
     }
 
     /**
      * @inheritDoc
      */
-    protected function getNotificationSpecificInputs() : array
+    protected function getNotificationSpecificInputs(): array
     {
         $inputs[self::INPUT_CONFIRMATION_EVENT] = $this->fields
             ->select(
@@ -73,15 +74,15 @@ class ConfirmationFormBuilder extends NotificationFormBuilder
      *
      * @return array<string, string>
      */
-    protected function getConfirmationEventOptions() : array
+    protected function getConfirmationEventOptions(): array
     {
         $options = [];
-        foreach (RoutineEvent::EVENT_NAMES as $action) {
+        foreach ($this->event_options as $event_name) {
             // only provide the current notification's event or events which
             // aren't already related to another confirmation.
-            $confirmation = $this->repository->getByRoutineAndEvent($this->notification->getRoutineId(), $action);
-            if (null === $confirmation || $this->notification->getEvent() === $action) {
-                $options[$action] = $this->translator->txt($action);
+            $confirmation = $this->repository->getByRoutineAndEvent($this->notification->getRoutineId(), $event_name);
+            if (null === $confirmation || $this->notification->getEvent() === $event_name) {
+                $options[$event_name] = $this->translator->txt($event_name);
             }
         }
 
@@ -92,19 +93,17 @@ class ConfirmationFormBuilder extends NotificationFormBuilder
      * Returns a constraint that ensures, that the confirmation for the
      * submitted event only exists once (unless it's the same one being
      * edited).
-     *
-     * @return Constraint
      */
-    protected function getConfirmationEventConstraint() : Constraint
+    protected function getConfirmationEventConstraint(): Constraint
     {
         return $this->refinery->custom()->constraint(
-            function ($event) : bool {
+            function ($event): bool {
                 if (!is_string($event)) {
                     return false;
                 }
 
                 // the constraint fails if the submitted event is unknown.
-                if (!in_array($event, RoutineEvent::EVENT_NAMES, true)) {
+                if (!in_array($event, $this->event_options, true)) {
                     return false;
                 }
 
@@ -125,4 +124,5 @@ class ConfirmationFormBuilder extends NotificationFormBuilder
             $this->translator->txt(self::MSG_CONFIRMATION_EVENT_ERROR)
         );
     }
+
 }

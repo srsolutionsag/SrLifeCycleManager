@@ -1,5 +1,16 @@
 # SrLifeCycleManager Changelog
 
+## 1.8.1
+
+- Improved object-retrieval in routine cron-job, which now only traverses the repository tree downwards from the
+  routines assigned ref-id.
+- Introduced an `INotifier` which is responsible for pinging the cron-manager during cron-job runs. This prevents the
+  cron-jobs from timing out.
+- Properly implemented the [`observer pattern`](https://refactoring.guru/design-patterns/observer) and improved the
+  naming to comply with PHPs subject-observer terminology.
+- Fixed an issue where the repository tool produced unnecessary log-entries, because `ilParticipants` has been used on
+  objects which don't support it.
+
 ## 1.8.0
 
 - Implemented a `IRecipientRetriever` which provides the `INotificationSender` with the corresponding recipients

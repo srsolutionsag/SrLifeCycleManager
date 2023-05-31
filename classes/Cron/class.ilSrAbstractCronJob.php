@@ -1,49 +1,42 @@
-<?php declare(strict_types=1);
+<?php
 
-/* Copyright (c) 2022 Thibeau Fuhrer <thibeau@sr.solutions> Extended GPL, see docs/LICENSE */
+declare(strict_types=1);
 
 use srag\Plugins\SrLifeCycleManager\Cron\ResultBuilder;
+use srag\Plugins\SrLifeCycleManager\Cron\INotifier;
+use srag\Plugins\SrLifeCycleManager\ITranslator;
 
 /**
- * @author Thibeau Fuhrer <thibeau@sr.solutions>
+ * @author       Thibeau Fuhrer <thibeau@sr.solutions>
  * @noinspection AutoloadingIssuesInspection
  */
 abstract class ilSrAbstractCronJob extends ilCronJob
 {
-    /**
-     * @var string prefix for all logger messages.
-     */
-    protected const LOGGER_PREFIX = '[SrLifeCycleManager] ';
-
     /**
      * @var ResultBuilder
      */
     protected $result_builder;
 
     /**
+     * @var INotifier
+     */
+    protected $notifier;
+
+    /**
      * @var string[]
      */
     protected $summary = [];
 
-    /**
-     * @var ilLogger
-     */
-    private $logger;
-
-    /**
-     * @param ResultBuilder $builder
-     * @param ilLogger      $logger
-     */
-    public function __construct(ResultBuilder $builder, ilLogger $logger)
+    public function __construct(ResultBuilder $builder, INotifier $notifier)
     {
         $this->result_builder = $builder;
-        $this->logger = $logger;
+        $this->notifier = $notifier;
     }
 
     /**
      * @inheritDoc
      */
-    public function run() : ilCronJobResult
+    public function run(): ilCronJobResult
     {
         $this->result_builder->request()->trackTime();
 
@@ -53,15 +46,13 @@ abstract class ilSrAbstractCronJob extends ilCronJob
             return $this->result_builder
                 ->crash()
                 ->message($throwable->getMessage() . $throwable->getTraceAsString())
-                ->getResult()
-            ;
+                ->getResult();
         }
 
         $result = $this->result_builder
             ->success()
             ->message($this->getSummary())
-            ->getResult()
-        ;
+            ->getResult();
 
         // displays an info-toast with the summary of the current cron-job
         // at the top of the cron-job administration page.
@@ -75,7 +66,7 @@ abstract class ilSrAbstractCronJob extends ilCronJob
     /**
      * @inheritDoc
      */
-    public function getId() : string
+    public function getId(): string
     {
         return static::class;
     }
@@ -83,7 +74,7 @@ abstract class ilSrAbstractCronJob extends ilCronJob
     /**
      * @inheritDoc
      */
-    public function hasAutoActivation() : bool
+    public function hasAutoActivation(): bool
     {
         return true;
     }
@@ -91,7 +82,7 @@ abstract class ilSrAbstractCronJob extends ilCronJob
     /**
      * @inheritDoc
      */
-    public function hasFlexibleSchedule() : bool
+    public function hasFlexibleSchedule(): bool
     {
         return false;
     }
@@ -99,7 +90,7 @@ abstract class ilSrAbstractCronJob extends ilCronJob
     /**
      * @inheritDoc
      */
-    public function getDefaultScheduleType() : int
+    public function getDefaultScheduleType(): int
     {
         return self::SCHEDULE_TYPE_DAILY;
     }
@@ -107,9 +98,39 @@ abstract class ilSrAbstractCronJob extends ilCronJob
     /**
      * @inheritDoc
      */
-    public function getDefaultScheduleValue() : int
+    public function getDefaultScheduleValue(): int
     {
         return self::SCHEDULE_TYPE_DAILY;
+    }
+
+    /**
+     * Returns the summary glued together (each entry as a new line).
+     */
+    protected function getSummary(string $line_break = PHP_EOL): string
+    {
+        $message = 'Successfully terminated.';
+        if (!empty($this->summary)) {
+            $message .=
+                $line_break .
+                $line_break .
+                implode($line_break, $this->summary);
+        }
+
+        return $message;
+    }
+
+    protected function addSummary(string $message): void
+    {
+        $this->summary[] = $message;
+    }
+
+    /**
+     * Returns whether the cron-job instance has been started via CLI.
+     */
+    protected function isCLI(): bool
+    {
+        // cannot use PHP_SAPI in this scenario.
+        return ('cli' === php_sapi_name());
     }
 
     /**
@@ -118,60 +139,5 @@ abstract class ilSrAbstractCronJob extends ilCronJob
      * The execution has been wrapped by a catch clause to manage
      * possible crashes.
      */
-    abstract protected function execute() : void;
-
-    /**
-     * Returns the summary glued together (each entry as a new line).
-     *
-     * @param string $line_break
-     * @return string
-     */
-    protected function getSummary(string $line_break = PHP_EOL) : string
-    {
-        $message = 'Successfully terminated.';
-        if (!empty($this->summary)) {
-            $message .=
-                $line_break .
-                $line_break .
-                implode($line_break, $this->summary)
-            ;
-        }
-
-        return $message;
-    }
-
-    /**
-     * @param string $summary
-     */
-    protected function addSummary(string $summary) : void
-    {
-        $this->summary[] = $summary;
-    }
-
-    /**
-     * @param string $message
-     */
-    protected function info(string $message) : void
-    {
-        $this->logger->info(self::LOGGER_PREFIX . $message);
-    }
-
-    /**
-     * @param string $message
-     */
-    protected function error(string $message) : void
-    {
-        $this->logger->error(self::LOGGER_PREFIX . $message);
-    }
-
-    /**
-     * Returns whether the cron-job instance has been started via CLI.
-     *
-     * @return bool
-     */
-    protected function isCLI() : bool
-    {
-        // cannot use PHP_SAPI in this scenario.
-        return ('cli' === php_sapi_name());
-    }
+    abstract protected function execute(): void;
 }

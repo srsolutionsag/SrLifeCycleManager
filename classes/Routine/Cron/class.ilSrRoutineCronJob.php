@@ -2,21 +2,24 @@
 
 declare(strict_types=1);
 
-use srag\Plugins\SrLifeCycleManager\Routine\Provider\DeletableObjectProvider;
-use srag\Plugins\SrLifeCycleManager\Routine\RoutineEvent;
+use srag\Plugins\SrLifeCycleManager\Object\AffectedObjectProvider;
+use srag\Plugins\SrLifeCycleManager\Routine\IRoutineRepository;
+use srag\Plugins\SrLifeCycleManager\Routine\IRoutineEvent;
 use srag\Plugins\SrLifeCycleManager\Routine\IRoutine;
 use srag\Plugins\SrLifeCycleManager\Notification\Reminder\IReminderRepository;
+use srag\Plugins\SrLifeCycleManager\Notification\IRecipientRetriever;
 use srag\Plugins\SrLifeCycleManager\Notification\Reminder\IReminder;
 use srag\Plugins\SrLifeCycleManager\Notification\INotificationSender;
 use srag\Plugins\SrLifeCycleManager\Whitelist\IWhitelistRepository;
+use srag\Plugins\SrLifeCycleManager\Whitelist\IWhitelistEntry;
 use srag\Plugins\SrLifeCycleManager\Repository\IGeneralRepository;
 use srag\Plugins\SrLifeCycleManager\Token\ITokenRepository;
 use srag\Plugins\SrLifeCycleManager\Cron\ResultBuilder;
-use srag\Plugins\SrLifeCycleManager\Event\Observer;
+use srag\Plugins\SrLifeCycleManager\Cron\INotifier;
+use srag\Plugins\SrLifeCycleManager\Object\AffectedObject;
+use srag\Plugins\SrLifeCycleManager\Event\EventSubject;
 use srag\Plugins\SrLifeCycleManager\DateTimeHelper;
-use srag\Plugins\SrLifeCycleManager\Notification\IRecipientRetriever;
-use srag\Plugins\SrLifeCycleManager\Routine\IRoutineRepository;
-use srag\Plugins\SrLifeCycleManager\Whitelist\IWhitelistEntry;
+use srag\Plugins\SrLifeCycleManager\ITranslator;
 
 /**
  * This cron job will delete repository objects that are affected by
@@ -54,9 +57,9 @@ class ilSrRoutineCronJob extends ilSrAbstractCronJob
     protected $recipient_retriever;
 
     /**
-     * @var Observer
+     * @var EventSubject
      */
-    protected $event_observer;
+    protected $event_subject;
 
     /**
      * @var IRoutineRepository
@@ -89,34 +92,38 @@ class ilSrRoutineCronJob extends ilSrAbstractCronJob
     protected $notification_sender;
 
     /**
-     * @var DeletableObjectProvider
+     * @var AffectedObjectProvider
      */
-    protected $object_provider;
+    protected $affected_object_provider;
+
+    /**
+     * @var int[]
+     */
+    protected $deleted_ref_ids = [];
 
     public function __construct(
         INotificationSender $notification_sender,
         IRecipientRetriever $recipient_retriever,
-        DeletableObjectProvider $object_provider,
-        ResultBuilder $result_builder,
-        Observer $event_observer,
         IRoutineRepository $routine_repository,
         IReminderRepository $notification_repository,
         ITokenRepository $token_repository,
         IWhitelistRepository $whitelist_repository,
         IGeneralRepository $general_repository,
-        ilLogger $logger
+        AffectedObjectProvider $object_provider,
+        EventSubject $event_subject,
+        ResultBuilder $result_builder,
+        INotifier $notifier
     ) {
-        parent::__construct($result_builder, $logger);
-
+        parent::__construct($result_builder, $notifier);
         $this->recipient_retriever = $recipient_retriever;
-        $this->event_observer = $event_observer;
+        $this->event_subject = $event_subject;
         $this->routine_repository = $routine_repository;
         $this->reminder_repository = $notification_repository;
         $this->token_repository = $token_repository;
         $this->whitelist_repository = $whitelist_repository;
         $this->general_repository = $general_repository;
         $this->notification_sender = $notification_sender;
-        $this->object_provider = $object_provider;
+        $this->affected_object_provider = $object_provider;
     }
 
     /**
@@ -141,37 +148,41 @@ class ilSrRoutineCronJob extends ilSrAbstractCronJob
      */
     protected function execute(): void
     {
-        foreach ($this->object_provider->getDeletableObjects() as $object) {
-            $object_instance = $object->getInstance();
-            $object_ref_id = $object_instance->getRefId();
+        foreach ($this->affected_object_provider->getAffectedObjects() as $affected_object) {
+            $this->notifier->notifySometimes("Processing routines, still running...");
 
-            foreach ($object->getAffectingRoutines() as $routine) {
-                $whitelist_entry = $this->whitelist_repository->get($routine, $object_ref_id);
+            if ($this->hasObjectBeenDeleted($affected_object)) {
+                continue;
+            }
 
-                $deletion_date = (null === $whitelist_entry) ?
-                    $this->routine_repository->getDeletionDate($routine, $object_ref_id) :
-                    $whitelist_entry->getExpiryDate();
+            $ref_id = $affected_object->getObject()->getRefId();
+            $routine = $affected_object->getRoutine();
 
-                if (null === $deletion_date) {
-                    // if the deletion date is null at this point, the object has an
-                    // opt-out whitelist entry, so we continue to the next routine.
-                    continue;
-                }
+            $whitelist_entry = $this->whitelist_repository->get($routine, $ref_id);
 
-                if ($deletion_date <= $this->getCurrentDate()) {
-                    $this->deleteObject($routine, $object_instance);
-                    // continue to the next object since this one no longer exists.
-                    continue 2;
-                }
+            $deletion_date = (null === $whitelist_entry) ?
+                $this->routine_repository->getDeletionDate($routine, $ref_id) :
+                $whitelist_entry->getExpiryDate();
 
-                $next_reminder = $this->reminder_repository->getWithDaysBeforeDeletion(
-                    $routine->getRoutineId(),
-                    $this->getGap($this->getCurrentDate(), $deletion_date)
-                );
+            if (null === $deletion_date) {
+                // if the deletion date is null at this point, the object has an
+                // opt-out whitelist entry, so we continue to the next routine.
+                continue;
+            }
 
-                if (null !== $next_reminder) {
-                    $this->notifyObject($next_reminder, $object_instance);
-                }
+            if ($deletion_date <= $this->getCurrentDate()) {
+                $this->deleteObject($affected_object);
+                $this->markObjectAsDeleted($affected_object);
+                continue;
+            }
+
+            $next_reminder = $this->reminder_repository->getWithDaysBeforeDeletion(
+                $routine->getRoutineId(),
+                $this->getGap($this->getCurrentDate(), $deletion_date)
+            );
+
+            if (null !== $next_reminder) {
+                $this->notifyObject($next_reminder, $affected_object);
             }
         }
     }
@@ -179,15 +190,13 @@ class ilSrRoutineCronJob extends ilSrAbstractCronJob
     /**
      * Tries to delete the given object, if it fails a corresponding
      * log entry will be made.
-     *
-     * @param IRoutine $routine
-     * @param ilObject $object
-     * @return void
      */
-    protected function deleteObject(IRoutine $routine, ilObject $object): void
+    protected function deleteObject(AffectedObject $affected_object): void
     {
+        $routine = $affected_object->getRoutine();
+        $object = $affected_object->getObject();
+
         // delete object from repository.
-        $this->info("Deleting object {$object->getRefId()} ({$object->getType()})");
         $this->general_repository->deleteObject($object->getRefId());
 
         // clean up internal data.
@@ -195,28 +204,49 @@ class ilSrRoutineCronJob extends ilSrAbstractCronJob
         $this->token_repository->delete($object->getRefId());
 
         // broadcast delete-event.
-        $this->event_observer->broadcast(
-            new RoutineEvent(
-                $routine,
-                $object,
-                RoutineEvent::EVENT_DELETE
+        $this->event_subject->notify(IRoutineEvent::EVENT_DELETE, $affected_object);
+
+        $this->notifier->notify(
+            sprintf(
+                "Object %s (%d) deleted by routine %s (%d).",
+                $object->getTitle(),
+                $object->getRefId(),
+                $routine->getTitle(),
+                $routine->getRoutineId()
             )
         );
     }
 
     /**
-     * Sends the given notification to all administrators of the object.
-     *
-     * @param IReminder $notification
-     * @param ilObject  $object
-     * @return void
+     * Sends the given notification to all according recipients of the object.
      */
-    protected function notifyObject(IReminder $notification, ilObject $object): void
+    protected function notifyObject(IReminder $notification, AffectedObject $affected_object): void
     {
-        $this->info(
-            "Sending administrators of object {$object->getRefId()} notification {$notification->getNotificationId()}"
-        );
+        $routine = $affected_object->getRoutine();
+        $object = $affected_object->getObject();
 
         $this->notification_sender->sendNotification($this->recipient_retriever, $notification, $object);
+
+        $this->notifier->notify(
+            sprintf(
+                'Sent reminder "%s" (%d) from routine "%s" (%d) to object "%s" (%d).',
+                $notification->getTitle(),
+                $notification->getNotificationId(),
+                $routine->getTitle(),
+                $routine->getRoutineId(),
+                $object->getTitle(),
+                $object->getRefId()
+            )
+        );
+    }
+
+    protected function markObjectAsDeleted(AffectedObject $affected_object): void
+    {
+        $this->deleted_ref_ids[] = $affected_object->getObject()->getRefId();
+    }
+
+    protected function hasObjectBeenDeleted(AffectedObject $affected_object): bool
+    {
+        return in_array($affected_object->getObject()->getRefId(), $this->deleted_ref_ids, true);
     }
 }

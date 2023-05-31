@@ -19,12 +19,25 @@ interface IGeneralRepository
     public function getParentId(int $ref_id): int;
 
     /**
-     * Returns all repository objects that can be deleted by a routine
-     * starting from the given ref-id.
+     * Returns the object (ilObject) for the given ref-id.
+     */
+    public function getObject(int $ref_id): ?ilObject;
+
+    /**
+     * Returns the participant object for the given object, if it supports it.
      *
+     * @param ilObject $object
+     * @return \ilParticipants|null
+     */
+    public function getParticipantObject(ilObject $object): ?\ilParticipants;
+
+    /**
+     * Returns all repository objects which are of the given types.
+     *
+     * @param string[] $types object types to retrieve
      * @return Generator|ilObject[]
      */
-    public function getRepositoryObjects(): Generator;
+    public function getRepositoryObjects(int $ref_id, array $types): Generator;
 
     /**
      * Returns all repository objects that relate to the given term.

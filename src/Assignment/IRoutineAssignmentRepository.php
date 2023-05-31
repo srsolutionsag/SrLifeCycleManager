@@ -15,7 +15,14 @@ interface IRoutineAssignmentRepository
      * @param int $ref_id
      * @return IRoutineAssignment|null
      */
-    public function get(int $routine_id, int $ref_id) : ?IRoutineAssignment;
+    public function get(int $routine_id, int $ref_id): ?IRoutineAssignment;
+
+    /**
+     * Fetches all assignments that are active and assigned to an object.
+     *
+     * @return IRoutineAssignment[]
+     */
+    public function getAllActiveAssignments(): array;
 
     /**
      * Fetches all existing assignments of a given routine.
@@ -27,7 +34,7 @@ interface IRoutineAssignmentRepository
      * @param bool $array_data
      * @return IRoutineAssignment[]
      */
-    public function getAllByRoutineId(int $routine_id, bool $array_data = false) : array;
+    public function getAllByRoutineId(int $routine_id, bool $array_data = false): array;
 
     /**
      * Fetches all existing assignments of a given object (ref-id).
@@ -35,11 +42,11 @@ interface IRoutineAssignmentRepository
      * To retrieve routines as array-data, true can be passed as an argument
      * (usually required by ilTableGUI).
      *
-     * @param int $ref_id
+     * @param int  $ref_id
      * @param bool $array_data
      * @return IRoutineAssignment[]
      */
-    public function getAllByRefId(int $ref_id, bool $array_data = false) : array;
+    public function getAllByRefId(int $ref_id, bool $array_data = false): array;
 
     /**
      * Fetches all existing assignments of a given object (ref-id) and
@@ -47,7 +54,7 @@ interface IRoutineAssignmentRepository
      *
      * @return array<int, array<string, mixed>>
      */
-    public function getAllWithJoinedDataByRefId(int $ref_id) : array;
+    public function getAllWithJoinedDataByRefId(int $ref_id): array;
 
     /**
      * Creates or updates the given routine assignment in the database.
@@ -55,7 +62,7 @@ interface IRoutineAssignmentRepository
      * @param IRoutineAssignment $assignment
      * @return IRoutineAssignment
      */
-    public function store(IRoutineAssignment $assignment) : IRoutineAssignment;
+    public function store(IRoutineAssignment $assignment): IRoutineAssignment;
 
     /**
      * Deletes an existing routine assignment from the database.
@@ -63,7 +70,7 @@ interface IRoutineAssignmentRepository
      * @param IRoutineAssignment $assignment
      * @return bool
      */
-    public function delete(IRoutineAssignment $assignment) : bool;
+    public function delete(IRoutineAssignment $assignment): bool;
 
     /**
      * Returns an empty instance of an assignment.
@@ -71,5 +78,5 @@ interface IRoutineAssignmentRepository
      * @param int $user_id
      * @return IRoutineAssignment
      */
-    public function empty(int $user_id) : IRoutineAssignment;
+    public function empty(int $user_id): IRoutineAssignment;
 }

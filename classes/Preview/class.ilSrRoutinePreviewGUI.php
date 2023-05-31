@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-use srag\Plugins\SrLifeCycleManager\Routine\Provider\RoutineProvider;
+use srag\Plugins\SrLifeCycleManager\Routine\AffectingRoutineProvider;
 use srag\Plugins\SrLifeCycleManager\Rule\Comparison\ComparisonFactory;
 use srag\Plugins\SrLifeCycleManager\Rule\Attribute\AttributeFactory;
-use srag\Plugins\SrLifeCycleManager\Routine\Provider\DeletableObjectProvider;
+use srag\Plugins\SrLifeCycleManager\Object\AffectedObjectProvider;
 use srag\Plugins\SrLifeCycleManager\Rule\Ressource\RessourceFactory;
 use srag\Plugins\SrLifeCycleManager\Rule\Attribute\Common\CommonAttributeFactory;
 use srag\Plugins\SrLifeCycleManager\Rule\Attribute\Object\ObjectAttributeFactory;
@@ -37,7 +37,7 @@ class ilSrRoutinePreviewGUI extends ilSrAbstractGUI
         parent::__construct();
 
         $this->preview_renderer = new ilSrRoutinePreviewRenderer(
-            ilSrLifeCycleManagerPlugin::getInstance()->getContainer()->getDeletableObjectProvider(),
+            ilSrLifeCycleManagerPlugin::getInstance()->getContainer()->getAffectedObjectProvider(),
             $this->translator,
             $this->renderer,
             $this->ui_factory,

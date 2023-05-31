@@ -160,12 +160,7 @@ abstract class ilSrAbstractGUI
         $this->database = $DIC->database();
 
         $this->repository = $container->getRepositoryFactory();
-
-        $this->access_handler = new ilSrAccessHandler(
-            $DIC->rbac(),
-            $this->repository->config()->get(),
-            $DIC->user()
-        );
+        $this->access_handler = $container->getAccessHandler();
 
         $this->toolbar_manager = new ilSrToolbarManager(
             $this->access_handler,

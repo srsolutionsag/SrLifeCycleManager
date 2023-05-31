@@ -2,11 +2,12 @@
 
 declare(strict_types=1);
 
-use srag\Plugins\SrLifeCycleManager\Routine\RoutineEvent;
-use srag\Plugins\SrLifeCycleManager\Event\Observer;
+use srag\Plugins\SrLifeCycleManager\Routine\IRoutineEvent;
+use srag\Plugins\SrLifeCycleManager\Event\EventSubject;
 use srag\Plugins\SrLifeCycleManager\Token\IToken;
 use srag\Plugins\SrLifeCycleManager\DateTimeHelper;
 use srag\Plugins\SrLifeCycleManager\Routine\IRoutine;
+use srag\Plugins\SrLifeCycleManager\Object\AffectedObject;
 
 /**
  * @author       Thibeau Fuhrer <thibeau@sr.solutions>
@@ -37,9 +38,9 @@ class ilSrWhitelistGUI extends ilSrAbstractGUI
     protected const PAGE_TITLE = 'page_title_whitelist';
 
     /**
-     * @var Observer
+     * @var EventSubject
      */
-    protected $event_observer;
+    protected $event_subject;
 
     /**
      * @inheritdoc
@@ -47,8 +48,7 @@ class ilSrWhitelistGUI extends ilSrAbstractGUI
     public function __construct()
     {
         parent::__construct();
-
-        $this->event_observer = Observer::getInstance();
+        $this->event_subject = ilSrLifeCycleManagerPlugin::getInstance()->getContainer()->getEventSubject();
     }
 
     /**
@@ -127,7 +127,7 @@ class ilSrWhitelistGUI extends ilSrAbstractGUI
         // abort if the provided whitelist token doesn't exist or
         // is not intended for this action.
         if ((null === $stored_token && !empty($request_token)) ||
-            (null !== $stored_token && RoutineEvent::EVENT_POSTPONE !== $stored_token->getEvent())
+            (null !== $stored_token && IRoutineEvent::EVENT_POSTPONE !== $stored_token->getEvent())
         ) {
             $this->displayErrorMessage(self::MSG_WHITELIST_INVALID_TOKEN);
             return;
@@ -211,11 +211,11 @@ class ilSrWhitelistGUI extends ilSrAbstractGUI
             $this->repository->token()->redeem($stored_token);
         }
 
-        $this->event_observer->broadcast(
-            new RoutineEvent(
-                $routine,
+        $this->event_subject->notify(
+            IRoutineEvent::EVENT_POSTPONE,
+            new AffectedObject(
                 $object_instance,
-                RoutineEvent::EVENT_POSTPONE
+                $routine
             )
         );
 
@@ -253,7 +253,7 @@ class ilSrWhitelistGUI extends ilSrAbstractGUI
         // abort if the provided whitelist token doesn't exist or
         // is not intended for this action.
         if ((null === $stored_token && !empty($request_token)) ||
-            (null !== $stored_token && RoutineEvent::EVENT_OPT_OUT !== $stored_token->getEvent())
+            (null !== $stored_token && IRoutineEvent::EVENT_OPT_OUT !== $stored_token->getEvent())
         ) {
             $this->displayErrorMessage(self::MSG_WHITELIST_INVALID_TOKEN);
             return;
@@ -314,11 +314,11 @@ class ilSrWhitelistGUI extends ilSrAbstractGUI
             $this->repository->token()->redeem($stored_token);
         }
 
-        $this->event_observer->broadcast(
-            new RoutineEvent(
-                $routine,
+        $this->event_subject->notify(
+            IRoutineEvent::EVENT_OPT_OUT,
+            new AffectedObject(
                 $object_instance,
-                RoutineEvent::EVENT_OPT_OUT
+                $routine
             )
         );
 

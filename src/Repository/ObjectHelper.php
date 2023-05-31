@@ -57,7 +57,7 @@ trait ObjectHelper
      * @param int $ref_id
      * @return string
      */
-    protected function getParentIdsForSqlComparison(int $ref_id) : string
+    protected function getParentIdsForSqlComparison(int $ref_id): string
     {
         // gather all parent objects of the given ref-id and
         // add the id itself to the array as well.
@@ -90,5 +90,15 @@ trait ObjectHelper
     protected function getContainerObjectTypes(): array
     {
         return ['crs', 'cat', 'grp', 'fold', 'itgr'];
+    }
+
+    /**
+     * Returns all repository object types which support participants.
+     *
+     * @return string[]
+     */
+    protected function getSupportedParticipantTypes(): array
+    {
+        return ['crs', 'grp', 'lso', 'sess'];
     }
 }

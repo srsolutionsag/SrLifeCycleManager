@@ -16,15 +16,6 @@ class ilSrGeneralRepository implements IGeneralRepository
     use ObjectHelper;
 
     /**
-     * This variable holds the merged object types of container
-     * objects and routine-types, due to the recursive object
-     * retrieval: @see self::getRepositoryObjects()
-     *
-     * @var string[]
-     */
-    protected $routine_candidate_and_container_types;
-
-    /**
      * @var ilDBInterface
      */
     protected $database;
@@ -41,13 +32,6 @@ class ilSrGeneralRepository implements IGeneralRepository
      */
     public function __construct(ilDBInterface $database, ilTree $tree, RBACServices $rbac)
     {
-        $this->routine_candidate_and_container_types = array_unique(
-            array_merge(
-                $this->getContainerObjectTypes(),
-                IRoutine::ROUTINE_TYPES,
-            )
-        );
-
         $this->database = $database;
         $this->tree = $tree;
         $this->rbac = $rbac;
@@ -56,38 +40,66 @@ class ilSrGeneralRepository implements IGeneralRepository
     /**
      * @inheritDoc
      */
-    public function getRepositoryObjects(int $ref_id = 1): Generator
+    public function getObject(int $ref_id): ?ilObject
     {
-        $routine_candidates_and_container = $this->tree->getChildsByTypeFilter(
-            $ref_id,
-            $this->routine_candidate_and_container_types
-        );
-
-        if (empty($routine_candidates_and_container)) {
-            return;
+        $object = ilObjectFactory::getInstanceByRefId($ref_id, false);
+        if (false !== $object) {
+            return $object;
         }
 
-        foreach ($routine_candidates_and_container as $candidate_or_container) {
-            $candidate_or_container_ref_id = (int) $candidate_or_container['ref_id'];
-            if (in_array($candidate_or_container['type'], IRoutine::ROUTINE_TYPES, true)) {
-                try {
-                    yield $candidate_or_container_ref_id => ilObjectFactory::getInstanceByRefId(
-                        $candidate_or_container_ref_id
-                    );
-                } catch (Exception $e) {
-                    continue;
-                }
-            } else {
-                yield from $this->getRepositoryObjects($candidate_or_container_ref_id);
-            }
+        return null;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function getParticipantObject(ilObject $object): ?\ilParticipants
+    {
+        if (!in_array($object->getType(), $this->getSupportedParticipantTypes(), true)) {
+            return null;
+        }
+
+        try {
+            return ilParticipants::getInstance($object->getRefId());
+        } catch (InvalidArgumentException $e) {
+            return null;
         }
     }
 
     /**
      * @inheritDoc
      */
-    public function getObjectsByTypeAndTerm(string $type, string $term): array
+    public function getRepositoryObjects(int $ref_id, array $types): Generator
     {
+        $container_types = $this->getContainerObjectTypes();
+        $combined_types = array_unique(array_merge($container_types, $types));
+
+        $children = $this->tree->getChildsByTypeFilter($ref_id, $combined_types);
+
+        foreach ($children as $container_or_candidate) {
+            $object_ref_id = (int) $container_or_candidate['ref_id'];
+
+            if (in_array($container_or_candidate['type'], $types, true)) {
+                $object = ilObjectFactory::getInstanceByRefId($object_ref_id, false);
+                if (false !== $object) {
+                    yield $object_ref_id => $object;
+                }
+
+                continue;
+            }
+
+            // object is a container object at this point.
+            yield from $this->getRepositoryObjects($object_ref_id, $types);
+        }
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function getObjectsByTypeAndTerm(
+        string $type,
+        string $term
+    ): array {
         $term = htmlspecialchars($term);
         $type = htmlspecialchars($type);
         $term = $this->database->quote("%$term%", 'text');
@@ -111,15 +123,17 @@ class ilSrGeneralRepository implements IGeneralRepository
     /**
      * @inheritDoc
      */
-    public function getUsersByTerm(string $term) : array
-    {
+    public
+    function getUsersByTerm(
+        string $term
+    ): array {
         $users = [];
         foreach (ilObjUser::searchUsers($term) as $user_data) {
-            $beautified_name   = "{$user_data['login_name']} ({$user_data['usr_id']})";
+            $beautified_name = "{$user_data['login_name']} ({$user_data['usr_id']})";
             $users[] = [
-                'value'    => $user_data['usr_id'],
+                'value' => $user_data['usr_id'],
                 'searchBy' => $beautified_name,
-                'display'  => $beautified_name,
+                'display' => $beautified_name,
             ];
         }
 
@@ -129,7 +143,8 @@ class ilSrGeneralRepository implements IGeneralRepository
     /**
      * @inheritDoc
      */
-    public function getAvailableGlobalRoles() : array
+    public
+    function getAvailableGlobalRoles(): array
     {
         $role_options = [];
         $global_roles = $this->rbac->review()->getRolesByFilter(ilRbacReview::FILTER_ALL_GLOBAL);
@@ -155,8 +170,10 @@ class ilSrGeneralRepository implements IGeneralRepository
     /**
      * @inheritDoc
      */
-    public function deleteObject(int $ref_id): bool
-    {
+    public
+    function deleteObject(
+        int $ref_id
+    ): bool {
         try {
             ilRepUtil::deleteObjects(null, [$ref_id]);
             return true;

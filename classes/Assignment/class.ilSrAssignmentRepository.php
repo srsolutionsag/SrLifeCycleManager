@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 use srag\Plugins\SrLifeCycleManager\Assignment\IRoutineAssignmentRepository;
 use srag\Plugins\SrLifeCycleManager\Assignment\IRoutineAssignment;
@@ -20,10 +22,6 @@ class ilSrAssignmentRepository implements IRoutineAssignmentRepository
      */
     protected $database;
 
-    /**
-     * @param ilDBInterface $database
-     * @param ilTree        $tree
-     */
     public function __construct(ilDBInterface $database, ilTree $tree)
     {
         $this->database = $database;
@@ -33,7 +31,7 @@ class ilSrAssignmentRepository implements IRoutineAssignmentRepository
     /**
      * @inheritDoc
      */
-    public function get(int $routine_id, int $ref_id) : ?IRoutineAssignment
+    public function get(int $routine_id, int $ref_id): ?IRoutineAssignment
     {
         $query = "
             SELECT routine_id, ref_id, usr_id, is_recursive, is_active FROM srlcm_assigned_routine
@@ -59,7 +57,24 @@ class ilSrAssignmentRepository implements IRoutineAssignmentRepository
     /**
      * @inheritDoc
      */
-    public function getAllByRoutineId(int $routine_id, bool $array_data = false) : array
+    public function getAllActiveAssignments(): array
+    {
+        $query = "
+            SELECT routine_id, ref_id, usr_id, is_recursive, is_active FROM srlcm_assigned_routine
+                WHERE is_active = 1
+                AND ref_id IS NOT NULL
+            ;
+        ";
+
+        return $this->returnAllQueryResults(
+            $this->database->fetchAll($this->database->query($query))
+        );
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function getAllByRoutineId(int $routine_id, bool $array_data = false): array
     {
         $query = "
             SELECT routine_id, ref_id, usr_id, is_recursive, is_active FROM srlcm_assigned_routine
@@ -76,14 +91,15 @@ class ilSrAssignmentRepository implements IRoutineAssignmentRepository
                         $routine_id,
                     ]
                 )
-            ), $array_data
+            ),
+            $array_data
         );
     }
 
     /**
      * @inheritDoc
      */
-    public function getAllByRefId(int $ref_id, bool $array_data = false) : array
+    public function getAllByRefId(int $ref_id, bool $array_data = false): array
     {
         $query = "
             SELECT routine_id, ref_id, usr_id, is_recursive, is_active FROM srlcm_assigned_routine
@@ -100,14 +116,15 @@ class ilSrAssignmentRepository implements IRoutineAssignmentRepository
                         $ref_id,
                     ]
                 )
-            ), $array_data
+            ),
+            $array_data
         );
     }
 
     /**
      * @inheritDoc
      */
-    public function getAllWithJoinedDataByRefId(int $ref_id) : array
+    public function getAllWithJoinedDataByRefId(int $ref_id): array
     {
         $query = "
             SELECT 
@@ -133,14 +150,15 @@ class ilSrAssignmentRepository implements IRoutineAssignmentRepository
                         $ref_id,
                     ]
                 )
-            ), true
+            ),
+            true
         );
     }
 
     /**
      * @inheritDoc
      */
-    public function store(IRoutineAssignment $assignment) : IRoutineAssignment
+    public function store(IRoutineAssignment $assignment): IRoutineAssignment
     {
         $routine_id = $assignment->getRoutineId();
         $ref_id = $assignment->getRefId();
@@ -158,7 +176,7 @@ class ilSrAssignmentRepository implements IRoutineAssignmentRepository
     /**
      * @inheritDoc
      */
-    public function delete(IRoutineAssignment $assignment) : bool
+    public function delete(IRoutineAssignment $assignment): bool
     {
         // the assignment cannot be stored yet if there aren't both
         // routine- and ref-id assigned.
@@ -182,16 +200,12 @@ class ilSrAssignmentRepository implements IRoutineAssignmentRepository
     /**
      * @inheritDoc
      */
-    public function empty(int $user_id) : IRoutineAssignment
+    public function empty(int $user_id): IRoutineAssignment
     {
         return new RoutineAssignment($user_id);
     }
 
-    /**
-     * @param IRoutineAssignment $assignment
-     * @return IRoutineAssignment
-     */
-    protected function insertAssignment(IRoutineAssignment $assignment) : IRoutineAssignment
+    protected function insertAssignment(IRoutineAssignment $assignment): IRoutineAssignment
     {
         if (null === $assignment->getRoutineId() || null === $assignment->getRefId()) {
             throw new LogicException("Assignment must contain routine-id and object (ref-id).");
@@ -218,11 +232,7 @@ class ilSrAssignmentRepository implements IRoutineAssignmentRepository
         return $assignment;
     }
 
-    /**
-     * @param IRoutineAssignment $assignment
-     * @return IRoutineAssignment
-     */
-    protected function updateAssignment(IRoutineAssignment $assignment) : IRoutineAssignment
+    protected function updateAssignment(IRoutineAssignment $assignment): IRoutineAssignment
     {
         if (null === $assignment->getRoutineId() || null === $assignment->getRefId()) {
             throw new LogicException("Assignment must contain routine-id and object (ref-id).");
@@ -249,11 +259,7 @@ class ilSrAssignmentRepository implements IRoutineAssignmentRepository
         return $assignment;
     }
 
-    /**
-     * @param array $query_result
-     * @return IRoutineAssignment
-     */
-    protected function transformToDTO(array $query_result) : IRoutineAssignment
+    protected function transformToDTO(array $query_result): IRoutineAssignment
     {
         return new RoutineAssignment(
             (int) $query_result[IRoutineAssignment::F_USER_ID],

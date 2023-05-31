@@ -11,7 +11,7 @@ This document holds ideas and improvements that could be implemented for this pl
   the [`ilSrConfigRepository`](classes/Config/class.ilSrConfigRepository.php) for better encoded values. It could be
   even more improved by some sort of type-safe abstraction for configurations.
 
-- [ ] The same dependencies are used in several instances and instantiated separately, which leads to multiple
+- [x] The same dependencies are used in several instances and instantiated separately, which leads to multiple
   code-adjustments if the constructor signature is changed. This could be avoided by a local DIC or initialization.
 
 - [ ] Add a post-composer-dump script that automatically reads `IEventListeners` into an artifact, which can then be

@@ -1,11 +1,10 @@
-<?php declare(strict_types=1);
+<?php
 
-/* Copyright (c) 2022 Thibeau Fuhrer <thibeau@sr.solutions> Extended GPL, see docs/LICENSE */
+declare(strict_types=1);
 
 use srag\Plugins\SrLifeCycleManager\Notification\Confirmation\IConfirmationRepository;
 use srag\Plugins\SrLifeCycleManager\Notification\Confirmation\IConfirmation;
 use srag\Plugins\SrLifeCycleManager\Notification\Confirmation\Confirmation;
-use srag\Plugins\SrLifeCycleManager\Routine\RoutineEvent;
 use srag\Plugins\SrLifeCycleManager\Routine\IRoutine;
 
 /**
@@ -20,7 +19,7 @@ class ilSrConfirmationRepository extends ilSrAbstractNotificationRepository impl
     /**
      * @inheritDoc
      */
-    public function get(int $notification_id) : ?IConfirmation
+    public function get(int $notification_id): ?IConfirmation
     {
         $query = "
             SELECT notification.notification_id, notification.routine_id, notification.title, notification.content, 
@@ -45,7 +44,7 @@ class ilSrConfirmationRepository extends ilSrAbstractNotificationRepository impl
     /**
      * @inheritDoc
      */
-    public function getByRoutine(IRoutine $routine, bool $array_data = false) : array
+    public function getByRoutine(IRoutine $routine, bool $array_data = false): array
     {
         $query = "
             SELECT notification.notification_id, notification.routine_id, notification.title, notification.content, 
@@ -63,7 +62,8 @@ class ilSrConfirmationRepository extends ilSrAbstractNotificationRepository impl
                     ['integer'],
                     [$routine->getRoutineId() ?? 0]
                 )
-            ), $array_data
+            ),
+            $array_data
         );
     }
 
@@ -74,7 +74,7 @@ class ilSrConfirmationRepository extends ilSrAbstractNotificationRepository impl
         int $routine_id,
         string $event,
         bool $array_data = false
-    ) : ?IConfirmation {
+    ): ?IConfirmation {
         $query = "
             SELECT notification.notification_id, notification.routine_id, notification.title, notification.content, 
                    confirmation.event
@@ -95,44 +95,15 @@ class ilSrConfirmationRepository extends ilSrAbstractNotificationRepository impl
                         $event,
                     ]
                 )
-            ), $array_data
+            ),
+            $array_data
         );
     }
 
     /**
      * @inheritDoc
      */
-    public function getSentByRoutineEvent(RoutineEvent $event) : array
-    {
-        $query = "
-            SELECT notification.notification_id, notification.routine_id, notification.title, notification.content, 
-                   confirmation.event, notified_objs.date, notified_objs.ref_id
-                FROM srlcm_confirmation AS confirmation
-                INNER JOIN srlcm_notification AS notification ON notification.notification_id = confirmation.notification_id
-                INNER JOIN srlcm_notified_objects AS notified_objs ON notified_objs.notification_id = notification.notification_id
-                WHERE notified_objs.routine_id = %s
-                AND notified_objs.ref_id = %s
-            ;
-        ";
-
-        return $this->returnAllQueryResults(
-            $this->database->fetchAll(
-                $this->database->queryF(
-                    $query,
-                    ['integer', 'integer'],
-                    [
-                        $event->getRoutine()->getRoutineId() ?? 0,
-                        $event->getObject()->getRefId(),
-                    ]
-                )
-            )
-        );
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function store(IConfirmation $notification) : IConfirmation
+    public function store(IConfirmation $notification): IConfirmation
     {
         if (null !== $notification->getNotificationId()) {
             return $this->updateNotification($notification);
@@ -144,7 +115,7 @@ class ilSrConfirmationRepository extends ilSrAbstractNotificationRepository impl
     /**
      * @inheritDoc
      */
-    public function delete(IConfirmation $notification) : bool
+    public function delete(IConfirmation $notification): bool
     {
         $query = "
             DELETE notification, confirmation
@@ -166,7 +137,7 @@ class ilSrConfirmationRepository extends ilSrAbstractNotificationRepository impl
     /**
      * @inheritDoc
      */
-    public function empty(IRoutine $routine) : IConfirmation
+    public function empty(IRoutine $routine): IConfirmation
     {
         return new Confirmation(
             $routine->getRoutineId() ?? 0,
@@ -176,11 +147,7 @@ class ilSrConfirmationRepository extends ilSrAbstractNotificationRepository impl
         );
     }
 
-    /**
-     * @param IConfirmation $notification
-     * @return IConfirmation
-     */
-    protected function updateNotification(IConfirmation $notification) : IConfirmation
+    protected function updateNotification(IConfirmation $notification): IConfirmation
     {
         $query = "
             UPDATE srlcm_confirmation AS confirmation
@@ -204,11 +171,7 @@ class ilSrConfirmationRepository extends ilSrAbstractNotificationRepository impl
         return $notification;
     }
 
-    /**
-     * @param IConfirmation $notification
-     * @return IConfirmation
-     */
-    protected function insertNotification(IConfirmation $notification) : IConfirmation
+    protected function insertNotification(IConfirmation $notification): IConfirmation
     {
         $notification_query = "
             INSERT INTO srlcm_notification (notification_id, routine_id, title, content)

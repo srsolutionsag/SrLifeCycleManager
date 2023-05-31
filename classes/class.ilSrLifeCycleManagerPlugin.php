@@ -60,26 +60,12 @@ class ilSrLifeCycleManagerPlugin extends ilCronHookPlugin implements ITranslator
                 ->setMainBarProvider(new ilSrMenuProvider($DIC, $this))
                 ->setToolProvider(new ilSrToolProvider($DIC, $this));
 
-            $this->getContainer()->getObserver()->register(
-                $this->getContainer()->getConfirmationEventListener()
+            $this->getContainer()->getEventSubject()->attach(
+                $this->getContainer()->getConfirmationEventObserver()
             );
         }
 
         self::$instance = $this;
-    }
-
-    /**
-     * Returns an instance of the plugin object.
-     *
-     * @return self
-     */
-    public static function getInstance(): self
-    {
-        if (!isset(self::$instance)) {
-            self::$instance = new self();
-        }
-
-        return self::$instance;
     }
 
     /**
@@ -107,6 +93,15 @@ class ilSrLifeCycleManagerPlugin extends ilCronHookPlugin implements ITranslator
     public function getCronJobInstance($a_job_id): ilCronJob
     {
         return $this->getContainer()->getRoutineJobFactory()->getJob($a_job_id);
+    }
+
+    public static function getInstance(): self
+    {
+        if (!isset(self::$instance)) {
+            self::$instance = new self();
+        }
+
+        return self::$instance;
     }
 
     public function getContainer(): ilSrLifeCycleManagerContainer

@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 /* Copyright (c) 2022 Thibeau Fuhrer <thibeau@sr.solutions> Extended GPL, see docs/LICENSE */
 
@@ -6,11 +8,12 @@ use srag\Plugins\SrLifeCycleManager\Notification\Confirmation\IConfirmation;
 use srag\Plugins\SrLifeCycleManager\Form\Notification\ConfirmationFormBuilder;
 use srag\Plugins\SrLifeCycleManager\Form\Notification\ConfirmationFormProcessor;
 use srag\Plugins\SrLifeCycleManager\Form\IFormBuilder;
+use srag\Plugins\SrLifeCycleManager\Routine\IRoutineEvent;
 
 /**
  * This GUI class is responsible for all actions regarding confirmations.
  *
- * @author Thibeau Fuhrer <thibeau@sr.solutions>
+ * @author       Thibeau Fuhrer <thibeau@sr.solutions>
  *
  * @noinspection AutoloadingIssuesInspection
  */
@@ -40,8 +43,7 @@ class ilSrConfirmationGUI extends ilSrAbstractNotificationGUI
 
         $this->notification =
             $this->getRequestedNotification() ??
-            $this->repository->confirmation()->empty($this->routine)
-        ;
+            $this->repository->confirmation()->empty($this->routine);
 
         $this->form_builder = new ConfirmationFormBuilder(
             $this->translator,
@@ -50,6 +52,7 @@ class ilSrConfirmationGUI extends ilSrAbstractNotificationGUI
             $this->refinery,
             $this->repository->confirmation(),
             $this->notification,
+            $this->getConfirmationEventOptions(),
             $this->getFormAction(
                 self::CMD_NOTIFICATION_SAVE,
                 self::PARAM_NOTIFICATION_ID
@@ -60,7 +63,7 @@ class ilSrConfirmationGUI extends ilSrAbstractNotificationGUI
     /**
      * @inheritDoc
      */
-    protected function canUserExecute(ilSrAccessHandler $access_handler, string $command) : bool
+    protected function canUserExecute(ilSrAccessHandler $access_handler, string $command): bool
     {
         // only routine-managers can execute commands in this gui.
         return $this->access_handler->canManageRoutines();
@@ -69,7 +72,7 @@ class ilSrConfirmationGUI extends ilSrAbstractNotificationGUI
     /**
      * @inheritDoc
      */
-    protected function setupGlobalTemplate(ilGlobalTemplateInterface $template, ilSrTabManager $tabs) : void
+    protected function setupGlobalTemplate(ilGlobalTemplateInterface $template, ilSrTabManager $tabs): void
     {
         $template->setTitle($this->translator->txt(self::PAGE_TITLE));
         $tabs
@@ -77,8 +80,7 @@ class ilSrConfirmationGUI extends ilSrAbstractNotificationGUI
             ->addRoutineTab()
             ->addPreviewTab()
             ->deactivateTabs()
-            ->addBackToIndex(static::class)
-        ;
+            ->addBackToIndex(static::class);
     }
 
     /**
@@ -86,7 +88,7 @@ class ilSrConfirmationGUI extends ilSrAbstractNotificationGUI
      *
      * @return IConfirmation|null
      */
-    protected function getRequestedNotification() : ?IConfirmation
+    protected function getRequestedNotification(): ?IConfirmation
     {
         $notification_id = $this->getRequestParameter(self::PARAM_NOTIFICATION_ID);
         if (null !== $notification_id) {
@@ -101,7 +103,7 @@ class ilSrConfirmationGUI extends ilSrAbstractNotificationGUI
      *
      * @inheritDoc
      */
-    protected function index() : void
+    protected function index(): void
     {
         $table = new ilSrConfirmationTable(
             $this->ui_factory,
@@ -122,7 +124,7 @@ class ilSrConfirmationGUI extends ilSrAbstractNotificationGUI
     /**
      * @inheritDoc
      */
-    protected function edit() : void
+    protected function edit(): void
     {
         $this->render($this->form_builder->getForm());
     }
@@ -130,7 +132,7 @@ class ilSrConfirmationGUI extends ilSrAbstractNotificationGUI
     /**
      * @inheritDoc
      */
-    protected function save() : void
+    protected function save(): void
     {
         $processor = new ConfirmationFormProcessor(
             $this->repository->confirmation(),
@@ -150,7 +152,7 @@ class ilSrConfirmationGUI extends ilSrAbstractNotificationGUI
     /**
      * @inheritDoc
      */
-    protected function delete() : void
+    protected function delete(): void
     {
         if (null !== $this->notification) {
             $this->sendSuccessMessage(self::MSG_NOTIFICATION_SUCCESS);
@@ -160,5 +162,19 @@ class ilSrConfirmationGUI extends ilSrAbstractNotificationGUI
         }
 
         $this->cancel();
+    }
+
+    /**
+     * Returns routine events which can trigger confirmations.
+     *
+     * @return string[]
+     */
+    protected function getConfirmationEventOptions(): array
+    {
+        return [
+            IRoutineEvent::EVENT_POSTPONE,
+            IRoutineEvent::EVENT_OPT_OUT,
+            IRoutineEvent::EVENT_DELETE,
+        ];
     }
 }

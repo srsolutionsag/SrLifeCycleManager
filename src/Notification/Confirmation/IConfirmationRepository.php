@@ -3,7 +3,6 @@
 namespace srag\Plugins\SrLifeCycleManager\Notification\Confirmation;
 
 use srag\Plugins\SrLifeCycleManager\Notification\INotificationRepository;
-use srag\Plugins\SrLifeCycleManager\Routine\RoutineEvent;
 use srag\Plugins\SrLifeCycleManager\Routine\IRoutine;
 
 /**
@@ -17,7 +16,7 @@ interface IConfirmationRepository extends INotificationRepository
      * @param int $notification_id
      * @return IConfirmation|null
      */
-    public function get(int $notification_id) : ?IConfirmation;
+    public function get(int $notification_id): ?IConfirmation;
 
     /**
      * Fetches all existing confirmations from the database that are related
@@ -30,7 +29,7 @@ interface IConfirmationRepository extends INotificationRepository
      * @param bool     $array_data
      * @return IConfirmation[]
      */
-    public function getByRoutine(IRoutine $routine, bool $array_data = false) : array;
+    public function getByRoutine(IRoutine $routine, bool $array_data = false): array;
 
     /**
      * Fetches an existing confirmation for the given event from the database that
@@ -43,15 +42,7 @@ interface IConfirmationRepository extends INotificationRepository
      * @param string $event
      * @return IConfirmation|null
      */
-    public function getByRoutineAndEvent(int $routine_id, string $event) : ?IConfirmation;
-
-    /**
-     * Fetches a sent notification for the given routine-event.
-     *
-     * @param RoutineEvent $event
-     * @return IConfirmation[]
-     */
-    public function getSentByRoutineEvent(RoutineEvent $event) : array;
+    public function getByRoutineAndEvent(int $routine_id, string $event): ?IConfirmation;
 
     /**
      * Creates or updates the given notification in the database.
@@ -59,7 +50,7 @@ interface IConfirmationRepository extends INotificationRepository
      * @param IConfirmation $notification
      * @return IConfirmation
      */
-    public function store(IConfirmation $notification) : IConfirmation;
+    public function store(IConfirmation $notification): IConfirmation;
 
     /**
      * Deletes the given notification from the database.
@@ -67,7 +58,7 @@ interface IConfirmationRepository extends INotificationRepository
      * @param IConfirmation $notification
      * @return bool
      */
-    public function delete(IConfirmation $notification) : bool;
+    public function delete(IConfirmation $notification): bool;
 
     /**
      * Initializes and returns an empty Confirmation DTO.
@@ -75,5 +66,5 @@ interface IConfirmationRepository extends INotificationRepository
      * @param IRoutine $routine
      * @return IConfirmation
      */
-    public function empty(IRoutine $routine) : IConfirmation;
+    public function empty(IRoutine $routine): IConfirmation;
 }
