@@ -18,14 +18,14 @@ class ilSrRoutinePreviewRenderer extends ilSrAbstractRoutinePreviewGenerator
     protected const PREVIEW_STYLESHEET = 'Customizing/global/plugins/Services/Cron/CronHook/SrLifeCycleManager/templates/default/css/routine_preview.css';
     protected const PREVIEW_TEMPLATE = 'Customizing/global/plugins/Services/Cron/CronHook/SrLifeCycleManager/templates/default/tpl.routine_preview.html';
     protected const PREVIEW_SCRIPT = 'Customizing/global/plugins/Services/Cron/CronHook/SrLifeCycleManager/templates/default/js/preview_loader.js';
-    
+
     // ilSrRoutinePreviewAsyncGUI language variables:
     protected const PREVIEW_REF_ID = 'preview_ref_id';
     protected const PREVIEW_ROUTINES = 'preview_routines';
     protected const PREVIEW_OBJECT_LINK = 'preview_link_goto_object';
     protected const LABEL_DELETED_OBJECTS = 'label_preview_deleted_objects';
     protected const MSG_LOADING = 'msg_this_may_take_a_while';
-    
+
     /**
      * @var AffectedObjectProvider
      */
@@ -35,21 +35,22 @@ class ilSrRoutinePreviewRenderer extends ilSrAbstractRoutinePreviewGenerator
      * @var ITranslator
      */
     protected $translator;
-    
+
     /**
      * @var Renderer
      */
     protected $renderer;
-    
+
     /**
      * @var UIFactory
      */
     protected $ui_factory;
-    
+
     /**
      * @var string
      */
     protected $ajax_action;
+
     public function __construct(
         AffectedObjectProvider $affected_object_provider,
         ITranslator $translator,
@@ -57,9 +58,7 @@ class ilSrRoutinePreviewRenderer extends ilSrAbstractRoutinePreviewGenerator
         UIFactory $ui_factory,
         string $ajax_action
     ) {
-        parent::__construct(
-            $object_provider
-        );
+        parent::__construct($affected_object_provider);
         $this->translator = $translator;
         $this->affected_object_provider = $affected_object_provider;
         $this->renderer = $renderer;
@@ -76,16 +75,16 @@ class ilSrRoutinePreviewRenderer extends ilSrAbstractRoutinePreviewGenerator
     public function getLoader(): Component
     {
         $template = new ilTemplate(self::PREVIEW_TEMPLATE, true, true);
-        
+
         $template->setVariable('MESSAGE', $this->translator->txt(self::MSG_LOADING));
         $template->setVariable('ASYNC_URL', $this->ajax_action);
-        
+
         try {
             $html = $template->get();
         } catch (ilTemplateException $e) {
             $html = '';
         }
-        
+
         return $this->ui_factory->legacy($html);
     }
 
@@ -106,7 +105,7 @@ class ilSrRoutinePreviewRenderer extends ilSrAbstractRoutinePreviewGenerator
                     ilLink::_getStaticLink($instance->getRefId())
                 )->withOpenInNewViewport(true),
             ]);
-            
+
             $items[] = $this->ui_factory
                 ->item()
                 ->standard($instance->getTitle())
@@ -114,12 +113,12 @@ class ilSrRoutinePreviewRenderer extends ilSrAbstractRoutinePreviewGenerator
                     $properties
                 )->withActions($links);
         }
-        
+
         $item_group = $this->ui_factory->item()->group(
             $this->translator->txt(self::LABEL_DELETED_OBJECTS),
             $items
         );
-        
+
         return $this->renderer->renderAsync([
             $this->ui_factory->messageBox()->info(count($items) . ' Item(s)'),
             $item_group

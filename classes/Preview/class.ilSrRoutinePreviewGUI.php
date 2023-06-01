@@ -18,20 +18,20 @@ use srag\Plugins\SrLifeCycleManager\Rule\Attribute\Course\CourseAttributeFactory
  */
 class ilSrRoutinePreviewGUI extends ilSrAbstractGUI
 {
-    // ilSrRoutinePreviewGUI command/method names:;
+    // ilSrRoutinePreviewGUI command/method names:
+    public const CMD_SHOW_ASYNC_PREVIEW = 'showAsyncPreview';
+    public const CMD_START_BACKGROUND_TASK = 'startBackgroundTask';
     protected const CMD_RENDER_ASYNC = 'renderAsync';
 
     // ilSrRoutinePreviewGUI language variables:
     protected const PAGE_TITLE = 'page_title_routine_preview';
-    const CMD_SHOW_ASYNC_PREVIEW = 'showAsyncPreview';
-    const CMD_START_BACKGROUND_TASK = 'startBackgroundTask';
     /**
      * @var \ILIAS\DI\BackgroundTaskServices
      */
     protected $background_tasks;
-    
+
     /**
-     * @var ilSrRoutinePreviewGenerator
+     * @var ilSrRoutinePreviewRenderer
      */
     protected $preview_renderer;
 
@@ -41,10 +41,10 @@ class ilSrRoutinePreviewGUI extends ilSrAbstractGUI
     public function __construct()
     {
         parent::__construct();
-        
+
         global $DIC;
         $this->background_tasks = $DIC->backgroundTasks();
-        
+
         $this->preview_renderer = new ilSrRoutinePreviewRenderer(
             ilSrLifeCycleManagerPlugin::getInstance()->getContainer()->getAffectedObjectProvider(),
             $this->translator,
@@ -95,7 +95,7 @@ class ilSrRoutinePreviewGUI extends ilSrAbstractGUI
             $async_button_text,
             $this->ctrl->getLinkTarget($this, self::CMD_SHOW_ASYNC_PREVIEW)
         );
-        
+
         $background_button_text = $this->translator->txt('bgt_preview');
         $bulky_background_button = $this->ui_factory->button()->bulky(
             $this->ui_factory->symbol()->icon()->standard(
@@ -106,11 +106,11 @@ class ilSrRoutinePreviewGUI extends ilSrAbstractGUI
             $background_button_text,
             $this->ctrl->getLinkTarget($this, self::CMD_START_BACKGROUND_TASK)
         );
-        
+
         $container = $this->ui_factory->panel()->secondary()->legacy(
             $this->translator->txt('choose_preview_mode'),
             $this->ui_factory->legacy(
-                $this->translator->txt('preview_mode_description').
+                $this->translator->txt('preview_mode_description') .
                 $this->renderer->render([
                     $this->ui_factory->divider()->horizontal(),
                     $bulky_async_button,
@@ -121,13 +121,13 @@ class ilSrRoutinePreviewGUI extends ilSrAbstractGUI
         );
         $this->render($container);
     }
-    
-    protected function startBackgroundTask() : void
+
+    protected function startBackgroundTask(): void
     {
         // Create Bucket and assign it to current user
         $bucket = new ILIAS\BackgroundTasks\Implementation\Bucket\BasicBucket();
         $bucket->setUserId($this->user->getId());
-        
+
         // Create Collect Job
         $collect_job = $this->background_tasks->taskFactory()->createTask(
             ilSrRoutinePreviewBackgroundTask::class
@@ -137,7 +137,7 @@ class ilSrRoutinePreviewGUI extends ilSrAbstractGUI
             ilSrRoutinePreviewBackgroundDownloadInteraction::class,
             [$collect_job, 'LifeCycleManager-Report.txt']
         );
-        
+
         // Assign Tasks to Bucket
         $bucket->setTask($download_interaction);
         $bucket->setTitle('LifeCycleManager-Report.txt');
@@ -145,8 +145,8 @@ class ilSrRoutinePreviewGUI extends ilSrAbstractGUI
         $this->sendSuccessMessage('background_task_started');
         $this->ctrl->redirect($this, self::CMD_INDEX);
     }
-    
-    protected function showAsyncPreview() : void
+
+    protected function showAsyncPreview(): void
     {
         $this->render($this->preview_renderer->getLoader());
     }

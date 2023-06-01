@@ -20,42 +20,41 @@ class ilSrRoutinePreviewBackgroundTask extends AbstractJob
     {
         $observer->notifyPercentage($this, 10);
         $path = new StringValue();
-        
+
         $preview_builder = new ilSrRoutinePreviewAsFile(
-            ilSrLifeCycleManagerPlugin::getInstance()->getContainer()->getDeletableObjectProvider()
+            ilSrLifeCycleManagerPlugin::getInstance()->getContainer()->getAffectedObjectProvider()
         );
-        
+
         $observer->notifyPercentage($this, 30);
         $content = $preview_builder->getTxtFileContent();
-        
+
         $observer->notifyPercentage($this, 40);
         $tmpdir = ilUtil::ilTempnam();
         $observer->notifyPercentage($this, 50);
         file_put_contents($tmpdir, $content);
         $observer->notifyPercentage($this, 60);
         $path->setValue($tmpdir);
-        
+
         return $path;
     }
-    
+
     public function isStateless()
     {
         return false;
     }
-    
+
     public function getExpectedTimeOfTaskInSeconds()
     {
         return 3600;
     }
-    
+
     public function getInputTypes()
     {
         return [];
     }
-    
+
     public function getOutputType()
     {
         return new SingleType(StringValue::class);
     }
-    
 }

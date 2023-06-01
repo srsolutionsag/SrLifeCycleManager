@@ -21,9 +21,9 @@ use ILIAS\Filesystem\Util\LegacyPathHelper;
  */
 class ilSrRoutinePreviewBackgroundDownloadInteraction extends AbstractUserInteraction
 {
-    const OPTION_DOWNLOAD = 'download';
-    const OPTION_CANCEL = 'cancel';
-    
+    public const OPTION_DOWNLOAD = 'download';
+    public const OPTION_CANCEL = 'cancel';
+
     public function getInputTypes()
     {
         return [
@@ -31,30 +31,30 @@ class ilSrRoutinePreviewBackgroundDownloadInteraction extends AbstractUserIntera
             new SingleType(StringValue::class),
         ];
     }
-    
+
     public function getRemoveOption()
     {
         return new UserInteractionOption('remove', self::OPTION_CANCEL);
     }
-    
+
     public function getOutputType()
     {
         return new SingleType(StringValue::class);
     }
-    
+
     public function getOptions(array $input)
     {
         return [
             new UserInteractionOption('download', self::OPTION_DOWNLOAD),
         ];
     }
-    
+
     public function interaction(array $input, Option $user_selected_option, Bucket $bucket)
     {
         global $DIC;
         $download_name = $input[0]; //directory name.
         $download_path = $input[1]; // zip job
-        
+
         if ($user_selected_option->getValue() != self::OPTION_DOWNLOAD) {
             // delete zip file
             $filesystem = $DIC->filesystem()->temp();
@@ -66,14 +66,13 @@ class ilSrRoutinePreviewBackgroundDownloadInteraction extends AbstractUserIntera
             if (!is_null($path) && $filesystem->has($path)) {
                 $filesystem->deleteDir(dirname($path));
             }
-            
+
             return $input;
         }
-        
+
         $download_path = $download_path->getValue();
         ilFileDelivery::deliverFileAttached($download_name->getValue(), $download_path);
-        
+
         return $input;
     }
-    
 }
