@@ -1,5 +1,10 @@
 # SrLifeCycleManager Changelog
 
+## 1.9.0
+
+- Added an ILIAS background-task to create a preview of the deletion-process, which can generates a text-file containing
+  all objects which will be deleted. This file can then be downloaded by the user.
+
 ## 1.8.1
 
 - Improved object-retrieval in routine cron-job, which now only traverses the repository tree downwards from the

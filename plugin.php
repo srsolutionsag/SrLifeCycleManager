@@ -1,11 +1,11 @@
 <?php
 
 $id = "srlcm";
-$version = "1.8.1";
+$version = "1.9.0";
 $ilias_min_version = "6.000";
-$ilias_max_version  = "7.999";
+$ilias_max_version = "7.999";
 
-$responsible        = "sr solutions ag";
-$responsible_mail   = "support@sr.solutions";
+$responsible = "sr solutions ag";
+$responsible_mail = "support@sr.solutions";
 
 $supports_cli_setup = true;

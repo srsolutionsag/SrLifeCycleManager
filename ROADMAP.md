@@ -11,9 +11,6 @@ This document holds ideas and improvements that could be implemented for this pl
   the [`ilSrConfigRepository`](classes/Config/class.ilSrConfigRepository.php) for better encoded values. It could be
   even more improved by some sort of type-safe abstraction for configurations.
 
-- [x] The same dependencies are used in several instances and instantiated separately, which leads to multiple
-  code-adjustments if the constructor signature is changed. This could be avoided by a local DIC or initialization.
-
 - [ ] Add a post-composer-dump script that automatically reads `IEventListeners` into an artifact, which can then be
   required in the `IObserver` implementation rather than manually registering them. For this the setup's interface
   collector can be used.
@@ -28,3 +25,6 @@ This document holds ideas and improvements that could be implemented for this pl
 
 - [ ] Separate representation and logic of attributes into DTOs and e.g. `Resolver`s. This should ease the process of
   providing attributes in a context, where no `IRessource` is being used.
+
+- [ ] Previews currently render/list one object-routine match. This could be improved by either grouping by objects or
+  by routines, to have a more concise overview.
