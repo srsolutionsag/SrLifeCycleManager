@@ -123,13 +123,15 @@ class ilSrGeneralRepository implements IGeneralRepository
     /**
      * @inheritDoc
      */
-    public
-    function getUsersByTerm(
-        string $term
-    ): array {
+    public function getUsersByTerm(string $term): array
+    {
+        $query = new ilUserQuery();
+        $query->setTextFilter($term);
+        $results = $query->query();
+
         $users = [];
-        foreach (ilObjUser::searchUsers($term) as $user_data) {
-            $beautified_name = "{$user_data['login_name']} ({$user_data['usr_id']})";
+        foreach ($results['set'] as $user_data) {
+            $beautified_name = "{$user_data['login']} ({$user_data['usr_id']})";
             $users[] = [
                 'value' => $user_data['usr_id'],
                 'searchBy' => $beautified_name,
@@ -143,8 +145,7 @@ class ilSrGeneralRepository implements IGeneralRepository
     /**
      * @inheritDoc
      */
-    public
-    function getAvailableGlobalRoles(): array
+    public function getAvailableGlobalRoles(): array
     {
         $role_options = [];
         $global_roles = $this->rbac->review()->getRolesByFilter(ilRbacReview::FILTER_ALL_GLOBAL);
@@ -170,12 +171,10 @@ class ilSrGeneralRepository implements IGeneralRepository
     /**
      * @inheritDoc
      */
-    public
-    function deleteObject(
-        int $ref_id
-    ): bool {
+    public function deleteObject(int $ref_id): bool
+    {
         try {
-            ilRepUtil::deleteObjects(null, [$ref_id]);
+            ilRepUtil::deleteObjects(0, [$ref_id]);
             return true;
         } catch (ilRepositoryException $e) {
             return false;

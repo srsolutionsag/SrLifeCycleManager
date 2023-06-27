@@ -47,8 +47,15 @@ class ilSrWhitelistGUI extends ilSrAbstractGUI
      */
     public function __construct()
     {
+        global $DIC;
         parent::__construct();
-        $this->event_subject = ilSrLifeCycleManagerPlugin::getInstance()->getContainer()->getEventSubject();
+
+        /** @var $component_factory ilComponentFactory */
+        $component_factory = $DIC['component.factory'];
+        /** @var $plugin ilSrLifeCycleManagerPlugin */
+        $plugin = $component_factory->getPlugin(ilSrLifeCycleManagerPlugin::PLUGIN_ID);
+
+        $this->event_subject = $plugin->getContainer()->getEventSubject();
     }
 
     /**
@@ -220,12 +227,12 @@ class ilSrWhitelistGUI extends ilSrAbstractGUI
         );
 
         // redirect back to the target object with according message.
-        ilUtil::sendSuccess(
+        $this->sendSuccessMessage(
             sprintf(
                 $this->translator->txt(self::MSG_ROUTINE_EXTENDED),
                 $routine->getElongation()
             ),
-            true
+            false
         );
 
         $this->redirectToRefId($object_instance->getRefId());

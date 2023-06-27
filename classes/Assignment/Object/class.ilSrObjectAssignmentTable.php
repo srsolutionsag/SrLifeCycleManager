@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 use srag\Plugins\SrLifeCycleManager\Assignment\IRoutineAssignment;
 use ILIAS\UI\Component\Dropdown\Dropdown;
@@ -19,7 +21,7 @@ class ilSrObjectAssignmentTable extends ilSrAbstractAssignmentTable
     /**
      * @inheritDoc
      */
-    protected function getTemplateName() : string
+    protected function getTemplateName(): string
     {
         return 'tpl.object_assignment_table_row.html';
     }
@@ -27,7 +29,7 @@ class ilSrObjectAssignmentTable extends ilSrAbstractAssignmentTable
     /**
      * @inheritDoc
      */
-    protected function addTableColumns() : void
+    protected function addTableColumns(): void
     {
         $this->addColumn($this->translator->txt(self::COL_ASSIGNMENT_REF_ID));
         $this->addColumn($this->translator->txt(self::COL_OBJECT_TITLE));
@@ -38,7 +40,7 @@ class ilSrObjectAssignmentTable extends ilSrAbstractAssignmentTable
     /**
      * @inheritDoc
      */
-    protected function renderTableRow(ilTemplate $template, array $data) : void
+    protected function renderTableRow(ilTemplate $template, array $data): void
     {
         $object_title = ilObject2::_lookupTitle(
             ilObject2::_lookupObjectId((int) $data[IRoutineAssignment::F_REF_ID])
@@ -53,7 +55,7 @@ class ilSrObjectAssignmentTable extends ilSrAbstractAssignmentTable
     /**
      * @inheritDoc
      */
-    protected function getDropdownActions(array $data) : array
+    protected function getDropdownActions(array $data): array
     {
         $actions = $this->getDefaultActions();
 
@@ -62,7 +64,7 @@ class ilSrObjectAssignmentTable extends ilSrAbstractAssignmentTable
         $actions[] = $this->ui_factory->button()->shy(
             $this->translator->txt(self::ACTION_ASSIGNMENT_DELETE),
             $this->ctrl->getLinkTargetByClass(
-                get_class($this->parent_obj),
+                get_class($this->parent_gui),
                 ilSrAbstractAssignmentGUI::CMD_ASSIGNMENT_DELETE
             )
         );

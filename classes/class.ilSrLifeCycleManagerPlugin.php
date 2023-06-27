@@ -48,10 +48,13 @@ class ilSrLifeCycleManagerPlugin extends ilCronHookPlugin implements ITranslator
     /**
      * Initializes the global screen providers and event-listeners.
      */
-    protected function __construct()
-    {
+    public function __construct(
+        ilDBInterface $db,
+        ilComponentRepositoryWrite $component_repository,
+        string $id
+    ) {
         global $DIC;
-        parent::__construct();
+        parent::__construct($db, $component_repository, $id);
 
         $this->container = new ilSrLifeCycleManagerContainer($this, $DIC);
 
@@ -64,20 +67,10 @@ class ilSrLifeCycleManagerPlugin extends ilCronHookPlugin implements ITranslator
                 $this->getContainer()->getConfirmationEventObserver()
             );
         }
-
-        self::$instance = $this;
     }
 
     /**
      * @inheritDoc
-     */
-    public function getPluginName(): string
-    {
-        return 'SrLifeCycleManager';
-    }
-
-    /**
-     * @return ilCronJob[]
      */
     public function getCronJobInstances(): array
     {
@@ -88,20 +81,11 @@ class ilSrLifeCycleManagerPlugin extends ilCronHookPlugin implements ITranslator
     }
 
     /**
-     * @param string $a_job_id
+     * @inheritDoc
      */
-    public function getCronJobInstance($a_job_id): ilCronJob
+    public function getCronJobInstance(string $jobId): ilCronJob
     {
-        return $this->getContainer()->getRoutineJobFactory()->getJob($a_job_id);
-    }
-
-    public static function getInstance(): self
-    {
-        if (!isset(self::$instance)) {
-            self::$instance = new self();
-        }
-
-        return self::$instance;
+        return $this->getContainer()->getRoutineJobFactory()->getJob($jobId);
     }
 
     public function getContainer(): ilSrLifeCycleManagerContainer

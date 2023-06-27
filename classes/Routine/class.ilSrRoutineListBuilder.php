@@ -279,7 +279,7 @@ class ilSrRoutineListBuilder
     {
         $actions[self::ACTION_ROUTINE_EDIT] = $this->ui_factory->button()->shy(
             $this->translator->txt(self::ACTION_ROUTINE_EDIT),
-            ilSrLifeCycleManagerDispatcher::getLinkTarget(
+            ilSrLifeCycleManagerDispatcherGUI::getLinkTarget(
                 ilSrRoutineGUI::class,
                 ilSrRoutineGUI::CMD_ROUTINE_EDIT
             )
@@ -299,7 +299,7 @@ class ilSrRoutineListBuilder
             if (null !== $exact_assignment) {
                 $actions[self::ACTION_ROUTINE_ASSIGNMENT_REMOVE] = $this->ui_factory->button()->shy(
                     $this->translator->txt(self::ACTION_ROUTINE_ASSIGNMENT_REMOVE),
-                    ilSrLifeCycleManagerDispatcher::getLinkTarget(
+                    ilSrLifeCycleManagerDispatcherGUI::getLinkTarget(
                         ilSrRoutineAssignmentGUI::class,
                         ilSrRoutineAssignmentGUI::CMD_ASSIGNMENT_DELETE
                     )
@@ -307,7 +307,7 @@ class ilSrRoutineListBuilder
 
                 $actions[self::ACTION_ROUTINE_ASSIGNMENT_EDIT] = $this->ui_factory->button()->shy(
                     $this->translator->txt(self::ACTION_ROUTINE_ASSIGNMENT_EDIT),
-                    ilSrLifeCycleManagerDispatcher::getLinkTarget(
+                    ilSrLifeCycleManagerDispatcherGUI::getLinkTarget(
                         ilSrRoutineAssignmentGUI::class,
                         ilSrRoutineAssignmentGUI::CMD_ASSIGNMENT_EDIT
                     )
@@ -325,7 +325,7 @@ class ilSrRoutineListBuilder
                     $this->translator->txt(self::ACTION_ROUTINE_EXTEND),
                     $routine->getElongation()
                 ),
-                ilSrLifeCycleManagerDispatcher::getLinkTarget(
+                ilSrLifeCycleManagerDispatcherGUI::getLinkTarget(
                     ilSrWhitelistGUI::class,
                     ilSrWhitelistGUI::CMD_WHITELIST_POSTPONE
                 )
@@ -343,7 +343,7 @@ class ilSrRoutineListBuilder
         if ($this->access_handler->isAdministrator() || $routine->hasOptOut()) {
             $actions[self::ACTION_ROUTINE_OPT_OUT] = $this->ui_factory->button()->shy(
                 $this->translator->txt(self::ACTION_ROUTINE_OPT_OUT),
-                ilSrLifeCycleManagerDispatcher::getLinkTarget(
+                ilSrLifeCycleManagerDispatcherGUI::getLinkTarget(
                     ilSrWhitelistGUI::class,
                     ilSrWhitelistGUI::CMD_WHITELIST_OPT_OUT
                 )
@@ -351,7 +351,7 @@ class ilSrRoutineListBuilder
 
             $actions[self::ACTION_ROUTINE_OPT_OUT_UNDO] = $this->ui_factory->button()->shy(
                 $this->translator->txt(self::ACTION_ROUTINE_OPT_OUT_UNDO),
-                ilSrLifeCycleManagerDispatcher::getLinkTarget(
+                ilSrLifeCycleManagerDispatcherGUI::getLinkTarget(
                     ilSrWhitelistGUI::class,
                     ilSrWhitelistGUI::CMD_WHITELIST_OPT_OUT_UNDO
                 )

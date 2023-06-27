@@ -16,6 +16,11 @@ class ilSrCronNotifier implements INotifier
     protected const LOGGER_PREFIX = '[SrLifeCycleManager] ';
 
     /**
+     * @var ilCronManager
+     */
+    protected $cron_manager;
+
+    /**
      * @var ilLogger
      */
     protected $logger;
@@ -39,6 +44,7 @@ class ilSrCronNotifier implements INotifier
      * @throws LogicException if $interval is not a positive integer
      */
     public function __construct(
+        ilCronManager $cron_manager,
         ilLogger $logger,
         string $cron_job_id,
         int $interval = self::DEFAULT_INTERVAL
@@ -47,6 +53,7 @@ class ilSrCronNotifier implements INotifier
             throw new LogicException('Interval must be a positive integer.');
         }
 
+        $this->cron_manager = $cron_manager;
         $this->logger = $logger;
         $this->cron_job_id = $cron_job_id;
         $this->interval = $interval;
@@ -71,6 +78,6 @@ class ilSrCronNotifier implements INotifier
     public function notify(string $message): void
     {
         $this->logger->info(self::LOGGER_PREFIX . $message);
-        ilCronManager::ping($this->cron_job_id);
+        $this->cron_manager->ping($this->cron_job_id);
     }
 }

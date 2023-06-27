@@ -146,9 +146,14 @@ abstract class ilSrAbstractGUI
     {
         global $DIC;
 
-        $container = ilSrLifeCycleManagerPlugin::getInstance()->getContainer();
+        /** @var $component_factory ilComponentFactory */
+        $component_factory = $DIC['component.factory'];
+        /** @var $plugin ilSrLifeCycleManagerPlugin */
+        $plugin = $component_factory->getPlugin(ilSrLifeCycleManagerPlugin::PLUGIN_ID);
 
-        $this->origin = ilSrLifeCycleManagerDispatcher::getOriginType();
+        $container = $plugin->getContainer();
+
+        $this->origin = ilSrLifeCycleManagerDispatcherGUI::getOriginType();
         $this->translator = $container->getTranslator();
         $this->global_template = $DIC->ui()->mainTemplate();
         $this->ui_factory = $DIC->ui()->factory();
@@ -380,12 +385,14 @@ abstract class ilSrAbstractGUI
 
     /**
      * displays an error message for given lang-var on the next page (redirect).
-     *
-     * @param string $lang_var
      */
-    protected function sendErrorMessage(string $lang_var): void
+    protected function sendErrorMessage(string $lang_var, bool $translate = true): void
     {
-        ilUtil::sendFailure($this->translator->txt($lang_var), true);
+        $this->global_template->setOnScreenMessage(
+            ilGlobalTemplateInterface::MESSAGE_TYPE_FAILURE,
+            ($translate) ? $this->translator->txt($lang_var) : $lang_var,
+            true
+        );
     }
 
     /**
@@ -400,12 +407,14 @@ abstract class ilSrAbstractGUI
 
     /**
      * displays a success message for given lang-var on the next page (redirect).
-     *
-     * @param string $lang_var
      */
-    protected function sendSuccessMessage(string $lang_var): void
+    protected function sendSuccessMessage(string $lang_var, bool $translate = true): void
     {
-        ilUtil::sendSuccess($this->translator->txt($lang_var), true);
+        $this->global_template->setOnScreenMessage(
+            ilGlobalTemplateInterface::MESSAGE_TYPE_SUCCESS,
+            ($translate) ? $this->translator->txt($lang_var) : $lang_var,
+            true
+        );
     }
 
     /**
@@ -420,12 +429,14 @@ abstract class ilSrAbstractGUI
 
     /**
      * displays an info message for given lang-var on the next page (redirect).
-     *
-     * @param string $lang_var
      */
-    protected function sendInfoMessage(string $lang_var): void
+    protected function sendInfoMessage(string $lang_var, bool $translate = true): void
     {
-        ilUtil::sendInfo($this->translator->txt($lang_var), true);
+        $this->global_template->setOnScreenMessage(
+            ilGlobalTemplateInterface::MESSAGE_TYPE_INFO,
+            ($translate) ? $this->translator->txt($lang_var) : $lang_var,
+            true
+        );
     }
 
     /**

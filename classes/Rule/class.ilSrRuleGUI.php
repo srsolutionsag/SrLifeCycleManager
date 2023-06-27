@@ -58,6 +58,7 @@ class ilSrRuleGUI extends ilSrAbstractGUI
      */
     public function __construct()
     {
+        global $DIC;
         parent::__construct();
 
         $this->panicOnMissingRoutine();
@@ -66,7 +67,12 @@ class ilSrRuleGUI extends ilSrAbstractGUI
             $this->getRequestedRule() ??
             $this->repository->rule()->empty($this->routine);
 
-        $this->attribute_factory = ilSrLifeCycleManagerPlugin::getInstance()->getContainer()->getAttributeFactory();
+        /** @var $component_factory ilComponentFactory */
+        $component_factory = $DIC['component.factory'];
+        /** @var $plugin ilSrLifeCycleManagerPlugin */
+        $plugin = $component_factory->getPlugin(ilSrLifeCycleManagerPlugin::PLUGIN_ID);
+
+        $this->attribute_factory = $plugin->getContainer()->getAttributeFactory();
 
         $this->form_director = new RuleFormDirector(
             new RuleFormBuilder(

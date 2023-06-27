@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 use srag\Plugins\SrLifeCycleManager\Assignment\IRoutineAssignment;
 use srag\Plugins\SrLifeCycleManager\Routine\IRoutine;
@@ -31,7 +33,7 @@ abstract class ilSrAbstractAssignmentTable extends ilSrAbstractTable
     /**
      * @inheritDoc
      */
-    protected function addTableColumns() : void
+    protected function addTableColumns(): void
     {
         $this->addColumn($this->translator->txt(self::COL_ASSIGNMENT_OWNER));
         $this->addColumn($this->translator->txt(self::COL_ASSIGNMENT_RECURSIVE));
@@ -42,24 +44,21 @@ abstract class ilSrAbstractAssignmentTable extends ilSrAbstractTable
     /**
      * @inheritDoc
      */
-    protected function renderTableRow(ilTemplate $template, array $data) : void
+    protected function renderTableRow(ilTemplate $template, array $data): void
     {
         // translate the status of 'recursive'.
         $status_recursive = ($data[IRoutineAssignment::F_RECURSIVE]) ?
             $this->translator->txt(self::STATUS_RECURSIVE) :
-            $this->translator->txt(self::STATUS_NOT_RECURSIVE)
-        ;
+            $this->translator->txt(self::STATUS_NOT_RECURSIVE);
 
         // translate the status of 'active'.
         $status_active = ($data[IRoutineAssignment::F_IS_ACTIVE]) ?
             $this->translator->txt(self::STATUS_ACTIVE) :
-            $this->translator->txt(self::STATUS_INACTIVE)
-        ;
+            $this->translator->txt(self::STATUS_INACTIVE);
 
         // if the 'usr_id' still exists, get the login-name.
         $owner_name = (ilObjUser::_exists($data[IRoutineAssignment::F_USER_ID])) ?
-            (new ilObjUser((int) $data[IRoutineAssignment::F_USER_ID]))->getLogin() : ''
-        ;
+            (new ilObjUser((int) $data[IRoutineAssignment::F_USER_ID]))->getLogin() : '';
 
         $template->setVariable(self::COL_ASSIGNMENT_OWNER, $owner_name);
         $template->setVariable(self::COL_ASSIGNMENT_RECURSIVE, $status_recursive);
@@ -81,8 +80,12 @@ abstract class ilSrAbstractAssignmentTable extends ilSrAbstractTable
     /**
      * @return Button[]
      */
-    protected function getDefaultActions() : array
+    protected function getDefaultActions(): array
     {
+        if (null === $this->parent_obj) {
+            return [];
+        }
+
         $actions[] = $this->ui_factory->button()->shy(
             $this->translator->txt(self::ACTION_ASSIGNMENT_EDIT),
             $this->ctrl->getLinkTargetByClass(
@@ -98,16 +101,16 @@ abstract class ilSrAbstractAssignmentTable extends ilSrAbstractTable
      * @param int $routine_id
      * @param int $ref_id
      */
-    protected function setActionParameters(int $routine_id, int $ref_id) : void
+    protected function setActionParameters(int $routine_id, int $ref_id): void
     {
         $this->ctrl->setParameterByClass(
-            get_class($this->parent_obj),
+            get_class($this->parent_gui),
             ilSrAbstractAssignmentGUI::PARAM_ROUTINE_ID,
             $routine_id
         );
 
         $this->ctrl->setParameterByClass(
-            get_class($this->parent_obj),
+            get_class($this->parent_gui),
             $this->parent_obj->getAssignmentRefIdParameter(),
             $ref_id
         );
@@ -117,5 +120,5 @@ abstract class ilSrAbstractAssignmentTable extends ilSrAbstractTable
      * @param array $data
      * @return Button[]
      */
-    abstract protected function getDropdownActions(array $data) : array;
+    abstract protected function getDropdownActions(array $data): array;
 }

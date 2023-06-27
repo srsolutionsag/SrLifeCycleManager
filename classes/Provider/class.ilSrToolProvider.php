@@ -101,7 +101,12 @@ class ilSrToolProvider extends AbstractDynamicToolPluginProvider
      */
     protected function initDependencies(): void
     {
-        $container = ilSrLifeCycleManagerPlugin::getInstance()->getContainer();
+        /** @var $component_factory ilComponentFactory */
+        $component_factory = $this->dic['component.factory'];
+        /** @var $plugin ilSrLifeCycleManagerPlugin */
+        $plugin = $component_factory->getPlugin(ilSrLifeCycleManagerPlugin::PLUGIN_ID);
+
+        $container = $plugin->getContainer();
 
         $this->request_object = $container
             ->getRepositoryFactory()
@@ -147,13 +152,9 @@ class ilSrToolProvider extends AbstractDynamicToolPluginProvider
      */
     protected function renderRoutineLists(int $ref_id): string
     {
-        try {
-            $object = ilObjectFactory::getInstanceByRefId($ref_id);
-        } catch (Throwable $t) {
-            return '';
-        }
+        $object = ilObjectFactory::getInstanceByRefId($ref_id, false);
 
-        if (false === $object) {
+        if (null === $object) {
             return '';
         }
 
@@ -244,7 +245,7 @@ class ilSrToolProvider extends AbstractDynamicToolPluginProvider
             // action-button to add new routines at current position.
             $controls[] = $this->dic->ui()->factory()->button()->standard(
                 $this->plugin->txt(self::ACTION_ASSIGNMENTS_MANAGE),
-                ilSrLifeCycleManagerDispatcher::getLinkTarget(
+                ilSrLifeCycleManagerDispatcherGUI::getLinkTarget(
                     ilSrRoutineAssignmentGUI::class,
                     ilSrRoutineAssignmentGUI::CMD_INDEX
                 )
@@ -255,7 +256,7 @@ class ilSrToolProvider extends AbstractDynamicToolPluginProvider
         if ($this->access_handler->canManageRoutines()) {
             $controls[] = $this->dic->ui()->factory()->button()->standard(
                 $this->plugin->txt(self::ACTION_ROUTINE_MANAGE),
-                ilSrLifeCycleManagerDispatcher::getLinkTarget(
+                ilSrLifeCycleManagerDispatcherGUI::getLinkTarget(
                     ilSrRoutineGUI::class,
                     ilSrRoutineGUI::CMD_INDEX
                 )

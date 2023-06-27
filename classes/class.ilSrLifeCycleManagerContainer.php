@@ -205,7 +205,7 @@ class ilSrLifeCycleManagerContainer
     public function getRoutineJobFactory(): ilSrRoutineJobFactory
     {
         if (null === $this->routine_job_factory) {
-            $this->abortIfDependenciesNotAvailable(['ilLoggerFactory']);
+            $this->abortIfDependenciesNotAvailable(['ilLoggerFactory', 'cron.manager']);
 
             $this->routine_job_factory = new ilSrRoutineJobFactory(
                 $this->getNotificationSender(),
@@ -213,10 +213,11 @@ class ilSrLifeCycleManagerContainer
                 $this->getRepositoryFactory(),
                 $this->getAffectedObjectProvider(),
                 $this->getEventSubject(),
-                new ResultBuilder(
-                    new ilCronJobResult()
-                ),
+                new ResultBuilder(new ilCronJobResult()),
+                new ilStrictCliCronManager($this->dic->cron()->manager()),
                 $this->dic->logger()->root(),
+                // cron-jobs are run in both CLI and web context, so we need to check if the template is available.
+                ($this->dic->offsetExists('tpl')) ? $this->dic->ui()->mainTemplate() : null
             );
         }
 

@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use srag\Plugins\SrLifeCycleManager\Object\AffectedObjectProvider;
 use ILIAS\BackgroundTasks\Implementation\Tasks\AbstractJob;
 use ILIAS\BackgroundTasks\Types\Type;
 use ILIAS\BackgroundTasks\Observer;
@@ -9,6 +10,7 @@ use ILIAS\BackgroundTasks\Value;
 use ILIAS\BackgroundTasks\Types\SingleType;
 use ILIAS\BackgroundTasks\Implementation\Values\ScalarValues\IntegerValue;
 use ILIAS\BackgroundTasks\Implementation\Values\ScalarValues\StringValue;
+use ILIAS\Filesystem\Filesystem;
 
 /**
  * @author       Fabian Schmid <fabian@sr.solutions>
@@ -16,44 +18,70 @@ use ILIAS\BackgroundTasks\Implementation\Values\ScalarValues\StringValue;
  */
 class ilSrRoutinePreviewBackgroundTask extends AbstractJob
 {
-    public function run(array $input, Observer $observer)
+    /**
+     * @var AffectedObjectProvider
+     */
+    protected $affected_object_provider;
+
+    /**
+     * @var Filesystem
+     */
+    protected $file_system;
+
+    public function __construct()
+    {
+        global $DIC;
+
+        /** @var $component_factory ilComponentFactory */
+        $component_factory = $DIC['component.factory'];
+        /** @var $plugin ilSrLifeCycleManagerPlugin */
+        $plugin = $component_factory->getPlugin(ilSrLifeCycleManagerPlugin::PLUGIN_ID);
+
+        $this->affected_object_provider = $plugin->getContainer()->getAffectedObjectProvider();
+        $this->file_system = $DIC->filesystem();
+    }
+
+    /**
+     * @TODO: test this cron job, removed ilUtil::ilTempnam() by using the filesystem service.
+     */
+    public function run(array $input, Observer $observer): Value
     {
         $observer->notifyPercentage($this, 10);
         $path = new StringValue();
 
-        $preview_builder = new ilSrRoutinePreviewAsFile(
-            ilSrLifeCycleManagerPlugin::getInstance()->getContainer()->getAffectedObjectProvider()
-        );
+        $preview_builder = new ilSrRoutinePreviewAsFile($this->affected_object_provider);
 
         $observer->notifyPercentage($this, 30);
         $content = $preview_builder->getTxtFileContent();
 
         $observer->notifyPercentage($this, 40);
-        $tmpdir = ilUtil::ilTempnam();
+        $tmp_file = uniqid("tmp", true);
+        $this->file_system->temp()->put($tmp_file, $content);
+
         $observer->notifyPercentage($this, 50);
-        file_put_contents($tmpdir, $content);
         $observer->notifyPercentage($this, 60);
-        $path->setValue($tmpdir);
+
+        $path->setValue($tmp_file);
 
         return $path;
     }
 
-    public function isStateless()
+    public function isStateless(): bool
     {
         return false;
     }
 
-    public function getExpectedTimeOfTaskInSeconds()
+    public function getExpectedTimeOfTaskInSeconds(): int
     {
         return 3600;
     }
 
-    public function getInputTypes()
+    public function getInputTypes(): array
     {
         return [];
     }
 
-    public function getOutputType()
+    public function getOutputType(): Type
     {
         return new SingleType(StringValue::class);
     }

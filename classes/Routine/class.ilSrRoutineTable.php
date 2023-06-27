@@ -67,7 +67,7 @@ class ilSrRoutineTable extends ilSrAbstractTable
         ;
 
         // if the 'owner_id' still exists, get the login-name.
-        $owner_name = (ilObjUser::_exists($data[IRoutine::F_USER_ID])) ?
+        $owner_name = (ilObjUser::_exists((int) $data[IRoutine::F_USER_ID])) ?
             (new ilObjUser((int) $data[IRoutine::F_USER_ID]))->getLogin() : ''
         ;
 

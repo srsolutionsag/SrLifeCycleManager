@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 use srag\Plugins\SrLifeCycleManager\Assignment\IRoutineAssignment;
 use srag\Plugins\SrLifeCycleManager\Routine\IRoutine;
@@ -12,7 +14,7 @@ class ilSrRoutineAssignmentTable extends ilSrAbstractAssignmentTable
     /**
      * @inheritDoc
      */
-    protected function getTemplateName() : string
+    protected function getTemplateName(): string
     {
         return 'tpl.routine_assignment_table_row.html';
     }
@@ -20,7 +22,7 @@ class ilSrRoutineAssignmentTable extends ilSrAbstractAssignmentTable
     /**
      * @inheritDoc
      */
-    protected function addTableColumns() : void
+    protected function addTableColumns(): void
     {
         $this->addColumn($this->translator->txt(ilSrRoutineTable::COL_ROUTINE_TITLE));
         $this->addColumn($this->translator->txt(ilSrRoutineTable::COL_ROUTINE_USER_ID));
@@ -34,12 +36,11 @@ class ilSrRoutineAssignmentTable extends ilSrAbstractAssignmentTable
     /**
      * @inheritDoc
      */
-    protected function renderTableRow(ilTemplate $template, array $data) : void
+    protected function renderTableRow(ilTemplate $template, array $data): void
     {
         // if the 'owner_id' still exists, get the login-name.
         $owner_name = (ilObjUser::_exists($data[IRoutine::F_USER_ID])) ?
-            (new ilObjUser((int) $data[IRoutine::F_USER_ID]))->getLogin() : ''
-        ;
+            (new ilObjUser((int) $data[IRoutine::F_USER_ID]))->getLogin() : '';
 
         // translate the routine type.
         $routine_type = $this->translator->txt($data[IRoutine::F_ROUTINE_TYPE]);
@@ -47,8 +48,7 @@ class ilSrRoutineAssignmentTable extends ilSrAbstractAssignmentTable
         // translate the status of 'opt_out_possible'.
         $status_opt_out = ($data[IRoutine::F_HAS_OPT_OUT]) ?
             $this->translator->txt(ilSrRoutineTable::STATUS_POSSIBLE) :
-            $this->translator->txt(ilSrRoutineTable::STATUS_IMPOSSIBLE)
-        ;
+            $this->translator->txt(ilSrRoutineTable::STATUS_IMPOSSIBLE);
 
         $template->setVariable(ilSrRoutineTable::COL_ROUTINE_TITLE, $data[IRoutine::F_TITLE]);
         $template->setVariable(ilSrRoutineTable::COL_ROUTINE_USER_ID, $owner_name);
@@ -62,18 +62,18 @@ class ilSrRoutineAssignmentTable extends ilSrAbstractAssignmentTable
     /**
      * @inheritDoc
      */
-    protected function getDropdownActions(array $data) : array
+    protected function getDropdownActions(array $data): array
     {
         $actions = $this->getDefaultActions();
 
         // add the delete action if the requested object is directly assigned
         // to the routine (and not by recursion), otherwise the whitelist
         // actions might be added (see below).
-        if ($this->parent_obj->getAssignmentRefId() === (int) $data[IRoutineAssignment::F_REF_ID]) {
+        if ($this->parent_gui->getAssignmentRefId() === (int) $data[IRoutineAssignment::F_REF_ID]) {
             $actions[] = $this->ui_factory->button()->shy(
                 $this->translator->txt(self::ACTION_ASSIGNMENT_DELETE),
                 $this->ctrl->getLinkTargetByClass(
-                    get_class($this->parent_obj),
+                    get_class($this->parent_gui),
                     ilSrAbstractAssignmentGUI::CMD_ASSIGNMENT_DELETE
                 )
             );
@@ -87,7 +87,7 @@ class ilSrRoutineAssignmentTable extends ilSrAbstractAssignmentTable
     /**
      * @inheritDoc
      */
-    protected function setActionParameters(int $routine_id, int $ref_id) : void
+    protected function setActionParameters(int $routine_id, int $ref_id): void
     {
         parent::setActionParameters($routine_id, $ref_id);
 

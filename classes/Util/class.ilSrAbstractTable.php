@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 /* Copyright (c) 2022 Thibeau Fuhrer <thibeau@sr.solutions> Extended GPL, see docs/LICENSE */
 
@@ -46,9 +48,9 @@ abstract class ilSrAbstractTable extends ilTable2GUI
     protected $translator;
 
     /**
-     * @var ilCtrl
+     * @var object
      */
-    protected $ctrl;
+    protected $parent_gui;
 
     /**
      * @param Factory           $ui_factory
@@ -75,6 +77,7 @@ abstract class ilSrAbstractTable extends ilTable2GUI
         $this->ui_factory = $ui_factory;
         $this->renderer = $renderer;
         $this->ctrl = $ctrl;
+        $this->parent_gui = $parent_gui_object;
 
         $this->setId(static::class);
         $this->setPrefix(ilSrLifeCycleManagerPlugin::PLUGIN_ID);
@@ -94,7 +97,7 @@ abstract class ilSrAbstractTable extends ilTable2GUI
      *
      * @return Component
      */
-    public function getTable() : Component
+    public function getTable(): Component
     {
         return $this->ui_factory->legacy($this->getHTML());
     }
@@ -107,7 +110,7 @@ abstract class ilSrAbstractTable extends ilTable2GUI
      *
      * @return string
      */
-    abstract protected function getTemplateName() : string;
+    abstract protected function getTemplateName(): string;
 
     /**
      * This method MUST add this tables columns.
@@ -115,7 +118,7 @@ abstract class ilSrAbstractTable extends ilTable2GUI
      * In order to add columns, the parent method @see ilTable2GUI::addColumn()
      * must be used.
      */
-    abstract protected function addTableColumns() : void;
+    abstract protected function addTableColumns(): void;
 
     /**
      * This method MUST prepare the given template which serves as ONE row-entry.
@@ -126,7 +129,7 @@ abstract class ilSrAbstractTable extends ilTable2GUI
      * @param ilTemplate $template
      * @param array $data
      */
-    abstract protected function renderTableRow(ilTemplate $template, array $data) : void;
+    abstract protected function renderTableRow(ilTemplate $template, array $data): void;
 
     /**
      * Adds an empty column to the current table with a fixed width, just
@@ -134,7 +137,7 @@ abstract class ilSrAbstractTable extends ilTable2GUI
      *
      * @see \ILIAS\UI\Component\Dropdown\Dropdown
      */
-    protected function addActionColumn() : void
+    protected function addActionColumn(): void
     {
         // empty column with fixed width for action dropdowns.
         $this->addColumn($this->translator->txt(self::COL_ACTIONS), '', '50px');
@@ -150,7 +153,7 @@ abstract class ilSrAbstractTable extends ilTable2GUI
      *
      * @param array<string, mixed> $a_set
      */
-    protected function fillRow($a_set) : void
+    protected function fillRow($a_set): void
     {
         $this->renderTableRow($this->tpl, $a_set);
     }

@@ -112,9 +112,10 @@ class ilSrRoutineCronJob extends ilSrAbstractCronJob
         AffectedObjectProvider $object_provider,
         EventSubject $event_subject,
         ResultBuilder $result_builder,
-        INotifier $notifier
+        INotifier $notifier,
+        ilGlobalTemplateInterface $template = null,
     ) {
-        parent::__construct($result_builder, $notifier);
+        parent::__construct($result_builder, $notifier, $template);
         $this->recipient_retriever = $recipient_retriever;
         $this->event_subject = $event_subject;
         $this->routine_repository = $routine_repository;

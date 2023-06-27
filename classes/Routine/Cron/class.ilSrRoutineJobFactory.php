@@ -48,9 +48,19 @@ class ilSrRoutineJobFactory
     protected $affected_objects_provider;
 
     /**
+     * @var ilCronManager
+     */
+    protected $cron_manager;
+
+    /**
      * @var ilLogger
      */
     protected $logger;
+
+    /**
+     * @var ilGlobalTemplateInterface|null
+     */
+    protected $template;
 
     public function __construct(
         INotificationSender $notification_sender,
@@ -59,7 +69,9 @@ class ilSrRoutineJobFactory
         AffectedObjectProvider $affected_object_provider,
         EventSubject $event_subject,
         ResultBuilder $result_builder,
-        ilLogger $logger
+        ilCronManager $cron_manager,
+        ilLogger $logger,
+        ilGlobalTemplateInterface $template = null,
     ) {
         $this->notification_sender = $notification_sender;
         $this->recipient_retriever = $recipient_retriever;
@@ -67,7 +79,9 @@ class ilSrRoutineJobFactory
         $this->repository = $repositories;
         $this->event_subject = $event_subject;
         $this->affected_objects_provider = $affected_object_provider;
+        $this->cron_manager = $cron_manager;
         $this->logger = $logger;
+        $this->template = $template;
     }
 
     public function getJob(string $job_id): ilCronJob
@@ -80,7 +94,7 @@ class ilSrRoutineJobFactory
                 return $this->dryRun();
 
             default:
-                throw new LogicException("Cron job '$job_id' was not found.");
+                throw new OutOfBoundsException("Cron job '$job_id' was not found.");
         }
     }
 
@@ -97,7 +111,8 @@ class ilSrRoutineJobFactory
             $this->affected_objects_provider,
             $this->event_subject,
             $this->result_builder,
-            $this->getNotifier(ilSrRoutineCronJob::class)
+            $this->getNotifier(ilSrRoutineCronJob::class),
+            $this->template,
         );
     }
 
@@ -114,12 +129,13 @@ class ilSrRoutineJobFactory
             $this->affected_objects_provider,
             $this->event_subject,
             $this->result_builder,
-            $this->getNotifier(ilSrDryRoutineCronJob::class)
+            $this->getNotifier(ilSrDryRoutineCronJob::class),
+            $this->template,
         );
     }
 
     protected function getNotifier(string $job_id): INotifier
     {
-        return new ilSrCronNotifier($this->logger, $job_id);
+        return new ilSrCronNotifier($this->cron_manager, $this->logger, $job_id);
     }
 }

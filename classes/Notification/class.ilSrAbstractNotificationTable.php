@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 /* Copyright (c) 2022 Thibeau Fuhrer <thibeau@sr.solutions> Extended GPL, see docs/LICENSE */
 
@@ -6,7 +8,7 @@ use srag\Plugins\SrLifeCycleManager\Notification\INotification;
 use ILIAS\UI\Component\Dropdown\Dropdown;
 
 /**
- * @author Thibeau Fuhrer <thibeau@sr.solutions>
+ * @author       Thibeau Fuhrer <thibeau@sr.solutions>
  * @noinspection AutoloadingIssuesInspection
  */
 abstract class ilSrAbstractNotificationTable extends ilSrAbstractTable
@@ -22,7 +24,7 @@ abstract class ilSrAbstractNotificationTable extends ilSrAbstractTable
     /**
      * @inheritDoc
      */
-    protected function addTableColumns() : void
+    protected function addTableColumns(): void
     {
         $this->addColumn($this->translator->txt(self::COL_NOTIFICATION_TITLE));
         $this->addColumn($this->translator->txt(self::COL_NOTIFICATION_CONTENT));
@@ -35,7 +37,7 @@ abstract class ilSrAbstractNotificationTable extends ilSrAbstractTable
     /**
      * @inheritDoc
      */
-    protected function renderTableRow(ilTemplate $template, array $data) : void
+    protected function renderTableRow(ilTemplate $template, array $data): void
     {
         $template->setVariable(self::COL_NOTIFICATION_TITLE, $data[INotification::F_TITLE]);
         $template->setVariable(self::COL_NOTIFICATION_CONTENT, $data[INotification::F_CONTENT]);
@@ -58,14 +60,14 @@ abstract class ilSrAbstractNotificationTable extends ilSrAbstractTable
      * @param int $routine_id
      * @return Dropdown
      */
-    protected function getActionDropdown(int $notification_id, int $routine_id) : Dropdown
+    protected function getActionDropdown(int $notification_id, int $routine_id): Dropdown
     {
         $this->setActionParameters($notification_id, $routine_id);
 
         $actions[] = $this->ui_factory->button()->shy(
             $this->translator->txt(self::ACTION_NOTIFICATION_EDIT),
             $this->ctrl->getLinkTargetByClass(
-                get_class($this->parent_obj),
+                get_class($this->parent_gui),
                 ilSrAbstractNotificationGUI::CMD_NOTIFICATION_EDIT
             )
         );
@@ -73,7 +75,7 @@ abstract class ilSrAbstractNotificationTable extends ilSrAbstractTable
         $actions[] = $this->ui_factory->button()->shy(
             $this->translator->txt(self::ACTION_NOTIFICATION_DELETE),
             $this->ctrl->getLinkTargetByClass(
-                get_class($this->parent_obj),
+                get_class($this->parent_gui),
                 ilSrAbstractNotificationGUI::CMD_NOTIFICATION_DELETE
             )
         );
@@ -86,16 +88,16 @@ abstract class ilSrAbstractNotificationTable extends ilSrAbstractTable
      * @param int $routine_id
      * @return void
      */
-    protected function setActionParameters(int $notification_id, int $routine_id) : void
+    protected function setActionParameters(int $notification_id, int $routine_id): void
     {
         $this->ctrl->setParameterByClass(
-            get_class($this->parent_obj),
+            get_class($this->parent_gui),
             ilSrAbstractNotificationGUI::PARAM_ROUTINE_ID,
             $routine_id
         );
 
         $this->ctrl->setParameterByClass(
-            get_class($this->parent_obj),
+            get_class($this->parent_gui),
             ilSrAbstractNotificationGUI::PARAM_NOTIFICATION_ID,
             $notification_id
         );
@@ -109,11 +111,11 @@ abstract class ilSrAbstractNotificationTable extends ilSrAbstractTable
      * @param array      $data
      * @return void
      */
-    abstract protected function renderNotificationSpecificColumns(ilTemplate $template, array $data) : void;
+    abstract protected function renderNotificationSpecificColumns(ilTemplate $template, array $data): void;
 
     /**
      * This method is called when initializing this table and should add all
      * necessary template variables that are specific to the notification.
      */
-    abstract protected function addNotificationSpecificColumns() : void;
+    abstract protected function addNotificationSpecificColumns(): void;
 }

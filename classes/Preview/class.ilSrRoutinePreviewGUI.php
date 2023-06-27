@@ -11,6 +11,7 @@ use srag\Plugins\SrLifeCycleManager\Rule\Attribute\Common\CommonAttributeFactory
 use srag\Plugins\SrLifeCycleManager\Rule\Attribute\Object\ObjectAttributeFactory;
 use srag\Plugins\SrLifeCycleManager\Rule\Attribute\Survey\SurveyAttributeFactory;
 use srag\Plugins\SrLifeCycleManager\Rule\Attribute\Course\CourseAttributeFactory;
+use ILIAS\BackgroundTasks\BackgroundTaskServices;
 
 /**
  * @author       Fabian Schmid <fabian@sr.solutions>
@@ -26,7 +27,7 @@ class ilSrRoutinePreviewGUI extends ilSrAbstractGUI
     // ilSrRoutinePreviewGUI language variables:
     protected const PAGE_TITLE = 'page_title_routine_preview';
     /**
-     * @var \ILIAS\DI\BackgroundTaskServices
+     * @var BackgroundTaskServices
      */
     protected $background_tasks;
 
@@ -40,13 +41,18 @@ class ilSrRoutinePreviewGUI extends ilSrAbstractGUI
      */
     public function __construct()
     {
+        global $DIC;
         parent::__construct();
 
-        global $DIC;
+        /** @var $component_factory ilComponentFactory */
+        $component_factory = $DIC['component.factory'];
+        /** @var $plugin ilSrLifeCycleManagerPlugin */
+        $plugin = $component_factory->getPlugin(ilSrLifeCycleManagerPlugin::PLUGIN_ID);
+
         $this->background_tasks = $DIC->backgroundTasks();
 
         $this->preview_renderer = new ilSrRoutinePreviewRenderer(
-            ilSrLifeCycleManagerPlugin::getInstance()->getContainer()->getAffectedObjectProvider(),
+            $plugin->getContainer()->getAffectedObjectProvider(),
             $this->translator,
             $this->renderer,
             $this->ui_factory,

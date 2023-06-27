@@ -1,18 +1,20 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 /* Copyright (c) 2022 Thibeau Fuhrer <thibeau@sr.solutions> Extended GPL, see docs/LICENSE */
 
 use srag\Plugins\SrLifeCycleManager\Form\IFormBuilder;
 use srag\Plugins\SrLifeCycleManager\Form\Config\ConfigFormBuilder;
 use srag\Plugins\SrLifeCycleManager\Form\Config\ConfigFormProcessor;
-use ILIAS\DI\HTTPServices;
+use ILIAS\HTTP\GlobalHttpState;
 use ILIAS\Filesystem\Stream\Streams;
 use srag\Plugins\SrLifeCycleManager\Routine\IRoutine;
 
 /**
  * This GUI is responsible for all actions in regard to plugin configuration.
  *
- * @author Thibeau Fuhrer <thibeau@sr.solutions>
+ * @author       Thibeau Fuhrer <thibeau@sr.solutions>
  *
  * @noinspection AutoloadingIssuesInspection
  */
@@ -33,7 +35,7 @@ class ilSrConfigGUI extends ilSrAbstractGUI
     protected $form_builder;
 
     /**
-     * @var HTTPServices
+     * @var GlobalHttpState
      */
     protected $http;
 
@@ -61,14 +63,13 @@ class ilSrConfigGUI extends ilSrAbstractGUI
     /**
      * @inheritDoc
      */
-    protected function setupGlobalTemplate(ilGlobalTemplateInterface $template, ilSrTabManager $tabs) : void
+    protected function setupGlobalTemplate(ilGlobalTemplateInterface $template, ilSrTabManager $tabs): void
     {
         $template->setTitle($this->translator->txt(self::PAGE_TITLE));
         $tabs
             ->addConfigurationTab(true)
             ->addRoutineTab()
-            ->addPreviewTab()
-        ;
+            ->addPreviewTab();
 
         // if the current user is not within the administration context we
         // need to add the back-to target manually.
@@ -80,7 +81,7 @@ class ilSrConfigGUI extends ilSrAbstractGUI
     /**
      * @inheritDoc
      */
-    protected function canUserExecute(ilSrAccessHandler $access_handler, string $command) : bool
+    protected function canUserExecute(ilSrAccessHandler $access_handler, string $command): bool
     {
         // the configurations are only accessible for administrators.
         return $access_handler->isAdministrator();
@@ -91,7 +92,7 @@ class ilSrConfigGUI extends ilSrAbstractGUI
      *
      * @inheritDoc
      */
-    protected function index() : void
+    protected function index(): void
     {
         $this->render($this->form_builder->getForm());
     }
@@ -105,7 +106,7 @@ class ilSrConfigGUI extends ilSrAbstractGUI
      * If the submitted data is invalid, the user will be shown the
      * processed form including the error-messages.
      */
-    protected function save() : void
+    protected function save(): void
     {
         $processor = new ConfigFormProcessor(
             $this->repository->config(),
@@ -128,7 +129,7 @@ class ilSrConfigGUI extends ilSrAbstractGUI
      *
      * @see AbstractFormBuilder::getTagInputAutoCompleteBinder()
      */
-    protected function findUsers() : void
+    protected function findUsers(): void
     {
         $body = $this->request->getQueryParams();
         $term = $body['term'] ?? '';
@@ -136,9 +137,13 @@ class ilSrConfigGUI extends ilSrAbstractGUI
         $this->http->saveResponse(
             $this->http
                 ->response()
-                ->withBody(Streams::ofString(json_encode(
-                    $this->repository->general()->getUsersByTerm($term)
-                )))
+                ->withBody(
+                    Streams::ofString(
+                        json_encode(
+                            $this->repository->general()->getUsersByTerm($term)
+                        )
+                    )
+                )
                 ->withHeader('Content-Type', 'application/json; charset=utf-8')
         );
 
@@ -147,11 +152,11 @@ class ilSrConfigGUI extends ilSrAbstractGUI
     }
 
     /**
-     * Returns an ajax autocomplete source that points to @see ilSrConfigGUI::findUsers().
+     * Returns an ajax autocomplete source that points to @return string
+     * @see ilSrConfigGUI::findUsers().
      *
-     * @return string
      */
-    protected function getAjaxAction() : string
+    protected function getAjaxAction(): string
     {
         return $this->ctrl->getLinkTargetByClass(
             self::class,

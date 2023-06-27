@@ -24,7 +24,7 @@ class ilSrRoutinePreviewBackgroundDownloadInteraction extends AbstractUserIntera
     public const OPTION_DOWNLOAD = 'download';
     public const OPTION_CANCEL = 'cancel';
 
-    public function getInputTypes()
+    public function getInputTypes(): array
     {
         return [
             new SingleType(StringValue::class),
@@ -32,24 +32,24 @@ class ilSrRoutinePreviewBackgroundDownloadInteraction extends AbstractUserIntera
         ];
     }
 
-    public function getRemoveOption()
+    public function getRemoveOption(): Option
     {
         return new UserInteractionOption('remove', self::OPTION_CANCEL);
     }
 
-    public function getOutputType()
+    public function getOutputType(): Type
     {
         return new SingleType(StringValue::class);
     }
 
-    public function getOptions(array $input)
+    public function getOptions(array $input): array
     {
         return [
             new UserInteractionOption('download', self::OPTION_DOWNLOAD),
         ];
     }
 
-    public function interaction(array $input, Option $user_selected_option, Bucket $bucket)
+    public function interaction(array $input, Option $user_selected_option, Bucket $bucket): Value
     {
         global $DIC;
         $download_name = $input[0]; //directory name.
@@ -67,12 +67,12 @@ class ilSrRoutinePreviewBackgroundDownloadInteraction extends AbstractUserIntera
                 $filesystem->deleteDir(dirname($path));
             }
 
-            return $input;
+            return $download_path;
         }
 
         $download_path = $download_path->getValue();
         ilFileDelivery::deliverFileAttached($download_name->getValue(), $download_path);
 
-        return $input;
+        return $download_path;
     }
 }

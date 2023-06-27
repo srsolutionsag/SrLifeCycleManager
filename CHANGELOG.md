@@ -1,5 +1,9 @@
 # SrLifeCycleManager Changelog
 
+## 2.0.0
+
+- Added ILIAS 8 compatibility.
+
 ## 1.9.0
 
 - Added an ILIAS background-task to create a preview of the deletion-process, which can generates a text-file containing

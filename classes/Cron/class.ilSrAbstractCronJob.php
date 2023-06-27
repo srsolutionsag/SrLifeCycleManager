@@ -13,6 +13,11 @@ use srag\Plugins\SrLifeCycleManager\ITranslator;
 abstract class ilSrAbstractCronJob extends ilCronJob
 {
     /**
+     * @var ilGlobalTemplateInterface|null
+     */
+    protected $template;
+
+    /**
      * @var ResultBuilder
      */
     protected $result_builder;
@@ -27,10 +32,11 @@ abstract class ilSrAbstractCronJob extends ilCronJob
      */
     protected $summary = [];
 
-    public function __construct(ResultBuilder $builder, INotifier $notifier)
+    public function __construct(ResultBuilder $builder, INotifier $notifier, ilGlobalTemplateInterface $template = null)
     {
         $this->result_builder = $builder;
         $this->notifier = $notifier;
+        $this->template = $template;
     }
 
     /**
@@ -56,8 +62,12 @@ abstract class ilSrAbstractCronJob extends ilCronJob
 
         // displays an info-toast with the summary of the current cron-job
         // at the top of the cron-job administration page.
-        if (!$this->isCLI()) {
-            ilUtil::sendInfo($this->getSummary('<br />'), true);
+        if ($this->template !== null) {
+            $this->template->setOnScreenMessage(
+                ilGlobalTemplateInterface::MESSAGE_TYPE_INFO,
+                $this->getSummary('<br />'),
+                true
+            );
         }
 
         return $result;
@@ -122,15 +132,6 @@ abstract class ilSrAbstractCronJob extends ilCronJob
     protected function addSummary(string $message): void
     {
         $this->summary[] = $message;
-    }
-
-    /**
-     * Returns whether the cron-job instance has been started via CLI.
-     */
-    protected function isCLI(): bool
-    {
-        // cannot use PHP_SAPI in this scenario.
-        return ('cli' === php_sapi_name());
     }
 
     /**

@@ -11,22 +11,23 @@ use srag\Plugins\SrLifeCycleManager\ITranslator;
  *
  * @author Thibeau Fuhrer <thibeau@sr.solutions>
  *
- * @ilCtrl_isCalledBy ilSrLifeCycleManagerDispatcher : ilUIPluginRouterGUI
- * @ilCtrl_isCalledBy ilSrLifeCycleManagerDispatcher : ilSrLifeCycleManagerConfigGUI
+ * @ilCtrl_isCalledBy ilSrLifeCycleManagerDispatcherGUI: ilUIPluginRouterGUI
+ * @ilCtrl_isCalledBy ilSrLifeCycleManagerDispatcherGUI: ilSrLifeCycleManagerConfigGUI
+ * @ilCtrl_isCalledBy ilSrLifeCycleManagerDispatcherGUI: ilObjComponentSettingsGUI
  *
- * @ilCtrl_Calls ilSrLifeCycleManagerDispatcher : ilSrConfigGUI
- * @ilCtrl_Calls ilSrLifeCycleManagerDispatcher : ilSrRoutineAssignmentGUI
- * @ilCtrl_Calls ilSrLifeCycleManagerDispatcher : ilSrObjectAssignmentGUI
- * @ilCtrl_Calls ilSrLifeCycleManagerDispatcher : ilSrConfirmationGUI
- * @ilCtrl_Calls ilSrLifeCycleManagerDispatcher : ilSrReminderGUI
- * @ilCtrl_Calls ilSrLifeCycleManagerDispatcher : ilSrRoutineGUI
- * @ilCtrl_Calls ilSrLifeCycleManagerDispatcher : ilSrRuleGUI
- * @ilCtrl_Calls ilSrLifeCycleManagerDispatcher : ilSrRoutinePreviewGUI
- * @ilCtrl_Calls ilSrLifeCycleManagerDispatcher : ilSrWhitelistGUI
+ * @ilCtrl_Calls ilSrLifeCycleManagerDispatcherGUI: ilSrConfigGUI
+ * @ilCtrl_Calls ilSrLifeCycleManagerDispatcherGUI: ilSrRoutineAssignmentGUI
+ * @ilCtrl_Calls ilSrLifeCycleManagerDispatcherGUI: ilSrObjectAssignmentGUI
+ * @ilCtrl_Calls ilSrLifeCycleManagerDispatcherGUI: ilSrConfirmationGUI
+ * @ilCtrl_Calls ilSrLifeCycleManagerDispatcherGUI: ilSrReminderGUI
+ * @ilCtrl_Calls ilSrLifeCycleManagerDispatcherGUI: ilSrRoutineGUI
+ * @ilCtrl_Calls ilSrLifeCycleManagerDispatcherGUI: ilSrRuleGUI
+ * @ilCtrl_Calls ilSrLifeCycleManagerDispatcherGUI: ilSrRoutinePreviewGUI
+ * @ilCtrl_Calls ilSrLifeCycleManagerDispatcherGUI: ilSrWhitelistGUI
  *
  * @noinspection AutoloadingIssuesInspection
  */
-class ilSrLifeCycleManagerDispatcher
+class ilSrLifeCycleManagerDispatcherGUI
 {
     /**
      * @var ilGlobalTemplateInterface
@@ -123,7 +124,7 @@ class ilSrLifeCycleManagerDispatcher
 
         $call_history = $DIC->ctrl()->getCallHistory();
         $base_class   = array_shift($call_history);
-        $base_class   = strtolower($base_class['class']);
+        $base_class   = strtolower($base_class[ilCtrlInterface::PARAM_CMD_CLASS]);
 
         switch ($base_class) {
             // because (somehow) this class cannot be called by ilRepositoryGUI,
