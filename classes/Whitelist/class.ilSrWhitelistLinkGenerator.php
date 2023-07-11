@@ -1,7 +1,7 @@
 <?php declare(strict_types=1);
 
 use srag\Plugins\SrLifeCycleManager\Token\ITokenRepository;
-use srag\Plugins\SrLifeCycleManager\Routine\RoutineEvent;
+use srag\Plugins\SrLifeCycleManager\Routine\IRoutineEvent;
 
 /**
  * @author       Thibeau Fuhrer <thibeau@sr.solutions>
@@ -40,8 +40,8 @@ class ilSrWhitelistLinkGenerator
     public function getElongationLink(int $routine_id, int $ref_id): string
     {
         $token =
-            $this->token_repository->get($routine_id, $ref_id, RoutineEvent::EVENT_POSTPONE) ??
-            $this->token_repository->new($routine_id, $ref_id, RoutineEvent::EVENT_POSTPONE)
+            $this->token_repository->get($routine_id, $ref_id, IRoutineEvent::EVENT_POSTPONE) ??
+            $this->token_repository->new($routine_id, $ref_id, IRoutineEvent::EVENT_POSTPONE)
         ;
 
         $this->ctrl->setParameterByClass(
@@ -67,8 +67,8 @@ class ilSrWhitelistLinkGenerator
     public function getOptOutLink(int $routine_id, int $ref_id): string
     {
         $token =
-            $this->token_repository->get($routine_id, $ref_id, RoutineEvent::EVENT_OPT_OUT) ??
-            $this->token_repository->new($routine_id, $ref_id, RoutineEvent::EVENT_OPT_OUT)
+            $this->token_repository->get($routine_id, $ref_id, IRoutineEvent::EVENT_OPT_OUT) ??
+            $this->token_repository->new($routine_id, $ref_id, IRoutineEvent::EVENT_OPT_OUT)
         ;
 
         $this->ctrl->setParameterByClass(

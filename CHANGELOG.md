@@ -1,5 +1,10 @@
 # SrLifeCycleManager Changelog
 
+## 1.9.1
+
+- Fixed an issue where whitelist tokens could not be generated because of an old usage of `RoutineEvent` which has been
+  replaced by an interface (`IRoutineEvent`).
+
 ## 1.9.0
 
 - Added an ILIAS background-task to create a preview of the deletion-process, which can generates a text-file containing
@@ -28,9 +33,9 @@
 - Added info-byline for routine-elongation-cooldowns.
 - Improved routine cron-job and it's unit tests.
 - Added new dynamic attributes for surveys:
-  - Survey participants (not the same as memberships)
-  - Survey questions
-  - Survey results
+    - Survey participants (not the same as memberships)
+    - Survey questions
+    - Survey results
 - Fixed an issue where the assignment-form would provide other ILIAS data as well when searching for objects.
 - Fixed a typo in the delete-clause of a routine which lead to routines not being deleted.
 - Applied PSR-12 to adjusted PHP files.
