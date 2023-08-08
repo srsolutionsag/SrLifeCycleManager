@@ -52,27 +52,32 @@ class ilSrRoutinePreviewBackgroundDownloadInteraction extends AbstractUserIntera
     public function interaction(array $input, Option $user_selected_option, Bucket $bucket): Value
     {
         global $DIC;
-        $download_name = $input[0]; //directory name.
-        $download_path = $input[1]; // zip job
+        $download_name_value_object = $input[1] ?? null; // Name of the zip file
+        $download_path_value_object = $input[0] ?? null; // Relative path to the zip file
 
-        if ($user_selected_option->getValue() != self::OPTION_DOWNLOAD) {
-            // delete zip file
-            $filesystem = $DIC->filesystem()->temp();
-            try {
-                $path = LegacyPathHelper::createRelativePath($download_path->getValue());
-            } catch (InvalidArgumentException $e) {
-                $path = null;
-            }
-            if (!is_null($path) && $filesystem->has($path)) {
-                $filesystem->deleteDir(dirname($path));
-            }
-
-            return $download_path;
+        if(!$download_name_value_object instanceof \ILIAS\BackgroundTasks\Value || !$download_path_value_object instanceof \ILIAS\BackgroundTasks\Value) {
+            return $download_path_value_object;
         }
 
-        $download_path = $download_path->getValue();
-        ilFileDelivery::deliverFileAttached($download_name->getValue(), $download_path);
+        $filesystem = $DIC->filesystem()->temp();
+        if ($user_selected_option->getValue() !== self::OPTION_DOWNLOAD) {
+            // delete zip file
+            try {
+                $filesystem->deleteDir($download_path_value_object->getValue());
+            } catch (Throwable $t) {
+            }
 
-        return $download_path;
+            return $download_path_value_object;
+        }
+
+        $file_stream = $filesystem->readStream($download_path_value_object->getValue());
+        $absolut_path = $file_stream->getMetadata()['uri'] ?? '';
+
+        ilFileDelivery::deliverFileAttached(
+            $absolut_path,
+            $download_name_value_object->getValue()
+        );
+
+        return $download_path_value_object;
     }
 }

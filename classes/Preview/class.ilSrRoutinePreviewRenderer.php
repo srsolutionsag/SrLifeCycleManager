@@ -97,6 +97,10 @@ class ilSrRoutinePreviewRenderer extends ilSrAbstractRoutinePreviewGenerator
                 $this->translator->txt(self::PREVIEW_REF_ID) => $instance->getRefId()
             ];
 
+            if (!isset($properties[$this->translator->txt(self::PREVIEW_ROUTINES)])) {
+                $properties[$this->translator->txt(self::PREVIEW_ROUTINES)] = '';
+            }
+
             $properties[$this->translator->txt(self::PREVIEW_ROUTINES)] .= $item->getRoutine()->getTitle() . '<br>';
 
             $links = $this->ui_factory->dropdown()->standard([

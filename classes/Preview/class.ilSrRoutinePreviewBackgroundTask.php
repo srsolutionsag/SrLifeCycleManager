@@ -11,6 +11,7 @@ use ILIAS\BackgroundTasks\Types\SingleType;
 use ILIAS\BackgroundTasks\Implementation\Values\ScalarValues\IntegerValue;
 use ILIAS\BackgroundTasks\Implementation\Values\ScalarValues\StringValue;
 use ILIAS\Filesystem\Filesystem;
+use ILIAS\Filesystem\Filesystems;
 
 /**
  * @author       Fabian Schmid <fabian@sr.solutions>
@@ -24,7 +25,7 @@ class ilSrRoutinePreviewBackgroundTask extends AbstractJob
     protected $affected_object_provider;
 
     /**
-     * @var Filesystem
+     * @var Filesystems
      */
     protected $file_system;
 
@@ -55,7 +56,7 @@ class ilSrRoutinePreviewBackgroundTask extends AbstractJob
         $content = $preview_builder->getTxtFileContent();
 
         $observer->notifyPercentage($this, 40);
-        $tmp_file = uniqid("tmp", true);
+        $tmp_file = str_replace(".", "", uniqid("tmp", true));
         $this->file_system->temp()->put($tmp_file, $content);
 
         $observer->notifyPercentage($this, 50);
