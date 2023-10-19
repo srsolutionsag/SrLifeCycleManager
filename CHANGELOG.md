@@ -1,5 +1,9 @@
 # SrLifeCycleManager Changelog
 
+## 2.0.2
+
+- Added PHP 7.4 compatibility.
+
 ## 2.0.1
 
 - Fixed an issue where the background-task for generating a preview was incompatible with ILIAS 8.
