@@ -71,7 +71,7 @@ class ilSrRoutineJobFactory
         ResultBuilder $result_builder,
         ilCronManager $cron_manager,
         ilLogger $logger,
-        ilGlobalTemplateInterface $template = null,
+        ilGlobalTemplateInterface $template = null
     ) {
         $this->notification_sender = $notification_sender;
         $this->recipient_retriever = $recipient_retriever;
