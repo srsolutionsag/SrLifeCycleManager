@@ -46,6 +46,11 @@ class ilSrLifeCycleManagerPlugin extends ilCronHookPlugin implements ITranslator
     protected $container;
 
     /**
+     * @var ilDBInterface
+     */
+    protected $db;
+
+    /**
      * Initializes the global screen providers and event-listeners.
      */
     protected function __construct()
@@ -63,6 +68,10 @@ class ilSrLifeCycleManagerPlugin extends ilCronHookPlugin implements ITranslator
             $this->getContainer()->getEventSubject()->attach(
                 $this->getContainer()->getConfirmationEventObserver()
             );
+        }
+
+        if ($DIC->offsetExists('ilDB')) {
+            $this->db = $DIC->database();
         }
 
         self::$instance = $this;
@@ -107,5 +116,22 @@ class ilSrLifeCycleManagerPlugin extends ilCronHookPlugin implements ITranslator
     public function getContainer(): ilSrLifeCycleManagerContainer
     {
         return $this->container;
+    }
+
+    /**
+     * Drops all database tables if the plugin is uninstalled.
+     */
+    protected function afterUninstall(): void
+    {
+        $this->db->dropTable('srlcm_configuration', false);
+        $this->db->dropTable('srlcm_routine', false);
+        $this->db->dropTable('srlcm_notification', false);
+        $this->db->dropTable('srlcm_rule', false);
+        $this->db->dropTable('srlcm_routine_rule', false);
+        $this->db->dropTable('srlcm_whitelist', false);
+        $this->db->dropTable('srlcm_notified_objects', false);
+        $this->db->dropTable('srlcm_assigned_routine', false);
+        $this->db->dropTable('srlcm_reminder', false);
+        $this->db->dropTable('srlcm_tokens', false);
     }
 }
