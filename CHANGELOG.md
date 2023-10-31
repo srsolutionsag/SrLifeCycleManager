@@ -1,5 +1,9 @@
 # SrLifeCycleManager Changelog
 
+## 1.9.2
+
+- Fixed an issue where database tables have not been deleted if the plugin was uninstalled.
+
 ## 1.9.1
 
 - Fixed an issue where whitelist tokens could not be generated because of an old usage of `RoutineEvent` which has been
