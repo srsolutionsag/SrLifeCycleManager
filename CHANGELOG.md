@@ -1,5 +1,9 @@
 # SrLifeCycleManager Changelog
 
+## 1.9.3
+
+- Added compatibility for PHP 7.3.
+
 ## 1.9.2
 
 - Fixed an issue where database tables have not been deleted if the plugin was uninstalled.
