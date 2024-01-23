@@ -17,7 +17,7 @@ class EventSubject
     /**
      * @var array<string, IEventObserver[]>
      */
-    protected array $observer_groups = [];
+    protected $observer_groups = [];
 
     /**
      * Attach an observer to a specific event, defaults to ALL_EVENTS.
