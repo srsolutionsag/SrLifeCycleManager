@@ -1,5 +1,10 @@
 # SrLifeCycleManager Changelog
 
+## 1.9.4
+
+- Routine assignments which are not recursive will provide direct children instead of the assigned object now.
+- Routine list in ILIAS tool will no longer show a deletion date for opt-outs.
+
 ## 1.9.3
 
 - Added compatibility for PHP 7.3.
