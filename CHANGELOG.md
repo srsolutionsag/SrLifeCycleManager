@@ -1,5 +1,10 @@
 # SrLifeCycleManager Changelog
 
+## 2.0.4
+
+- Routine assignments which are not recursive will provide direct children instead of the assigned object now.
+- Routine list in ILIAS tool will no longer show a deletion date for opt-outs.
+
 ## 2.0.3
 
 - Fixed an issue where database tables have not been deleted if the plugin was uninstalled.
