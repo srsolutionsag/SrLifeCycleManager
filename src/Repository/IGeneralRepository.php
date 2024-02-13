@@ -32,12 +32,13 @@ interface IGeneralRepository
     public function getParticipantObject(ilObject $object): ?\ilParticipants;
 
     /**
-     * Returns all repository objects which are of the given types.
+     * Returns all children of the given repository object (ref-id) which match the given types.
+     * Recursion can be limited by providing a $max_depth to e.g. only return direct children.
      *
      * @param string[] $types object types to retrieve
      * @return Generator|ilObject[]
      */
-    public function getRepositoryObjects(int $ref_id, array $types): Generator;
+    public function getRepositoryObjectChildren(int $ref_id, array $types, int $max_depth = PHP_INT_MAX): Generator;
 
     /**
      * Returns all repository objects that relate to the given term.

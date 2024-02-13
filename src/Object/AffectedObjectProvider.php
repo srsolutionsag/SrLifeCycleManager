@@ -71,16 +71,9 @@ class AffectedObjectProvider
                 continue;
             }
 
-            if (!$assignment->isRecursive()) {
-                $object = $this->general_repository->getObject($ref_id);
-                if (null !== $object && $this->applicability_checker->isApplicable($routine, $object)) {
-                    yield new AffectedObject($object, $routine);
-                }
-                continue;
-            }
-
-            $routine_type = [$routine->getRoutineType()];
-            foreach ($this->general_repository->getRepositoryObjects($ref_id, $routine_type) as $object) {
+            $max_depth = ($assignment->isRecursive()) ? PHP_INT_MAX : 1;
+            $types = [$routine->getRoutineType()];
+            foreach ($this->general_repository->getRepositoryObjectChildren($ref_id, $types, $max_depth) as $object) {
                 if ($this->applicability_checker->isApplicable($routine, $object)) {
                     yield new AffectedObject($object, $routine);
                 }
