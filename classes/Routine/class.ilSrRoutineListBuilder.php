@@ -33,6 +33,7 @@ class ilSrRoutineListBuilder
     protected const LABEL_WHITELIST_EXPIRY_DATE = 'label_whitelist_expiry_date';
     protected const LABEL_POSTPONED_INDEFINITELY = 'label_postponed_indefinitely';
     protected const MSG_NO_AVAILABLE_ROUTINES = 'msg_no_available_routines';
+    protected const LABEL_DATE_NEVER = 'label_date_never';
 
     /**
      * @var array<int, IWhitelistEntry|null>
@@ -247,7 +248,8 @@ class ilSrRoutineListBuilder
         $whitelist_entry = $this->getRoutineWhitelistEntry($routine);
 
         // add initial deletion date to properties.
-        $properties[$this->translator->txt(self::LABEL_ROUTINE_DELETION_DATE)] = $this->getPrettyDateString(
+        $deletion_date_key = $this->translator->txt(self::LABEL_ROUTINE_DELETION_DATE);
+        $properties[$deletion_date_key] = $this->getPrettyDateString(
             $this->routine_repository->getDeletionDate($routine, $this->object->getRefId())
         );
 
@@ -257,6 +259,8 @@ class ilSrRoutineListBuilder
                 $properties[$this->translator->txt(self::LABEL_WHITELIST_EXPIRY_DATE)] = $this->translator->txt(
                     self::LABEL_POSTPONED_INDEFINITELY
                 );
+                // update deletion date to "never".
+                $properties[$deletion_date_key] = $this->translator->txt(self::LABEL_DATE_NEVER);
             } elseif (null !== $whitelist_entry->getExpiryDate()) {
                 // add the expiry-date if the whitelist entry has one.
                 $properties[$this->translator->txt(self::LABEL_WHITELIST_EXPIRY_DATE)] = $this->getPrettyDateString(
