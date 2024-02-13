@@ -14,6 +14,7 @@ label_affecting_routines#:#Löschende Routinen
 label_assigned_routines#:#Zugewiesene Routinen
 label_routine_owner_unknown#:#Unbekannt
 label_preview_deleted_objects#:#Vorschau der gelöschten Objekte
+label_date_never#:#Niemals
 
 msg_permission_denied#:#Sie haben nicht ausreichende Berechtigung.
 msg_object_not_found#:#Das angefragte Object wurde nicht gefunden.

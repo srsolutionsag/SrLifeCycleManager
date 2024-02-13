@@ -14,6 +14,7 @@ label_affecting_routines#:#Deleting routines
 label_assigned_routines#:#Assigned routines
 label_routine_owner_unknown#:#Unknown
 label_preview_deleted_objects#:#Preview of deleted objects
+label_date_never#:#Never
 
 msg_permission_denied#:#Permission denied.
 msg_object_not_found#:#Requested object not found.
