@@ -69,8 +69,16 @@ class ilSrGeneralRepository implements IGeneralRepository
     /**
      * @inheritDoc
      */
-    public function getRepositoryObjects(int $ref_id, array $types): Generator
-    {
+    public function getRepositoryObjectChildren(
+        int $ref_id,
+        array $types,
+        int $max_depth = PHP_INT_MAX,
+        int $depth = 0
+    ): Generator {
+        if ($depth === $max_depth) {
+            return;
+        }
+
         $container_types = $this->getContainerObjectTypes();
         $combined_types = array_unique(array_merge($container_types, $types));
 
@@ -89,7 +97,7 @@ class ilSrGeneralRepository implements IGeneralRepository
             }
 
             // object is a container object at this point.
-            yield from $this->getRepositoryObjects($object_ref_id, $types);
+            yield from $this->getRepositoryObjectChildren($object_ref_id, $types, $max_depth, $depth + 1);
         }
     }
 
