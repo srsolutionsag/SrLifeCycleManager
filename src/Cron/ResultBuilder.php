@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 /* Copyright (c) 2022 Thibeau Fuhrer <thibeau@sr.solutions> Extended GPL, see docs/LICENSE */
 
@@ -12,6 +14,11 @@ use LogicException;
  */
 class ResultBuilder implements IResultBuilder
 {
+    /**
+     * corresponds to the max length of ilCronJobResult::setMessage().
+     */
+    protected const MAX_MESSAGE_LENGTH = 400;
+
     /**
      * @var ilCronJobResult
      */
@@ -38,7 +45,7 @@ class ResultBuilder implements IResultBuilder
     /**
      * @inheritDoc
      */
-    public function request() : IResultBuilder
+    public function request(): IResultBuilder
     {
         $this->result = $this->boilerplate;
         $this->start = null;
@@ -53,7 +60,7 @@ class ResultBuilder implements IResultBuilder
      *
      * @return self
      */
-    public function trackTime() : self
+    public function trackTime(): self
     {
         $this->start = microtime(true);
         return $this;
@@ -66,14 +73,14 @@ class ResultBuilder implements IResultBuilder
      * @param string[] $summary
      * @return self
      */
-    public function message(string $message, array $summary = []) : self
+    public function message(string $message, array $summary = []): self
     {
         $message_combined = $message . (
-            $summary != []
+            $summary !== []
                 ? PHP_EOL . PHP_EOL . implode(PHP_EOL, $summary)
                 : ''
-            );
-        $this->result->setMessage($message_combined);
+        );
+        $this->result->setMessage($this->cropMessage($message_combined));
         return $this;
     }
 
@@ -82,7 +89,7 @@ class ResultBuilder implements IResultBuilder
      *
      * @return self
      */
-    public function success() : self
+    public function success(): self
     {
         $this->result->setStatus(ilCronJobResult::STATUS_OK);
         return $this;
@@ -93,7 +100,7 @@ class ResultBuilder implements IResultBuilder
      *
      * @return self
      */
-    public function failure() : self
+    public function failure(): self
     {
         $this->result->setStatus(ilCronJobResult::STATUS_FAIL);
         return $this;
@@ -104,7 +111,7 @@ class ResultBuilder implements IResultBuilder
      *
      * @return self
      */
-    public function crash() : self
+    public function crash(): self
     {
         $this->result->setStatus(ilCronJobResult::STATUS_CRASHED);
         return $this;
@@ -113,7 +120,7 @@ class ResultBuilder implements IResultBuilder
     /**
      * @inheritDoc
      */
-    public function getResult() : ilCronJobResult
+    public function getResult(): ilCronJobResult
     {
         if (null === $this->result) {
             throw new LogicException("Cannot build object without requesting it.");
@@ -126,5 +133,10 @@ class ResultBuilder implements IResultBuilder
         }
 
         return $this->result;
+    }
+
+    protected function cropMessage(string $message, int $length = self::MAX_MESSAGE_LENGTH): string
+    {
+        return substr($message, 0, ($length - 3)) . '...';
     }
 }

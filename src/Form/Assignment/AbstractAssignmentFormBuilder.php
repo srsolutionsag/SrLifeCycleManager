@@ -96,7 +96,9 @@ abstract class AbstractAssignmentFormBuilder extends AbstractFormBuilder
             $this->translator->txt(self::INPUT_ROUTINE),
             $this->getRoutineOptions($this->all_routines)
         )->withValue(
-            $this->assignment->getRoutineId()
+            // make sure to cast value to string, because required select inputs
+            // expect it to be, see https://jira.sr.solutions/browse/PLSRLCM-59
+            (string) $this->assignment->getRoutineId()
         )->withRequired(
             true
         )->withDisabled(
@@ -129,7 +131,9 @@ abstract class AbstractAssignmentFormBuilder extends AbstractFormBuilder
     {
         $options = [];
         foreach ($routines as $routine) {
-            $options[$routine->getRoutineId()] = $routine->getTitle();
+            // make sure to cast keys to strings, because required select inputs
+            // expect them to be, see https://jira.sr.solutions/browse/PLSRLCM-59
+            $options[(string) $routine->getRoutineId()] = $routine->getTitle();
         }
 
         return $options;
