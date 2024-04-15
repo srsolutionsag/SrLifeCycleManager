@@ -1,5 +1,10 @@
 # SrLifeCycleManager Changelog
 
+## 2.0.5
+
+- Fixed an issue where routines could not be assigned to objects anymore, due to an error in the form validation.
+- Fixed an issue where cron job messages were too long (more than 400 characters).
+
 ## 2.0.4
 
 - Routine assignments which are not recursive will provide direct children instead of the assigned object now.
