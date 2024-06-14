@@ -1,5 +1,9 @@
 # SrLifeCycleManager Changelog
 
+## 2.0.6
+
+- Fixed an ILIAS 8 compatibility issue which made the routine-assignment and whitelist table inaccessible.
+
 ## 2.0.5
 
 - Fixed an issue where routines could not be assigned to objects anymore, due to an error in the form validation.
