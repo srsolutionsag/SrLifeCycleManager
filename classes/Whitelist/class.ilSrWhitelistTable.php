@@ -48,7 +48,7 @@ class ilSrWhitelistTable extends ilSrAbstractTable
     protected function renderTableRow(ilTemplate $template, array $data) : void
     {
         // if the 'usr_id' still exists, get the login-name.
-        $user_name = (ilObjUser::_exists($data[IWhitelistEntry::F_USER_ID])) ?
+        $user_name = (ilObjUser::_exists((int) $data[IWhitelistEntry::F_USER_ID])) ?
             (new ilObjUser((int) $data[IWhitelistEntry::F_USER_ID]))->getLogin() : ''
         ;
 
