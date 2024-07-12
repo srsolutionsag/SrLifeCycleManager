@@ -56,11 +56,7 @@ abstract class ilSrAbstractAssignmentTable extends ilSrAbstractTable
             $this->translator->txt(self::STATUS_ACTIVE) :
             $this->translator->txt(self::STATUS_INACTIVE);
 
-        // if the 'usr_id' still exists, get the login-name.
-        $owner_name = (ilObjUser::_exists((int)$data[IRoutineAssignment::F_USER_ID])) ?
-            (new ilObjUser((int) $data[IRoutineAssignment::F_USER_ID]))->getLogin() : '';
-
-        $template->setVariable(self::COL_ASSIGNMENT_OWNER, $owner_name);
+        $template->setVariable(self::COL_ASSIGNMENT_OWNER, $this->getUserName((int) $data[IRoutineAssignment::F_USER_ID]));
         $template->setVariable(self::COL_ASSIGNMENT_RECURSIVE, $status_recursive);
         $template->setVariable(self::COL_ASSIGNMENT_ACTIVE, $status_active);
 

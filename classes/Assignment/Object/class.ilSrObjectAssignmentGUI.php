@@ -6,7 +6,7 @@ use srag\Plugins\SrLifeCycleManager\Form\Assignment\ObjectAssignmentFormBuilder;
 use srag\Plugins\SrLifeCycleManager\Form\IFormBuilder;
 use ILIAS\UI\Component\Input\Container\Form\Form;
 use ILIAS\Filesystem\Stream\Streams;
-use ILIAS\DI\HTTPServices;
+use ILIAS\HTTP\GlobalHttpState;
 
 /**
  * This class is responsible for assigning multiple or one object to
@@ -35,7 +35,7 @@ class ilSrObjectAssignmentGUI extends ilSrAbstractAssignmentGUI
     protected $form_builder;
 
     /**
-     * @var HTTPServices
+     * @var GlobalHttpState
      */
     protected $http;
 
@@ -86,6 +86,7 @@ class ilSrObjectAssignmentGUI extends ilSrAbstractAssignmentGUI
             $this->ui_factory,
             $this->renderer,
             $this->translator,
+            $this->repository->general(),
             $this->access_handler,
             $this->ctrl,
             $this,

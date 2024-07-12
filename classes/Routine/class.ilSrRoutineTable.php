@@ -66,16 +66,11 @@ class ilSrRoutineTable extends ilSrAbstractTable
             $this->translator->txt(self::STATUS_IMPOSSIBLE)
         ;
 
-        // if the 'owner_id' still exists, get the login-name.
-        $owner_name = (ilObjUser::_exists((int) $data[IRoutine::F_USER_ID])) ?
-            (new ilObjUser((int) $data[IRoutine::F_USER_ID]))->getLogin() : ''
-        ;
-
         // translate the routine type.
         $routine_type = $this->translator->txt($data[IRoutine::F_ROUTINE_TYPE]);
 
         $template->setVariable(self::COL_ROUTINE_TITLE, $data[IRoutine::F_TITLE]);
-        $template->setVariable(self::COL_ROUTINE_USER_ID, $owner_name);
+        $template->setVariable(self::COL_ROUTINE_USER_ID, $this->getUserName((int) $data[IRoutine::F_USER_ID]));
         $template->setVariable(self::COL_ROUTINE_TYPE, $routine_type);
         $template->setVariable(self::COL_ROUTINE_ELONGATION, $data[IRoutine::F_ELONGATION]);
         $template->setVariable(self::COL_ROUTINE_ELONGATION_COOLDOWN, $data[IRoutine::F_COOLDOWN]);

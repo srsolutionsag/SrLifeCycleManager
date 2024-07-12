@@ -85,6 +85,7 @@ class ilSrRoutineGUI extends ilSrAbstractGUI
             $this->ui_factory,
             $this->renderer,
             $this->translator,
+            $this->repository->general(),
             $this->access_handler,
             $this->ctrl,
             $this,

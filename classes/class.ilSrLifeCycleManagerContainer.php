@@ -190,6 +190,7 @@ class ilSrLifeCycleManagerContainer
             $this->notification_sender = new ilSrNotificationSender(
                 $this->getRepositoryFactory()->reminder(),
                 $this->getRepositoryFactory()->routine(),
+                $this->getRepositoryFactory()->general(),
                 new ilSrWhitelistLinkGenerator(
                     $this->getRepositoryFactory()->token(),
                     $this->dic->ctrl()

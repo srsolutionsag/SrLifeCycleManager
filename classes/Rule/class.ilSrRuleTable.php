@@ -11,6 +11,7 @@ use ILIAS\UI\Component\Dropdown\Dropdown;
 use ILIAS\UI\Renderer;
 use ILIAS\UI\Factory;
 use srag\Plugins\SrLifeCycleManager\Rule\Attribute\Common\CommonAttribute;
+use srag\Plugins\SrLifeCycleManager\Repository\IGeneralRepository;
 
 /**
  * @author       Thibeau Fuhrer <thibeau@sr.solutions>
@@ -39,6 +40,7 @@ class ilSrRuleTable extends ilSrAbstractTable
         Factory $ui_factory,
         Renderer $renderer,
         ITranslator $translator,
+        IGeneralRepository $general_repository,
         AttributeFactory $attribute_factory,
         ilSrAccessHandler $access_handler,
         ilCtrl $ctrl,
@@ -50,6 +52,7 @@ class ilSrRuleTable extends ilSrAbstractTable
             $ui_factory,
             $renderer,
             $translator,
+            $general_repository,
             $access_handler,
             $ctrl,
             $parent_gui_object,

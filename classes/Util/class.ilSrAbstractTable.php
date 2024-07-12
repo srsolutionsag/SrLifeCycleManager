@@ -8,6 +8,8 @@ use srag\Plugins\SrLifeCycleManager\ITranslator;
 use ILIAS\UI\Component\Component;
 use ILIAS\UI\Renderer;
 use ILIAS\UI\Factory;
+use srag\Plugins\SrLifeCycleManager\Repository\IGeneralRepository;
+use srag\Plugins\SrLifeCycleManager\Assignment\IRoutineAssignment;
 
 /**
  * This is an abstraction for ILIAS ilTable2GUI implementations.
@@ -31,6 +33,11 @@ abstract class ilSrAbstractTable extends ilTable2GUI
      * @var ilSrAccessHandler
      */
     protected $access_handler;
+
+    /**
+     * @var IGeneralRepository
+     */
+    protected $general_repository;
 
     /**
      * @var Factory
@@ -66,6 +73,7 @@ abstract class ilSrAbstractTable extends ilTable2GUI
         Factory $ui_factory,
         Renderer $renderer,
         ITranslator $translator,
+        IGeneralRepository $general_repository,
         ilSrAccessHandler $access_handler,
         ilCtrl $ctrl,
         object $parent_gui_object,
@@ -73,6 +81,7 @@ abstract class ilSrAbstractTable extends ilTable2GUI
         array $table_data
     ) {
         $this->translator = $translator;
+        $this->general_repository = $general_repository;
         $this->access_handler = $access_handler;
         $this->ui_factory = $ui_factory;
         $this->renderer = $renderer;
@@ -156,5 +165,15 @@ abstract class ilSrAbstractTable extends ilTable2GUI
     protected function fillRow($a_set): void
     {
         $this->renderTableRow($this->tpl, $a_set);
+    }
+
+    protected function getUserName(int $user_id): string
+    {
+        $user = $this->general_repository->getUser($user_id);
+        if (null !== $user) {
+            return $user->getLogin();
+        }
+
+        return '';
     }
 }

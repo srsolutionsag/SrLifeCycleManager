@@ -188,4 +188,20 @@ class ilSrGeneralRepository implements IGeneralRepository
             return false;
         }
     }
+
+    /**
+     * @inheritDoc
+     */
+    public function getUser(int $user_id): ?\ilObjUser
+    {
+        // we cannot use ilObjUser::_exists() because this only checks the object_data
+        // table. we therefore simply try to read the user from the database and catch
+        // any throwable along the way. see https://jira.sr.solutions/browse/PLSRLCM-62
+
+        try {
+            return new ilObjUser($user_id);
+        } catch (Throwable $any) {
+            return null;
+        }
+    }
 }

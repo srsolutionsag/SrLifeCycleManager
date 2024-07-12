@@ -122,6 +122,7 @@ class ilSrRuleGUI extends ilSrAbstractGUI
             $this->ui_factory,
             $this->renderer,
             $this->translator,
+            $this->repository->general(),
             $this->attribute_factory,
             $this->access_handler,
             $this->ctrl,

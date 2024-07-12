@@ -9,6 +9,7 @@ use srag\Plugins\SrLifeCycleManager\Notification\ISentNotification;
 use srag\Plugins\SrLifeCycleManager\Notification\INotificationRepository;
 use srag\Plugins\SrLifeCycleManager\Routine\IRoutineRepository;
 use srag\Plugins\SrLifeCycleManager\Config\IConfig;
+use srag\Plugins\SrLifeCycleManager\Repository\IGeneralRepository;
 
 /**
  * This class is responsible for sending notifications to object
@@ -36,6 +37,11 @@ class ilSrNotificationSender implements INotificationSender
     protected $routine_repository;
 
     /**
+     * @var IGeneralRepository
+     */
+    protected $general_repository;
+
+    /**
      * @var ilSrWhitelistLinkGenerator
      */
     protected $whitelist_link_generator;
@@ -53,12 +59,14 @@ class ilSrNotificationSender implements INotificationSender
     public function __construct(
         INotificationRepository $notification_repository,
         IRoutineRepository $routine_repository,
+        IGeneralRepository $general_repository,
         ilSrWhitelistLinkGenerator $whitelist_link_generator,
         ilMailMimeSender $mail_sender,
         IConfig $config
     ) {
         $this->notification_repository = $notification_repository;
         $this->routine_repository = $routine_repository;
+        $this->general_repository = $general_repository;
         $this->whitelist_link_generator = $whitelist_link_generator;
         $this->mail_sender = $mail_sender;
         $this->config = $config;
@@ -80,10 +88,10 @@ class ilSrNotificationSender implements INotificationSender
         foreach ($recipient_retriever->getRecipients($object) as $user_id) {
             // only send notifications to users that still exist and are not contained
             // on the configured blacklist.
-            if (ilObjUser::_exists($user_id) &&
-                !in_array($user_id, $this->config->getMailingBlacklist(), true)
+            $user = $this->general_repository->getUser($user_id);
+            if (null !== $user && !in_array($user_id, $this->config->getMailingBlacklist(), true)
             ) {
-                $this->sendNotificationToUser(new ilObjUser($user_id), $subject, $message);
+                $this->sendNotificationToUser($user, $subject, $message);
             }
         }
 

@@ -72,4 +72,15 @@ interface IGeneralRepository
      * @return bool
      */
     public function deleteObject(int $ref_id): bool;
+
+    /**
+     * Returns a user object for the given user-id, if it truly exists.
+     *
+     * A user truly exists, if both, object_data and usr_data table contain an entry for
+     * the given user-id.
+     *
+     * @param int $user_id
+     * @return \ilObjUser|null
+     */
+    public function getUser(int $user_id): ?\ilObjUser;
 }

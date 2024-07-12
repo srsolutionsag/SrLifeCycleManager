@@ -47,11 +47,6 @@ class ilSrWhitelistTable extends ilSrAbstractTable
      */
     protected function renderTableRow(ilTemplate $template, array $data) : void
     {
-        // if the 'usr_id' still exists, get the login-name.
-        $user_name = (ilObjUser::_exists((int) $data[IWhitelistEntry::F_USER_ID])) ?
-            (new ilObjUser((int) $data[IWhitelistEntry::F_USER_ID]))->getLogin() : ''
-        ;
-
         // translate the status of 'opt_out_possible'.
         $status_opt_out = ($data[IWhitelistEntry::F_IS_OPT_OUT]) ?
             $this->translator->txt(self::STATUS_IS_OPT_OUT) :
@@ -59,7 +54,7 @@ class ilSrWhitelistTable extends ilSrAbstractTable
         ;
 
         $template->setVariable(self::COL_REF_ID, $data[IWhitelistEntry::F_REF_ID]);
-        $template->setVariable(self::COL_USER_NAME, $user_name);
+        $template->setVariable(self::COL_USER_NAME, $this->getUserName((int) $data[IWhitelistEntry::F_USER_ID]));
         $template->setVariable(self::COL_IS_OPT_OUT, $status_opt_out);
         $template->setVariable(self::COL_EXPIRY_DATE, $data[IWhitelistEntry::F_EXPIRY_DATE]);
         $template->setVariable(self::COL_DATE, $data[IWhitelistEntry::F_DATE]);
