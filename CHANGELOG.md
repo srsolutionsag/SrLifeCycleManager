@@ -1,5 +1,9 @@
 # SrLifeCycleManager Changelog
 
+## 2.0.7
+
+- Fixed an issue where user object instances have been created unsafely  which has led to cron job crashes sometimes.
+
 ## 2.0.6
 
 - Fixed an ILIAS 8 compatibility issue which made the routine-assignment and whitelist table inaccessible.
