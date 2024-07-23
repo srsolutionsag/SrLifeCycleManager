@@ -128,6 +128,7 @@ input_name_routine_assignment_ref_id#:#Objekt (ref-id)
 input_name_routine_assignment_recursive#:#Rekursiv?
 input_name_routine_assignment_active#:#Aktivieren
 input_name_notification_title#:#Titel
+input_name_notification_title_info#:#Benutze [OBJECT_TITLE] um den Objekttitel anzuzeigen.
 input_name_notification_content#:#Inhalt
 input_name_notification_content_info#:#Benutze [EXTENSION_LINK] für einen Link, mit dem Empfänger das Objekt um die definierte Zeit verlängern können. <br /> Benutze [OPT_OUT_LINK] für einen Link, mit dem Empfänger das Objekt von der Löschung ausschliessen können. <br /> Benutze [OBJECT_LINK] für einen Link zum Objekt, dass gelöscht werden soll. <br /> Benutze [OBJECT_TITLE] um den Objekttitel anzuzeigen.
 input_name_reminder_days_before_deletion#:#Senden (Tage vor Löschung)

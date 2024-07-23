@@ -75,7 +75,9 @@ class ilSrNotificationSender implements INotificationSender
         // it's important the message is parsed outside the loop, otherwise
         // the whitelist-tokens will be overwritten each iteration.
         $message = $this->getNotificationBody($object, $notification);
-        $subject = $notification->getTitle();
+
+        // HS_Brhv_Sascha: allow object title in notification subject
+        $subject = str_replace('[OBJECT_TITLE]', $object->getTitle(), $notification->getTitle());
 
         foreach ($recipient_retriever->getRecipients($object) as $user_id) {
             // only send notifications to users that still exist and are not contained
