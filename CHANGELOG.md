@@ -1,5 +1,10 @@
 # SrLifeCycleManager Changelog
 
+## 1.10.0
+
+- Added `[OBJECT_TITLE]` shortcode for notification subjects, which translates to the corresponding ILIAS object title
+  at runtime.
+
 ## 1.9.4
 
 - Routine assignments which are not recursive will provide direct children instead of the assigned object now.
