@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace srag\Plugins\SrLifeCycleManager\Form\Notification;
 
@@ -22,6 +24,7 @@ abstract class NotificationFormBuilder extends AbstractFormBuilder
 
     // NotificationFormBuilder language variables:
     protected const INPUT_NOTIFICATION_CONTENT_INFO = 'input_name_notification_content_info';
+    protected const INPUT_NOTIFICATION_TITLE_INFO = 'input_name_notification_title_info';
 
     /**
      * @var INotification
@@ -51,10 +54,13 @@ abstract class NotificationFormBuilder extends AbstractFormBuilder
     /**
      * @inheritDoc
      */
-    public function getForm() : UIForm
+    public function getForm(): UIForm
     {
         $inputs[self::INPUT_NOTIFICATION_TITLE] = $this->fields
-            ->text($this->translator->txt(self::INPUT_NOTIFICATION_TITLE))
+            ->text(
+                $this->translator->txt(self::INPUT_NOTIFICATION_TITLE),
+                $this->translator->txt(self::INPUT_NOTIFICATION_TITLE_INFO)
+            )
             ->withValue($this->notification->getTitle())
             ->withRequired(true)
         ;
@@ -64,7 +70,8 @@ abstract class NotificationFormBuilder extends AbstractFormBuilder
                 $this->translator->txt(self::INPUT_NOTIFICATION_CONTENT),
                 $this->translator->txt(self::INPUT_NOTIFICATION_CONTENT_INFO)
             )
-            ->withValue((null !== $this->notification) ?
+            ->withValue(
+                (null !== $this->notification) ?
                 $this->notification->getContent() : ''
             )
             ->withRequired(true)
@@ -82,5 +89,5 @@ abstract class NotificationFormBuilder extends AbstractFormBuilder
      *
      * @return Input[]
      */
-    abstract protected function getNotificationSpecificInputs() : array;
+    abstract protected function getNotificationSpecificInputs(): array;
 }
