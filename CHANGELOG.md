@@ -1,8 +1,13 @@
 # SrLifeCycleManager Changelog
 
+## 2.1.0
+
+- Added `[OBJECT_TITLE]` shortcode for notification subjects, which translates to the corresponding ILIAS object title
+  at runtime.
+
 ## 2.0.7
 
-- Fixed an issue where user object instances have been created unsafely  which has led to cron job crashes sometimes.
+- Fixed an issue where user object instances have been created unsafely which has led to cron job crashes sometimes.
 
 ## 2.0.6
 
@@ -62,9 +67,9 @@
 - Added info-byline for routine-elongation-cooldowns.
 - Improved routine cron-job and it's unit tests.
 - Added new dynamic attributes for surveys:
-  - Survey participants (not the same as memberships)
-  - Survey questions
-  - Survey results
+    - Survey participants (not the same as memberships)
+    - Survey questions
+    - Survey results
 - Fixed an issue where the assignment-form would provide other ILIAS data as well when searching for objects.
 - Fixed a typo in the delete-clause of a routine which lead to routines not being deleted.
 - Applied PSR-12 to adjusted PHP files.
