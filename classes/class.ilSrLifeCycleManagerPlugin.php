@@ -60,7 +60,7 @@ class ilSrLifeCycleManagerPlugin extends ilCronHookPlugin implements ITranslator
 
         $this->container = new ilSrLifeCycleManagerContainer($this, $DIC);
 
-        if ($this->isActive()) {
+        if ($DIC->offsetExists('global_screen') && $this->isActive()) {
             $this->provider_collection
                 ->setMainBarProvider(new ilSrMenuProvider($DIC, $this))
                 ->setToolProvider(new ilSrToolProvider($DIC, $this));
