@@ -1,5 +1,9 @@
 # SrLifeCycleManager Changelog
 
+## 2.1.1
+
+- Fixed an issue where the plugin could not be installed/updated via setup (CLI) due to an undefined service.
+
 ## 2.1.0
 
 - Added `[OBJECT_TITLE]` shortcode for notification subjects, which translates to the corresponding ILIAS object title
