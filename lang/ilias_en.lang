@@ -83,7 +83,7 @@ cnf_tool_is_enabled#:#Enable Tool
 cnf_tool_show_routines#:#Show active routines
 cnf_tool_show_controls#:#Show controls
 cnf_tool_controls#:#Controls
-cnf_custom_from_email#:#Notification email
+cnf_custom_from_email#:#Email for external notifications
 cnf_mailing_blacklist#:#Mailing Blacklist
 cnf_mailing_blacklist_info#:#Comma-separated list of user IDs that should not receive notifications about routines. This is suitable, for example, for system accounts that are administrators in a large number of courses because they have created the courses automatically.
 cnf_force_mail_forwarding#:#Force mail-forwarding
