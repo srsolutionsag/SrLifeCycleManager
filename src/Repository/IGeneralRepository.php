@@ -29,7 +29,7 @@ interface IGeneralRepository
     /**
      * Returns the object (ilObject) for the given ref-id.
      */
-    public function getObject(int $ref_id): ?ilObject;
+    public function getObject(?int $ref_id): ?ilObject;
 
     /**
      * Returns the participant object for the given object, if it supports it.

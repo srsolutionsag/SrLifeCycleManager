@@ -35,8 +35,12 @@ class ilSrGeneralRepository implements IGeneralRepository
     /**
      * @inheritDoc
      */
-    public function getObject(int $ref_id): ?ilObject
+    public function getObject(?int $ref_id): ?ilObject
     {
+        if ($ref_id === null) {
+            return null;
+        }
+
         $object = ilObjectFactory::getInstanceByRefId($ref_id, false);
         if (false !== $object) {
             return $object;

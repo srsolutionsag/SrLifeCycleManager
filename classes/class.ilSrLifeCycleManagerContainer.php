@@ -29,6 +29,7 @@ use srag\Plugins\SrLifeCycleManager\Cron\ResultBuilder;
 use srag\Plugins\SrLifeCycleManager\Event\EventSubject;
 use srag\Plugins\SrLifeCycleManager\ITranslator;
 use ILIAS\DI\Container;
+use ILIAS\Mail\Service\MimeMailService;
 
 /**
  * @author       Thibeau Fuhrer <thibeau@sr.solutions>
@@ -139,6 +140,9 @@ class ilSrLifeCycleManagerContainer
     public function getNotificationSender(): INotificationSender
     {
         if (null === $this->notification_sender) {
+            // load
+            new MimeMailService($this->dic);
+
             $this->abortIfDependenciesNotAvailable(['ilCtrl', 'mail.mime.sender.factory']);
 
             /** @var $sender_factory ilMailMimeSenderFactory */
