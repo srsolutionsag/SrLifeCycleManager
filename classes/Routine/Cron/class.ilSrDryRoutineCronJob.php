@@ -11,7 +11,6 @@
 declare(strict_types=1);
 
 use srag\Plugins\SrLifeCycleManager\Notification\Reminder\IReminder;
-use srag\Plugins\SrLifeCycleManager\Routine\IRoutine;
 use srag\Plugins\SrLifeCycleManager\Object\AffectedObject;
 
 /**

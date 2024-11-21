@@ -12,7 +12,6 @@ declare(strict_types=1);
 
 namespace srag\Plugins\SrLifeCycleManager\Rule\Attribute\Common;
 
-use srag\Plugins\SrLifeCycleManager\Rule\Attribute\IAttribute;
 use srag\Plugins\SrLifeCycleManager\DateTimeHelper;
 use DateTimeImmutable;
 
@@ -23,10 +22,7 @@ class CommonDateTime extends CommonAttribute
 {
     use DateTimeHelper;
 
-    /**
-     * @var DateTimeImmutable|null
-     */
-    protected $value;
+    protected \DateTimeImmutable $value;
 
     public function __construct(DateTimeImmutable $value)
     {

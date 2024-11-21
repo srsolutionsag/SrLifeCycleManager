@@ -12,17 +12,12 @@ declare(strict_types=1);
 
 namespace srag\Plugins\SrLifeCycleManager\Rule\Attribute\Common;
 
-use srag\Plugins\SrLifeCycleManager\Rule\Attribute\IAttribute;
-
 /**
  * @author Thibeau Fuhrer <thibeau@sr.solutions>
  */
 class CommonString extends CommonAttribute
 {
-    /**
-     * @var string
-     */
-    protected $value;
+    protected string $value;
 
     public function __construct(string $value)
     {
@@ -42,7 +37,7 @@ class CommonString extends CommonAttribute
     /**
      * @inheritDoc
      */
-    public function getComparableValue(string $type)
+    public function getComparableValue(string $type): ?string
     {
         if (self::COMPARABLE_VALUE_TYPE_STRING === $type) {
             return $this->value;

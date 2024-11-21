@@ -11,13 +11,11 @@ declare(strict_types=1);
 
 namespace srag\Plugins\SrLifeCycleManager\Form\Notification;
 
+use ILIAS\UI\Component\Input\Container\Form\Factory;
 use srag\Plugins\SrLifeCycleManager\Notification\Reminder\IReminderRepository;
 use srag\Plugins\SrLifeCycleManager\Notification\Reminder\IReminder;
 use srag\Plugins\SrLifeCycleManager\ITranslator;
-use ILIAS\UI\Component\Input\Container\Form\Factory as FormFactory;
-use ILIAS\UI\Component\Input\Field\Factory as FieldFactory;
 use ILIAS\Refinery\Constraint;
-use ILIAS\Refinery\Factory as Refinery;
 
 /**
  * @author Thibeau Fuhrer <thibeau@sr.solutions>
@@ -30,25 +28,22 @@ class ReminderFormBuilder extends NotificationFormBuilder
     // NotificationFormBuilder language variables:
     protected const MSG_DAYS_BEFORE_DELETION_ERROR = 'msg_days_before_deletion_error';
 
-    /**
-     * @var IReminderRepository
-     */
-    protected $repository;
+    protected IReminderRepository $repository;
 
     /**
      * @param ITranslator         $translator
-     * @param FormFactory         $forms
-     * @param FieldFactory        $fields
-     * @param Refinery            $refinery
+     * @param mixed $forms
+     * @param mixed $fields
+     * @param mixed $refinery
      * @param IReminderRepository $repository
      * @param IReminder           $notification
      * @param string              $form_action
      */
     public function __construct(
         ITranslator $translator,
-        FormFactory $forms,
-        FieldFactory $fields,
-        Refinery $refinery,
+        Factory $forms,
+        \ILIAS\UI\Component\Input\Field\Factory $fields,
+        \ILIAS\Refinery\Factory $refinery,
         IReminderRepository $repository,
         IReminder $notification,
         string $form_action

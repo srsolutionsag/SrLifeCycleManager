@@ -25,10 +25,7 @@ class ResultBuilder implements IResultBuilder
      */
     protected const MAX_MESSAGE_LENGTH = 400;
 
-    /**
-     * @var ilCronJobResult
-     */
-    protected $boilerplate;
+    protected \ilCronJobResult $boilerplate;
 
     /**
      * @var ilCronJobResult|null

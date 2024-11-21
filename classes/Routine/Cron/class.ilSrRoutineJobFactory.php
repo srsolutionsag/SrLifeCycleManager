@@ -17,7 +17,6 @@ use srag\Plugins\SrLifeCycleManager\Cron\ResultBuilder;
 use srag\Plugins\SrLifeCycleManager\Notification\IRecipientRetriever;
 use srag\Plugins\SrLifeCycleManager\Event\EventSubject;
 use srag\Plugins\SrLifeCycleManager\Cron\INotifier;
-use srag\Plugins\SrLifeCycleManager\ITranslator;
 
 /**
  * @author       Thibeau Fuhrer <thibeau@sr.solutions>
@@ -25,50 +24,23 @@ use srag\Plugins\SrLifeCycleManager\ITranslator;
  */
 class ilSrRoutineJobFactory
 {
-    /**
-     * @var INotificationSender
-     */
-    protected $notification_sender;
+    protected INotificationSender $notification_sender;
 
-    /**
-     * @var IRecipientRetriever
-     */
-    protected $recipient_retriever;
+    protected IRecipientRetriever $recipient_retriever;
 
-    /**
-     * @var ResultBuilder
-     */
-    protected $result_builder;
+    protected ResultBuilder $result_builder;
 
-    /**
-     * @var RepositoryFactory
-     */
-    protected $repository;
+    protected RepositoryFactory $repository;
 
-    /**
-     * @var EventSubject
-     */
-    protected $event_subject;
+    protected EventSubject $event_subject;
 
-    /**
-     * @var AffectedObjectProvider
-     */
-    protected $affected_objects_provider;
+    protected AffectedObjectProvider $affected_objects_provider;
 
-    /**
-     * @var ilCronManager
-     */
-    protected $cron_manager;
+    protected \ilCronManager $cron_manager;
 
-    /**
-     * @var ilLogger
-     */
-    protected $logger;
+    protected \ilLogger $logger;
 
-    /**
-     * @var ilGlobalTemplateInterface|null
-     */
-    protected $template;
+    protected ?\ilGlobalTemplateInterface $template;
 
     public function __construct(
         INotificationSender $notification_sender,

@@ -19,47 +19,29 @@ class Config implements IConfig
     /**
      * @var int[] role ids
      */
-    protected $manage_routine_roles;
+    protected array $manage_routine_roles;
 
     /**
      * @var int[] role ids
      */
-    protected $manage_assignment_roles;
+    protected array $manage_assignment_roles;
 
-    /**
-     * @var bool
-     */
-    protected $tool_is_enabled;
+    protected bool $tool_is_enabled;
 
-    /**
-     * @var bool
-     */
-    protected $tool_show_routines;
+    protected bool $tool_show_routines;
 
-    /**
-     * @var bool
-     */
-    protected $tool_show_controls;
+    protected bool $tool_show_controls;
 
-    /**
-     * @var string|null
-     */
-    protected $custom_email;
+    protected ?string $custom_email;
 
     /**
      * @var int[]
      */
-    protected $mailing_blacklist;
+    protected array $mailing_blacklist;
 
-    /**
-     * @var bool
-     */
-    protected $force_mail_forwarding;
+    protected bool $force_mail_forwarding;
 
-    /**
-     * @var bool
-     */
-    protected $is_debug_mode_enabled;
+    protected bool $is_debug_mode_enabled;
 
     /**
      * @param int[]       $manage_routines

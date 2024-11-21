@@ -17,15 +17,9 @@ namespace srag\Plugins\SrLifeCycleManager\Rule\Attribute\Migration;
  */
 abstract class AttributeMigration
 {
-    /**
-     * @var \ilDBInterface
-     */
-    protected $database;
+    protected \ilDBInterface $database;
 
-    /**
-     * @var string
-     */
-    protected $table_name;
+    protected string $table_name;
 
     /**
      * @throws \LogicException if the database table or columns do not exist.

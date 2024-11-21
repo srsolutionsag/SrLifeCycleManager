@@ -59,11 +59,7 @@ abstract class ilSrAbstractGUI
     protected const MSG_OBJECT_NOT_FOUND = 'msg_object_not_found';
 
     // Plugin dependencies:
-
-    /**
-     * @var IRoutine
-     */
-    protected $routine;
+    protected IRoutine $routine;
 
     /**
      * @var RepositoryFactory
@@ -80,25 +76,13 @@ abstract class ilSrAbstractGUI
      */
     protected $access_handler;
 
-    /**
-     * @var ilSrToolbarManager
-     */
-    protected $toolbar_manager;
+    protected \ilSrToolbarManager $toolbar_manager;
 
-    /**
-     * @var ilSrTabManager
-     */
-    protected $tab_manager;
+    protected \ilSrTabManager $tab_manager;
 
-    /**
-     * @var int|null
-     */
-    protected $object_ref_id;
+    protected ?int $object_ref_id;
 
-    /**
-     * @var int
-     */
-    protected $origin;
+    protected int $origin;
 
     // ILIAS dependencies:
 
@@ -486,14 +470,15 @@ abstract class ilSrAbstractGUI
         if (IRoutine::ORIGIN_TYPE_ADMINISTRATION !== $this->origin) {
             $this->ctrl->saveParameterByClass(ilSrConfigGUI::class, self::PARAM_OBJECT_REF_ID);
         }
-
         // save the routine-id parameter for all derived classes except routine-assignment-
         // and routine-gui, otherwise the link-generation might misbehave.
-        if (ilSrRoutineAssignmentGUI::class !== static::class &&
-            ilSrRoutineGUI::class !== static::class
-        ) {
-            $this->ctrl->saveParameterByClass(static::class, self::PARAM_ROUTINE_ID);
+        if (ilSrRoutineAssignmentGUI::class === static::class) {
+            return;
         }
+        if (ilSrRoutineGUI::class === static::class) {
+            return;
+        }
+        $this->ctrl->saveParameterByClass(static::class, self::PARAM_ROUTINE_ID);
     }
 
     /**

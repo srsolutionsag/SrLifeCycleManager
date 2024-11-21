@@ -13,8 +13,6 @@ namespace srag\Plugins\SrLifeCycleManager\Rule\Attribute\Common;
 
 use srag\Plugins\SrLifeCycleManager\Rule\Attribute\IAttributeValueProvider;
 use srag\Plugins\SrLifeCycleManager\Rule\Attribute\IAttribute;
-use srag\Plugins\SrLifeCycleManager\Rule\Attribute\IDynamicAttributeProvider;
-use srag\Plugins\SrLifeCycleManager\Rule\Ressource\IRessource;
 use srag\Plugins\SrLifeCycleManager\DateTimeHelper;
 use ILIAS\Refinery\Factory as Refinery;
 
@@ -28,8 +26,11 @@ class CommonAttributeFactory implements IAttributeValueProvider
     /**
      * @var Refinery
      */
-    protected $refinery;
+    protected Refinery $refinery;
 
+    /**
+     * @param mixed $refinery
+     */
     public function __construct(Refinery $refinery)
     {
         $this->refinery = $refinery;

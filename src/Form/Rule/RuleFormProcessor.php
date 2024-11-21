@@ -17,33 +17,26 @@ use srag\Plugins\SrLifeCycleManager\Rule\Attribute\Common\CommonAttribute;
 use srag\Plugins\SrLifeCycleManager\Rule\IRuleRepository;
 use srag\Plugins\SrLifeCycleManager\Rule\IRule;
 use Psr\Http\Message\ServerRequestInterface;
-use ILIAS\UI\Component\Input\Container\Form\Form as UIForm;
 
 /**
  * @author Thibeau Fuhrer <thibeau@sr.solutions>
  */
 class RuleFormProcessor extends AbstractFormProcessor
 {
-    /**
-     * @var IRuleRepository
-     */
-    protected $repository;
+    protected IRuleRepository $repository;
 
-    /**
-     * @var IRule
-     */
-    protected $rule;
+    protected IRule $rule;
 
     /**
      * @param IRuleRepository        $repository
      * @param ServerRequestInterface $request
-     * @param UIForm                 $form
+     * @param mixed $form
      * @param IRule                  $rule
      */
     public function __construct(
         IRuleRepository $repository,
         ServerRequestInterface $request,
-        UIForm $form,
+        $form,
         IRule $rule
     ) {
         parent::__construct($request, $form);
@@ -68,14 +61,13 @@ class RuleFormProcessor extends AbstractFormProcessor
 
         $rhs_value = $this->getValueTypeBySide(RuleFormBuilder::KEY_LHS_VALUE, $post_data);
         // ensure that RHS value is only empty if the type is CommonNull.
-        if ($this->isSideCommonAttribute(RuleFormBuilder::KEY_RHS_VALUE, $post_data) &&
-            $this->getValueTypeBySide(RuleFormBuilder::KEY_RHS_VALUE, $post_data) !== CommonNull::class &&
-            ('0' === $rhs_value || empty($rhs_value)) // it's important we check '0' before empty, since empty would be true
-        ) {
-            return false;
+        if (!$this->isSideCommonAttribute(RuleFormBuilder::KEY_RHS_VALUE, $post_data)) {
+            return true;
         }
-
-        return true;
+        if ($this->getValueTypeBySide(RuleFormBuilder::KEY_RHS_VALUE, $post_data) === CommonNull::class) {
+            return true;
+        }
+        return '0' !== $rhs_value && !empty($rhs_value);
     }
 
     /**

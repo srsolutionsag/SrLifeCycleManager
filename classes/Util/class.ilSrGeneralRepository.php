@@ -12,7 +12,6 @@ declare(strict_types=1);
 
 use srag\Plugins\SrLifeCycleManager\Repository\IGeneralRepository;
 use srag\Plugins\SrLifeCycleManager\Repository\ObjectHelper;
-use srag\Plugins\SrLifeCycleManager\Routine\IRoutine;
 use ILIAS\DI\RBACServices;
 
 /**
@@ -23,15 +22,9 @@ class ilSrGeneralRepository implements IGeneralRepository
 {
     use ObjectHelper;
 
-    /**
-     * @var ilDBInterface
-     */
-    protected $database;
+    protected \ilDBInterface $database;
 
-    /**
-     * @var RBACServices
-     */
-    protected $rbac;
+    protected RBACServices $rbac;
 
     /**
      * @param ilDBInterface $database

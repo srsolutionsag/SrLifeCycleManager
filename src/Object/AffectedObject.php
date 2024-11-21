@@ -23,15 +23,9 @@ use ilObject;
  */
 class AffectedObject
 {
-    /**
-     * @var ilObject
-     */
-    protected $object;
+    protected \ilObject $object;
 
-    /**
-     * @var IRoutine
-     */
-    protected $routine;
+    protected IRoutine $routine;
 
     public function __construct(ilObject $object, IRoutine $routine)
     {

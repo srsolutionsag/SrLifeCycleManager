@@ -25,10 +25,7 @@ class ObjectTaxonomy extends ObjectAttribute
      */
     protected static $cache = [];
 
-    /**
-     * @var ilDBInterface
-     */
-    protected $database;
+    protected \ilDBInterface $database;
 
     public function __construct(ilDBInterface $database, ilObject $object)
     {
@@ -50,6 +47,7 @@ class ObjectTaxonomy extends ObjectAttribute
 
     /**
      * @inheritDoc
+     * @return mixed[]|string|null
      */
     public function getComparableValue(string $type)
     {

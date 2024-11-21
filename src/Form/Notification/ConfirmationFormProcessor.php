@@ -11,10 +11,10 @@ declare(strict_types=1);
 
 namespace srag\Plugins\SrLifeCycleManager\Form\Notification;
 
+use ILIAS\UI\Component\Input\Container\Form\Form;
 use srag\Plugins\SrLifeCycleManager\Form\AbstractFormProcessor;
 use srag\Plugins\SrLifeCycleManager\Notification\Confirmation\IConfirmationRepository;
 use srag\Plugins\SrLifeCycleManager\Notification\Confirmation\IConfirmation;
-use ILIAS\UI\Component\Input\Container\Form\Form as UIForm;
 use Psr\Http\Message\ServerRequestInterface;
 
 /**
@@ -22,26 +22,20 @@ use Psr\Http\Message\ServerRequestInterface;
  */
 class ConfirmationFormProcessor extends AbstractFormProcessor
 {
-    /**
-     * @var IConfirmationRepository
-     */
-    protected $repository;
+    protected IConfirmationRepository $repository;
 
-    /**
-     * @var IConfirmation
-     */
-    protected $notification;
+    protected IConfirmation $notification;
 
     /**
      * @param IConfirmationRepository $repository
      * @param ServerRequestInterface  $request
-     * @param UIForm                  $form
+     * @param mixed $form
      * @param IConfirmation           $notification
      */
     public function __construct(
         IConfirmationRepository $repository,
         ServerRequestInterface $request,
-        UIForm $form,
+        Form $form,
         IConfirmation $notification
     ) {
         parent::__construct($request, $form);

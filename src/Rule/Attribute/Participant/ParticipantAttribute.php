@@ -20,10 +20,7 @@ use ilParticipants;
  */
 abstract class ParticipantAttribute implements IAttribute
 {
-    /**
-     * @var ilParticipants
-     */
-    private $participants;
+    private \ilParticipants $participants;
 
     public function __construct(ilParticipants $participants)
     {

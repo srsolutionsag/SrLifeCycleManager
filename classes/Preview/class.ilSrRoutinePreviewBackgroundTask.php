@@ -16,9 +16,7 @@ use ILIAS\BackgroundTasks\Types\Type;
 use ILIAS\BackgroundTasks\Observer;
 use ILIAS\BackgroundTasks\Value;
 use ILIAS\BackgroundTasks\Types\SingleType;
-use ILIAS\BackgroundTasks\Implementation\Values\ScalarValues\IntegerValue;
 use ILIAS\BackgroundTasks\Implementation\Values\ScalarValues\StringValue;
-use ILIAS\Filesystem\Filesystem;
 use ILIAS\Filesystem\Filesystems;
 
 /**

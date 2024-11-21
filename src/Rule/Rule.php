@@ -16,35 +16,20 @@ namespace srag\Plugins\SrLifeCycleManager\Rule;
  */
 class Rule implements IRule
 {
-    /**
-     * @var int|null
-     */
-    protected $rule_id;
+    protected ?int $rule_id;
 
-    /**
-     * @var int
-     */
-    protected $routine_id;
+    protected int $routine_id;
 
-    /**
-     * @var string
-     */
-    protected $lhs_type;
+    protected string $lhs_type;
 
     /**
      * @var mixed
      */
     protected $lhs_value;
 
-    /**
-     * @var string
-     */
-    protected $operator;
+    protected string $operator;
 
-    /**
-     * @var string
-     */
-    protected $rhs_type;
+    protected string $rhs_type;
 
     /**
      * @var mixed

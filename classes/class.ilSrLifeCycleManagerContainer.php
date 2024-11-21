@@ -36,15 +36,9 @@ use ILIAS\DI\Container;
  */
 class ilSrLifeCycleManagerContainer
 {
-    /**
-     * @var ilSrLifeCycleManagerPlugin
-     */
-    protected $plugin;
+    protected \ilSrLifeCycleManagerPlugin $plugin;
 
-    /**
-     * @var Container
-     */
-    protected $dic;
+    protected Container $dic;
 
     /**
      * @var RepositoryFactory
@@ -191,9 +185,9 @@ class ilSrLifeCycleManagerContainer
 
             $config = $this->getRepositoryFactory()->config()->get();
 
-            $sender = (!empty(($sender = $config->getNotificationSenderAddress()))) ?
-                $sender_factory->userByEmailAddress($sender) :
-                $sender_factory->system();
+            $sender = (empty(($sender = $config->getNotificationSenderAddress()))) ?
+                $sender_factory->system() :
+                $sender_factory->userByEmailAddress($sender);
 
             $this->notification_sender = new ilSrNotificationSender(
                 $this->getRepositoryFactory()->reminder(),

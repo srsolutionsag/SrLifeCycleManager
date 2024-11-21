@@ -34,35 +34,17 @@ use srag\Plugins\SrLifeCycleManager\Repository\IGeneralRepository;
  */
 class ilSrNotificationSender implements INotificationSender
 {
-    /**
-     * @var INotificationRepository
-     */
-    protected $notification_repository;
+    protected INotificationRepository $notification_repository;
 
-    /**
-     * @var IRoutineRepository
-     */
-    protected $routine_repository;
+    protected IRoutineRepository $routine_repository;
 
-    /**
-     * @var IGeneralRepository
-     */
-    protected $general_repository;
+    protected IGeneralRepository $general_repository;
 
-    /**
-     * @var ilSrWhitelistLinkGenerator
-     */
-    protected $whitelist_link_generator;
+    protected \ilSrWhitelistLinkGenerator $whitelist_link_generator;
 
-    /**
-     * @var ilMailMimeSender
-     */
-    protected $mail_sender;
+    protected \ilMailMimeSender $mail_sender;
 
-    /**
-     * @var IConfig
-     */
-    protected $config;
+    protected IConfig $config;
 
     public function __construct(
         INotificationRepository $notification_repository,
@@ -99,10 +81,13 @@ class ilSrNotificationSender implements INotificationSender
             // only send notifications to users that still exist and are not contained
             // on the configured blacklist.
             $user = $this->general_repository->getUser($user_id);
-            if (null !== $user && !in_array($user_id, $this->config->getMailingBlacklist(), true)
-            ) {
-                $this->sendNotificationToUser($user, $subject, $message);
+            if (null === $user) {
+                continue;
             }
+            if (in_array($user_id, $this->config->getMailingBlacklist(), true)) {
+                continue;
+            }
+            $this->sendNotificationToUser($user, $subject, $message);
         }
 
         return $this->notification_repository->markObjectAsNotified($notification, $object->getRefId());
@@ -138,7 +123,7 @@ class ilSrNotificationSender implements INotificationSender
 
         if (strpos($message, '[OPT_OUT_LINK]')) {
             // use the previously fetched routine if possible.
-            $routine = $routine ?? $this->routine_repository->get($notification->getRoutineId());
+            $routine ??= $this->routine_repository->get($notification->getRoutineId());
 
             // link defaults to 'unavailable' if the routine doesn't support opt-outs.
             $link = (null !== $routine && $routine->hasOptOut()) ?
@@ -168,12 +153,13 @@ class ilSrNotificationSender implements INotificationSender
     protected function sendNotificationToUser(ilObjUser $recipient, string $subject, string $message): void
     {
         $this->sendIliasMail($recipient, $subject, $message);
-
-        if ($this->config->isMailForwardingForced() &&
-            !$this->hasUserEnabledForwarding($recipient)
-        ) {
-            $this->sendMimeMail($recipient, $subject, $message);
+        if (!$this->config->isMailForwardingForced()) {
+            return;
         }
+        if ($this->hasUserEnabledForwarding($recipient)) {
+            return;
+        }
+        $this->sendMimeMail($recipient, $subject, $message);
     }
 
     /**

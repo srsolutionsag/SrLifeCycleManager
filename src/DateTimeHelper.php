@@ -13,7 +13,6 @@ namespace srag\Plugins\SrLifeCycleManager;
 
 use DateTimeImmutable;
 use LogicException;
-use Sabre\VObject\Property\VCard\Date;
 
 /**
  * This trait is responsible for managing datetime objects.

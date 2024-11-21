@@ -11,15 +11,13 @@ declare(strict_types=1);
 
 namespace srag\Plugins\SrLifeCycleManager\Form\Assignment;
 
+use ILIAS\UI\Component\Input\Container\Form\Factory;
+use ILIAS\UI\Component\Input\Container\Form\Form;
 use srag\Plugins\SrLifeCycleManager\Assignment\IRoutineAssignment;
 use srag\Plugins\SrLifeCycleManager\Form\AbstractFormBuilder;
 use srag\Plugins\SrLifeCycleManager\Routine\IRoutine;
 use srag\Plugins\SrLifeCycleManager\ITranslator;
-use ILIAS\UI\Component\Input\Container\Form\Form as UIForm;
-use ILIAS\UI\Component\Input\Container\Form\Factory as FormFactory;
-use ILIAS\UI\Component\Input\Field\Factory as FieldFactory;
 use ILIAS\UI\Component\Input\Field\Input;
-use ILIAS\Refinery\Factory as Refinery;
 
 /**
  * @author Thibeau Fuhrer <thibeau@sr.solutions>
@@ -32,26 +30,26 @@ abstract class AbstractAssignmentFormBuilder extends AbstractFormBuilder
     public const INPUT_IS_RECURSIVE = 'input_name_routine_assignment_recursive';
     public const INPUT_IS_ACTIVE = 'input_name_routine_assignment_active';
 
-    /**
-     * @var IRoutineAssignment
-     */
-    protected $assignment;
+    protected IRoutineAssignment $assignment;
 
     /**
      * @var IRoutine[]
      */
-    protected $all_routines;
+    protected array $all_routines;
 
     /**
      * @param IRoutineAssignment $assignment
      * @param IRoutine[]         $all_routines
      * @inheritDoc
+     * @param mixed $forms
+     * @param mixed $fields
+     * @param mixed $refinery
      */
     public function __construct(
         ITranslator $translator,
-        FormFactory $forms,
-        FieldFactory $fields,
-        Refinery $refinery,
+        Factory $forms,
+        \ILIAS\UI\Component\Input\Field\Factory $fields,
+        \ILIAS\Refinery\Factory $refinery,
         IRoutineAssignment $assignment,
         array $all_routines,
         string $form_action
@@ -64,7 +62,7 @@ abstract class AbstractAssignmentFormBuilder extends AbstractFormBuilder
     /**
      * @inheritDoc
      */
-    public function getForm(): UIForm
+    public function getForm(): Form
     {
         return $this->forms->standard(
             $this->form_action,

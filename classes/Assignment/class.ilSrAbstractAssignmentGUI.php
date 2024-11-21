@@ -42,10 +42,7 @@ abstract class ilSrAbstractAssignmentGUI extends ilSrAbstractGUI
     protected const MSG_ASSIGNMENT_FAILURE = 'msg_assignment_failure';
     protected const PAGE_TITLE = 'page_title_routine_assignment';
 
-    /**
-     * @var int|null
-     */
-    protected $assignment_ref_id;
+    protected ?int $assignment_ref_id;
 
     /**
      * @var IRoutineAssignment
@@ -113,10 +110,10 @@ abstract class ilSrAbstractAssignmentGUI extends ilSrAbstractGUI
     protected function canUserExecute(ilSrAccessHandler $access_handler, string $command): bool
     {
         // all actions are available for routine- or assignment-managers.
-        return (
-            $access_handler->canManageRoutines() ||
-            $access_handler->canManageAssignments()
-        );
+        if ($access_handler->canManageRoutines()) {
+            return true;
+        }
+        return $access_handler->canManageAssignments();
     }
 
     /**
@@ -203,12 +200,13 @@ abstract class ilSrAbstractAssignmentGUI extends ilSrAbstractGUI
     {
         $assigned_ref_id = $this->getRequestedAssignmentRefId();
         $routine_id = $this->routine->getRoutineId();
-
-        if (null !== $routine_id && null !== $assigned_ref_id) {
-            return $this->repository->assignment()->get($routine_id, $assigned_ref_id);
+        if (null === $routine_id) {
+            return null;
         }
-
-        return null;
+        if (null === $assigned_ref_id) {
+            return null;
+        }
+        return $this->repository->assignment()->get($routine_id, $assigned_ref_id);
     }
 
     /**

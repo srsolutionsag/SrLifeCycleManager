@@ -12,6 +12,8 @@ declare(strict_types=1);
 
 namespace srag\Plugins\SrLifeCycleManager\Form\Rule;
 
+use ILIAS\UI\Component\Input\Container\Form\Factory;
+use ILIAS\UI\Component\Input\Container\Form\Form;
 use srag\Plugins\SrLifeCycleManager\Form\AbstractFormBuilder;
 use srag\Plugins\SrLifeCycleManager\Rule\Attribute\Common\CommonAttribute;
 use srag\Plugins\SrLifeCycleManager\Rule\Attribute\Participant\ParticipantAttribute;
@@ -21,13 +23,9 @@ use srag\Plugins\SrLifeCycleManager\Rule\Attribute\Survey\SurveyAttribute;
 use srag\Plugins\SrLifeCycleManager\Rule\Attribute\AttributeFactory;
 use srag\Plugins\SrLifeCycleManager\Rule\IRule;
 use srag\Plugins\SrLifeCycleManager\ITranslator;
-use ILIAS\UI\Component\Input\Container\Form\Factory as FormFactory;
-use ILIAS\UI\Component\Input\Container\Form\Form as UIForm;
-use ILIAS\UI\Component\Input\Field\Factory as FieldFactory;
 use ILIAS\UI\Component\Input\Field\SwitchableGroup;
 use ILIAS\UI\Component\Input\Field\Group;
 use ILIAS\UI\Component\Input\Field\Input;
-use ILIAS\Refinery\Factory as Refinery;
 
 /**
  * @author Thibeau Fuhrer <thibeau@sr.solutions>
@@ -53,32 +51,26 @@ class RuleFormBuilder extends AbstractFormBuilder
     /**
      * @var string[]
      */
-    protected $common_attribute_list;
+    protected array $common_attribute_list;
 
-    /**
-     * @var AttributeFactory
-     */
-    protected $attributes;
+    protected AttributeFactory $attributes;
 
-    /**
-     * @var IRule|null
-     */
-    protected $rule;
+    protected IRule $rule;
 
     /**
      * @param ITranslator      $translator
-     * @param FormFactory      $forms
-     * @param FieldFactory     $fields
-     * @param Refinery         $refinery
+     * @param mixed $forms
+     * @param mixed $fields
+     * @param mixed $refinery
      * @param AttributeFactory $attributes
      * @param IRule            $rule
      * @param string           $form_action
      */
     public function __construct(
         ITranslator $translator,
-        FormFactory $forms,
-        FieldFactory $fields,
-        Refinery $refinery,
+        Factory $forms,
+        \ILIAS\UI\Component\Input\Field\Factory $fields,
+        \ILIAS\Refinery\Factory $refinery,
         AttributeFactory $attributes,
         IRule $rule,
         string $form_action
@@ -92,7 +84,7 @@ class RuleFormBuilder extends AbstractFormBuilder
     /**
      * @inheritDoc
      */
-    public function getForm(): UIForm
+    public function getForm(): Form
     {
         $inputs[self::KEY_LHS_VALUE] = $this->getSwitchableAttributesInput(self::KEY_LHS_VALUE);
 

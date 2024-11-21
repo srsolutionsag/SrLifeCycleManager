@@ -49,40 +49,19 @@ class ilSrRoutineListBuilder
      */
     protected static $whitelist_entries = [];
 
-    /**
-     * @var Factory
-     */
-    protected $ui_factory;
+    protected Factory $ui_factory;
 
-    /**
-     * @var IRoutineAssignmentRepository
-     */
-    protected $assignment_repository;
+    protected IRoutineAssignmentRepository $assignment_repository;
 
-    /**
-     * @var IRoutineRepository
-     */
-    protected $routine_repository;
+    protected IRoutineRepository $routine_repository;
 
-    /**
-     * @var IWhitelistRepository
-     */
-    protected $whitelist_repository;
+    protected IWhitelistRepository $whitelist_repository;
 
-    /**
-     * @var ITranslator
-     */
-    protected $translator;
+    protected ITranslator $translator;
 
-    /**
-     * @var ilSrAccessHandler
-     */
-    protected $access_handler;
+    protected \ilSrAccessHandler $access_handler;
 
-    /**
-     * @var ilCtrl
-     */
-    protected $ctrl;
+    protected \ilCtrl $ctrl;
 
     /**
      * @var bool

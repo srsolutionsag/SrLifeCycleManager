@@ -23,25 +23,13 @@ class ilSrCronNotifier implements INotifier
      */
     protected const LOGGER_PREFIX = '[SrLifeCycleManager] ';
 
-    /**
-     * @var ilCronManager
-     */
-    protected $cron_manager;
+    protected \ilCronManager $cron_manager;
 
-    /**
-     * @var ilLogger
-     */
-    protected $logger;
+    protected \ilLogger $logger;
 
-    /**
-     * @var string
-     */
-    protected $cron_job_id;
+    protected string $cron_job_id;
 
-    /**
-     * @var int
-     */
-    protected $interval;
+    protected int $interval;
 
     /**
      * @var int

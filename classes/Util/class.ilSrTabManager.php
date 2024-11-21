@@ -33,30 +33,15 @@ class ilSrTabManager
     // ilSrTabManager language variables:
     protected const MSG_BACK_TO = 'msg_back_to';
 
-    /**
-     * @var ilSrAccessHandler
-     */
-    protected $access_handler;
+    protected \ilSrAccessHandler $access_handler;
 
-    /**
-     * @var ITranslator
-     */
-    protected $translator;
+    protected ITranslator $translator;
 
-    /**
-     * @var ilTabsGUI
-     */
-    protected $tabs;
+    protected \ilTabsGUI $tabs;
 
-    /**
-     * @var ilCtrl
-     */
-    protected $ctrl;
+    protected \ilCtrl $ctrl;
 
-    /**
-     * @var int
-     */
-    protected $origin;
+    protected int $origin;
 
     /**
      * @param ilSrAccessHandler $access_handler

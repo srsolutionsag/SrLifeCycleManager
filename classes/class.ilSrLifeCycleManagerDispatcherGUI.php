@@ -11,7 +11,6 @@ declare(strict_types=1);
 
 use srag\Plugins\SrLifeCycleManager\Routine\IRoutine;
 use srag\Plugins\SrLifeCycleManager\Config\IConfig;
-use srag\Plugins\SrLifeCycleManager\ITranslator;
 
 /**
  * Handles all requests of this plugin and dispatches them to the responsible class.
@@ -41,10 +40,7 @@ class ilSrLifeCycleManagerDispatcherGUI
      */
     protected $global_template;
 
-    /**
-     * @var IConfig
-     */
-    protected $config;
+    protected IConfig $config;
 
     /**
      * @var ilCtrl
@@ -201,12 +197,11 @@ class ilSrLifeCycleManagerDispatcherGUI
     {
         $message = "{$exception->getMessage()} : ";
         $message .= "<br /><br />";
-        $message .= str_replace(
+
+        return $message . str_replace(
             PHP_EOL,
             "<br />",
             $exception->getTraceAsString()
         );
-
-        return $message;
     }
 }

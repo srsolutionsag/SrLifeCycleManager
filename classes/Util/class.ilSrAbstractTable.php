@@ -15,7 +15,6 @@ use ILIAS\UI\Component\Component;
 use ILIAS\UI\Renderer;
 use ILIAS\UI\Factory;
 use srag\Plugins\SrLifeCycleManager\Repository\IGeneralRepository;
-use srag\Plugins\SrLifeCycleManager\Assignment\IRoutineAssignment;
 
 /**
  * This is an abstraction for ILIAS ilTable2GUI implementations.
@@ -35,35 +34,17 @@ abstract class ilSrAbstractTable extends ilTable2GUI
      */
     public const COL_ACTIONS = 'col_actions';
 
-    /**
-     * @var ilSrAccessHandler
-     */
-    protected $access_handler;
+    protected \ilSrAccessHandler $access_handler;
 
-    /**
-     * @var IGeneralRepository
-     */
-    protected $general_repository;
+    protected IGeneralRepository $general_repository;
 
-    /**
-     * @var Factory
-     */
-    protected $ui_factory;
+    protected Factory $ui_factory;
 
-    /**
-     * @var Renderer
-     */
-    protected $renderer;
+    protected Renderer $renderer;
 
-    /**
-     * @var ITranslator
-     */
-    protected $translator;
+    protected ITranslator $translator;
 
-    /**
-     * @var object
-     */
-    protected $parent_gui;
+    protected object $parent_gui;
 
     /**
      * @param Factory           $ui_factory

@@ -40,7 +40,7 @@ class ilSrObjectAssignmentGUI extends ilSrAbstractAssignmentGUI
     /**
      * @var IFormBuilder
      */
-    protected $form_builder;
+    protected ObjectAssignmentFormBuilder $form_builder;
 
     /**
      * @var GlobalHttpState

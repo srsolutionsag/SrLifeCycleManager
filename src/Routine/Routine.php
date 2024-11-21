@@ -11,7 +11,6 @@ declare(strict_types=1);
 
 namespace srag\Plugins\SrLifeCycleManager\Routine;
 
-use srag\Plugins\SrLifeCycleManager\Rule\IRule;
 use DateTimeImmutable;
 
 /**
@@ -19,50 +18,23 @@ use DateTimeImmutable;
  */
 class Routine implements IRoutine
 {
-    /**
-     * @var int|null
-     */
-    protected $routine_id;
+    protected ?int $routine_id;
 
-    /**
-     * @var int
-     */
-    protected $owner_id;
+    protected int $owner_id;
 
-    /**
-     * @var string
-     */
-    protected $routine_type;
+    protected string $routine_type;
 
-    /**
-     * @var int
-     */
-    protected $origin;
+    protected int $origin;
 
-    /**
-     * @var string
-     */
-    protected $title;
+    protected string $title;
 
-    /**
-     * @var bool
-     */
-    protected $has_opt_out;
+    protected bool $has_opt_out;
 
-    /**
-     * @var int|null
-     */
-    protected $elongation;
+    protected ?int $elongation;
 
-    /**
-     * @var int|null
-     */
-    protected $elongation_cooldown;
+    protected ?int $elongation_cooldown;
 
-    /**
-     * @var DateTimeImmutable
-     */
-    protected $creation_date;
+    protected \DateTimeImmutable $creation_date;
 
     /**
      * @param int               $owner_id

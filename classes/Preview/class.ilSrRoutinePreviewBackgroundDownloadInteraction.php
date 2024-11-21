@@ -9,19 +9,14 @@
  *********************************************************************/
 
 declare(strict_types=1);
-
-use ILIAS\BackgroundTasks\Implementation\Tasks\AbstractJob;
 use ILIAS\BackgroundTasks\Types\Type;
-use ILIAS\BackgroundTasks\Observer;
 use ILIAS\BackgroundTasks\Value;
 use ILIAS\BackgroundTasks\Types\SingleType;
-use ILIAS\BackgroundTasks\Implementation\Values\ScalarValues\IntegerValue;
 use ILIAS\BackgroundTasks\Implementation\Values\ScalarValues\StringValue;
 use ILIAS\BackgroundTasks\Implementation\Tasks\AbstractUserInteraction;
 use ILIAS\BackgroundTasks\Bucket;
 use ILIAS\BackgroundTasks\Task\UserInteraction\Option;
 use ILIAS\BackgroundTasks\Implementation\Tasks\UserInteraction\UserInteractionOption;
-use ILIAS\Filesystem\Util\LegacyPathHelper;
 
 /**
  * @author       Fabian Schmid <fabian@sr.solutions>
@@ -63,7 +58,7 @@ class ilSrRoutinePreviewBackgroundDownloadInteraction extends AbstractUserIntera
         $download_name_value_object = $input[1] ?? null; // Name of the zip file
         $download_path_value_object = $input[0] ?? null; // Relative path to the zip file
 
-        if (!$download_name_value_object instanceof \ILIAS\BackgroundTasks\Value || !$download_path_value_object instanceof \ILIAS\BackgroundTasks\Value) {
+        if (!$download_name_value_object instanceof Value || !$download_path_value_object instanceof Value) {
             return $download_path_value_object;
         }
 

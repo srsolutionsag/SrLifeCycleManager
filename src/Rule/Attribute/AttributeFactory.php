@@ -24,30 +24,15 @@ use srag\Plugins\SrLifeCycleManager\Rule\Ressource\IRessource;
  */
 class AttributeFactory
 {
-    /**
-     * @var CommonAttributeFactory
-     */
-    protected $common_factory;
+    protected CommonAttributeFactory $common_factory;
 
-    /**
-     * @var ParticipantAttributeFactory
-     */
-    protected $participant_factory;
+    protected ParticipantAttributeFactory $participant_factory;
 
-    /**
-     * @var ObjectAttributeFactory
-     */
-    protected $object_factory;
+    protected ObjectAttributeFactory $object_factory;
 
-    /**
-     * @var SurveyAttributeFactory
-     */
-    protected $survey_factory;
+    protected SurveyAttributeFactory $survey_factory;
 
-    /**
-     * @var CourseAttributeFactory
-     */
-    protected $course_factory;
+    protected CourseAttributeFactory $course_factory;
 
     public function __construct(
         CommonAttributeFactory $common_factory,

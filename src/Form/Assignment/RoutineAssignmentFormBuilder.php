@@ -11,13 +11,11 @@ declare(strict_types=1);
 
 namespace srag\Plugins\SrLifeCycleManager\Form\Assignment;
 
+use ILIAS\UI\Component\Input\Container\Form\Factory;
 use srag\Plugins\SrLifeCycleManager\Assignment\IRoutineAssignment;
 use srag\Plugins\SrLifeCycleManager\Routine\IRoutine;
 use srag\Plugins\SrLifeCycleManager\ITranslator;
-use ILIAS\UI\Component\Input\Container\Form\Factory as FormFactory;
-use ILIAS\UI\Component\Input\Field\Factory as FieldFactory;
 use ILIAS\UI\Component\Input\Field\Input;
-use ILIAS\Refinery\Factory as Refinery;
 
 /**
  * @author Thibeau Fuhrer <thibeau@sr.solutions>
@@ -27,17 +25,20 @@ class RoutineAssignmentFormBuilder extends AbstractAssignmentFormBuilder
     /**
      * @var IRoutine[]
      */
-    protected $unassigned_routines;
+    protected array $unassigned_routines;
 
     /**
      * @param IRoutine[] $unassigned_routines
      * @inheritDoc
+     * @param mixed $forms
+     * @param mixed $fields
+     * @param mixed $refinery
      */
     public function __construct(
         ITranslator $translator,
-        FormFactory $forms,
-        FieldFactory $fields,
-        Refinery $refinery,
+        Factory $forms,
+        \ILIAS\UI\Component\Input\Field\Factory $fields,
+        \ILIAS\Refinery\Factory $refinery,
         IRoutineAssignment $assignment,
         array $all_routines,
         array $unassigned_routines,

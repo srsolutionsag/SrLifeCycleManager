@@ -29,15 +29,9 @@ use ilObject;
  */
 class ComparisonFactory
 {
-    /**
-     * @var AttributeFactory
-     */
-    protected $attribute_factory;
+    protected AttributeFactory $attribute_factory;
 
-    /**
-     * @var RessourceFactory
-     */
-    protected $ressource_factory;
+    protected RessourceFactory $ressource_factory;
 
     public function __construct(RessourceFactory $ressource_factory, AttributeFactory $attribute_factory)
     {

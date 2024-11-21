@@ -39,31 +39,25 @@ class ilSrRoutinePreviewRenderer extends ilSrAbstractRoutinePreviewGenerator
      */
     protected $affected_object_provider;
 
-    /**
-     * @var ITranslator
-     */
-    protected $translator;
+    protected ITranslator $translator;
 
-    /**
-     * @var Renderer
-     */
-    protected $renderer;
+    protected Renderer $renderer;
 
     /**
      * @var UIFactory
      */
-    protected $ui_factory;
+    protected UIFactory $ui_factory;
+
+    protected string $ajax_action;
 
     /**
-     * @var string
+     * @param mixed $ui_factory
      */
-    protected $ajax_action;
-
     public function __construct(
         AffectedObjectProvider $affected_object_provider,
         ITranslator $translator,
         Renderer $renderer,
-        UIFactory $ui_factory,
+        $ui_factory,
         string $ajax_action
     ) {
         parent::__construct($affected_object_provider);

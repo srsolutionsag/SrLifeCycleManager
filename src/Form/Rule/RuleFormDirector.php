@@ -21,10 +21,7 @@ use LogicException;
  */
 class RuleFormDirector
 {
-    /**
-     * @var RuleFormBuilder
-     */
-    protected $form_builder;
+    protected RuleFormBuilder $form_builder;
 
     /**
      * @param RuleFormBuilder $form_builder

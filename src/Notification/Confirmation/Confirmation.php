@@ -19,10 +19,7 @@ use DateTimeImmutable;
  */
 class Confirmation extends Notification implements IConfirmation
 {
-    /**
-     * @var string
-     */
-    protected $event;
+    protected string $event;
 
     /**
      * @param int                    $routine_id

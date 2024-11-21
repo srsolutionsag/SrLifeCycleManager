@@ -62,8 +62,6 @@ trait DTOHelper
             return $query_results;
         }
 
-        return array_map(function (array $r) {
-            return $this->transformToDTO($r);
-        }, $query_results);
+        return array_map(fn(array $r) => $this->transformToDTO($r), $query_results);
     }
 }

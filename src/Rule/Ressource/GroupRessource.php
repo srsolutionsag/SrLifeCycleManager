@@ -17,15 +17,9 @@ namespace srag\Plugins\SrLifeCycleManager\Rule\Ressource;
  */
 class GroupRessource implements IDatabaseRessource, IObjectRessource, IParticipantRessource
 {
-    /**
-     * @var \ilDBInterface
-     */
-    protected $database;
+    protected \ilDBInterface $database;
 
-    /**
-     * @var \ilObjGroup
-     */
-    protected $group;
+    protected \ilObjGroup $group;
 
     public function __construct(\ilDBInterface $database, \ilObjGroup $group)
     {

@@ -20,10 +20,7 @@ use DateInterval;
  */
 class Reminder extends Notification implements IReminder
 {
-    /**
-     * @var int
-     */
-    protected $days_before_deletion;
+    protected int $days_before_deletion;
 
     /**
      * @param int                    $routine_id

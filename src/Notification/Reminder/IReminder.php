@@ -10,9 +10,6 @@
 
 namespace srag\Plugins\SrLifeCycleManager\Notification\Reminder;
 
-use DateTimeImmutable;
-use DateTime;
-
 /**
  * @author Thibeau Fuhrer <thibeau@sr.solutions>
  */

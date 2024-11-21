@@ -29,10 +29,7 @@ class ilSrWhitelistRepository implements IWhitelistRepository
     use DateTimeHelper;
     use DTOHelper;
 
-    /**
-     * @var ilDBInterface
-     */
-    protected $database;
+    protected \ilDBInterface $database;
 
     /**
      * @param ilDBInterface $database

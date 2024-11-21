@@ -19,35 +19,17 @@ use DateTimeImmutable;
  */
 class WhitelistEntry implements IWhitelistEntry
 {
-    /**
-     * @var int
-     */
-    protected $routine_id;
+    protected int $routine_id;
 
-    /**
-     * @var int
-     */
-    protected $ref_id;
+    protected int $ref_id;
 
-    /**
-     * @var int
-     */
-    protected $user_id;
+    protected int $user_id;
 
-    /**
-     * @var bool
-     */
-    protected $is_opt_out;
+    protected bool $is_opt_out;
 
-    /**
-     * @var DateTimeImmutable|null
-     */
-    protected $expiry_date;
+    protected ?\DateTimeImmutable $expiry_date;
 
-    /**
-     * @var DateTimeImmutable|null
-     */
-    protected $date;
+    protected ?\DateTimeImmutable $date;
 
     /**
      * @param int                    $routine_id

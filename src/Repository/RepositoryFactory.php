@@ -25,50 +25,23 @@ use srag\Plugins\SrLifeCycleManager\Token\ITokenRepository;
  */
 class RepositoryFactory
 {
-    /**
-     * @var IGeneralRepository
-     */
-    protected $general_repository;
+    protected IGeneralRepository $general_repository;
 
-    /**
-     * @var IConfigRepository
-     */
-    protected $config_repository;
+    protected IConfigRepository $config_repository;
 
-    /**
-     * @var IRoutineRepository
-     */
-    protected $routine_repository;
+    protected IRoutineRepository $routine_repository;
 
-    /**
-     * @var IRoutineAssignmentRepository
-     */
-    protected $assignment_repository;
+    protected IRoutineAssignmentRepository $assignment_repository;
 
-    /**
-     * @var IRuleRepository
-     */
-    protected $rule_repository;
+    protected IRuleRepository $rule_repository;
 
-    /**
-     * @var IConfirmationRepository
-     */
-    protected $confirmation_repository;
+    protected IConfirmationRepository $confirmation_repository;
 
-    /**
-     * @var IReminderRepository
-     */
-    protected $reminder_repository;
+    protected IReminderRepository $reminder_repository;
 
-    /**
-     * @var IWhitelistRepository
-     */
-    protected $whitelist_repository;
+    protected IWhitelistRepository $whitelist_repository;
 
-    /**
-     * @var ITokenRepository
-     */
-    protected $token_repository;
+    protected ITokenRepository $token_repository;
 
     /**
      * @param IGeneralRepository           $general_repository

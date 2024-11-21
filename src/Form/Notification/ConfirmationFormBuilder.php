@@ -12,14 +12,11 @@ declare(strict_types=1);
 
 namespace srag\Plugins\SrLifeCycleManager\Form\Notification;
 
+use ILIAS\UI\Component\Input\Container\Form\Factory;
 use srag\Plugins\SrLifeCycleManager\Notification\Confirmation\IConfirmationRepository;
 use srag\Plugins\SrLifeCycleManager\Notification\Confirmation\IConfirmation;
-use srag\Plugins\SrLifeCycleManager\Routine\IRoutineEvent;
 use srag\Plugins\SrLifeCycleManager\ITranslator;
-use ILIAS\UI\Component\Input\Container\Form\Factory as FormFactory;
-use ILIAS\UI\Component\Input\Field\Factory as FieldFactory;
 use ILIAS\Refinery\Constraint;
-use ILIAS\Refinery\Factory as Refinery;
 
 /**
  * @author Thibeau Fuhrer <thibeau@sr.solutions>
@@ -32,24 +29,24 @@ class ConfirmationFormBuilder extends NotificationFormBuilder
     // NotificationFormBuilder language variables:
     protected const MSG_CONFIRMATION_EVENT_ERROR = 'msg_confirmation_event_error';
 
-    /**
-     * @var IConfirmationRepository
-     */
-    protected $repository;
+    protected IConfirmationRepository $repository;
 
     /**
      * @var string[]
      */
-    protected $event_options;
+    protected array $event_options;
 
     /**
      * @param string[] $event_options
+     * @param mixed $forms
+     * @param mixed $fields
+     * @param mixed $refinery
      */
     public function __construct(
         ITranslator $translator,
-        FormFactory $forms,
-        FieldFactory $fields,
-        Refinery $refinery,
+        Factory $forms,
+        \ILIAS\UI\Component\Input\Field\Factory $fields,
+        \ILIAS\Refinery\Factory $refinery,
         IConfirmationRepository $repository,
         IConfirmation $notification,
         array $event_options,

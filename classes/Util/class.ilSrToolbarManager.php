@@ -10,7 +10,6 @@
 declare(strict_types=1);
 
 use srag\Plugins\SrLifeCycleManager\ITranslator;
-use srag\Plugins\SrLifeCycleManager\Routine\IRoutine;
 
 /**
  * This class is responsible for managing the plugin toolbars.
@@ -33,30 +32,15 @@ class ilSrToolbarManager
     public const ACTION_REMINDER_ADD = 'action_reminder_add';
     public const ACTION_RULE_ADD = 'action_rule_add';
 
-    /**
-     * @var ilSrAccessHandler
-     */
-    protected $access_handler;
+    protected \ilSrAccessHandler $access_handler;
 
-    /**
-     * @var ilGlobalTemplateInterface
-     */
-    protected $global_template;
+    protected \ilGlobalTemplateInterface $global_template;
 
-    /**
-     * @var ITranslator
-     */
-    protected $translator;
+    protected ITranslator $translator;
 
-    /**
-     * @var ilToolbarGUI
-     */
-    protected $toolbar;
+    protected \ilToolbarGUI $toolbar;
 
-    /**
-     * @var ilCtrl
-     */
-    protected $ctrl;
+    protected \ilCtrl $ctrl;
 
     /**
      * @param ilSrAccessHandler         $access_handler

@@ -11,10 +11,10 @@ declare(strict_types=1);
 
 namespace srag\Plugins\SrLifeCycleManager\Form\Notification;
 
+use ILIAS\UI\Component\Input\Container\Form\Form;
 use srag\Plugins\SrLifeCycleManager\Notification\Reminder\IReminderRepository;
 use srag\Plugins\SrLifeCycleManager\Notification\Reminder\IReminder;
 use srag\Plugins\SrLifeCycleManager\Form\AbstractFormProcessor;
-use ILIAS\UI\Component\Input\Container\Form\Form as UIForm;
 use Psr\Http\Message\ServerRequestInterface;
 
 /**
@@ -22,26 +22,20 @@ use Psr\Http\Message\ServerRequestInterface;
  */
 class ReminderFormProcessor extends AbstractFormProcessor
 {
-    /**
-     * @var IReminderRepository
-     */
-    protected $repository;
+    protected IReminderRepository $repository;
 
-    /**
-     * @var IReminder
-     */
-    protected $notification;
+    protected IReminder $notification;
 
     /**
      * @param IReminderRepository    $repository
      * @param ServerRequestInterface $request
-     * @param UIForm                 $form
+     * @param mixed $form
      * @param IReminder              $notification
      */
     public function __construct(
         IReminderRepository $repository,
         ServerRequestInterface $request,
-        UIForm $form,
+        Form $form,
         IReminder $notification
     ) {
         parent::__construct($request, $form);

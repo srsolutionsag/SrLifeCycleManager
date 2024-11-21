@@ -21,20 +21,11 @@ use srag\Plugins\SrLifeCycleManager\Rule\IRule;
  */
 abstract class AbstractComparison implements IComparison
 {
-    /**
-     * @var IAttribute
-     */
-    protected $lhs_attribute;
+    protected IAttribute $lhs_attribute;
 
-    /**
-     * @var IAttribute
-     */
-    protected $rhs_attribute;
+    protected IAttribute $rhs_attribute;
 
-    /**
-     * @var IRule
-     */
-    protected $rule;
+    protected IRule $rule;
 
     public function __construct(AttributeFactory $attribute_factory, IRessource $ressource, IRule $rule)
     {

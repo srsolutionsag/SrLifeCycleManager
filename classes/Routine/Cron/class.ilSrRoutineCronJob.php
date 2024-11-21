@@ -13,13 +13,11 @@ declare(strict_types=1);
 use srag\Plugins\SrLifeCycleManager\Object\AffectedObjectProvider;
 use srag\Plugins\SrLifeCycleManager\Routine\IRoutineRepository;
 use srag\Plugins\SrLifeCycleManager\Routine\IRoutineEvent;
-use srag\Plugins\SrLifeCycleManager\Routine\IRoutine;
 use srag\Plugins\SrLifeCycleManager\Notification\Reminder\IReminderRepository;
 use srag\Plugins\SrLifeCycleManager\Notification\IRecipientRetriever;
 use srag\Plugins\SrLifeCycleManager\Notification\Reminder\IReminder;
 use srag\Plugins\SrLifeCycleManager\Notification\INotificationSender;
 use srag\Plugins\SrLifeCycleManager\Whitelist\IWhitelistRepository;
-use srag\Plugins\SrLifeCycleManager\Whitelist\IWhitelistEntry;
 use srag\Plugins\SrLifeCycleManager\Repository\IGeneralRepository;
 use srag\Plugins\SrLifeCycleManager\Token\ITokenRepository;
 use srag\Plugins\SrLifeCycleManager\Cron\ResultBuilder;
@@ -27,7 +25,6 @@ use srag\Plugins\SrLifeCycleManager\Cron\INotifier;
 use srag\Plugins\SrLifeCycleManager\Object\AffectedObject;
 use srag\Plugins\SrLifeCycleManager\Event\EventSubject;
 use srag\Plugins\SrLifeCycleManager\DateTimeHelper;
-use srag\Plugins\SrLifeCycleManager\ITranslator;
 
 /**
  * This cron job will delete repository objects that are affected by
@@ -59,50 +56,23 @@ class ilSrRoutineCronJob extends ilSrAbstractCronJob
 {
     use DateTimeHelper;
 
-    /**
-     * @var IRecipientRetriever
-     */
-    protected $recipient_retriever;
+    protected IRecipientRetriever $recipient_retriever;
 
-    /**
-     * @var EventSubject
-     */
-    protected $event_subject;
+    protected EventSubject $event_subject;
 
-    /**
-     * @var IRoutineRepository
-     */
-    protected $routine_repository;
+    protected IRoutineRepository $routine_repository;
 
-    /**
-     * @var IReminderRepository
-     */
-    protected $reminder_repository;
+    protected IReminderRepository $reminder_repository;
 
-    /**
-     * @var ITokenRepository
-     */
-    protected $token_repository;
+    protected ITokenRepository $token_repository;
 
-    /**
-     * @var IWhitelistRepository
-     */
-    protected $whitelist_repository;
+    protected IWhitelistRepository $whitelist_repository;
 
-    /**
-     * @var IGeneralRepository
-     */
-    protected $general_repository;
+    protected IGeneralRepository $general_repository;
 
-    /**
-     * @var INotificationSender
-     */
-    protected $notification_sender;
+    protected INotificationSender $notification_sender;
 
-    /**
-     * @var AffectedObjectProvider
-     */
-    protected $affected_object_provider;
+    protected AffectedObjectProvider $affected_object_provider;
 
     /**
      * @var int[]

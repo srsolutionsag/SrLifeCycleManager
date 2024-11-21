@@ -12,14 +12,12 @@ declare(strict_types=1);
 
 namespace srag\Plugins\SrLifeCycleManager\Form\Notification;
 
+use ILIAS\UI\Component\Input\Container\Form\Factory;
+use ILIAS\UI\Component\Input\Container\Form\Form;
 use srag\Plugins\SrLifeCycleManager\Form\AbstractFormBuilder;
-use ILIAS\UI\Component\Input\Container\Form\Form as UIForm;
 use ILIAS\UI\Component\Input\Field\Input;
 use srag\Plugins\SrLifeCycleManager\Notification\INotification;
-use ILIAS\UI\Component\Input\Field\Factory as FieldFactory;
 use srag\Plugins\SrLifeCycleManager\ITranslator;
-use ILIAS\UI\Component\Input\Container\Form\Factory as FormFactory;
-use ILIAS\Refinery\Factory as Refinery;
 
 /**
  * @author Thibeau Fuhrer <thibeau@sr.solutions>
@@ -34,24 +32,21 @@ abstract class NotificationFormBuilder extends AbstractFormBuilder
     protected const INPUT_NOTIFICATION_CONTENT_INFO = 'input_name_notification_content_info';
     protected const INPUT_NOTIFICATION_TITLE_INFO = 'input_name_notification_title_info';
 
-    /**
-     * @var INotification
-     */
-    protected $notification;
+    protected INotification $notification;
 
     /**
      * @param ITranslator   $translator
-     * @param FormFactory   $forms
-     * @param FieldFactory  $fields
-     * @param Refinery      $refinery
+     * @param mixed $forms
+     * @param mixed $fields
+     * @param mixed $refinery
      * @param INotification $notification
      * @param string        $form_action
      */
     public function __construct(
         ITranslator $translator,
-        FormFactory $forms,
-        FieldFactory $fields,
-        Refinery $refinery,
+        Factory $forms,
+        \ILIAS\UI\Component\Input\Field\Factory $fields,
+        \ILIAS\Refinery\Factory $refinery,
         INotification $notification,
         string $form_action
     ) {
@@ -62,7 +57,7 @@ abstract class NotificationFormBuilder extends AbstractFormBuilder
     /**
      * @inheritDoc
      */
-    public function getForm(): UIForm
+    public function getForm(): Form
     {
         $inputs[self::INPUT_NOTIFICATION_TITLE] = $this->fields
             ->text(

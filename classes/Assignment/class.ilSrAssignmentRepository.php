@@ -25,10 +25,7 @@ class ilSrAssignmentRepository implements IRoutineAssignmentRepository
     use ObjectHelper;
     use DTOHelper;
 
-    /**
-     * @var ilDBInterface
-     */
-    protected $database;
+    protected \ilDBInterface $database;
 
     public function __construct(ilDBInterface $database, ilTree $tree)
     {

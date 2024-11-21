@@ -15,10 +15,6 @@ use srag\Plugins\SrLifeCycleManager\Form\Rule\RuleFormBuilder;
 use srag\Plugins\SrLifeCycleManager\Rule\IRule;
 use srag\Plugins\SrLifeCycleManager\Rule\Attribute\AttributeFactory;
 use srag\Plugins\SrLifeCycleManager\Form\Rule\RuleFormProcessor;
-use srag\Plugins\SrLifeCycleManager\Rule\Attribute\Common\CommonAttributeFactory;
-use srag\Plugins\SrLifeCycleManager\Rule\Attribute\Object\ObjectAttributeFactory;
-use srag\Plugins\SrLifeCycleManager\Rule\Attribute\Survey\SurveyAttributeFactory;
-use srag\Plugins\SrLifeCycleManager\Rule\Attribute\Course\CourseAttributeFactory;
 
 /**
  * This GUI class is responsible for all actions regarding rules.
@@ -48,10 +44,7 @@ class ilSrRuleGUI extends ilSrAbstractGUI
      */
     protected $attribute_factory;
 
-    /**
-     * @var RuleFormDirector
-     */
-    protected $form_director;
+    protected RuleFormDirector $form_director;
 
     /**
      * @var IRule

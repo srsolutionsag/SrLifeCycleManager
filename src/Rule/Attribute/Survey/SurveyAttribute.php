@@ -20,10 +20,7 @@ use ilObjSurvey;
  */
 abstract class SurveyAttribute implements IAttribute
 {
-    /**
-     * @var ilObjSurvey
-     */
-    protected $survey;
+    protected \ilObjSurvey $survey;
 
     public function __construct(ilObjSurvey $survey)
     {

@@ -12,17 +12,12 @@ declare(strict_types=1);
 
 namespace srag\Plugins\SrLifeCycleManager\Rule\Attribute\Common;
 
-use srag\Plugins\SrLifeCycleManager\Rule\Attribute\IAttribute;
-
 /**
  * @author Thibeau Fuhrer <thibeau@sr.solutions>
  */
 class CommonBoolean extends CommonAttribute
 {
-    /**
-     * @var bool
-     */
-    protected $value;
+    protected bool $value;
 
     public function __construct(bool $value)
     {
@@ -43,6 +38,7 @@ class CommonBoolean extends CommonAttribute
 
     /**
      * @inheritDoc
+     * @return bool|int|string|null
      */
     public function getComparableValue(string $type)
     {

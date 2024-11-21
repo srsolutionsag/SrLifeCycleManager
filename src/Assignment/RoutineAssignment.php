@@ -16,30 +16,15 @@ namespace srag\Plugins\SrLifeCycleManager\Assignment;
  */
 class RoutineAssignment implements IRoutineAssignment
 {
-    /**
-     * @var int|null
-     */
-    protected $routine_id;
+    protected ?int $routine_id;
 
-    /**
-     * @var int|null
-     */
-    protected $ref_id;
+    protected ?int $ref_id;
 
-    /**
-     * @var int
-     */
-    protected $user_id;
+    protected int $user_id;
 
-    /**
-     * @var bool
-     */
-    protected $is_active;
+    protected bool $is_active;
 
-    /**
-     * @var bool
-     */
-    protected $is_recursive;
+    protected bool $is_recursive;
 
     /**
      * @param int      $user_id

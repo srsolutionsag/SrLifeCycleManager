@@ -11,37 +11,32 @@ declare(strict_types=1);
 
 namespace srag\Plugins\SrLifeCycleManager\Form\Assignment;
 
+use ILIAS\UI\Component\Input\Container\Form\Form;
 use srag\Plugins\SrLifeCycleManager\Assignment\IRoutineAssignmentRepository;
 use srag\Plugins\SrLifeCycleManager\Assignment\IRoutineAssignment;
 use srag\Plugins\SrLifeCycleManager\Form\AbstractFormProcessor;
 use Psr\Http\Message\ServerRequestInterface;
-use ILIAS\UI\Component\Input\Container\Form\Form as UIForm;
 
 /**
  * @author Thibeau Fuhrer <thibeau@sr.solutions>
  */
 class AssignmentFormProcessor extends AbstractFormProcessor
 {
-    /**
-     * @var IRoutineAssignmentRepository
-     */
-    protected $repository;
+    protected IRoutineAssignmentRepository $repository;
 
-    /**
-     * @var IRoutineAssignment
-     */
-    protected $assignment;
+    protected IRoutineAssignment $assignment;
 
     /**
      * @param IRoutineAssignmentRepository $repository
      * @param IRoutineAssignment           $assignment
      * @inheritdoc
+     * @param mixed $form
      */
     public function __construct(
         IRoutineAssignmentRepository $repository,
         IRoutineAssignment $assignment,
         ServerRequestInterface $request,
-        UIForm $form
+        Form $form
     ) {
         parent::__construct($request, $form);
         $this->repository = $repository;
@@ -82,12 +77,13 @@ class AssignmentFormProcessor extends AbstractFormProcessor
         ) {
             $this->processMultipleRoutines($post_data);
         }
-
-        if (is_array($post_data[AbstractAssignmentFormBuilder::INPUT_REF_ID]) &&
-            null === $this->assignment->getRefId()
-        ) {
-            $this->processMultipleRefIds($post_data);
+        if (!is_array($post_data[AbstractAssignmentFormBuilder::INPUT_REF_ID])) {
+            return;
         }
+        if (null !== $this->assignment->getRefId()) {
+            return;
+        }
+        $this->processMultipleRefIds($post_data);
     }
 
     /**

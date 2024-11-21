@@ -31,6 +31,7 @@ class SurveyQuestions extends SurveyAttribute
 
     /**
      * @inheritDoc
+     * @return bool|int|string|null
      */
     public function getComparableValue(string $type)
     {

@@ -9,12 +9,8 @@
  *********************************************************************/
 
 declare(strict_types=1);
-
+use srag\Plugins\SrLifeCycleManager\Object\AffectedObject;
 use srag\Plugins\SrLifeCycleManager\Object\AffectedObjectProvider;
-use srag\Plugins\SrLifeCycleManager\ITranslator;
-use ILIAS\UI\Factory as UIFactory;
-use ILIAS\UI\Renderer;
-use ILIAS\UI\Component\Component;
 
 /**
  * @author       Fabian Schmid <fabian@sr.solutions>
@@ -22,10 +18,7 @@ use ILIAS\UI\Component\Component;
  */
 abstract class ilSrAbstractRoutinePreviewGenerator
 {
-    /**
-     * @var AffectedObjectProvider
-     */
-    protected $affected_object_provider;
+    protected AffectedObjectProvider $affected_object_provider;
 
     /**
      * @param AffectedObjectProvider $object_provider
@@ -36,7 +29,7 @@ abstract class ilSrAbstractRoutinePreviewGenerator
     }
 
     /**
-     * @return Generator|\srag\Plugins\SrLifeCycleManager\Object\AffectedObject[]
+     * @return Generator|AffectedObject[]
      */
     protected function getDeletableItems()
     {

@@ -11,32 +11,29 @@ declare(strict_types=1);
 
 namespace srag\Plugins\SrLifeCycleManager\Form\Config;
 
+use ILIAS\UI\Component\Input\Container\Form\Form;
 use srag\Plugins\SrLifeCycleManager\Form\AbstractFormProcessor;
 use srag\Plugins\SrLifeCycleManager\Config\IConfigRepository;
 use srag\Plugins\SrLifeCycleManager\Config\Config;
 use srag\Plugins\SrLifeCycleManager\Config\IConfig;
 use Psr\Http\Message\ServerRequestInterface;
-use ILIAS\UI\Component\Input\Container\Form\Form as UIForm;
 
 /**
  * @author Thibeau Fuhrer <thibeau@sr.solutions>
  */
 class ConfigFormProcessor extends AbstractFormProcessor
 {
-    /**
-     * @var IConfigRepository
-     */
-    protected $repository;
+    protected IConfigRepository $repository;
 
     /**
      * @param IConfigRepository      $repository
      * @param ServerRequestInterface $request
-     * @param UIForm                 $form
+     * @param mixed $form
      */
     public function __construct(
         IConfigRepository $repository,
         ServerRequestInterface $request,
-        UIForm $form
+        Form $form
     ) {
         parent::__construct($request, $form);
         $this->repository = $repository;

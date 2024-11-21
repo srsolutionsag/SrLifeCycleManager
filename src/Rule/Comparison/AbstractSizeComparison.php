@@ -22,10 +22,7 @@ use srag\Plugins\SrLifeCycleManager\Rule\IRule;
  */
 abstract class AbstractSizeComparison extends AbstractComparison
 {
-    /**
-     * @var bool
-     */
-    protected $strict;
+    protected bool $strict;
 
     public function __construct(
         AttributeFactory $attribute_factory,

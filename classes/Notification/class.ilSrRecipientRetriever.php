@@ -11,7 +11,6 @@
 declare(strict_types=1);
 
 use srag\Plugins\SrLifeCycleManager\Notification\IRecipientRetriever;
-use srag\Plugins\SrLifeCycleManager\Config\IConfig;
 
 /**
  * @author       Thibeau Fuhrer <thibeau@sr.solutions>

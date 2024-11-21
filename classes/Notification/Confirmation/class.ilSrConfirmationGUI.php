@@ -28,7 +28,7 @@ class ilSrConfirmationGUI extends ilSrAbstractNotificationGUI
     /**
      * @var IFormBuilder
      */
-    protected $form_builder;
+    protected ConfirmationFormBuilder $form_builder;
 
     /**
      * @var IConfirmation

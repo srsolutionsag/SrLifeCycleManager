@@ -12,13 +12,11 @@ declare(strict_types=1);
 
 namespace srag\Plugins\SrLifeCycleManager\Form\Routine;
 
+use ILIAS\UI\Component\Input\Container\Form\Factory;
+use ILIAS\UI\Component\Input\Container\Form\Form;
 use srag\Plugins\SrLifeCycleManager\Form\AbstractFormBuilder;
 use srag\Plugins\SrLifeCycleManager\Routine\IRoutine;
 use srag\Plugins\SrLifeCycleManager\ITranslator;
-use ILIAS\Refinery\Factory as Refinery;
-use ILIAS\UI\Component\Input\Container\Form\Factory as FormFactory;
-use ILIAS\UI\Component\Input\Container\Form\Form as UIForm;
-use ILIAS\UI\Component\Input\Field\Factory as FieldFactory;
 
 /**
  * @author Thibeau Fuhrer <thibeau@sr.solutions>
@@ -33,24 +31,21 @@ class RoutineFormBuilder extends AbstractFormBuilder
     public const INPUT_ROUTINE_TYPE = 'input_name_routine_type';
     public const INPUT_TITLE = 'input_name_routine_title';
 
-    /**
-     * @var IRoutine
-     */
-    protected $routine;
+    protected IRoutine $routine;
 
     /**
      * @param ITranslator   $translator
-     * @param FormFactory   $forms
-     * @param FieldFactory  $fields
-     * @param Refinery      $refinery
+     * @param mixed $forms
+     * @param mixed $fields
+     * @param mixed $refinery
      * @param string        $form_action
      * @param IRoutine|null $routine
      */
     public function __construct(
         ITranslator $translator,
-        FormFactory $forms,
-        FieldFactory $fields,
-        Refinery $refinery,
+        Factory $forms,
+        \ILIAS\UI\Component\Input\Field\Factory $fields,
+        \ILIAS\Refinery\Factory $refinery,
         IRoutine $routine,
         string $form_action
     ) {
@@ -61,7 +56,7 @@ class RoutineFormBuilder extends AbstractFormBuilder
     /**
      * @inheritDoc
      */
-    public function getForm(): UIForm
+    public function getForm(): Form
     {
         $inputs[self::INPUT_TITLE] = $this->fields
             ->text($this->translator->txt(self::INPUT_TITLE))

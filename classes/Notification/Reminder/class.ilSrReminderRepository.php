@@ -389,7 +389,7 @@ class ilSrReminderRepository extends ilSrAbstractNotificationRepository implemen
     /**
      * @inheritDoc
      */
-    protected function transformToDTO(array $query_result)
+    protected function transformToDTO(array $query_result): Reminder
     {
         return new Reminder(
             (int) $query_result[IReminder::F_ROUTINE_ID],

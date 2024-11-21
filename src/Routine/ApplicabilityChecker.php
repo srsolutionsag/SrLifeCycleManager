@@ -26,15 +26,9 @@ class ApplicabilityChecker
      */
     protected static $rule_cache = [];
 
-    /**
-     * @var ComparisonFactory
-     */
-    protected $comparison_factory;
+    protected ComparisonFactory $comparison_factory;
 
-    /**
-     * @var IRuleRepository
-     */
-    protected $rule_repository;
+    protected IRuleRepository $rule_repository;
 
     public function __construct(ComparisonFactory $comparison_factory, IRuleRepository $rule_repository)
     {

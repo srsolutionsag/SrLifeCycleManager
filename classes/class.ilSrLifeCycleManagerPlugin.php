@@ -10,12 +10,7 @@
 
 declare(strict_types=1);
 
-// This is the first class being loaded, therefore the plugin's
-// autoloader can be included here.
-require __DIR__ . '/../vendor/autoload.php';
-
 use srag\Plugins\SrLifeCycleManager\ITranslator;
-use ILIAS\DI\Container;
 
 /**
  * This class is the actual plugin object.
@@ -48,10 +43,7 @@ class ilSrLifeCycleManagerPlugin extends ilCronHookPlugin implements ITranslator
      */
     protected static $instance;
 
-    /**
-     * @var ilSrLifeCycleManagerContainer
-     */
-    protected $container;
+    protected \ilSrLifeCycleManagerContainer $container;
 
     /**
      * Initializes the global screen providers and event-listeners.

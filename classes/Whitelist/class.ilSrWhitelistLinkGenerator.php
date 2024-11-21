@@ -18,15 +18,9 @@ use srag\Plugins\SrLifeCycleManager\Routine\IRoutineEvent;
  */
 class ilSrWhitelistLinkGenerator
 {
-    /**
-     * @var ITokenRepository
-     */
-    protected $token_repository;
+    protected ITokenRepository $token_repository;
 
-    /**
-     * @var ilCtrl
-     */
-    protected $ctrl;
+    protected \ilCtrl $ctrl;
 
     /**
      * @param ITokenRepository $token_repository

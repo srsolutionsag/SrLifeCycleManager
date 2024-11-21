@@ -19,10 +19,7 @@ use ilObjCourse;
  */
 abstract class CourseAttribute implements IAttribute
 {
-    /**
-     * @var ilObjCourse
-     */
-    protected $course;
+    protected \ilObjCourse $course;
 
     /**
      * @param ilObjCourse $course

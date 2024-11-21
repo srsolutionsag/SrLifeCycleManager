@@ -12,10 +12,6 @@ declare(strict_types=1);
 
 namespace srag\Plugins\SrLifeCycleManager\Routine;
 
-use srag\Plugins\SrLifeCycleManager\Rule\Comparison\ComparisonFactory;
-use srag\Plugins\SrLifeCycleManager\Whitelist\IWhitelistEntry;
-use srag\Plugins\SrLifeCycleManager\Whitelist\WhitelistEntry;
-use srag\Plugins\SrLifeCycleManager\Rule\IRuleRepository;
 use ilObject;
 
 /**
@@ -23,15 +19,9 @@ use ilObject;
  */
 class AffectingRoutineProvider
 {
-    /**
-     * @var IRoutineRepository
-     */
-    protected $routine_repository;
+    protected IRoutineRepository $routine_repository;
 
-    /**
-     * @var ApplicabilityChecker
-     */
-    protected $applicability_checker;
+    protected ApplicabilityChecker $applicability_checker;
 
     public function __construct(IRoutineRepository $routine_repository, ApplicabilityChecker $applicability_checker)
     {
@@ -52,9 +42,7 @@ class AffectingRoutineProvider
                 $object->getRefId(),
                 $object->getType()
             ),
-            function (IRoutine $routine) use ($object): bool {
-                return $this->applicability_checker->isApplicable($routine, $object);
-            }
+            fn(IRoutine $routine): bool => $this->applicability_checker->isApplicable($routine, $object)
         );
     }
 
@@ -68,9 +56,7 @@ class AffectingRoutineProvider
     {
         return array_filter(
             $this->routine_repository->getAllByRefId($object->getRefId()),
-            function (IRoutine $routine) use ($object): bool {
-                return $this->applicability_checker->isApplicable($routine, $object);
-            }
+            fn(IRoutine $routine): bool => $this->applicability_checker->isApplicable($routine, $object)
         );
     }
 }

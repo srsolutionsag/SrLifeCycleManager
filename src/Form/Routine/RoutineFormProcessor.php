@@ -11,10 +11,10 @@ declare(strict_types=1);
 
 namespace srag\Plugins\SrLifeCycleManager\Form\Routine;
 
+use ILIAS\UI\Component\Input\Container\Form\Form;
 use srag\Plugins\SrLifeCycleManager\Form\AbstractFormProcessor;
 use srag\Plugins\SrLifeCycleManager\Routine\IRoutineRepository;
 use srag\Plugins\SrLifeCycleManager\Routine\IRoutine;
-use ILIAS\UI\Component\Input\Container\Form\Form as UIForm;
 use Psr\Http\Message\ServerRequestInterface;
 
 /**
@@ -22,26 +22,20 @@ use Psr\Http\Message\ServerRequestInterface;
  */
 class RoutineFormProcessor extends AbstractFormProcessor
 {
-    /**
-     * @var IRoutineRepository
-     */
-    protected $repository;
+    protected IRoutineRepository $repository;
 
-    /**
-     * @var IRoutine
-     */
-    protected $routine;
+    protected IRoutine $routine;
 
     /**
      * @param IRoutineRepository     $repository
      * @param ServerRequestInterface $request
-     * @param UIForm                 $form
+     * @param mixed $form
      * @param IRoutine               $routine
      */
     public function __construct(
         IRoutineRepository $repository,
         ServerRequestInterface $request,
-        UIForm $form,
+        Form $form,
         IRoutine $routine
     ) {
         parent::__construct($request, $form);

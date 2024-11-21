@@ -9,16 +9,7 @@
  *********************************************************************/
 
 declare(strict_types=1);
-
-use srag\Plugins\SrLifeCycleManager\Routine\AffectingRoutineProvider;
-use srag\Plugins\SrLifeCycleManager\Rule\Comparison\ComparisonFactory;
-use srag\Plugins\SrLifeCycleManager\Rule\Attribute\AttributeFactory;
-use srag\Plugins\SrLifeCycleManager\Object\AffectedObjectProvider;
-use srag\Plugins\SrLifeCycleManager\Rule\Ressource\RessourceFactory;
-use srag\Plugins\SrLifeCycleManager\Rule\Attribute\Common\CommonAttributeFactory;
-use srag\Plugins\SrLifeCycleManager\Rule\Attribute\Object\ObjectAttributeFactory;
-use srag\Plugins\SrLifeCycleManager\Rule\Attribute\Survey\SurveyAttributeFactory;
-use srag\Plugins\SrLifeCycleManager\Rule\Attribute\Course\CourseAttributeFactory;
+use ILIAS\BackgroundTasks\Implementation\Bucket\BasicBucket;
 use ILIAS\BackgroundTasks\BackgroundTaskServices;
 
 /**
@@ -39,10 +30,7 @@ class ilSrRoutinePreviewGUI extends ilSrAbstractGUI
      */
     protected $background_tasks;
 
-    /**
-     * @var ilSrRoutinePreviewRenderer
-     */
-    protected $preview_renderer;
+    protected \ilSrRoutinePreviewRenderer $preview_renderer;
 
     /**
      * Initializes the object provider for the current preview.
@@ -139,7 +127,7 @@ class ilSrRoutinePreviewGUI extends ilSrAbstractGUI
     protected function startBackgroundTask(): void
     {
         // Create Bucket and assign it to current user
-        $bucket = new ILIAS\BackgroundTasks\Implementation\Bucket\BasicBucket();
+        $bucket = new BasicBucket();
         $bucket->setUserId($this->user->getId());
 
         // Create Collect Job

@@ -12,8 +12,6 @@ declare(strict_types=1);
 
 namespace srag\Plugins\SrLifeCycleManager\Tests\Routine;
 
-require_once __DIR__ . '/../../vendor/autoload.php';
-
 use srag\Plugins\SrLifeCycleManager\Notification\Reminder\IReminderRepository;
 use srag\Plugins\SrLifeCycleManager\Notification\Reminder\IReminder;
 use srag\Plugins\SrLifeCycleManager\Notification\IRecipientRetriever;
@@ -197,7 +195,7 @@ class RoutineCronJobTest extends TestCase
 
         // assertion-logic will be handled in this callback.
         $this->notification_sender->method('sendNotification')->willReturnCallback(
-            function ($retriever, $reminder, $object) use (&$next_reminder, &$test_object) {
+            function ($retriever, $reminder, $object) use (&$next_reminder, &$test_object): MockObject {
                 $this->assertInstanceOf(IReminder::class, $reminder);
                 $this->assertInstanceOf(ilObject::class, $object);
                 $this->assertEquals($next_reminder->getNotificationId(), $reminder->getNotificationId());
@@ -323,14 +321,14 @@ class RoutineCronJobTest extends TestCase
         );
 
         $this->notification_sender->method('sendNotification')->willReturnCallback(
-            function () use (&$has_reminder_been_sent) {
+            function () use (&$has_reminder_been_sent): MockObject {
                 $has_reminder_been_sent = true;
                 return $this->createMock(ISentNotification::class);
             }
         );
 
         $this->general_repository->method('deleteObject')->willReturnCallback(
-            function () use (&$has_object_been_deleted) {
+            function () use (&$has_object_been_deleted): bool {
                 $has_object_been_deleted = true;
                 return true;
             }
@@ -347,7 +345,7 @@ class RoutineCronJobTest extends TestCase
         $reminder_1->method('getNotifiedDate')->willReturn($date_when_reminder_1_should_be_sent);
         $reminder_1->method('isElapsed')->willReturnCallback(
             // emulates the same logic as to the original method.
-            static function ($when) use ($reminder_1, $date_when_reminder_1_should_be_sent) {
+            static function ($when) use ($reminder_1, $date_when_reminder_1_should_be_sent): bool {
                 $elapsed_date = $date_when_reminder_1_should_be_sent->add(
                     new DateInterval("P{$reminder_1->getDaysBeforeDeletion()}D")
                 );
@@ -467,7 +465,7 @@ class RoutineCronJobTest extends TestCase
         );
 
         $this->reminder_repository->method('getWithDaysBeforeDeletion')->willReturnCallback(
-            static function ($_, $with_days_before_deletion) use ($days_before_deletion, $reminder) {
+            static function ($_, $with_days_before_deletion) use ($days_before_deletion, $reminder): ?IReminder {
                 if ($with_days_before_deletion === $days_before_deletion) {
                     return $reminder;
                 }
@@ -479,7 +477,7 @@ class RoutineCronJobTest extends TestCase
 
         $sent_reminders = [];
         $this->notification_sender->method('sendNotification')->willReturnCallback(
-            function ($_, $reminder_to_send) use (&$sent_reminders, &$latest_reminder, &$current_date) {
+            function ($_, $reminder_to_send) use (&$sent_reminders, &$latest_reminder, &$current_date): MockObject {
                 $sent_reminders[] = $reminder_to_send;
                 $latest_reminder = $reminder_to_send;
                 $latest_reminder->method('getNotifiedDate')->willReturn($current_date);
@@ -490,7 +488,7 @@ class RoutineCronJobTest extends TestCase
 
         $deleted_objects = [];
         $this->general_repository->method('deleteObject')->willReturnCallback(
-            static function ($object) use (&$deleted_objects) {
+            static function ($object) use (&$deleted_objects): bool {
                 $deleted_objects[] = $object;
                 return true;
             }
@@ -574,7 +572,7 @@ class RoutineCronJobTest extends TestCase
         $this->whitelist_repository->method('get')->willReturn($whitelist_entry);
 
         $this->event_subject->method('notify')->willReturnCallback(
-            function ($event, $data) use ($object) {
+            function ($event, $data) use ($object): void {
                 $this->assertEquals(IRoutineEvent::EVENT_DELETE, $event);
                 //                $this->assertInstanceOf(AffectedObject::class, $data);
                 $this->assertEquals($this->routine->getRoutineId(), $data->getRoutine()->getRoutineId());
@@ -607,15 +605,9 @@ class RoutineCronJobTest extends TestCase
             $execution_date,
             $this->createMock(ilCronJobResult::class)
         ) extends ilSrRoutineCronJob {
-            /**
-             * @var DateTimeImmutable
-             */
-            private $current_date;
+            private \DateTimeImmutable $current_date;
 
-            /**
-             * @var ilCronJobResult
-             */
-            private $result;
+            private \ilCronJobResult $result;
 
             public function __construct(
                 INotificationSender $notification_sender,
@@ -693,7 +685,7 @@ class RoutineCronJobTest extends TestCase
             /**
              * @param AffectedObject[] $objects
              */
-            private $objects;
+            private array $objects;
 
             /**
              * @param AffectedObject[] $objects

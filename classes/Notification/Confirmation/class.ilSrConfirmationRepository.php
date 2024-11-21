@@ -223,7 +223,7 @@ class ilSrConfirmationRepository extends ilSrAbstractNotificationRepository impl
     /**
      * @inheritDoc
      */
-    protected function transformToDTO(array $query_result)
+    protected function transformToDTO(array $query_result): Confirmation
     {
         return new Confirmation(
             (int) $query_result[IConfirmation::F_ROUTINE_ID],

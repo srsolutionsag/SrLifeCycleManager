@@ -24,10 +24,7 @@ class ilSrTokenRepository implements ITokenRepository
     use TokenGenerator;
     use DTOHelper;
 
-    /**
-     * @var ilDBInterface
-     */
-    protected $database;
+    protected \ilDBInterface $database;
 
     /**
      * @param ilDBInterface $database

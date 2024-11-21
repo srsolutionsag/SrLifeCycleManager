@@ -11,7 +11,6 @@
 declare(strict_types=1);
 
 use srag\Plugins\SrLifeCycleManager\Assignment\IRoutineAssignment;
-use ILIAS\UI\Component\Dropdown\Dropdown;
 
 /**
  * @author       Thibeau Fuhrer <thibeau@sr.solutions>

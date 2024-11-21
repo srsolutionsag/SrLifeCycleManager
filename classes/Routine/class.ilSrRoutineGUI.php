@@ -13,8 +13,6 @@ use srag\Plugins\SrLifeCycleManager\Form\IFormBuilder;
 use srag\Plugins\SrLifeCycleManager\Form\Routine\RoutineFormBuilder;
 use srag\Plugins\SrLifeCycleManager\Form\Routine\RoutineFormProcessor;
 use srag\Plugins\SrLifeCycleManager\Routine\IRoutine;
-use srag\Plugins\SrLifeCycleManager\Form\Assignment\RoutineAssignmentFormBuilder;
-use srag\Plugins\SrLifeCycleManager\Assignment\RoutineAssignment;
 
 /**
  * This GUI class is responsible for all actions regarding routines.
@@ -38,7 +36,7 @@ class ilSrRoutineGUI extends ilSrAbstractGUI
     /**
      * @var IFormBuilder
      */
-    protected $routine_form_builder;
+    protected RoutineFormBuilder $routine_form_builder;
 
     /**
      * Initializes the routine form-builder and fetches the required request

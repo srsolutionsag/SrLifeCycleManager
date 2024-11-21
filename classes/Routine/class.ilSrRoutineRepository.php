@@ -32,20 +32,11 @@ class ilSrRoutineRepository implements IRoutineRepository
     use ObjectHelper;
     use DTOHelper;
 
-    /**
-     * @var IReminderRepository
-     */
-    protected $reminder_repository;
+    protected IReminderRepository $reminder_repository;
 
-    /**
-     * @var IWhitelistRepository
-     */
-    protected $whitelist_repository;
+    protected IWhitelistRepository $whitelist_repository;
 
-    /**
-     * @var ilDBInterface
-     */
-    protected $database;
+    protected \ilDBInterface $database;
 
     /**
      * @param IReminderRepository  $reminder_repository

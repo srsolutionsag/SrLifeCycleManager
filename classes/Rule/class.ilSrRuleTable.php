@@ -9,10 +9,7 @@
  *********************************************************************/
 
 declare(strict_types=1);
-
-use srag\Plugins\SrLifeCycleManager\Rule\Attribute\Common\CommonAttributeFactory;
 use srag\Plugins\SrLifeCycleManager\Rule\Attribute\AttributeFactory;
-use srag\Plugins\SrLifeCycleManager\Routine\IRoutine;
 use srag\Plugins\SrLifeCycleManager\Rule\IRule;
 use srag\Plugins\SrLifeCycleManager\ITranslator;
 use ILIAS\UI\Component\Dropdown\Dropdown;
@@ -39,10 +36,7 @@ class ilSrRuleTable extends ilSrAbstractTable
     public const ACTION_RULE_EDIT = 'action_rule_edit';
     public const ACTION_RULE_DELETE = 'action_rule_delete';
 
-    /**
-     * @var AttributeFactory
-     */
-    protected $attribute_factory;
+    protected AttributeFactory $attribute_factory;
 
     public function __construct(
         Factory $ui_factory,
@@ -162,7 +156,7 @@ class ilSrRuleTable extends ilSrAbstractTable
      * @param mixed  $attr_value
      * @return string
      */
-    protected function getMaybeTranslatedValue(string $attr_type, $attr_value): string
+    protected function getMaybeTranslatedValue(string $attr_type, string $attr_value): string
     {
         // common attributes must not be translated because they
         // hold user generated values.

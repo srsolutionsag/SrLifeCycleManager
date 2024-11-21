@@ -12,10 +12,6 @@ declare(strict_types=1);
 
 namespace srag\Plugins\SrLifeCycleManager\Repository;
 
-use srag\Plugins\SrLifeCycleManager\Routine\IRoutine;
-use Exception;
-use Generator;
-use ilObjectFactory;
 use ilTree;
 
 /**

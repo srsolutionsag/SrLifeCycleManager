@@ -22,25 +22,13 @@ namespace srag\Plugins\SrLifeCycleManager\Rule\Attribute\Migration;
  */
 class TypeMigration extends AttributeMigration
 {
-    /**
-     * @var string
-     */
-    protected $lhs_value_column;
+    protected string $lhs_value_column;
 
-    /**
-     * @var string
-     */
-    protected $lhs_type_column;
+    protected string $lhs_type_column;
 
-    /**
-     * @var string
-     */
-    protected $rhs_value_column;
+    protected string $rhs_value_column;
 
-    /**
-     * @var string
-     */
-    protected $rhs_type_column;
+    protected string $rhs_type_column;
 
     /**
      * @inheritDoc

@@ -19,35 +19,17 @@ use LogicException;
  */
 abstract class Notification implements ISentNotification
 {
-    /**
-     * @var int|null
-     */
-    protected $notification_id;
+    protected ?int $notification_id;
 
-    /**
-     * @var int
-     */
-    protected $routine_id;
+    protected int $routine_id;
 
-    /**
-     * @var int|null
-     */
-    protected $notified_ref_id;
+    protected ?int $notified_ref_id;
 
-    /**
-     * @var DateTimeImmutable|null
-     */
-    protected $notified_date;
+    protected ?\DateTimeImmutable $notified_date;
 
-    /**
-     * @var string
-     */
-    protected $title;
+    protected string $title;
 
-    /**
-     * @var string
-     */
-    protected $content;
+    protected string $content;
 
     /**
      * @param int                    $routine_id

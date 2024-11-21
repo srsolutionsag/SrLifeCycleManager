@@ -19,10 +19,7 @@ use srag\Plugins\SrLifeCycleManager\Rule\Attribute\IAttribute;
  */
 abstract class GroupAttribute implements IAttribute
 {
-    /**
-     * @var \ilObjGroup
-     */
-    protected $group;
+    protected \ilObjGroup $group;
 
     public function __construct(\ilObjGroup $group)
     {

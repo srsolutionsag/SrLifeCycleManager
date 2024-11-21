@@ -12,8 +12,6 @@ declare(strict_types=1);
 
 namespace srag\Plugins\SrLifeCycleManager\Rule\Attribute\Survey;
 
-use ilObjSurvey;
-
 /**
  * @author Thibeau Fuhrer <thibeau@sr.solutions>
  */
@@ -33,6 +31,7 @@ class SurveyResults extends SurveyAttribute
 
     /**
      * @inheritDoc
+     * @return bool|int|string|null
      */
     public function getComparableValue(string $type)
     {

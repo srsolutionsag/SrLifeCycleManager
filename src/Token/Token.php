@@ -16,25 +16,13 @@ namespace srag\Plugins\SrLifeCycleManager\Token;
  */
 class Token implements IToken
 {
-    /**
-     * @var int
-     */
-    protected $routine_id;
+    protected int $routine_id;
 
-    /**
-     * @var int
-     */
-    protected $ref_id;
+    protected int $ref_id;
 
-    /**
-     * @var string
-     */
-    protected $event;
+    protected string $event;
 
-    /**
-     * @var string
-     */
-    protected $token;
+    protected string $token;
 
     /**
      * @param int    $routine_id

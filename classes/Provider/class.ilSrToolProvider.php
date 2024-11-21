@@ -12,12 +12,8 @@ declare(strict_types=1);
 
 use srag\Plugins\SrLifeCycleManager\Routine\AffectingRoutineProvider;
 use srag\Plugins\SrLifeCycleManager\Routine\IRoutineRepository;
-use srag\Plugins\SrLifeCycleManager\Routine\IRoutine;
-use srag\Plugins\SrLifeCycleManager\Rule\Attribute\AttributeFactory;
-use srag\Plugins\SrLifeCycleManager\Rule\Comparison\ComparisonFactory;
 use srag\Plugins\SrLifeCycleManager\Whitelist\IWhitelistRepository;
 use srag\Plugins\SrLifeCycleManager\Config\IConfig;
-use srag\Plugins\SrLifeCycleManager\ITranslator;
 use ILIAS\GlobalScreen\Scope\Tool\Provider\AbstractDynamicToolPluginProvider;
 use ILIAS\GlobalScreen\ScreenContext\Stack\ContextCollection;
 use ILIAS\GlobalScreen\ScreenContext\Stack\CalledContexts;
@@ -35,6 +31,7 @@ use ILIAS\UI\Component\Component;
  */
 class ilSrToolProvider extends AbstractDynamicToolPluginProvider
 {
+    public $if;
     // ilSrToolProvider language variables:
     protected const ACTION_ASSIGNMENTS_MANAGE = 'action_routine_assignment_manage';
     protected const ACTION_ROUTINE_MANAGE = 'action_routine_manage';
@@ -343,11 +340,10 @@ class ilSrToolProvider extends AbstractDynamicToolPluginProvider
      */
     protected function getToolAvailabilityClosure(): Closure
     {
-        return function (): bool {
+        return fn(): bool =>
             // the availability of the tool depends on the
             // active state of the plugin.
-            return (bool) $this->plugin->isActive();
-        };
+            (bool) $this->plugin->isActive();
     }
 
     /**
@@ -357,14 +353,10 @@ class ilSrToolProvider extends AbstractDynamicToolPluginProvider
     {
         // the tool should be visible if an object was requested,
         // and at least one of the tool components should be rendered.
-        return function (): bool {
-            return (
-                null !== $this->request_object && (
-                    $this->shouldRenderRoutineControls() ||
-                    $this->shouldRenderRoutineLists()
-                )
-            );
-        };
+        return fn(): bool => null !== $this->request_object && (
+            $this->shouldRenderRoutineControls() ||
+            $this->shouldRenderRoutineLists()
+        );
     }
 
     /**

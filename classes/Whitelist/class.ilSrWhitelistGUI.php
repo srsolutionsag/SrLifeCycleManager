@@ -207,12 +207,11 @@ class ilSrWhitelistGUI extends ilSrAbstractGUI
         // the current routine's elongation.
         $expiry_date = $deletion_date->add(new DateInterval("P{$routine->getElongation()}D"));
 
-        $whitelist_entry = $whitelist_entry ??
-            $this->repository->whitelist()->empty(
-                $routine,
-                $object_instance->getRefId(),
-                $this->user->getId()
-            );
+        $whitelist_entry ??= $this->repository->whitelist()->empty(
+            $routine,
+            $object_instance->getRefId(),
+            $this->user->getId()
+        );
 
         // store the existing or a new entry with the updated information.
         $this->repository->whitelist()->store(
@@ -311,12 +310,11 @@ class ilSrWhitelistGUI extends ilSrAbstractGUI
             return;
         }
 
-        $whitelist_entry = $whitelist_entry ??
-            $this->repository->whitelist()->empty(
-                $routine,
-                $object_instance->getRefId(),
-                $this->user->getId()
-            );
+        $whitelist_entry ??= $this->repository->whitelist()->empty(
+            $routine,
+            $object_instance->getRefId(),
+            $this->user->getId()
+        );
 
         // store the existing or a new entry with the updated information.
         $this->repository->whitelist()->store(
@@ -455,7 +453,7 @@ class ilSrWhitelistGUI extends ilSrAbstractGUI
      */
     protected function cancel(?int $ref_id = null): void
     {
-        $ref_id = $ref_id ?? $this->object_ref_id;
+        $ref_id ??= $this->object_ref_id;
 
         if (null !== $ref_id) {
             $this->redirectToRefId($ref_id);

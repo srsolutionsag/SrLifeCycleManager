@@ -12,17 +12,12 @@ declare(strict_types=1);
 
 namespace srag\Plugins\SrLifeCycleManager\Rule\Attribute\Common;
 
-use srag\Plugins\SrLifeCycleManager\Rule\Attribute\IAttribute;
-
 /**
  * @author Thibeau Fuhrer <thibeau@sr.solutions>
  */
 class CommonList extends CommonAttribute
 {
-    /**
-     * @var array
-     */
-    protected $value;
+    protected array $value;
 
     public function __construct(array $value)
     {
@@ -42,6 +37,7 @@ class CommonList extends CommonAttribute
 
     /**
      * @inheritDoc
+     * @return mixed[]|string|null
      */
     public function getComparableValue(string $type)
     {

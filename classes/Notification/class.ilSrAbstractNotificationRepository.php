@@ -27,10 +27,7 @@ abstract class ilSrAbstractNotificationRepository implements INotificationReposi
     use DateTimeHelper;
     use DTOHelper;
 
-    /**
-     * @var ilDBInterface
-     */
-    protected $database;
+    protected \ilDBInterface $database;
 
     /**
      * @param ilDBInterface $database

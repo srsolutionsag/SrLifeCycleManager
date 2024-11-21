@@ -11,13 +11,11 @@ declare(strict_types=1);
 
 namespace srag\Plugins\SrLifeCycleManager\Form\Config;
 
+use ILIAS\UI\Component\Input\Container\Form\Factory;
+use ILIAS\UI\Component\Input\Container\Form\Form;
 use srag\Plugins\SrLifeCycleManager\Form\AbstractFormBuilder;
 use srag\Plugins\SrLifeCycleManager\Config\IConfig;
 use srag\Plugins\SrLifeCycleManager\ITranslator;
-use ILIAS\Refinery\Factory as Refinery;
-use ILIAS\UI\Component\Input\Container\Form\Factory as FormFactory;
-use ILIAS\UI\Component\Input\Container\Form\Form as UIForm;
-use ILIAS\UI\Component\Input\Field\Factory as FieldFactory;
 
 /**
  * @author Thibeau Fuhrer <thibeau@sr.solutions>
@@ -27,23 +25,17 @@ class ConfigFormBuilder extends AbstractFormBuilder
     /**
      * @var string[]
      */
-    protected $global_roles;
+    protected array $global_roles;
 
-    /**
-     * @var string
-     */
-    protected $ajax_action;
+    protected string $ajax_action;
 
-    /**
-     * @var IConfig
-     */
-    protected $config;
+    protected IConfig $config;
 
     /**
      * @param ITranslator  $translator
-     * @param FormFactory  $forms
-     * @param FieldFactory $fields
-     * @param Refinery     $refinery
+     * @param mixed $forms
+     * @param mixed $fields
+     * @param mixed $refinery
      * @param IConfig      $config
      * @param string[]     $global_roles
      * @param string       $form_action
@@ -51,9 +43,9 @@ class ConfigFormBuilder extends AbstractFormBuilder
      */
     public function __construct(
         ITranslator $translator,
-        FormFactory $forms,
-        FieldFactory $fields,
-        Refinery $refinery,
+        Factory $forms,
+        \ILIAS\UI\Component\Input\Field\Factory $fields,
+        \ILIAS\Refinery\Factory $refinery,
         IConfig $config,
         array $global_roles,
         string $form_action,
@@ -68,21 +60,21 @@ class ConfigFormBuilder extends AbstractFormBuilder
     /**
      * @inheritDoc
      */
-    public function getForm(): UIForm
+    public function getForm(): Form
     {
         $inputs[IConfig::CNF_ROLE_MANAGE_ROUTINES] = $this->fields
             ->multiSelect($this->translator->txt(IConfig::CNF_ROLE_MANAGE_ROUTINES), $this->global_roles)
             ->withValue(
-                (!empty($this->config->getManageRoutineRoles())) ?
-                $this->config->getManageRoutineRoles() : null
+                (empty($this->config->getManageRoutineRoles())) ?
+                null : $this->config->getManageRoutineRoles()
             )
         ;
 
         $inputs[IConfig::CNF_ROLE_MANAGE_ASSIGNMENTS] = $this->fields
             ->multiSelect($this->translator->txt(IConfig::CNF_ROLE_MANAGE_ASSIGNMENTS), $this->global_roles)
             ->withValue(
-                (!empty($this->config->getManageAssignmentRoles())) ?
-                $this->config->getManageAssignmentRoles() : null
+                (empty($this->config->getManageAssignmentRoles())) ?
+                null : $this->config->getManageAssignmentRoles()
             )
         ;
 

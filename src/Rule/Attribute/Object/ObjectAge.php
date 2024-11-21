@@ -12,9 +12,7 @@ declare(strict_types=1);
 
 namespace srag\Plugins\SrLifeCycleManager\Rule\Attribute\Object;
 
-use srag\Plugins\SrLifeCycleManager\Rule\Attribute\IAttribute;
 use srag\Plugins\SrLifeCycleManager\DateTimeHelper;
-use ilObject;
 
 /**
  * @author Thibeau Fuhrer <thibeau@sr.solutions>
@@ -36,6 +34,7 @@ class ObjectAge extends ObjectAttribute
 
     /**
      * @inheritDoc
+     * @return int|string|null
      */
     public function getComparableValue(string $type)
     {

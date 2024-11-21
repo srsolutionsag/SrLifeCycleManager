@@ -9,10 +9,9 @@
  *********************************************************************/
 
 declare(strict_types=1);
-
+use ILIAS\Cron\Schedule\CronJobScheduleType;
 use srag\Plugins\SrLifeCycleManager\Cron\ResultBuilder;
 use srag\Plugins\SrLifeCycleManager\Cron\INotifier;
-use srag\Plugins\SrLifeCycleManager\ITranslator;
 
 /**
  * @author       Thibeau Fuhrer <thibeau@sr.solutions>
@@ -20,20 +19,11 @@ use srag\Plugins\SrLifeCycleManager\ITranslator;
  */
 abstract class ilSrAbstractCronJob extends ilCronJob
 {
-    /**
-     * @var ilGlobalTemplateInterface|null
-     */
-    protected $template;
+    protected ?\ilGlobalTemplateInterface $template;
 
-    /**
-     * @var ResultBuilder
-     */
-    protected $result_builder;
+    protected ResultBuilder $result_builder;
 
-    /**
-     * @var INotifier
-     */
-    protected $notifier;
+    protected INotifier $notifier;
 
     /**
      * @var string[]
@@ -108,9 +98,9 @@ abstract class ilSrAbstractCronJob extends ilCronJob
     /**
      * @inheritDoc
      */
-    public function getDefaultScheduleType(): \ILIAS\Cron\Schedule\CronJobScheduleType
+    public function getDefaultScheduleType(): CronJobScheduleType
     {
-        return \ILIAS\Cron\Schedule\CronJobScheduleType::SCHEDULE_TYPE_DAILY;
+        return CronJobScheduleType::SCHEDULE_TYPE_DAILY;
     }
 
     /**

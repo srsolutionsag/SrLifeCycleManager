@@ -11,6 +11,7 @@ declare(strict_types=1);
 
 namespace srag\Plugins\SrLifeCycleManager\Form;
 
+use ILIAS\UI\Component\Input\Container\Container;
 use ILIAS\UI\Component\Input\Container\Form\Form as UIForm;
 use Psr\Http\Message\ServerRequestInterface;
 
@@ -22,13 +23,13 @@ abstract class AbstractFormProcessor implements IFormProcessor
     /**
      * @var UIForm
      */
-    protected $form;
+    protected Container $form;
 
     /**
      * @param ServerRequestInterface $request
-     * @param UIForm                 $form
+     * @param mixed $form
      */
-    public function __construct(ServerRequestInterface $request, UIForm $form)
+    public function __construct(ServerRequestInterface $request, $form)
     {
         $this->form = $form->withRequest($request);
     }

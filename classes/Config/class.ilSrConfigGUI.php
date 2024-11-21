@@ -38,7 +38,7 @@ class ilSrConfigGUI extends ilSrAbstractGUI
     /**
      * @var IFormBuilder
      */
-    protected $form_builder;
+    protected ConfigFormBuilder $form_builder;
 
     /**
      * @var GlobalHttpState
@@ -76,12 +76,15 @@ class ilSrConfigGUI extends ilSrAbstractGUI
             ->addConfigurationTab(true)
             ->addRoutineTab()
             ->addPreviewTab();
-
         // if the current user is not within the administration context we
         // need to add the back-to target manually.
-        if (null !== $this->object_ref_id && IRoutine::ORIGIN_TYPE_ADMINISTRATION !== $this->origin) {
-            $tabs->addBackToObject($this->object_ref_id);
+        if (null === $this->object_ref_id) {
+            return;
         }
+        if (IRoutine::ORIGIN_TYPE_ADMINISTRATION === $this->origin) {
+            return;
+        }
+        $tabs->addBackToObject($this->object_ref_id);
     }
 
     /**

@@ -40,7 +40,7 @@ class ilSrRoutineAssignmentGUI extends ilSrAbstractAssignmentGUI
     /**
      * @var IFormBuilder
      */
-    protected $form_builder;
+    protected RoutineAssignmentFormBuilder $form_builder;
 
     /**
      * Throws an exception if the request doesn't provide an object (ref-id).

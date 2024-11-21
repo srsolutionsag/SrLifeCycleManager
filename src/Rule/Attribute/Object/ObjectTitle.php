@@ -30,7 +30,7 @@ class ObjectTitle extends ObjectAttribute
     /**
      * @inheritDoc
      */
-    public function getComparableValue(string $type)
+    public function getComparableValue(string $type): ?string
     {
         if (self::COMPARABLE_VALUE_TYPE_STRING === $type) {
             return $this->getObject()->getTitle();

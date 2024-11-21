@@ -11,7 +11,6 @@
 namespace srag\Plugins\SrLifeCycleManager\Whitelist;
 
 use DateTimeImmutable;
-use DateTime;
 
 /**
  * @author Thibeau Fuhrer <thibeau@sr.solutions>

@@ -10,11 +10,6 @@
 
 declare(strict_types=1);
 
-use srag\Plugins\SrLifeCycleManager\ITranslator;
-use ILIAS\UI\Factory as UIFactory;
-use ILIAS\UI\Renderer;
-use ILIAS\UI\Component\Component;
-
 /**
  * @author       Fabian Schmid <fabian@sr.solutions>
  * @noinspection AutoloadingIssuesInspection

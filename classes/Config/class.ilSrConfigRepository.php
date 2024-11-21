@@ -25,15 +25,9 @@ class ilSrConfigRepository implements IConfigRepository
 {
     protected const ARRAY_STRING_SEPARATOR = ',';
 
-    /**
-     * @var ilDBInterface
-     */
-    protected $database;
+    protected \ilDBInterface $database;
 
-    /**
-     * @var RBACServices
-     */
-    protected $rbac;
+    protected RBACServices $rbac;
 
     /**
      * @param ilDBInterface $database

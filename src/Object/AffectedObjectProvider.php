@@ -29,25 +29,13 @@ class AffectedObjectProvider
      */
     protected static $routine_cache = [];
 
-    /**
-     * @var IRoutineAssignmentRepository
-     */
-    protected $assignment_repository;
+    protected IRoutineAssignmentRepository $assignment_repository;
 
-    /**
-     * @var IGeneralRepository
-     */
-    protected $general_repository;
+    protected IGeneralRepository $general_repository;
 
-    /**
-     * @var IRoutineRepository
-     */
-    protected $routine_repository;
+    protected IRoutineRepository $routine_repository;
 
-    /**
-     * @var ApplicabilityChecker
-     */
-    protected $applicability_checker;
+    protected ApplicabilityChecker $applicability_checker;
 
     public function __construct(
         IRoutineAssignmentRepository $assignment_repository,
@@ -72,13 +60,15 @@ class AffectedObjectProvider
     {
         $assignments = $this->assignment_repository->getAllActiveAssignments();
         foreach ($assignments as $assignment) {
-            if (null === ($ref_id = $assignment->getRefId()) ||
-                null === ($routine_id = $assignment->getRoutineId()) ||
-                null === ($routine = $this->getRoutineByCacheOrDatabase($routine_id))
-            ) {
+            if (null === ($ref_id = $assignment->getRefId())) {
                 continue;
             }
-
+            if (null === ($routine_id = $assignment->getRoutineId())) {
+                continue;
+            }
+            if (null === ($routine = $this->getRoutineByCacheOrDatabase($routine_id))) {
+                continue;
+            }
             $max_depth = ($assignment->isRecursive()) ? PHP_INT_MAX : 1;
             $types = [$routine->getRoutineType()];
             foreach ($this->general_repository->getRepositoryObjectChildren($ref_id, $types, $max_depth) as $object) {

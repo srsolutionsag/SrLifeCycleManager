@@ -30,36 +30,30 @@ abstract class AbstractFormBuilder implements IFormBuilder
     private const MSG_INVALID_EMAIL = 'msg_invalid_email';
     private const MSG_NUMBER_LESS_THAN = 'msg_number_less_than';
 
-    /**
-     * @var ITranslator
-     */
-    protected $translator;
+    protected ITranslator $translator;
 
     /**
      * @var FormFactory
      */
-    protected $forms;
+    protected FormFactory $forms;
 
     /**
      * @var FieldFactory
      */
-    protected $fields;
+    protected FieldFactory $fields;
 
     /**
      * @var Refinery
      */
-    protected $refinery;
+    protected Refinery $refinery;
 
-    /**
-     * @var string
-     */
-    protected $form_action;
+    protected string $form_action;
 
     /**
      * @param ITranslator  $translator
      * @param FormFactory  $forms
      * @param FieldFactory $fields
-     * @param Refinery     $refinery
+     * @param mixed $refinery
      * @param string       $form_action
      */
     public function __construct(
@@ -109,9 +103,7 @@ abstract class AbstractFormBuilder implements IFormBuilder
     protected function getRefIdValidationConstraint(): Constraint
     {
         return $this->refinery->custom()->constraint(
-            static function (int $ref_id): bool {
-                return (ilObject2::_exists($ref_id, true));
-            },
+            static fn(int $ref_id): bool => ilObject2::_exists($ref_id, true),
             $this->translator->txt(self::MSG_INVALID_REF_ID)
         );
     }
@@ -177,12 +169,11 @@ abstract class AbstractFormBuilder implements IFormBuilder
     protected function getTagInputAutoCompleteBinder(string $ajax_action): Closure
     {
         if (version_compare(ILIAS_VERSION_NUMERIC, '7.0', '<')) {
-            return static function ($id) {
+            return static function ($id): void {
             };
         }
 
-        return static function ($id) use ($ajax_action) {
-            return "
+        return static fn($id): string => "
                 var {$id}_requests = [];
                 let searchCategories = async function (event) {
                     let tag = il.UI.Input.tagInput.getTagifyInstance('$id')
@@ -225,6 +216,5 @@ abstract class AbstractFormBuilder implements IFormBuilder
                     tag.on('input', searchCategories);
                 });
             ";
-        };
     }
 }
