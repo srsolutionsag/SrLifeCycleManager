@@ -30,33 +30,24 @@ abstract class AbstractAssignmentFormBuilder extends AbstractFormBuilder
     public const INPUT_IS_RECURSIVE = 'input_name_routine_assignment_recursive';
     public const INPUT_IS_ACTIVE = 'input_name_routine_assignment_active';
 
-    protected IRoutineAssignment $assignment;
-
-    /**
-     * @var IRoutine[]
-     */
-    protected array $all_routines;
-
     /**
      * @param IRoutineAssignment $assignment
      * @param IRoutine[]         $all_routines
      * @inheritDoc
-     * @param mixed $forms
-     * @param mixed $fields
-     * @param mixed $refinery
+     * @param mixed              $forms
+     * @param mixed              $fields
+     * @param mixed              $refinery
      */
     public function __construct(
         ITranslator $translator,
         Factory $forms,
         \ILIAS\UI\Component\Input\Field\Factory $fields,
         \ILIAS\Refinery\Factory $refinery,
-        IRoutineAssignment $assignment,
-        array $all_routines,
+        protected IRoutineAssignment $assignment,
+        protected array $all_routines,
         string $form_action
     ) {
         parent::__construct($translator, $forms, $fields, $refinery, $form_action);
-        $this->assignment = $assignment;
-        $this->all_routines = $all_routines;
     }
 
     /**

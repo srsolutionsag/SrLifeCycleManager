@@ -23,14 +23,8 @@ use ilObject;
  */
 class AffectedObject
 {
-    protected \ilObject $object;
-
-    protected IRoutine $routine;
-
-    public function __construct(ilObject $object, IRoutine $routine)
+    public function __construct(protected \ilObject $object, protected IRoutine $routine)
     {
-        $this->object = $object;
-        $this->routine = $routine;
     }
 
     public function getObject(): ilObject

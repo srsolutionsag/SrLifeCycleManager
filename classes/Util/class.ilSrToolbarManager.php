@@ -14,7 +14,7 @@ use srag\Plugins\SrLifeCycleManager\ITranslator;
 /**
  * This class is responsible for managing the plugin toolbars.
  *
- * @author Thibeau Fuhrer <thibeau@sr.solutions>
+ * @author       Thibeau Fuhrer <thibeau@sr.solutions>
  *
  * This helper class is meant to centralize the toolbar implementation
  * and simplify their management. Methods that add or render toolbars
@@ -32,35 +32,20 @@ class ilSrToolbarManager
     public const ACTION_REMINDER_ADD = 'action_reminder_add';
     public const ACTION_RULE_ADD = 'action_rule_add';
 
-    protected \ilSrAccessHandler $access_handler;
-
-    protected \ilGlobalTemplateInterface $global_template;
-
-    protected ITranslator $translator;
-
-    protected \ilToolbarGUI $toolbar;
-
-    protected \ilCtrl $ctrl;
-
     /**
-     * @param ilSrAccessHandler         $access_handler
+     * @param ilSrAccessHandler $access_handler
      * @param ilGlobalTemplateInterface $global_template
-     * @param ITranslator               $translator
-     * @param ilToolbarGUI              $toolbar
-     * @param ilCtrl                    $ctrl
+     * @param ITranslator $translator
+     * @param ilToolbarGUI $toolbar
+     * @param ilCtrl $ctrl
      */
     public function __construct(
-        ilSrAccessHandler $access_handler,
-        ilGlobalTemplateInterface $global_template,
-        ITranslator $translator,
-        ilToolbarGUI $toolbar,
-        ilCtrl $ctrl
+        protected \ilSrAccessHandler $access_handler,
+        protected \ilGlobalTemplateInterface $global_template,
+        protected ITranslator $translator,
+        protected \ilToolbarGUI $toolbar,
+        protected \ilCtrl $ctrl
     ) {
-        $this->access_handler = $access_handler;
-        $this->global_template = $global_template;
-        $this->translator = $translator;
-        $this->toolbar = $toolbar;
-        $this->ctrl = $ctrl;
     }
 
     /**

@@ -139,10 +139,10 @@ class ilSrObjectAssignmentGUI extends ilSrAbstractAssignmentGUI
     }
 
     /**
-     * Returns a link pointing to @see ilSrObjectAssignmentGUI::searchObjects(),
-     * which is used for the tag-input-autocomplete in ILIAS>=7.
+     * Returns a link pointing to @return string
+     * @see ilSrObjectAssignmentGUI::searchObjects(),
+     *      which is used for the tag-input-autocomplete in ILIAS>=7.
      *
-     * @return string
      */
     protected function getAjaxSource(): string
     {

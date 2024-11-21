@@ -17,11 +17,8 @@ namespace srag\Plugins\SrLifeCycleManager\Rule\Attribute\Common;
  */
 class CommonList extends CommonAttribute
 {
-    protected array $value;
-
-    public function __construct(array $value)
+    public function __construct(protected array $value)
     {
-        $this->value = $value;
     }
 
     /**
@@ -39,17 +36,12 @@ class CommonList extends CommonAttribute
      * @inheritDoc
      * @return mixed[]|string|null
      */
-    public function getComparableValue(string $type)
+    public function getComparableValue(string $type): array|string|null
     {
-        switch ($type) {
-            case self::COMPARABLE_VALUE_TYPE_ARRAY:
-                return $this->value;
-
-            case self::COMPARABLE_VALUE_TYPE_STRING:
-                return implode(',', $this->value);
-
-            default:
-                return null;
-        }
+        return match ($type) {
+            self::COMPARABLE_VALUE_TYPE_ARRAY => $this->value,
+            self::COMPARABLE_VALUE_TYPE_STRING => implode(',', $this->value),
+            default => null,
+        };
     }
 }

@@ -17,7 +17,7 @@ use ILIAS\DI\RBACServices;
 /**
  * This repository is responsible for all config CRUD operation.
  *
- * @author Thibeau Fuhrer <thibeau@sr.solutions>
+ * @author       Thibeau Fuhrer <thibeau@sr.solutions>
  *
  * @noinspection AutoloadingIssuesInspection
  */
@@ -25,18 +25,12 @@ class ilSrConfigRepository implements IConfigRepository
 {
     protected const ARRAY_STRING_SEPARATOR = ',';
 
-    protected \ilDBInterface $database;
-
-    protected RBACServices $rbac;
-
     /**
      * @param ilDBInterface $database
      * @param RBACServices  $rbac
      */
-    public function __construct(ilDBInterface $database, RBACServices $rbac)
+    public function __construct(protected \ilDBInterface $database, protected RBACServices $rbac)
     {
-        $this->database = $database;
-        $this->rbac = $rbac;
     }
 
     /**
@@ -109,7 +103,10 @@ class ilSrConfigRepository implements IConfigRepository
     public function store(IConfig $config): IConfig
     {
         $this->updateConfig(IConfig::CNF_ROLE_MANAGE_ROUTINES, $this->arrayToString($config->getManageRoutineRoles()));
-        $this->updateConfig(IConfig::CNF_ROLE_MANAGE_ASSIGNMENTS, $this->arrayToString($config->getManageAssignmentRoles()));
+        $this->updateConfig(
+            IConfig::CNF_ROLE_MANAGE_ASSIGNMENTS,
+            $this->arrayToString($config->getManageAssignmentRoles())
+        );
         $this->updateConfig(IConfig::CNF_TOOL_IS_ENABLED, (string) $config->isToolEnabled());
         $this->updateConfig(IConfig::CNF_TOOL_SHOW_ROUTINES, (string) $config->shouldToolShowRoutines());
         $this->updateConfig(IConfig::CNF_TOOL_SHOW_CONTROLS, (string) $config->shouldToolShowControls());
@@ -141,9 +138,9 @@ class ilSrConfigRepository implements IConfigRepository
     }
 
     /**
-     * @todo: this could be improved with json_decode.
      * @param string $array
      * @return array
+     * @todo: this could be improved with json_decode.
      */
     protected function stringToArray(string $array): array
     {
@@ -155,9 +152,9 @@ class ilSrConfigRepository implements IConfigRepository
     }
 
     /**
-     * @todo: this could be improved with json_encode.
      * @param array $array
      * @return string
+     * @todo: this could be improved with json_encode.
      */
     protected function arrayToString(array $array): string
     {

@@ -29,32 +29,23 @@ class ConfirmationFormBuilder extends NotificationFormBuilder
     // NotificationFormBuilder language variables:
     protected const MSG_CONFIRMATION_EVENT_ERROR = 'msg_confirmation_event_error';
 
-    protected IConfirmationRepository $repository;
-
-    /**
-     * @var string[]
-     */
-    protected array $event_options;
-
     /**
      * @param string[] $event_options
-     * @param mixed $forms
-     * @param mixed $fields
-     * @param mixed $refinery
+     * @param mixed    $forms
+     * @param mixed    $fields
+     * @param mixed    $refinery
      */
     public function __construct(
         ITranslator $translator,
         Factory $forms,
         \ILIAS\UI\Component\Input\Field\Factory $fields,
         \ILIAS\Refinery\Factory $refinery,
-        IConfirmationRepository $repository,
+        protected IConfirmationRepository $repository,
         IConfirmation $notification,
-        array $event_options,
+        protected array $event_options,
         string $form_action
     ) {
         parent::__construct($translator, $forms, $fields, $refinery, $notification, $form_action);
-        $this->event_options = $event_options;
-        $this->repository = $repository;
     }
 
     /**

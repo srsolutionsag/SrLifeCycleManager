@@ -19,7 +19,7 @@ use srag\Plugins\SrLifeCycleManager\Repository\DTOHelper;
 /**
  * This repository is responsible for all rule CRUD operations.
  *
- * @author Thibeau Fuhrer <thibeau@sr.solutions>
+ * @author       Thibeau Fuhrer <thibeau@sr.solutions>
  *
  * @noinspection AutoloadingIssuesInspection
  */
@@ -27,8 +27,6 @@ class ilSrRuleRepository implements IRuleRepository
 {
     use ObjectHelper;
     use DTOHelper;
-
-    protected \ilDBInterface $database;
 
     /**
      * @var ilTree
@@ -39,9 +37,8 @@ class ilSrRuleRepository implements IRuleRepository
      * @param ilDBInterface $database
      * @param ilTree        $tree
      */
-    public function __construct(ilDBInterface $database, ilTree $tree)
+    public function __construct(protected \ilDBInterface $database, ilTree $tree)
     {
-        $this->database = $database;
         $this->tree = $tree;
     }
 

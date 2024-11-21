@@ -605,10 +605,6 @@ class RoutineCronJobTest extends TestCase
             $execution_date,
             $this->createMock(ilCronJobResult::class)
         ) extends ilSrRoutineCronJob {
-            private \DateTimeImmutable $current_date;
-
-            private \ilCronJobResult $result;
-
             public function __construct(
                 INotificationSender $notification_sender,
                 IRecipientRetriever $recipient_retriever,
@@ -621,8 +617,8 @@ class RoutineCronJobTest extends TestCase
                 ResultBuilder $result_builder,
                 EventSubject $event_subject,
                 INotifier $notifier,
-                DateTimeImmutable $execution_date,
-                ilCronJobResult $result
+                private \DateTimeImmutable $current_date,
+                private \ilCronJobResult $result
             ) {
                 parent::__construct(
                     $notification_sender,
@@ -637,8 +633,6 @@ class RoutineCronJobTest extends TestCase
                     $result_builder,
                     $notifier,
                 );
-                $this->current_date = $execution_date;
-                $this->result = $result;
             }
 
             /**
@@ -684,16 +678,10 @@ class RoutineCronJobTest extends TestCase
         return new class ($affected_objects) extends AffectedObjectProvider {
             /**
              * @param AffectedObject[] $objects
-             */
-            private array $objects;
-
-            /**
-             * @param AffectedObject[] $objects
              * @noinspection PhpMissingParentConstructorInspection
              */
-            public function __construct(array $objects)
+            public function __construct(private array $objects)
             {
-                $this->objects = $objects;
             }
 
             /**

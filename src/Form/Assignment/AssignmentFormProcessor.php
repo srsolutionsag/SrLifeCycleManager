@@ -22,25 +22,19 @@ use Psr\Http\Message\ServerRequestInterface;
  */
 class AssignmentFormProcessor extends AbstractFormProcessor
 {
-    protected IRoutineAssignmentRepository $repository;
-
-    protected IRoutineAssignment $assignment;
-
     /**
      * @param IRoutineAssignmentRepository $repository
      * @param IRoutineAssignment           $assignment
      * @inheritdoc
-     * @param mixed $form
+     * @param mixed                        $form
      */
     public function __construct(
-        IRoutineAssignmentRepository $repository,
-        IRoutineAssignment $assignment,
+        protected IRoutineAssignmentRepository $repository,
+        protected IRoutineAssignment $assignment,
         ServerRequestInterface $request,
         Form $form
     ) {
         parent::__construct($request, $form);
-        $this->repository = $repository;
-        $this->assignment = $assignment;
     }
 
     /**
@@ -89,21 +83,20 @@ class AssignmentFormProcessor extends AbstractFormProcessor
     /**
      * Creates or updates multiple routine assignments for the submitted ref-id.
      *
-     * Note that the value of @see RoutineAssignment::$ref_id must not be set, since
-     * the DTO is passed by reference and already set up in @see \ilSrAbstractAssignmentGUI.
+     * Note that the value of @param array $post_data
+     * @return void
+     * @see RoutineAssignment::$ref_id must not be set, since
+     *      the DTO is passed by reference and already set up in @see \ilSrAbstractAssignmentGUI.
      *
      * This also serves as some kind of manipulation protection because even if the
      * clientside HTML-value of the immutable input was modified it doesn't matter.
      *
-     * @param array $post_data
-     * @return void
      */
     protected function processMultipleRoutines(array $post_data): void
     {
         $this->assignment
             ->setRecursive($post_data[AbstractAssignmentFormBuilder::INPUT_IS_RECURSIVE])
-            ->setActive($post_data[AbstractAssignmentFormBuilder::INPUT_IS_ACTIVE])
-        ;
+            ->setActive($post_data[AbstractAssignmentFormBuilder::INPUT_IS_ACTIVE]);
 
         // all data except $routine_id stays persistent, therefore we store the
         // same assignment for different routines.
@@ -115,21 +108,20 @@ class AssignmentFormProcessor extends AbstractFormProcessor
     /**
      * Creates or updates multiple routine assignments for the submitted routine_id.
      *
-     * Note that the value of @see RoutineAssignment::$routine_id must not be set, since
-     * the DTO is passed by reference and already set up in @see \ilSrAbstractAssignmentGUI.
+     * Note that the value of @param array $post_data
+     * @return void
+     * @see RoutineAssignment::$routine_id must not be set, since
+     *      the DTO is passed by reference and already set up in @see \ilSrAbstractAssignmentGUI.
      *
      * This also serves as some kind of manipulation protection because even if the
      * clientside HTML-value of the immutable input was modified it doesn't matter.
      *
-     * @param array $post_data
-     * @return void
      */
     protected function processMultipleRefIds(array $post_data): void
     {
         $this->assignment
             ->setRecursive($post_data[AbstractAssignmentFormBuilder::INPUT_IS_RECURSIVE])
-            ->setActive($post_data[AbstractAssignmentFormBuilder::INPUT_IS_ACTIVE])
-        ;
+            ->setActive($post_data[AbstractAssignmentFormBuilder::INPUT_IS_ACTIVE]);
 
         // all data except $ref_id stays persistent, therefore we store the
         // same assignment for different objects.

@@ -56,53 +56,26 @@ class ilSrRoutineCronJob extends ilSrAbstractCronJob
 {
     use DateTimeHelper;
 
-    protected IRecipientRetriever $recipient_retriever;
-
-    protected EventSubject $event_subject;
-
-    protected IRoutineRepository $routine_repository;
-
-    protected IReminderRepository $reminder_repository;
-
-    protected ITokenRepository $token_repository;
-
-    protected IWhitelistRepository $whitelist_repository;
-
-    protected IGeneralRepository $general_repository;
-
-    protected INotificationSender $notification_sender;
-
-    protected AffectedObjectProvider $affected_object_provider;
-
     /**
      * @var int[]
      */
     protected $deleted_ref_ids = [];
 
     public function __construct(
-        INotificationSender $notification_sender,
-        IRecipientRetriever $recipient_retriever,
-        IRoutineRepository $routine_repository,
-        IReminderRepository $notification_repository,
-        ITokenRepository $token_repository,
-        IWhitelistRepository $whitelist_repository,
-        IGeneralRepository $general_repository,
-        AffectedObjectProvider $object_provider,
-        EventSubject $event_subject,
+        protected INotificationSender $notification_sender,
+        protected IRecipientRetriever $recipient_retriever,
+        protected IRoutineRepository $routine_repository,
+        protected IReminderRepository $reminder_repository,
+        protected ITokenRepository $token_repository,
+        protected IWhitelistRepository $whitelist_repository,
+        protected IGeneralRepository $general_repository,
+        protected AffectedObjectProvider $affected_object_provider,
+        protected EventSubject $event_subject,
         ResultBuilder $result_builder,
         INotifier $notifier,
         ilGlobalTemplateInterface $template = null
     ) {
         parent::__construct($result_builder, $notifier, $template);
-        $this->recipient_retriever = $recipient_retriever;
-        $this->event_subject = $event_subject;
-        $this->routine_repository = $routine_repository;
-        $this->reminder_repository = $notification_repository;
-        $this->token_repository = $token_repository;
-        $this->whitelist_repository = $whitelist_repository;
-        $this->general_repository = $general_repository;
-        $this->notification_sender = $notification_sender;
-        $this->affected_object_provider = $object_provider;
     }
 
     /**

@@ -17,7 +17,7 @@ use srag\Plugins\SrLifeCycleManager\Form\IFormBuilder;
 /**
  * This GUI class is responsible for all actions regarding notifications.
  *
- * @author Thibeau Fuhrer <thibeau@sr.solutions>
+ * @author       Thibeau Fuhrer <thibeau@sr.solutions>
  *
  * @noinspection AutoloadingIssuesInspection
  */
@@ -45,8 +45,7 @@ class ilSrReminderGUI extends ilSrAbstractNotificationGUI
 
         $this->notification =
             $this->getRequestedNotification() ??
-            $this->repository->reminder()->empty($this->routine)
-        ;
+            $this->repository->reminder()->empty($this->routine);
 
         $this->form_builder = new ReminderFormBuilder(
             $this->translator,

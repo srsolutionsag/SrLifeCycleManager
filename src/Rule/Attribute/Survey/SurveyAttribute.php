@@ -13,18 +13,14 @@ declare(strict_types=1);
 namespace srag\Plugins\SrLifeCycleManager\Rule\Attribute\Survey;
 
 use srag\Plugins\SrLifeCycleManager\Rule\Attribute\IAttribute;
-use ilObjSurvey;
 
 /**
  * @author Thibeau Fuhrer <thibeau@sr.solutions>
  */
 abstract class SurveyAttribute implements IAttribute
 {
-    protected \ilObjSurvey $survey;
-
-    public function __construct(ilObjSurvey $survey)
+    public function __construct(protected \ilObjSurvey $survey)
     {
-        $this->survey = $survey;
     }
 
     protected function getParticipants(): array

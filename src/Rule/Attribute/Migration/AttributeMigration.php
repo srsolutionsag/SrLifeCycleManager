@@ -17,16 +17,13 @@ namespace srag\Plugins\SrLifeCycleManager\Rule\Attribute\Migration;
  */
 abstract class AttributeMigration
 {
-    protected \ilDBInterface $database;
-
     protected string $table_name;
 
     /**
      * @throws \LogicException if the database table or columns do not exist.
      */
-    public function __construct(\ilDBInterface $database, string $table_name)
+    public function __construct(protected \ilDBInterface $database, string $table_name)
     {
-        $this->database = $database;
         $this->checkTable($table_name);
         $this->table_name = $table_name;
     }

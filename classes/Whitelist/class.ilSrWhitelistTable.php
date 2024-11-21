@@ -59,8 +59,7 @@ class ilSrWhitelistTable extends ilSrAbstractTable
         // translate the status of 'opt_out_possible'.
         $status_opt_out = ($data[IWhitelistEntry::F_IS_OPT_OUT]) ?
             $this->translator->txt(self::STATUS_IS_OPT_OUT) :
-            $this->translator->txt(self::STATUS_IS_NOT_OPT_OUT)
-        ;
+            $this->translator->txt(self::STATUS_IS_NOT_OPT_OUT);
 
         $template->setVariable(self::COL_REF_ID, $data[IWhitelistEntry::F_REF_ID]);
         $template->setVariable(self::COL_USER_NAME, $this->getUserName((int) $data[IWhitelistEntry::F_USER_ID]));

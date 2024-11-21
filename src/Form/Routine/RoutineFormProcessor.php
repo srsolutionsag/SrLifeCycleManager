@@ -22,25 +22,19 @@ use Psr\Http\Message\ServerRequestInterface;
  */
 class RoutineFormProcessor extends AbstractFormProcessor
 {
-    protected IRoutineRepository $repository;
-
-    protected IRoutine $routine;
-
     /**
-     * @param IRoutineRepository     $repository
+     * @param IRoutineRepository $repository
      * @param ServerRequestInterface $request
      * @param mixed $form
-     * @param IRoutine               $routine
+     * @param IRoutine $routine
      */
     public function __construct(
-        IRoutineRepository $repository,
+        protected IRoutineRepository $repository,
         ServerRequestInterface $request,
         Form $form,
-        IRoutine $routine
+        protected IRoutine $routine
     ) {
         parent::__construct($request, $form);
-        $this->repository = $repository;
-        $this->routine = $routine;
     }
 
     /**
@@ -63,15 +57,18 @@ class RoutineFormProcessor extends AbstractFormProcessor
         $this->routine
             ->setTitle($post_data[RoutineFormBuilder::INPUT_TITLE])
             ->setRoutineType($post_data[RoutineFormBuilder::INPUT_ROUTINE_TYPE])
-            ->setOptOut($post_data[RoutineFormBuilder::INPUT_HAS_OPT_OUT])
-        ;
+            ->setOptOut($post_data[RoutineFormBuilder::INPUT_HAS_OPT_OUT]);
 
         // if elongation is possible, update the elongation
         // in days attribute. If it's been disabled set the
         // value to null instead.
         if (!empty($post_data[RoutineFormBuilder::INPUT_ELONGATION_POSSIBLE])) {
-            $this->routine->setElongation((int) $post_data[RoutineFormBuilder::INPUT_ELONGATION_POSSIBLE][RoutineFormBuilder::INPUT_ELONGATION]);
-            $this->routine->setElongationCooldown((int) $post_data[RoutineFormBuilder::INPUT_ELONGATION_POSSIBLE][RoutineFormBuilder::INPUT_ELONGATION_COOLDOWN]);
+            $this->routine->setElongation(
+                (int) $post_data[RoutineFormBuilder::INPUT_ELONGATION_POSSIBLE][RoutineFormBuilder::INPUT_ELONGATION]
+            );
+            $this->routine->setElongationCooldown(
+                (int) $post_data[RoutineFormBuilder::INPUT_ELONGATION_POSSIBLE][RoutineFormBuilder::INPUT_ELONGATION_COOLDOWN]
+            );
         } else {
             $this->routine->setElongation(null);
             $this->routine->setElongationCooldown(null);

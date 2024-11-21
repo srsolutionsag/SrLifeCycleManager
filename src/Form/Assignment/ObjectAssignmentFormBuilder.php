@@ -21,14 +21,12 @@ use ILIAS\UI\Component\Input\Field\Input;
  */
 class ObjectAssignmentFormBuilder extends AbstractAssignmentFormBuilder
 {
-    protected string $ajax_source;
-
     /**
      * @param string $ajax_source
      * @inheritDoc
-     * @param mixed $forms
-     * @param mixed $fields
-     * @param mixed $refinery
+     * @param mixed  $forms
+     * @param mixed  $fields
+     * @param mixed  $refinery
      */
     public function __construct(
         ITranslator $translator,
@@ -38,10 +36,9 @@ class ObjectAssignmentFormBuilder extends AbstractAssignmentFormBuilder
         IRoutineAssignment $assignment,
         array $all_routines,
         string $form_action,
-        string $ajax_source
+        protected string $ajax_source
     ) {
         parent::__construct($translator, $forms, $fields, $refinery, $assignment, $all_routines, $form_action);
-        $this->ajax_source = $ajax_source;
     }
 
     /**

@@ -48,8 +48,7 @@ abstract class ilSrAbstractNotificationGUI extends ilSrAbstractGUI
             ->addRoutineTab()
             ->addPreviewTab()
             ->deactivateTabs()
-            ->addBackToIndex(static::class)
-        ;
+            ->addBackToIndex(static::class);
     }
 
     /**

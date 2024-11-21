@@ -25,21 +25,18 @@ abstract class AbstractComparison implements IComparison
 
     protected IAttribute $rhs_attribute;
 
-    protected IRule $rule;
-
-    public function __construct(AttributeFactory $attribute_factory, IRessource $ressource, IRule $rule)
+    public function __construct(AttributeFactory $attribute_factory, IRessource $ressource, protected IRule $rule)
     {
-        $this->rule = $rule;
         $this->lhs_attribute = $attribute_factory->getAttribute(
             $ressource,
-            $rule->getLhsType(),
-            $rule->getLhsValue()
+            $this->rule->getLhsType(),
+            $this->rule->getLhsValue()
         );
 
         $this->rhs_attribute = $attribute_factory->getAttribute(
             $ressource,
-            $rule->getRhsType(),
-            $rule->getRhsValue()
+            $this->rule->getRhsType(),
+            $this->rule->getRhsValue()
         );
     }
 

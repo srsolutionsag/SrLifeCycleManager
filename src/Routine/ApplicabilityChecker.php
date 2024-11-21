@@ -26,14 +26,10 @@ class ApplicabilityChecker
      */
     protected static $rule_cache = [];
 
-    protected ComparisonFactory $comparison_factory;
-
-    protected IRuleRepository $rule_repository;
-
-    public function __construct(ComparisonFactory $comparison_factory, IRuleRepository $rule_repository)
-    {
-        $this->comparison_factory = $comparison_factory;
-        $this->rule_repository = $rule_repository;
+    public function __construct(
+        protected ComparisonFactory $comparison_factory,
+        protected IRuleRepository $rule_repository
+    ) {
     }
 
     /**

@@ -33,22 +33,17 @@ class SurveyParticipants extends SurveyAttribute
      * @inheritDoc
      * @return bool|int|string|null
      */
-    public function getComparableValue(string $type)
+    public function getComparableValue(string $type): int|bool|string|null
     {
         $participants = ($this->survey->get360Mode()) ?
             $this->survey->getAppraiseesData() :
             $this->survey->getSurveyParticipants(null, false, true);
 
-        switch ($type) {
-            case self::COMPARABLE_VALUE_TYPE_INT:
-                return count($participants);
-            case self::COMPARABLE_VALUE_TYPE_BOOL:
-                return !empty($participants);
-            case self::COMPARABLE_VALUE_TYPE_STRING:
-                return (string) count($participants);
-
-            default:
-                return null;
-        }
+        return match ($type) {
+            self::COMPARABLE_VALUE_TYPE_INT => count($participants),
+            self::COMPARABLE_VALUE_TYPE_BOOL => !empty($participants),
+            self::COMPARABLE_VALUE_TYPE_STRING => (string) count($participants),
+            default => null,
+        };
     }
 }

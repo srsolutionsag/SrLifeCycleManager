@@ -19,7 +19,7 @@ use srag\Plugins\SrLifeCycleManager\Repository\IGeneralRepository;
 /**
  * This is an abstraction for ILIAS ilTable2GUI implementations.
  *
- * @author Thibeau Fuhrer <thibeau@sr.solutions>
+ * @author       Thibeau Fuhrer <thibeau@sr.solutions>
  *
  * The table wraps the table-gui implementation, so that their generation can
  * be unified and derived classes must only bother about rendering table rows
@@ -34,46 +34,28 @@ abstract class ilSrAbstractTable extends ilTable2GUI
      */
     public const COL_ACTIONS = 'col_actions';
 
-    protected \ilSrAccessHandler $access_handler;
-
-    protected IGeneralRepository $general_repository;
-
-    protected Factory $ui_factory;
-
-    protected Renderer $renderer;
-
-    protected ITranslator $translator;
-
-    protected object $parent_gui;
-
     /**
      * @param Factory           $ui_factory
      * @param Renderer          $renderer
      * @param ITranslator       $translator
      * @param ilSrAccessHandler $access_handler
      * @param ilCtrl            $ctrl
-     * @param object            $parent_gui_object
+     * @param object            $parent_gui
      * @param string            $parent_gui_cmd
      * @param array             $table_data
      */
     public function __construct(
-        Factory $ui_factory,
-        Renderer $renderer,
-        ITranslator $translator,
-        IGeneralRepository $general_repository,
-        ilSrAccessHandler $access_handler,
+        protected Factory $ui_factory,
+        protected Renderer $renderer,
+        protected ITranslator $translator,
+        protected IGeneralRepository $general_repository,
+        protected \ilSrAccessHandler $access_handler,
         ilCtrl $ctrl,
-        object $parent_gui_object,
+        protected object $parent_gui,
         string $parent_gui_cmd,
         array $table_data
     ) {
-        $this->translator = $translator;
-        $this->general_repository = $general_repository;
-        $this->access_handler = $access_handler;
-        $this->ui_factory = $ui_factory;
-        $this->renderer = $renderer;
         $this->ctrl = $ctrl;
-        $this->parent_gui = $parent_gui_object;
 
         $this->setId(static::class);
         $this->setPrefix(ilSrLifeCycleManagerPlugin::PLUGIN_ID);
@@ -82,7 +64,7 @@ abstract class ilSrAbstractTable extends ilTable2GUI
             ilSrLifeCycleManagerPlugin::PLUGIN_DIR
         );
 
-        parent::__construct($parent_gui_object, $parent_gui_cmd);
+        parent::__construct($this->parent_gui, $parent_gui_cmd);
 
         $this->addTableColumns();
         $this->setData($table_data);
@@ -120,10 +102,10 @@ abstract class ilSrAbstractTable extends ilTable2GUI
      * This method MUST prepare the given template which serves as ONE row-entry.
      *
      * The array-data as second argument contains ONE entry of the data provided
-     * in the table constructor: @see ilSrAbstractTable::__construct().
-     *
-     * @param ilTemplate $template
+     * in the table constructor: @param ilTemplate $template
      * @param array $data
+     * @see ilSrAbstractTable::__construct().
+     *
      */
     abstract protected function renderTableRow(ilTemplate $template, array $data): void;
 
@@ -145,9 +127,9 @@ abstract class ilSrAbstractTable extends ilTable2GUI
      * Overwrites ilTable2GUI's method and serves as an adapter
      * method to declare an abstract method for derived classes:
      *
+     * @param array<string, mixed> $a_set
      * @see ilSrAbstractTable::renderTableRow()
      *
-     * @param array<string, mixed> $a_set
      */
     protected function fillRow($a_set): void
     {

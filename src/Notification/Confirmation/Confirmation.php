@@ -19,8 +19,6 @@ use DateTimeImmutable;
  */
 class Confirmation extends Notification implements IConfirmation
 {
-    protected string $event;
-
     /**
      * @param int                    $routine_id
      * @param string                 $title
@@ -34,13 +32,12 @@ class Confirmation extends Notification implements IConfirmation
         int $routine_id,
         string $title,
         string $content,
-        string $event,
+        protected string $event,
         ?int $notification_id = null,
         ?int $notified_ref_id = null,
         ?DateTimeImmutable $notified_date = null
     ) {
         parent::__construct($routine_id, $title, $content, $notification_id, $notified_ref_id, $notified_date);
-        $this->event = $event;
     }
 
     /**

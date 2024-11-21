@@ -15,7 +15,7 @@ use srag\Plugins\SrLifeCycleManager\Routine\IRoutine;
 /**
  * This class is responsible for managing the plugin tabs.
  *
- * @author Thibeau Fuhrer <thibeau@sr.solutions>
+ * @author       Thibeau Fuhrer <thibeau@sr.solutions>
  *
  * This helper class is meant to centralize the tabs implementation
  * and simplify their management. All methods in this class (except
@@ -33,16 +33,6 @@ class ilSrTabManager
     // ilSrTabManager language variables:
     protected const MSG_BACK_TO = 'msg_back_to';
 
-    protected \ilSrAccessHandler $access_handler;
-
-    protected ITranslator $translator;
-
-    protected \ilTabsGUI $tabs;
-
-    protected \ilCtrl $ctrl;
-
-    protected int $origin;
-
     /**
      * @param ilSrAccessHandler $access_handler
      * @param ITranslator       $translator
@@ -51,26 +41,21 @@ class ilSrTabManager
      * @param int               $origin
      */
     public function __construct(
-        ilSrAccessHandler $access_handler,
-        ITranslator $translator,
-        ilTabsGUI $tabs,
-        ilCtrl $ctrl,
-        int $origin
+        protected \ilSrAccessHandler $access_handler,
+        protected ITranslator $translator,
+        protected \ilTabsGUI $tabs,
+        protected \ilCtrl $ctrl,
+        protected int $origin
     ) {
-        $this->access_handler = $access_handler;
-        $this->translator = $translator;
-        $this->tabs = $tabs;
-        $this->ctrl = $ctrl;
-        $this->origin = $origin;
     }
 
     /**
-     * Adds a tab pointing to @see ilSrConfigGUI::CMD_INDEX.
+     * Adds a tab pointing to @param bool $is_active
+     * @return self
+     * @see ilSrConfigGUI::CMD_INDEX.
      *
      * If true is provided as an argument, this tab will be shown as active.
      *
-     * @param bool $is_active
-     * @return self
      */
     public function addConfigurationTab(bool $is_active = false): self
     {
@@ -96,12 +81,12 @@ class ilSrTabManager
     }
 
     /**
-     * Adds a tab pointing to @see ilSrRoutineGUI::CMD_INDEX.
+     * Adds a tab pointing to @param bool $is_active
+     * @return self
+     * @see ilSrRoutineGUI::CMD_INDEX.
      *
      * If true is provided as an argument, this tab will be shown as active.
      *
-     * @param bool $is_active
-     * @return self
      */
     public function addRoutineTab(bool $is_active = false): self
     {
@@ -127,12 +112,12 @@ class ilSrTabManager
     }
 
     /**
-     * Adds a tab pointing to @see ilSrRoutinePreviewGUI::CMD_INDEX.
+     * Adds a tab pointing to @param bool $is_active
+     * @return self
+     * @see ilSrRoutinePreviewGUI::CMD_INDEX.
      *
      * If true is provided as an argument, this tab will be shown as active.
      *
-     * @param bool $is_active
-     * @return self
      */
     public function addPreviewTab(bool $is_active = false): self
     {
@@ -158,9 +143,9 @@ class ilSrTabManager
     }
 
     /**
-     * Adds a back-to tab pointing to @see ilSrRoutineGUI::index().
+     * Adds a back-to tab pointing to @return self
+     * @see ilSrRoutineGUI::index().
      *
-     * @return self
      */
     public function addBackToRoutines(): self
     {
@@ -175,11 +160,11 @@ class ilSrTabManager
     }
 
     /**
-     * Adds a back-to tab pointing to @see ilSrAbstractGUI::index() of the
-     * given classname.
-     *
-     * @param string $class
+     * Adds a back-to tab pointing to @param string $class
      * @return self
+     * @see ilSrAbstractGUI::index() of the
+     *      given classname.
+     *
      */
     public function addBackToIndex(string $class): self
     {

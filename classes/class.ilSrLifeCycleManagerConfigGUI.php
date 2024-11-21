@@ -45,7 +45,13 @@ class ilSrLifeCycleManagerConfigGUI extends ilPluginConfigGUI
             // request comes from ILIAS (ilAdministrationGUI) itself, in which
             // case the request is redirected to the plugins actual config GUI.
             $DIC->ctrl()->redirectByClass(
-                [ilAdministrationGUI::class, ilObjComponentSettingsGUI::class, self::class, ilSrLifeCycleManagerDispatcherGUI::class, ilSrConfigGUI::class],
+                [
+                    ilAdministrationGUI::class,
+                    ilObjComponentSettingsGUI::class,
+                    self::class,
+                    ilSrLifeCycleManagerDispatcherGUI::class,
+                    ilSrConfigGUI::class
+                ],
                 ilSrConfigGUI::CMD_INDEX
             );
         }

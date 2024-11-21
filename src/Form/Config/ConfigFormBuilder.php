@@ -23,38 +23,26 @@ use srag\Plugins\SrLifeCycleManager\ITranslator;
 class ConfigFormBuilder extends AbstractFormBuilder
 {
     /**
-     * @var string[]
-     */
-    protected array $global_roles;
-
-    protected string $ajax_action;
-
-    protected IConfig $config;
-
-    /**
-     * @param ITranslator  $translator
-     * @param mixed $forms
-     * @param mixed $fields
-     * @param mixed $refinery
-     * @param IConfig      $config
-     * @param string[]     $global_roles
-     * @param string       $form_action
-     * @param string       $ajax_action
+     * @param ITranslator $translator
+     * @param mixed       $forms
+     * @param mixed       $fields
+     * @param mixed       $refinery
+     * @param IConfig     $config
+     * @param string[]    $global_roles
+     * @param string      $form_action
+     * @param string      $ajax_action
      */
     public function __construct(
         ITranslator $translator,
         Factory $forms,
         \ILIAS\UI\Component\Input\Field\Factory $fields,
         \ILIAS\Refinery\Factory $refinery,
-        IConfig $config,
-        array $global_roles,
+        protected IConfig $config,
+        protected array $global_roles,
         string $form_action,
-        string $ajax_action
+        protected string $ajax_action
     ) {
         parent::__construct($translator, $forms, $fields, $refinery, $form_action);
-        $this->global_roles = $global_roles;
-        $this->ajax_action = $ajax_action;
-        $this->config = $config;
     }
 
     /**
@@ -66,17 +54,15 @@ class ConfigFormBuilder extends AbstractFormBuilder
             ->multiSelect($this->translator->txt(IConfig::CNF_ROLE_MANAGE_ROUTINES), $this->global_roles)
             ->withValue(
                 (empty($this->config->getManageRoutineRoles())) ?
-                null : $this->config->getManageRoutineRoles()
-            )
-        ;
+                    null : $this->config->getManageRoutineRoles()
+            );
 
         $inputs[IConfig::CNF_ROLE_MANAGE_ASSIGNMENTS] = $this->fields
             ->multiSelect($this->translator->txt(IConfig::CNF_ROLE_MANAGE_ASSIGNMENTS), $this->global_roles)
             ->withValue(
                 (empty($this->config->getManageAssignmentRoles())) ?
-                null : $this->config->getManageAssignmentRoles()
-            )
-        ;
+                    null : $this->config->getManageAssignmentRoles()
+            );
 
         $inputs[IConfig::CNF_MAILING_BLACKLIST] = $this->fields
             ->tag(
@@ -87,21 +73,18 @@ class ConfigFormBuilder extends AbstractFormBuilder
             ->withValue(array_map('strval', $this->config->getMailingBlacklist()))
             ->withAdditionalOnLoadCode(
                 $this->getTagInputAutoCompleteBinder($this->ajax_action)
-            )
-        ;
+            );
 
         $inputs[IConfig::CNF_CUSTOM_FROM_EMAIL] = $this->fields
             ->text($this->translator->txt(IConfig::CNF_CUSTOM_FROM_EMAIL))
             ->withValue($this->config->getNotificationSenderAddress() ?? '')
             ->withAdditionalTransformation(
                 $this->getEmailValidationConstraint()
-            )
-        ;
+            );
 
         $inputs[IConfig::CNF_FORCE_MAIL_FORWARDING] = $this->fields
             ->checkbox($this->translator->txt(IConfig::CNF_FORCE_MAIL_FORWARDING))
-            ->withValue($this->config->isMailForwardingForced())
-        ;
+            ->withValue($this->config->isMailForwardingForced());
 
         $inputs[IConfig::CNF_TOOL_IS_ENABLED] = $this->fields->optionalGroup([
 
@@ -123,8 +106,7 @@ class ConfigFormBuilder extends AbstractFormBuilder
 
         $inputs[IConfig::CNF_DEBUG_MODE] = $this->fields
             ->checkbox($this->translator->txt(IConfig::CNF_DEBUG_MODE))
-            ->withValue($this->config->isDebugModeEnabled())
-        ;
+            ->withValue($this->config->isDebugModeEnabled());
 
         return $this->forms->standard(
             $this->form_action,

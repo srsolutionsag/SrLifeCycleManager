@@ -9,6 +9,7 @@
  *********************************************************************/
 
 declare(strict_types=1);
+
 use ILIAS\Cron\Schedule\CronJobScheduleType;
 use srag\Plugins\SrLifeCycleManager\Cron\ResultBuilder;
 use srag\Plugins\SrLifeCycleManager\Cron\INotifier;
@@ -19,22 +20,16 @@ use srag\Plugins\SrLifeCycleManager\Cron\INotifier;
  */
 abstract class ilSrAbstractCronJob extends ilCronJob
 {
-    protected ?\ilGlobalTemplateInterface $template;
-
-    protected ResultBuilder $result_builder;
-
-    protected INotifier $notifier;
-
     /**
      * @var string[]
      */
     protected $summary = [];
 
-    public function __construct(ResultBuilder $builder, INotifier $notifier, ilGlobalTemplateInterface $template = null)
-    {
-        $this->result_builder = $builder;
-        $this->notifier = $notifier;
-        $this->template = $template;
+    public function __construct(
+        protected ResultBuilder $result_builder,
+        protected INotifier $notifier,
+        protected ?\ilGlobalTemplateInterface $template = null
+    ) {
     }
 
     /**

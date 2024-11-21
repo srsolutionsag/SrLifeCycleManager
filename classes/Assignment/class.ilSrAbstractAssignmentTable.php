@@ -62,7 +62,10 @@ abstract class ilSrAbstractAssignmentTable extends ilSrAbstractTable
             $this->translator->txt(self::STATUS_ACTIVE) :
             $this->translator->txt(self::STATUS_INACTIVE);
 
-        $template->setVariable(self::COL_ASSIGNMENT_OWNER, $this->getUserName((int) $data[IRoutineAssignment::F_USER_ID]));
+        $template->setVariable(
+            self::COL_ASSIGNMENT_OWNER,
+            $this->getUserName((int) $data[IRoutineAssignment::F_USER_ID])
+        );
         $template->setVariable(self::COL_ASSIGNMENT_RECURSIVE, $status_recursive);
         $template->setVariable(self::COL_ASSIGNMENT_ACTIVE, $status_active);
 
@@ -91,7 +94,7 @@ abstract class ilSrAbstractAssignmentTable extends ilSrAbstractTable
         $actions[] = $this->ui_factory->button()->shy(
             $this->translator->txt(self::ACTION_ASSIGNMENT_EDIT),
             $this->ctrl->getLinkTargetByClass(
-                get_class($this->parent_obj),
+                $this->parent_obj::class,
                 ilSrAbstractAssignmentGUI::CMD_ASSIGNMENT_EDIT
             )
         );
@@ -106,13 +109,13 @@ abstract class ilSrAbstractAssignmentTable extends ilSrAbstractTable
     protected function setActionParameters(int $routine_id, int $ref_id): void
     {
         $this->ctrl->setParameterByClass(
-            get_class($this->parent_gui),
+            $this->parent_gui::class,
             ilSrAbstractAssignmentGUI::PARAM_ROUTINE_ID,
             $routine_id
         );
 
         $this->ctrl->setParameterByClass(
-            get_class($this->parent_gui),
+            $this->parent_gui::class,
             $this->parent_obj->getAssignmentRefIdParameter(),
             $ref_id
         );

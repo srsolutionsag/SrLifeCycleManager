@@ -9,6 +9,7 @@
  *********************************************************************/
 
 declare(strict_types=1);
+
 use srag\Plugins\SrLifeCycleManager\Rule\Attribute\AttributeFactory;
 use srag\Plugins\SrLifeCycleManager\Rule\IRule;
 use srag\Plugins\SrLifeCycleManager\ITranslator;
@@ -36,14 +37,12 @@ class ilSrRuleTable extends ilSrAbstractTable
     public const ACTION_RULE_EDIT = 'action_rule_edit';
     public const ACTION_RULE_DELETE = 'action_rule_delete';
 
-    protected AttributeFactory $attribute_factory;
-
     public function __construct(
         Factory $ui_factory,
         Renderer $renderer,
         ITranslator $translator,
         IGeneralRepository $general_repository,
-        AttributeFactory $attribute_factory,
+        protected AttributeFactory $attribute_factory,
         ilSrAccessHandler $access_handler,
         ilCtrl $ctrl,
         object $parent_gui_object,
@@ -61,8 +60,6 @@ class ilSrRuleTable extends ilSrAbstractTable
             $parent_gui_cmd,
             $table_data
         );
-
-        $this->attribute_factory = $attribute_factory;
     }
 
     /**

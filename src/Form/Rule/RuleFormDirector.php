@@ -21,14 +21,11 @@ use LogicException;
  */
 class RuleFormDirector
 {
-    protected RuleFormBuilder $form_builder;
-
     /**
      * @param RuleFormBuilder $form_builder
      */
-    public function __construct(RuleFormBuilder $form_builder)
+    public function __construct(protected RuleFormBuilder $form_builder)
     {
-        $this->form_builder = $form_builder;
     }
 
     /**
@@ -40,21 +37,14 @@ class RuleFormDirector
      */
     public function getFormByRoutine(IRoutine $routine): UIForm
     {
-        switch ($routine->getRoutineType()) {
-            case IRoutine::ROUTINE_TYPE_COURSE:
-                return $this->getCourseAttributeForm();
-
-            case IRoutine::ROUTINE_TYPE_GROUP:
-                return $this->getGroupAttributeForm();
-
-            case IRoutine::ROUTINE_TYPE_SURVEY:
-                return $this->getSurveyAttributeForm();
-
-            default:
-                throw new LogicException(
-                    self::class . " cannot yet build form for '" . $routine->getRoutineType() . "'."
-                );
-        }
+        return match ($routine->getRoutineType()) {
+            IRoutine::ROUTINE_TYPE_COURSE => $this->getCourseAttributeForm(),
+            IRoutine::ROUTINE_TYPE_GROUP => $this->getGroupAttributeForm(),
+            IRoutine::ROUTINE_TYPE_SURVEY => $this->getSurveyAttributeForm(),
+            default => throw new LogicException(
+                self::class . " cannot yet build form for '" . $routine->getRoutineType() . "'."
+            ),
+        };
     }
 
     /**

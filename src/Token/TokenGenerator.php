@@ -35,7 +35,7 @@ trait TokenGenerator
             // every byte, therefore we have to cut the random-bytes in
             // half.
             $token = bin2hex(random_bytes(32));
-        } catch (Throwable $t) {
+        } catch (Throwable) {
             $token = hash('sha256', uniqid((string) time(), true));
         }
 

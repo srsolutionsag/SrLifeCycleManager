@@ -17,7 +17,7 @@ use srag\Plugins\SrLifeCycleManager\Routine\IRoutine;
 /**
  * This GUI class is responsible for all actions regarding routines.
  *
- * @author Thibeau Fuhrer <thibeau@sr.solutions>
+ * @author       Thibeau Fuhrer <thibeau@sr.solutions>
  *
  * @noinspection AutoloadingIssuesInspection
  */
@@ -68,8 +68,7 @@ class ilSrRoutineGUI extends ilSrAbstractGUI
         $tabs
             ->addConfigurationTab()
             ->addRoutineTab(true)
-            ->addPreviewTab()
-        ;
+            ->addPreviewTab();
     }
 
     /**

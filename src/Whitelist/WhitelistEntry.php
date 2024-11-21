@@ -19,18 +19,6 @@ use DateTimeImmutable;
  */
 class WhitelistEntry implements IWhitelistEntry
 {
-    protected int $routine_id;
-
-    protected int $ref_id;
-
-    protected int $user_id;
-
-    protected bool $is_opt_out;
-
-    protected ?\DateTimeImmutable $expiry_date;
-
-    protected ?\DateTimeImmutable $date;
-
     /**
      * @param int                    $routine_id
      * @param int                    $ref_id
@@ -40,19 +28,13 @@ class WhitelistEntry implements IWhitelistEntry
      * @param DateTimeImmutable|null $expiry_date
      */
     public function __construct(
-        int $routine_id,
-        int $ref_id,
-        int $user_id,
-        bool $is_opt_out,
-        DateTimeImmutable $date = null,
-        DateTimeImmutable $expiry_date = null
+        protected int $routine_id,
+        protected int $ref_id,
+        protected int $user_id,
+        protected bool $is_opt_out,
+        protected ?\DateTimeImmutable $date = null,
+        protected ?\DateTimeImmutable $expiry_date = null
     ) {
-        $this->routine_id = $routine_id;
-        $this->ref_id = $ref_id;
-        $this->user_id = $user_id;
-        $this->is_opt_out = $is_opt_out;
-        $this->expiry_date = $expiry_date;
-        $this->date = $date;
     }
 
     /**

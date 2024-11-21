@@ -13,7 +13,7 @@ use srag\Plugins\SrLifeCycleManager\Routine\IRoutine;
 use ILIAS\UI\Component\Dropdown\Dropdown;
 
 /**
- * @author Thibeau Fuhrer <thibeau@sr.solutions>
+ * @author       Thibeau Fuhrer <thibeau@sr.solutions>
  *
  * @noinspection AutoloadingIssuesInspection
  */
@@ -70,8 +70,7 @@ class ilSrRoutineTable extends ilSrAbstractTable
         // translate the status of 'opt_out_possible'.
         $status_opt_out = ($data[IRoutine::F_HAS_OPT_OUT]) ?
             $this->translator->txt(self::STATUS_POSSIBLE) :
-            $this->translator->txt(self::STATUS_IMPOSSIBLE)
-        ;
+            $this->translator->txt(self::STATUS_IMPOSSIBLE);
 
         // translate the routine type.
         $routine_type = $this->translator->txt($data[IRoutine::F_ROUTINE_TYPE]);

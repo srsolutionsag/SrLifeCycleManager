@@ -25,8 +25,6 @@ class ResultBuilder implements IResultBuilder
      */
     protected const MAX_MESSAGE_LENGTH = 400;
 
-    protected \ilCronJobResult $boilerplate;
-
     /**
      * @var ilCronJobResult|null
      */
@@ -40,9 +38,8 @@ class ResultBuilder implements IResultBuilder
     /**
      * @param ilCronJobResult $boilerplate
      */
-    public function __construct(ilCronJobResult $boilerplate)
+    public function __construct(protected \ilCronJobResult $boilerplate)
     {
-        $this->boilerplate = $boilerplate;
     }
 
     /**
@@ -72,7 +69,7 @@ class ResultBuilder implements IResultBuilder
     /**
      * Sets the current results message to the one given.
      *
-     * @param string $message
+     * @param string   $message
      * @param string[] $summary
      * @return self
      */

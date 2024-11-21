@@ -19,18 +19,6 @@ use LogicException;
  */
 abstract class Notification implements ISentNotification
 {
-    protected ?int $notification_id;
-
-    protected int $routine_id;
-
-    protected ?int $notified_ref_id;
-
-    protected ?\DateTimeImmutable $notified_date;
-
-    protected string $title;
-
-    protected string $content;
-
     /**
      * @param int                    $routine_id
      * @param string                 $title
@@ -40,19 +28,13 @@ abstract class Notification implements ISentNotification
      * @param DateTimeImmutable|null $notified_date
      */
     public function __construct(
-        int $routine_id,
-        string $title,
-        string $content,
-        ?int $notification_id = null,
-        ?int $notified_ref_id = null,
-        ?DateTimeImmutable $notified_date = null
+        protected int $routine_id,
+        protected string $title,
+        protected string $content,
+        protected ?int $notification_id = null,
+        protected ?int $notified_ref_id = null,
+        protected ?\DateTimeImmutable $notified_date = null
     ) {
-        $this->notification_id = $notification_id;
-        $this->routine_id = $routine_id;
-        $this->notified_ref_id = $notified_ref_id;
-        $this->notified_date = $notified_date;
-        $this->title = $title;
-        $this->content = $content;
     }
 
     /**
@@ -176,7 +158,9 @@ abstract class Notification implements ISentNotification
     protected function abortIfNotSent(): void
     {
         if (!$this->hasBeenSent()) {
-            throw new LogicException("Notification ({$this->getNotificationId()}) has not been sent to {$this->getNotifiedRefId()} yet");
+            throw new LogicException(
+                "Notification ({$this->getNotificationId()}) has not been sent to {$this->getNotifiedRefId()} yet"
+            );
         }
     }
 }

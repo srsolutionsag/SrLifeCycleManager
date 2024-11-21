@@ -19,14 +19,10 @@ use ilObject;
  */
 class AffectingRoutineProvider
 {
-    protected IRoutineRepository $routine_repository;
-
-    protected ApplicabilityChecker $applicability_checker;
-
-    public function __construct(IRoutineRepository $routine_repository, ApplicabilityChecker $applicability_checker)
-    {
-        $this->routine_repository = $routine_repository;
-        $this->applicability_checker = $applicability_checker;
+    public function __construct(
+        protected IRoutineRepository $routine_repository,
+        protected ApplicabilityChecker $applicability_checker
+    ) {
     }
 
     /**

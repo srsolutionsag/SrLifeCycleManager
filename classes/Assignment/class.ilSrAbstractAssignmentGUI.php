@@ -18,7 +18,7 @@ use ILIAS\UI\Component\Input\Container\Form\Form;
  * This class holds the similarities of both, routine and object assignment
  * GUIs and is used as an abstract base class for them.
  *
- * @author Thibeau Fuhrer <thibeau@sr.solutions>
+ * @author       Thibeau Fuhrer <thibeau@sr.solutions>
  *
  * The wording might be kind of confusing (I have to admit), but I figured once
  * I write this down it seems relatable.
@@ -65,19 +65,17 @@ abstract class ilSrAbstractAssignmentGUI extends ilSrAbstractGUI
         $this->assignment_ref_id = $this->getRequestedAssignmentRefId();
         $this->assignment =
             $this->getRequestedAssignment() ??
-            $this->repository->assignment()->empty($this->user->getId())
-        ;
+            $this->repository->assignment()->empty($this->user->getId());
 
         $this->assignment
             ->setRoutineId($this->routine->getRoutineId())
-            ->setRefId($this->assignment_ref_id)
-        ;
+            ->setRefId($this->assignment_ref_id);
     }
 
     /**
-     * Public getter is due to actions in @see ilSrAbstractAssignmentTable::getActionDropdown().
+     * Public getter is due to actions in @return int|null
+     * @see ilSrAbstractAssignmentTable::getActionDropdown().
      *
-     * @return int|null
      */
     public function getAssignmentRefId(): ?int
     {
@@ -99,8 +97,7 @@ abstract class ilSrAbstractAssignmentGUI extends ilSrAbstractGUI
                 ->addConfigurationTab()
                 ->addRoutineTab()
                 ->addPreviewTab()
-                ->deactivateTabs()
-            ;
+                ->deactivateTabs();
         }
     }
 
@@ -228,18 +225,18 @@ abstract class ilSrAbstractAssignmentGUI extends ilSrAbstractGUI
      * This method MUST return the query-parameter name that is expected to
      * deliver the ref-id of the current assignment.
      *
-     * The method is also public, so that @see ilSrAbstractAssignmentTable can
-     * retrieve the assignment GUIs proper action-parameter.
+     * The method is also public, so that @return string
+     * @see ilSrAbstractAssignmentTable can
+     *      retrieve the assignment GUIs proper action-parameter.
      *
-     * @return string
      */
     abstract public function getAssignmentRefIdParameter(): string;
 
     /**
      * This method MUST return the form instance of the derived class, which
-     * should be used in @see ilSrAbstractAssignmentGUI::save().
+     * should be used in @return Form
+     * @see ilSrAbstractAssignmentGUI::save().
      *
-     * @return Form
      */
     abstract protected function getForm(): Form;
 }

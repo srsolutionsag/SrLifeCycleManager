@@ -22,20 +22,14 @@ class ilSrGeneralRepository implements IGeneralRepository
 {
     use ObjectHelper;
 
-    protected \ilDBInterface $database;
-
-    protected RBACServices $rbac;
-
     /**
      * @param ilDBInterface $database
      * @param ilTree        $tree
      * @param RBACServices  $rbac
      */
-    public function __construct(ilDBInterface $database, ilTree $tree, RBACServices $rbac)
+    public function __construct(protected \ilDBInterface $database, ilTree $tree, protected RBACServices $rbac)
     {
-        $this->database = $database;
         $this->tree = $tree;
-        $this->rbac = $rbac;
     }
 
     /**
@@ -62,7 +56,7 @@ class ilSrGeneralRepository implements IGeneralRepository
 
         try {
             return ilParticipants::getInstance($object->getRefId());
-        } catch (InvalidArgumentException $e) {
+        } catch (InvalidArgumentException) {
             return null;
         }
     }
@@ -185,7 +179,7 @@ class ilSrGeneralRepository implements IGeneralRepository
         try {
             ilRepUtil::deleteObjects(0, [$ref_id]);
             return true;
-        } catch (ilRepositoryException $e) {
+        } catch (ilRepositoryException) {
             return false;
         }
     }
@@ -201,7 +195,7 @@ class ilSrGeneralRepository implements IGeneralRepository
 
         try {
             return new ilObjUser($user_id);
-        } catch (Throwable $any) {
+        } catch (Throwable) {
             return null;
         }
     }

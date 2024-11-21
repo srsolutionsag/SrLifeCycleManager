@@ -22,16 +22,13 @@ use srag\Plugins\SrLifeCycleManager\Rule\IRule;
  */
 abstract class AbstractSizeComparison extends AbstractComparison
 {
-    protected bool $strict;
-
     public function __construct(
         AttributeFactory $attribute_factory,
         IRessource $ressource,
         IRule $rule,
-        bool $strict
+        protected bool $strict
     ) {
         parent::__construct($attribute_factory, $ressource, $rule);
-        $this->strict = $strict;
     }
 
     /**
@@ -48,24 +45,17 @@ abstract class AbstractSizeComparison extends AbstractComparison
         $lhs = $this->lhs_attribute->getComparableValue($comparable_type);
         $rhs = $this->rhs_attribute->getComparableValue($comparable_type);
 
-        switch ($comparable_type) {
-            case IAttribute::COMPARABLE_VALUE_TYPE_STRING:
-                return $this->compare(strlen($lhs), strlen($rhs));
-
-            case IAttribute::COMPARABLE_VALUE_TYPE_ARRAY:
-                return $this->compare(count($lhs), count($rhs));
-
-            default:
-                return $this->compare($lhs, $rhs);
-        }
+        return match ($comparable_type) {
+            IAttribute::COMPARABLE_VALUE_TYPE_STRING => $this->compare(strlen((string) $lhs), strlen((string) $rhs)),
+            IAttribute::COMPARABLE_VALUE_TYPE_ARRAY => $this->compare(count($lhs), count($rhs)),
+            default => $this->compare($lhs, $rhs),
+        };
     }
 
     /**
      * Compares the given values with the greater- or lesser-than operator.
      *
-     * @param mixed $lhs_value
-     * @param mixed $rhs_value
      * @return bool
      */
-    abstract protected function compare($lhs_value, $rhs_value): bool;
+    abstract protected function compare(mixed $lhs_value, mixed $rhs_value): bool;
 }

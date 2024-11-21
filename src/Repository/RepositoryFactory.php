@@ -25,55 +25,28 @@ use srag\Plugins\SrLifeCycleManager\Token\ITokenRepository;
  */
 class RepositoryFactory
 {
-    protected IGeneralRepository $general_repository;
-
-    protected IConfigRepository $config_repository;
-
-    protected IRoutineRepository $routine_repository;
-
-    protected IRoutineAssignmentRepository $assignment_repository;
-
-    protected IRuleRepository $rule_repository;
-
-    protected IConfirmationRepository $confirmation_repository;
-
-    protected IReminderRepository $reminder_repository;
-
-    protected IWhitelistRepository $whitelist_repository;
-
-    protected ITokenRepository $token_repository;
-
     /**
-     * @param IGeneralRepository           $general_repository
-     * @param IConfigRepository            $config_repository
-     * @param IRoutineRepository           $routine_repository
+     * @param IGeneralRepository $general_repository
+     * @param IConfigRepository $config_repository
+     * @param IRoutineRepository $routine_repository
      * @param IRoutineAssignmentRepository $assignment_repository
-     * @param IRuleRepository              $rule_repository
-     * @param IConfirmationRepository      $confirmation_repository
-     * @param IReminderRepository          $reminder_repository
-     * @param IWhitelistRepository         $whitelist_repository
-     * @param ITokenRepository             $token_repository
+     * @param IRuleRepository $rule_repository
+     * @param IConfirmationRepository $confirmation_repository
+     * @param IReminderRepository $reminder_repository
+     * @param IWhitelistRepository $whitelist_repository
+     * @param ITokenRepository $token_repository
      */
     public function __construct(
-        IGeneralRepository $general_repository,
-        IConfigRepository $config_repository,
-        IRoutineRepository $routine_repository,
-        IRoutineAssignmentRepository $assignment_repository,
-        IRuleRepository $rule_repository,
-        IConfirmationRepository $confirmation_repository,
-        IReminderRepository $reminder_repository,
-        IWhitelistRepository $whitelist_repository,
-        ITokenRepository $token_repository
+        protected IGeneralRepository $general_repository,
+        protected IConfigRepository $config_repository,
+        protected IRoutineRepository $routine_repository,
+        protected IRoutineAssignmentRepository $assignment_repository,
+        protected IRuleRepository $rule_repository,
+        protected IConfirmationRepository $confirmation_repository,
+        protected IReminderRepository $reminder_repository,
+        protected IWhitelistRepository $whitelist_repository,
+        protected ITokenRepository $token_repository
     ) {
-        $this->general_repository = $general_repository;
-        $this->config_repository = $config_repository;
-        $this->routine_repository = $routine_repository;
-        $this->assignment_repository = $assignment_repository;
-        $this->rule_repository = $rule_repository;
-        $this->confirmation_repository = $confirmation_repository;
-        $this->reminder_repository = $reminder_repository;
-        $this->whitelist_repository = $whitelist_repository;
-        $this->token_repository = $token_repository;
     }
 
     /**

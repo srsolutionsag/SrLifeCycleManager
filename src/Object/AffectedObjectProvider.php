@@ -29,24 +29,12 @@ class AffectedObjectProvider
      */
     protected static $routine_cache = [];
 
-    protected IRoutineAssignmentRepository $assignment_repository;
-
-    protected IGeneralRepository $general_repository;
-
-    protected IRoutineRepository $routine_repository;
-
-    protected ApplicabilityChecker $applicability_checker;
-
     public function __construct(
-        IRoutineAssignmentRepository $assignment_repository,
-        IGeneralRepository $general_repository,
-        IRoutineRepository $routine_repository,
-        ApplicabilityChecker $applicability_checker
+        protected IRoutineAssignmentRepository $assignment_repository,
+        protected IGeneralRepository $general_repository,
+        protected IRoutineRepository $routine_repository,
+        protected ApplicabilityChecker $applicability_checker
     ) {
-        $this->assignment_repository = $assignment_repository;
-        $this->general_repository = $general_repository;
-        $this->routine_repository = $routine_repository;
-        $this->applicability_checker = $applicability_checker;
     }
 
     /**

@@ -165,8 +165,8 @@ interface IConfig
     public function isDebugModeEnabled(): bool;
 
     /**
-     * @var bool $is_enabled
      * @return IConfig
+     * @var bool $is_enabled
      */
     public function setDebugModeEnabled(bool $is_enabled): IConfig;
 }

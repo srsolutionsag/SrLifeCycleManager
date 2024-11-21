@@ -49,20 +49,6 @@ class ilSrRoutineListBuilder
      */
     protected static $whitelist_entries = [];
 
-    protected Factory $ui_factory;
-
-    protected IRoutineAssignmentRepository $assignment_repository;
-
-    protected IRoutineRepository $routine_repository;
-
-    protected IWhitelistRepository $whitelist_repository;
-
-    protected ITranslator $translator;
-
-    protected \ilSrAccessHandler $access_handler;
-
-    protected \ilCtrl $ctrl;
-
     /**
      * @var bool
      */
@@ -93,21 +79,14 @@ class ilSrRoutineListBuilder
      * @param ilCtrl                       $ctrl
      */
     public function __construct(
-        Factory $ui_factory,
-        IRoutineAssignmentRepository $assignment_repository,
-        IRoutineRepository $routine_repository,
-        IWhitelistRepository $whitelist_repository,
-        ITranslator $translator,
-        ilSrAccessHandler $access_handler,
-        ilCtrl $ctrl
+        protected Factory $ui_factory,
+        protected IRoutineAssignmentRepository $assignment_repository,
+        protected IRoutineRepository $routine_repository,
+        protected IWhitelistRepository $whitelist_repository,
+        protected ITranslator $translator,
+        protected \ilSrAccessHandler $access_handler,
+        protected \ilCtrl $ctrl
     ) {
-        $this->ui_factory = $ui_factory;
-        $this->assignment_repository = $assignment_repository;
-        $this->routine_repository = $routine_repository;
-        $this->whitelist_repository = $whitelist_repository;
-        $this->translator = $translator;
-        $this->access_handler = $access_handler;
-        $this->ctrl = $ctrl;
     }
 
     /**
@@ -325,7 +304,7 @@ class ilSrRoutineListBuilder
 
             if (null !== $whitelist_entry && (
                 $whitelist_entry->isOptOut() ||
-                $this->isWhitelistEntryCool($routine, $whitelist_entry)
+                    $this->isWhitelistEntryCool($routine, $whitelist_entry)
             )) {
                 $actions[self::ACTION_ROUTINE_EXTEND] =
                     $actions[self::ACTION_ROUTINE_EXTEND]->withUnavailableAction();

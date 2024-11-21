@@ -23,20 +23,11 @@ use srag\Plugins\SrLifeCycleManager\Object\AffectedObject;
  */
 class ConfirmationEventObserver implements IEventObserver
 {
-    protected IConfirmationRepository $confirmation_repository;
-
-    protected INotificationSender $notification_sender;
-
-    protected IRecipientRetriever $recipient_retriever;
-
     public function __construct(
-        IConfirmationRepository $confirmation_repository,
-        INotificationSender $notification_sender,
-        IRecipientRetriever $recipient_retriever
+        protected IConfirmationRepository $confirmation_repository,
+        protected INotificationSender $notification_sender,
+        protected IRecipientRetriever $recipient_retriever
     ) {
-        $this->confirmation_repository = $confirmation_repository;
-        $this->notification_sender = $notification_sender;
-        $this->recipient_retriever = $recipient_retriever;
     }
 
     /**

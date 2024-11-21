@@ -23,16 +23,11 @@ use ILIAS\UI\Component\Input\Field\Input;
 class RoutineAssignmentFormBuilder extends AbstractAssignmentFormBuilder
 {
     /**
-     * @var IRoutine[]
-     */
-    protected array $unassigned_routines;
-
-    /**
      * @param IRoutine[] $unassigned_routines
      * @inheritDoc
-     * @param mixed $forms
-     * @param mixed $fields
-     * @param mixed $refinery
+     * @param mixed      $forms
+     * @param mixed      $fields
+     * @param mixed      $refinery
      */
     public function __construct(
         ITranslator $translator,
@@ -41,11 +36,10 @@ class RoutineAssignmentFormBuilder extends AbstractAssignmentFormBuilder
         \ILIAS\Refinery\Factory $refinery,
         IRoutineAssignment $assignment,
         array $all_routines,
-        array $unassigned_routines,
+        protected array $unassigned_routines,
         string $form_action
     ) {
         parent::__construct($translator, $forms, $fields, $refinery, $assignment, $all_routines, $form_action);
-        $this->unassigned_routines = $unassigned_routines;
     }
 
     /**

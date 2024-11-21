@@ -22,25 +22,19 @@ use Psr\Http\Message\ServerRequestInterface;
  */
 class ConfirmationFormProcessor extends AbstractFormProcessor
 {
-    protected IConfirmationRepository $repository;
-
-    protected IConfirmation $notification;
-
     /**
      * @param IConfirmationRepository $repository
      * @param ServerRequestInterface  $request
-     * @param mixed $form
+     * @param mixed                   $form
      * @param IConfirmation           $notification
      */
     public function __construct(
-        IConfirmationRepository $repository,
+        protected IConfirmationRepository $repository,
         ServerRequestInterface $request,
         Form $form,
-        IConfirmation $notification
+        protected IConfirmation $notification
     ) {
         parent::__construct($request, $form);
-        $this->repository = $repository;
-        $this->notification = $notification;
     }
 
     /**
@@ -64,8 +58,7 @@ class ConfirmationFormProcessor extends AbstractFormProcessor
         $this->notification
             ->setTitle($post_data[ConfirmationFormBuilder::INPUT_NOTIFICATION_TITLE])
             ->setContent($post_data[ConfirmationFormBuilder::INPUT_NOTIFICATION_CONTENT])
-            ->setEvent($post_data[ConfirmationFormBuilder::INPUT_CONFIRMATION_EVENT])
-        ;
+            ->setEvent($post_data[ConfirmationFormBuilder::INPUT_CONFIRMATION_EVENT]);
 
         $this->repository->store($this->notification);
     }

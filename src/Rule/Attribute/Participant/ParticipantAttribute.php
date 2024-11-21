@@ -20,11 +20,8 @@ use ilParticipants;
  */
 abstract class ParticipantAttribute implements IAttribute
 {
-    private \ilParticipants $participants;
-
-    public function __construct(ilParticipants $participants)
+    public function __construct(private \ilParticipants $participants)
     {
-        $this->participants = $participants;
     }
 
     /**
@@ -48,19 +45,12 @@ abstract class ParticipantAttribute implements IAttribute
             return null;
         }
 
-        switch ($type) {
-            case self::COMPARABLE_VALUE_TYPE_ARRAY:
-                return $this->getConsideredMembers($participants);
-
-            case self::COMPARABLE_VALUE_TYPE_INT:
-                return count($this->getConsideredMembers($participants));
-
-            case self::COMPARABLE_VALUE_TYPE_STRING:
-                return implode(',', $this->getConsideredMembers($participants));
-
-            default:
-                return null;
-        }
+        return match ($type) {
+            self::COMPARABLE_VALUE_TYPE_ARRAY => $this->getConsideredMembers($participants),
+            self::COMPARABLE_VALUE_TYPE_INT => count($this->getConsideredMembers($participants)),
+            self::COMPARABLE_VALUE_TYPE_STRING => implode(',', $this->getConsideredMembers($participants)),
+            default => null,
+        };
     }
 
     protected function getParticipants(): ?ilParticipants

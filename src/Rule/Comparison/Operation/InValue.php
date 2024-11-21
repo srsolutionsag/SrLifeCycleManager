@@ -37,6 +37,6 @@ class InValue extends AbstractComparison
         $lhs = $this->lhs_attribute->getComparableValue(IAttribute::COMPARABLE_VALUE_TYPE_STRING);
         $rhs = $this->rhs_attribute->getComparableValue(IAttribute::COMPARABLE_VALUE_TYPE_STRING);
 
-        return (false !== strpos($rhs, (string) $lhs));
+        return (str_contains((string) $rhs, (string) $lhs));
     }
 }

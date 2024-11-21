@@ -31,7 +31,7 @@ trait DTOHelper
      * To return the raw query-result, true can be passed as second argument.
      *
      * @param array<int, array<string, string|int>> $query_results
-     * @param bool $array_data
+     * @param bool                                  $array_data
      * @return mixed|null
      */
     protected function returnSingleQueryResult(array $query_results, bool $array_data = false)
@@ -53,7 +53,7 @@ trait DTOHelper
      * To return the raw query-result, true can be passed as second argument.
      *
      * @param array<int, array<string, string|int>> $query_results
-     * @param bool  $array_data
+     * @param bool                                  $array_data
      * @return array[]
      */
     protected function returnAllQueryResults(array $query_results, bool $array_data = false): array

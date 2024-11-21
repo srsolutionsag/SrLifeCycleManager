@@ -17,63 +17,27 @@ namespace srag\Plugins\SrLifeCycleManager\Config;
 class Config implements IConfig
 {
     /**
-     * @var int[] role ids
-     */
-    protected array $manage_routine_roles;
-
-    /**
-     * @var int[] role ids
-     */
-    protected array $manage_assignment_roles;
-
-    protected bool $tool_is_enabled;
-
-    protected bool $tool_show_routines;
-
-    protected bool $tool_show_controls;
-
-    protected ?string $custom_email;
-
-    /**
-     * @var int[]
-     */
-    protected array $mailing_blacklist;
-
-    protected bool $force_mail_forwarding;
-
-    protected bool $is_debug_mode_enabled;
-
-    /**
-     * @param int[]       $manage_routines
-     * @param int[]       $manage_assignments
-     * @param bool        $is_tool_enabled
-     * @param bool        $tool_show_routines
-     * @param bool        $tool_show_controls
+     * @param int[] $manage_routine_roles
+     * @param int[] $manage_assignment_roles
+     * @param bool $tool_is_enabled
+     * @param bool $tool_show_routines
+     * @param bool $tool_show_controls
      * @param string|null $custom_email
-     * @param array       $mailing_blacklist
-     * @param bool        $force_mail_forwarding
-     * @param bool        $is_debug_mode_enabled
+     * @param array $mailing_blacklist
+     * @param bool $force_mail_forwarding
+     * @param bool $is_debug_mode_enabled
      */
     public function __construct(
-        array $manage_routines = [],
-        array $manage_assignments = [],
-        bool $is_tool_enabled = false,
-        bool $tool_show_routines = false,
-        bool $tool_show_controls = false,
-        string $custom_email = null,
-        array $mailing_blacklist = [],
-        bool $force_mail_forwarding = false,
-        bool $is_debug_mode_enabled = false
+        protected array $manage_routine_roles = [],
+        protected array $manage_assignment_roles = [],
+        protected bool $tool_is_enabled = false,
+        protected bool $tool_show_routines = false,
+        protected bool $tool_show_controls = false,
+        protected ?string $custom_email = null,
+        protected array $mailing_blacklist = [],
+        protected bool $force_mail_forwarding = false,
+        protected bool $is_debug_mode_enabled = false
     ) {
-        $this->manage_routine_roles = $manage_routines;
-        $this->manage_assignment_roles = $manage_assignments;
-        $this->tool_is_enabled = $is_tool_enabled;
-        $this->tool_show_routines = $tool_show_routines;
-        $this->tool_show_controls = $tool_show_controls;
-        $this->custom_email = $custom_email;
-        $this->mailing_blacklist = $mailing_blacklist;
-        $this->force_mail_forwarding = $force_mail_forwarding;
-        $this->is_debug_mode_enabled = $is_debug_mode_enabled;
     }
 
     /**

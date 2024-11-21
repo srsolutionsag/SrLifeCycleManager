@@ -18,24 +18,6 @@ use DateTimeImmutable;
  */
 class Routine implements IRoutine
 {
-    protected ?int $routine_id;
-
-    protected int $owner_id;
-
-    protected string $routine_type;
-
-    protected int $origin;
-
-    protected string $title;
-
-    protected bool $has_opt_out;
-
-    protected ?int $elongation;
-
-    protected ?int $elongation_cooldown;
-
-    protected \DateTimeImmutable $creation_date;
-
     /**
      * @param int               $owner_id
      * @param string            $routine_type
@@ -48,25 +30,16 @@ class Routine implements IRoutine
      * @param int|null          $routine_id
      */
     public function __construct(
-        int $owner_id,
-        string $routine_type,
-        int $origin,
-        string $title,
-        bool $has_opt_out,
-        DateTimeImmutable $creation_date,
-        int $elongation = null,
-        int $elongation_cooldown = null,
-        int $routine_id = null
+        protected int $owner_id,
+        protected string $routine_type,
+        protected int $origin,
+        protected string $title,
+        protected bool $has_opt_out,
+        protected \DateTimeImmutable $creation_date,
+        protected ?int $elongation = null,
+        protected ?int $elongation_cooldown = null,
+        protected ?int $routine_id = null
     ) {
-        $this->routine_id = $routine_id;
-        $this->owner_id = $owner_id;
-        $this->routine_type = $routine_type;
-        $this->origin = $origin;
-        $this->title = $title;
-        $this->has_opt_out = $has_opt_out;
-        $this->elongation = $elongation;
-        $this->elongation_cooldown = $elongation_cooldown;
-        $this->creation_date = $creation_date;
     }
 
     /**

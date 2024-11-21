@@ -9,6 +9,7 @@
  *********************************************************************/
 
 declare(strict_types=1);
+
 use ILIAS\BackgroundTasks\Types\Type;
 use ILIAS\BackgroundTasks\Value;
 use ILIAS\BackgroundTasks\Types\SingleType;
@@ -67,7 +68,7 @@ class ilSrRoutinePreviewBackgroundDownloadInteraction extends AbstractUserIntera
             // delete zip file
             try {
                 $filesystem->deleteDir($download_path_value_object->getValue());
-            } catch (Throwable $t) {
+            } catch (Throwable) {
             }
 
             return $download_path_value_object;

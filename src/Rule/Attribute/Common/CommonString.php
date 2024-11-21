@@ -17,11 +17,8 @@ namespace srag\Plugins\SrLifeCycleManager\Rule\Attribute\Common;
  */
 class CommonString extends CommonAttribute
 {
-    protected string $value;
-
-    public function __construct(string $value)
+    public function __construct(protected string $value)
     {
-        $this->value = $value;
     }
 
     /**

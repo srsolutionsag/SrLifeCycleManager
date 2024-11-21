@@ -71,7 +71,7 @@ class ilSrObjectAssignmentTable extends ilSrAbstractAssignmentTable
         $actions[] = $this->ui_factory->button()->shy(
             $this->translator->txt(self::ACTION_ASSIGNMENT_DELETE),
             $this->ctrl->getLinkTargetByClass(
-                get_class($this->parent_gui),
+                $this->parent_gui::class,
                 ilSrAbstractAssignmentGUI::CMD_ASSIGNMENT_DELETE
             )
         );

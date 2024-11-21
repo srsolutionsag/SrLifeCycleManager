@@ -55,13 +55,11 @@ class RuleFormBuilder extends AbstractFormBuilder
 
     protected AttributeFactory $attributes;
 
-    protected IRule $rule;
-
     /**
      * @param ITranslator      $translator
-     * @param mixed $forms
-     * @param mixed $fields
-     * @param mixed $refinery
+     * @param mixed            $forms
+     * @param mixed            $fields
+     * @param mixed            $refinery
      * @param AttributeFactory $attributes
      * @param IRule            $rule
      * @param string           $form_action
@@ -72,13 +70,12 @@ class RuleFormBuilder extends AbstractFormBuilder
         \ILIAS\UI\Component\Input\Field\Factory $fields,
         \ILIAS\Refinery\Factory $refinery,
         AttributeFactory $attributes,
-        IRule $rule,
+        protected IRule $rule,
         string $form_action
     ) {
         parent::__construct($translator, $forms, $fields, $refinery, $form_action);
         $this->common_attribute_list = $attributes->getAttributeValues(CommonAttribute::class);
         $this->attributes = $attributes;
-        $this->rule = $rule;
     }
 
     /**

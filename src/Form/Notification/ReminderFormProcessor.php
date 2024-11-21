@@ -22,25 +22,19 @@ use Psr\Http\Message\ServerRequestInterface;
  */
 class ReminderFormProcessor extends AbstractFormProcessor
 {
-    protected IReminderRepository $repository;
-
-    protected IReminder $notification;
-
     /**
      * @param IReminderRepository    $repository
      * @param ServerRequestInterface $request
-     * @param mixed $form
+     * @param mixed                  $form
      * @param IReminder              $notification
      */
     public function __construct(
-        IReminderRepository $repository,
+        protected IReminderRepository $repository,
         ServerRequestInterface $request,
         Form $form,
-        IReminder $notification
+        protected IReminder $notification
     ) {
         parent::__construct($request, $form);
-        $this->repository = $repository;
-        $this->notification = $notification;
     }
 
     /**
@@ -64,8 +58,7 @@ class ReminderFormProcessor extends AbstractFormProcessor
         $this->notification
             ->setTitle($post_data[ReminderFormBuilder::INPUT_NOTIFICATION_TITLE])
             ->setContent($post_data[ReminderFormBuilder::INPUT_NOTIFICATION_CONTENT])
-            ->setDaysBeforeDeletion((int) $post_data[ReminderFormBuilder::INPUT_REMINDER_DAYS_BEFORE_DELETION])
-        ;
+            ->setDaysBeforeDeletion((int) $post_data[ReminderFormBuilder::INPUT_REMINDER_DAYS_BEFORE_DELETION]);
 
         $this->repository->store($this->notification);
     }

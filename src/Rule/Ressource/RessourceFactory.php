@@ -17,11 +17,8 @@ namespace srag\Plugins\SrLifeCycleManager\Rule\Ressource;
  */
 class RessourceFactory
 {
-    protected \ilDBInterface $database;
-
-    public function __construct(\ilDBInterface $database)
+    public function __construct(protected \ilDBInterface $database)
     {
-        $this->database = $database;
     }
 
     public function getRessource(\ilObject $object): IRessource

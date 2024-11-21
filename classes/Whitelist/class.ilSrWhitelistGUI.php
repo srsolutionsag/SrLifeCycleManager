@@ -436,7 +436,7 @@ class ilSrWhitelistGUI extends ilSrAbstractGUI
     {
         try {
             return ilObjectFactory::getInstanceByRefId($ref_id);
-        } catch (Throwable $t) {
+        } catch (Throwable) {
             return null;
         }
     }

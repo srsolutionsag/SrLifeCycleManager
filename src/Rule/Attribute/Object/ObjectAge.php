@@ -36,7 +36,7 @@ class ObjectAge extends ObjectAttribute
      * @inheritDoc
      * @return int|string|null
      */
-    public function getComparableValue(string $type)
+    public function getComparableValue(string $type): null|int|string
     {
         $creation_date = $this->getDateTime($this->getObject()->getCreateDate());
         if (null === $creation_date) {
@@ -45,15 +45,10 @@ class ObjectAge extends ObjectAttribute
 
         $elapsed_days = $this->getGap($creation_date, $this->getCurrentDate());
 
-        switch ($type) {
-            case self::COMPARABLE_VALUE_TYPE_INT:
-                return $elapsed_days;
-
-            case self::COMPARABLE_VALUE_TYPE_STRING:
-                return (string) $elapsed_days;
-
-            default:
-                return null;
-        }
+        return match ($type) {
+            self::COMPARABLE_VALUE_TYPE_INT => $elapsed_days,
+            self::COMPARABLE_VALUE_TYPE_STRING => (string) $elapsed_days,
+            default => null,
+        };
     }
 }

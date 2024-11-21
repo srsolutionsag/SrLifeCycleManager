@@ -17,11 +17,8 @@ namespace srag\Plugins\SrLifeCycleManager\Rule\Attribute\Common;
  */
 class CommonBoolean extends CommonAttribute
 {
-    protected bool $value;
-
-    public function __construct(bool $value)
+    public function __construct(protected bool $value)
     {
-        $this->value = $value;
     }
 
     /**
@@ -40,20 +37,13 @@ class CommonBoolean extends CommonAttribute
      * @inheritDoc
      * @return bool|int|string|null
      */
-    public function getComparableValue(string $type)
+    public function getComparableValue(string $type): bool|string|int|null
     {
-        switch ($type) {
-            case self::COMPARABLE_VALUE_TYPE_BOOL:
-                return $this->value;
-
-            case self::COMPARABLE_VALUE_TYPE_STRING:
-                return ($this->value) ? 'true' : 'false';
-
-            case self::COMPARABLE_VALUE_TYPE_INT:
-                return ($this->value) ? 1 : 0;
-
-            default:
-                return null;
-        }
+        return match ($type) {
+            self::COMPARABLE_VALUE_TYPE_BOOL => $this->value,
+            self::COMPARABLE_VALUE_TYPE_STRING => ($this->value) ? 'true' : 'false',
+            self::COMPARABLE_VALUE_TYPE_INT => ($this->value) ? 1 : 0,
+            default => null,
+        };
     }
 }

@@ -18,7 +18,7 @@ use ILIAS\UI\Component\Input\Container\Form\Form;
  * This class is responsible for assigning multiple or one routine to
  * exactly one object.
  *
- * @author Thibeau Fuhrer <thibeau@sr.solutions>
+ * @author       Thibeau Fuhrer <thibeau@sr.solutions>
  *
  * The GUI must therefore be provided with @see ilSrAbstractGUI::PARAM_OBJECT_REF_ID,
  * Otherwise the constructor will throw an exception.
@@ -121,8 +121,8 @@ class ilSrRoutineAssignmentGUI extends ilSrAbstractAssignmentGUI
     /**
      * Throws an exception if the request didn't provide an object-ref-id.
      *
-     * @see ilSrAbstractAssignmentGUI::PARAM_OBJECT_REF_ID
      * @throws LogicException
+     * @see ilSrAbstractAssignmentGUI::PARAM_OBJECT_REF_ID
      */
     protected function panicOnMissingAssignmentRefId(): void
     {

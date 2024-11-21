@@ -73,7 +73,7 @@ abstract class ilSrAbstractNotificationTable extends ilSrAbstractTable
         $actions[] = $this->ui_factory->button()->shy(
             $this->translator->txt(self::ACTION_NOTIFICATION_EDIT),
             $this->ctrl->getLinkTargetByClass(
-                get_class($this->parent_gui),
+                $this->parent_gui::class,
                 ilSrAbstractNotificationGUI::CMD_NOTIFICATION_EDIT
             )
         );
@@ -81,7 +81,7 @@ abstract class ilSrAbstractNotificationTable extends ilSrAbstractTable
         $actions[] = $this->ui_factory->button()->shy(
             $this->translator->txt(self::ACTION_NOTIFICATION_DELETE),
             $this->ctrl->getLinkTargetByClass(
-                get_class($this->parent_gui),
+                $this->parent_gui::class,
                 ilSrAbstractNotificationGUI::CMD_NOTIFICATION_DELETE
             )
         );
@@ -97,13 +97,13 @@ abstract class ilSrAbstractNotificationTable extends ilSrAbstractTable
     protected function setActionParameters(int $notification_id, int $routine_id): void
     {
         $this->ctrl->setParameterByClass(
-            get_class($this->parent_gui),
+            $this->parent_gui::class,
             ilSrAbstractNotificationGUI::PARAM_ROUTINE_ID,
             $routine_id
         );
 
         $this->ctrl->setParameterByClass(
-            get_class($this->parent_gui),
+            $this->parent_gui::class,
             ilSrAbstractNotificationGUI::PARAM_NOTIFICATION_ID,
             $notification_id
         );

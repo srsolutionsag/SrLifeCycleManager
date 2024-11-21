@@ -17,14 +17,8 @@ namespace srag\Plugins\SrLifeCycleManager\Rule\Ressource;
  */
 class SurveyRessource implements IDatabaseRessource, IObjectRessource
 {
-    protected \ilDBInterface $database;
-
-    protected \ilObjSurvey $survey;
-
-    public function __construct(\ilDBInterface $database, \ilObjSurvey $survey)
+    public function __construct(protected \ilDBInterface $database, protected \ilObjSurvey $survey)
     {
-        $this->database = $database;
-        $this->survey = $survey;
     }
 
     /**

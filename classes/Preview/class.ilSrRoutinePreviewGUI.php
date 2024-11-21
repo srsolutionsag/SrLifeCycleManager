@@ -9,6 +9,7 @@
  *********************************************************************/
 
 declare(strict_types=1);
+
 use ILIAS\BackgroundTasks\Implementation\Bucket\BasicBucket;
 use ILIAS\BackgroundTasks\BackgroundTaskServices;
 

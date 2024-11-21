@@ -24,16 +24,10 @@ class CommonAttributeFactory implements IAttributeValueProvider
     use DateTimeHelper;
 
     /**
-     * @var Refinery
-     */
-    protected Refinery $refinery;
-
-    /**
      * @param mixed $refinery
      */
-    public function __construct(Refinery $refinery)
+    public function __construct(protected Refinery $refinery)
     {
-        $this->refinery = $refinery;
     }
 
     /**

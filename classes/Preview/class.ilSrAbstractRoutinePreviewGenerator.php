@@ -9,6 +9,7 @@
  *********************************************************************/
 
 declare(strict_types=1);
+
 use srag\Plugins\SrLifeCycleManager\Object\AffectedObject;
 use srag\Plugins\SrLifeCycleManager\Object\AffectedObjectProvider;
 
@@ -18,14 +19,11 @@ use srag\Plugins\SrLifeCycleManager\Object\AffectedObjectProvider;
  */
 abstract class ilSrAbstractRoutinePreviewGenerator
 {
-    protected AffectedObjectProvider $affected_object_provider;
-
     /**
-     * @param AffectedObjectProvider $object_provider
+     * @param AffectedObjectProvider $affected_object_provider
      */
-    public function __construct(AffectedObjectProvider $object_provider)
+    public function __construct(protected AffectedObjectProvider $affected_object_provider)
     {
-        $this->affected_object_provider = $object_provider;
     }
 
     /**

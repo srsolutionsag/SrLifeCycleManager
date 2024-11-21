@@ -17,10 +17,6 @@ use srag\Plugins\SrLifeCycleManager\Rule\Attribute\IDynamicAttributeProvider;
 use srag\Plugins\SrLifeCycleManager\Rule\Attribute\IAttribute;
 use srag\Plugins\SrLifeCycleManager\Rule\Ressource\SurveyRessource;
 use srag\Plugins\SrLifeCycleManager\Rule\Ressource\IRessource;
-use srag\Plugins\SrLifeCycleManager\Rule\Attribute\Survey\SurveyAttribute;
-use srag\Plugins\SrLifeCycleManager\Rule\Attribute\Survey\SurveyParticipants;
-use srag\Plugins\SrLifeCycleManager\Rule\Attribute\Survey\SurveyQuestions;
-use srag\Plugins\SrLifeCycleManager\Rule\Attribute\Survey\SurveyResults;
 
 /**
  * @author Thibeau Fuhrer <thibeau@sr.solutions>

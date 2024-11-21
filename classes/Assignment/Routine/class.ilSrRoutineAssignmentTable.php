@@ -55,7 +55,10 @@ class ilSrRoutineAssignmentTable extends ilSrAbstractAssignmentTable
             $this->translator->txt(ilSrRoutineTable::STATUS_IMPOSSIBLE);
 
         $template->setVariable(ilSrRoutineTable::COL_ROUTINE_TITLE, $data[IRoutine::F_TITLE]);
-        $template->setVariable(ilSrRoutineTable::COL_ROUTINE_USER_ID, $this->getUserName((int) $data[IRoutine::F_USER_ID]));
+        $template->setVariable(
+            ilSrRoutineTable::COL_ROUTINE_USER_ID,
+            $this->getUserName((int) $data[IRoutine::F_USER_ID])
+        );
         $template->setVariable(ilSrRoutineTable::COL_ROUTINE_TYPE, $routine_type);
         $template->setVariable(ilSrRoutineTable::COL_ROUTINE_ELONGATION, $data[IRoutine::F_ELONGATION]);
         $template->setVariable(ilSrRoutineTable::COL_ROUTINE_HAS_OPT_OUT, $status_opt_out);
@@ -77,7 +80,7 @@ class ilSrRoutineAssignmentTable extends ilSrAbstractAssignmentTable
             $actions[] = $this->ui_factory->button()->shy(
                 $this->translator->txt(self::ACTION_ASSIGNMENT_DELETE),
                 $this->ctrl->getLinkTargetByClass(
-                    get_class($this->parent_gui),
+                    $this->parent_gui::class,
                     ilSrAbstractAssignmentGUI::CMD_ASSIGNMENT_DELETE
                 )
             );

@@ -23,25 +23,19 @@ use Psr\Http\Message\ServerRequestInterface;
  */
 class RuleFormProcessor extends AbstractFormProcessor
 {
-    protected IRuleRepository $repository;
-
-    protected IRule $rule;
-
     /**
      * @param IRuleRepository        $repository
      * @param ServerRequestInterface $request
-     * @param mixed $form
+     * @param mixed                  $form
      * @param IRule                  $rule
      */
     public function __construct(
-        IRuleRepository $repository,
+        protected IRuleRepository $repository,
         ServerRequestInterface $request,
         $form,
-        IRule $rule
+        protected IRule $rule
     ) {
         parent::__construct($request, $form);
-        $this->repository = $repository;
-        $this->rule = $rule;
     }
 
     /**
@@ -87,8 +81,7 @@ class RuleFormProcessor extends AbstractFormProcessor
             ->setLhsValue($lhs_value)
             ->setRhsType($rhs_type)
             ->setRhsValue($rhs_value)
-            ->setOperator($operator)
-        ;
+            ->setOperator($operator);
 
         $this->repository->store($rule);
     }
@@ -107,8 +100,7 @@ class RuleFormProcessor extends AbstractFormProcessor
         // another input that contains the actual type.
         return ($this->isSideCommonAttribute($side, $post_data)) ?
             $post_data[$side][RuleFormBuilder::INDEX_GROUP_VALUE][RuleFormBuilder::KEY_ATTR_TYPE] :
-            $post_data[$side][RuleFormBuilder::INDEX_GROUP_TYPE]
-        ;
+            $post_data[$side][RuleFormBuilder::INDEX_GROUP_TYPE];
     }
 
     /**

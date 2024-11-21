@@ -33,7 +33,7 @@ class SurveyResults extends SurveyAttribute
      * @inheritDoc
      * @return bool|int|string|null
      */
-    public function getComparableValue(string $type)
+    public function getComparableValue(string $type): int|bool|string|null
     {
         $is_360_survey = $this->survey->get360Mode();
         $result_count = 0;
@@ -46,17 +46,12 @@ class SurveyResults extends SurveyAttribute
             }
         }
 
-        switch ($type) {
-            case self::COMPARABLE_VALUE_TYPE_INT:
-                return $result_count;
-            case self::COMPARABLE_VALUE_TYPE_BOOL:
-                return (0 < $result_count);
-            case self::COMPARABLE_VALUE_TYPE_STRING:
-                return (string) $result_count;
-
-            default:
-                return null;
-        }
+        return match ($type) {
+            self::COMPARABLE_VALUE_TYPE_INT => $result_count,
+            self::COMPARABLE_VALUE_TYPE_BOOL => 0 < $result_count,
+            self::COMPARABLE_VALUE_TYPE_STRING => (string) $result_count,
+            default => null,
+        };
     }
 
     /**
@@ -69,7 +64,7 @@ class SurveyResults extends SurveyAttribute
             return false;
         }
 
-        $rater_x_of_y_array = explode('/', $data['finished']);
+        $rater_x_of_y_array = explode('/', (string) $data['finished']);
 
         // unexpected data was supplied if there are not exactly two
         // array entries (for x and y of a string 'x/y').

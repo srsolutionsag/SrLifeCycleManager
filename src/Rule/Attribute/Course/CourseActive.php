@@ -32,20 +32,13 @@ class CourseActive extends CourseAttribute
      * @inheritDoc
      * @return bool|int|string|null
      */
-    public function getComparableValue(string $type)
+    public function getComparableValue(string $type): bool|int|string|null
     {
-        switch ($type) {
-            case self::COMPARABLE_VALUE_TYPE_BOOL:
-                return $this->course->isActivated();
-
-            case self::COMPARABLE_VALUE_TYPE_INT:
-                return ($this->course->isActivated()) ? 1 : 0;
-
-            case self::COMPARABLE_VALUE_TYPE_STRING:
-                return ($this->course->isActivated()) ? 'true' : 'false';
-
-            default:
-                return null;
-        }
+        return match ($type) {
+            self::COMPARABLE_VALUE_TYPE_BOOL => $this->course->isActivated(),
+            self::COMPARABLE_VALUE_TYPE_INT => ($this->course->isActivated()) ? 1 : 0,
+            self::COMPARABLE_VALUE_TYPE_STRING => ($this->course->isActivated()) ? 'true' : 'false',
+            default => null,
+        };
     }
 }

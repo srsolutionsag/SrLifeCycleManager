@@ -18,18 +18,12 @@ use srag\Plugins\SrLifeCycleManager\Routine\IRoutineEvent;
  */
 class ilSrWhitelistLinkGenerator
 {
-    protected ITokenRepository $token_repository;
-
-    protected \ilCtrl $ctrl;
-
     /**
      * @param ITokenRepository $token_repository
      * @param ilCtrl           $ctrl
      */
-    public function __construct(ITokenRepository $token_repository, ilCtrl $ctrl)
+    public function __construct(protected ITokenRepository $token_repository, protected \ilCtrl $ctrl)
     {
-        $this->token_repository = $token_repository;
-        $this->ctrl = $ctrl;
     }
 
     /**
@@ -44,8 +38,7 @@ class ilSrWhitelistLinkGenerator
     {
         $token =
             $this->token_repository->get($routine_id, $ref_id, IRoutineEvent::EVENT_POSTPONE) ??
-            $this->token_repository->new($routine_id, $ref_id, IRoutineEvent::EVENT_POSTPONE)
-        ;
+            $this->token_repository->new($routine_id, $ref_id, IRoutineEvent::EVENT_POSTPONE);
 
         $this->ctrl->setParameterByClass(
             ilSrWhitelistGUI::class,
@@ -71,8 +64,7 @@ class ilSrWhitelistLinkGenerator
     {
         $token =
             $this->token_repository->get($routine_id, $ref_id, IRoutineEvent::EVENT_OPT_OUT) ??
-            $this->token_repository->new($routine_id, $ref_id, IRoutineEvent::EVENT_OPT_OUT)
-        ;
+            $this->token_repository->new($routine_id, $ref_id, IRoutineEvent::EVENT_OPT_OUT);
 
         $this->ctrl->setParameterByClass(
             ilSrWhitelistGUI::class,

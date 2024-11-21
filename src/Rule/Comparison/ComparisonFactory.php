@@ -29,39 +29,25 @@ use ilObject;
  */
 class ComparisonFactory
 {
-    protected AttributeFactory $attribute_factory;
-
-    protected RessourceFactory $ressource_factory;
-
-    public function __construct(RessourceFactory $ressource_factory, AttributeFactory $attribute_factory)
-    {
-        $this->ressource_factory = $ressource_factory;
-        $this->attribute_factory = $attribute_factory;
+    public function __construct(
+        protected RessourceFactory $ressource_factory,
+        protected AttributeFactory $attribute_factory
+    ) {
     }
 
     public function getComparison(ilObject $object, IRule $rule): IComparison
     {
-        switch ($rule->getOperator()) {
-            case IRule::OPERATOR_EQUAL:
-                return $this->equal($object, $rule);
-            case IRule::OPERATOR_NOT_EQUAL:
-                return $this->unequal($object, $rule);
-            case IRule::OPERATOR_GREATER:
-                return $this->greater($object, $rule, true);
-            case IRule::OPERATOR_GREATER_EQUAL:
-                return $this->greater($object, $rule, false);
-            case IRule::OPERATOR_LESSER:
-                return $this->lesser($object, $rule, true);
-            case IRule::OPERATOR_LESSER_EQUAL:
-                return $this->lesser($object, $rule, false);
-            case IRule::OPERATOR_CONTAINS:
-                return $this->inValue($object, $rule);
-            case IRule::OPERATOR_IN_ARRAY:
-                return $this->inArray($object, $rule);
-
-            default:
-                throw new LogicException("Comparison for operator '{$rule->getOperator()}' is not supported.");
-        }
+        return match ($rule->getOperator()) {
+            IRule::OPERATOR_EQUAL => $this->equal($object, $rule),
+            IRule::OPERATOR_NOT_EQUAL => $this->unequal($object, $rule),
+            IRule::OPERATOR_GREATER => $this->greater($object, $rule, true),
+            IRule::OPERATOR_GREATER_EQUAL => $this->greater($object, $rule, false),
+            IRule::OPERATOR_LESSER => $this->lesser($object, $rule, true),
+            IRule::OPERATOR_LESSER_EQUAL => $this->lesser($object, $rule, false),
+            IRule::OPERATOR_CONTAINS => $this->inValue($object, $rule),
+            IRule::OPERATOR_IN_ARRAY => $this->inArray($object, $rule),
+            default => throw new LogicException("Comparison for operator '{$rule->getOperator()}' is not supported."),
+        };
     }
 
     public function equal(ilObject $object, IRule $rule): Equal

@@ -32,12 +32,6 @@ class ilSrRoutineRepository implements IRoutineRepository
     use ObjectHelper;
     use DTOHelper;
 
-    protected IReminderRepository $reminder_repository;
-
-    protected IWhitelistRepository $whitelist_repository;
-
-    protected \ilDBInterface $database;
-
     /**
      * @param IReminderRepository  $reminder_repository
      * @param IWhitelistRepository $whitelist_repository
@@ -45,14 +39,11 @@ class ilSrRoutineRepository implements IRoutineRepository
      * @param ilTree               $tree
      */
     public function __construct(
-        IReminderRepository $reminder_repository,
-        IWhitelistRepository $whitelist_repository,
-        ilDBInterface $database,
+        protected IReminderRepository $reminder_repository,
+        protected IWhitelistRepository $whitelist_repository,
+        protected \ilDBInterface $database,
         ilTree $tree
     ) {
-        $this->reminder_repository = $reminder_repository;
-        $this->whitelist_repository = $whitelist_repository;
-        $this->database = $database;
         $this->tree = $tree;
     }
 

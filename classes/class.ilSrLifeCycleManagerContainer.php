@@ -36,10 +36,6 @@ use ILIAS\DI\Container;
  */
 class ilSrLifeCycleManagerContainer
 {
-    protected \ilSrLifeCycleManagerPlugin $plugin;
-
-    protected Container $dic;
-
     /**
      * @var RepositoryFactory
      */
@@ -95,10 +91,8 @@ class ilSrLifeCycleManagerContainer
      */
     protected $event_subject;
 
-    public function __construct(ilSrLifeCycleManagerPlugin $plugin, Container $dic)
+    public function __construct(protected \ilSrLifeCycleManagerPlugin $plugin, protected Container $dic)
     {
-        $this->plugin = $plugin;
-        $this->dic = $dic;
     }
 
     public function getRepositoryFactory(): RepositoryFactory

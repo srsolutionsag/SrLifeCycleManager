@@ -27,24 +27,12 @@ use srag\Plugins\SrLifeCycleManager\Repository\IGeneralRepository;
  */
 class ilSrAccessHandler
 {
-    protected RBACServices $access;
-
-    protected IGeneralRepository $general_repository;
-
-    protected IConfig $config;
-
-    protected \ilObjUser $user;
-
     public function __construct(
-        RBACServices $access,
-        IGeneralRepository $general_repository,
-        IConfig $config,
-        ilObjUser $user
+        protected RBACServices $access,
+        protected IGeneralRepository $general_repository,
+        protected IConfig $config,
+        protected \ilObjUser $user
     ) {
-        $this->access = $access;
-        $this->general_repository = $general_repository;
-        $this->config = $config;
-        $this->user = $user;
     }
 
     /**

@@ -27,9 +27,8 @@ abstract class AbstractFormProcessor implements IFormProcessor
 
     /**
      * @param ServerRequestInterface $request
-     * @param mixed $form
      */
-    public function __construct(ServerRequestInterface $request, $form)
+    public function __construct(ServerRequestInterface $request, mixed $form)
     {
         $this->form = $form->withRequest($request);
     }
@@ -67,10 +66,10 @@ abstract class AbstractFormProcessor implements IFormProcessor
     /**
      * This method MUST process the provided POST-data.
      *
-     * The method is only called when @see AbstractFormProcessor::isValid()
-     * returned true.
+     * The method is only called when @param array $post_data
+     * @see AbstractFormProcessor::isValid()
+     *      returned true.
      *
-     * @param array $post_data
      */
     abstract protected function processData(array $post_data): void;
 }

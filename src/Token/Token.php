@@ -16,30 +16,18 @@ namespace srag\Plugins\SrLifeCycleManager\Token;
  */
 class Token implements IToken
 {
-    protected int $routine_id;
-
-    protected int $ref_id;
-
-    protected string $event;
-
-    protected string $token;
-
     /**
-     * @param int    $routine_id
-     * @param int    $ref_id
+     * @param int $routine_id
+     * @param int $ref_id
      * @param string $event
      * @param string $token
      */
     public function __construct(
-        int $routine_id,
-        int $ref_id,
-        string $event,
-        string $token
+        protected int $routine_id,
+        protected int $ref_id,
+        protected string $event,
+        protected string $token
     ) {
-        $this->routine_id = $routine_id;
-        $this->ref_id = $ref_id;
-        $this->event = $event;
-        $this->token = $token;
     }
 
     /**

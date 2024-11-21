@@ -24,14 +24,11 @@ class ilSrTokenRepository implements ITokenRepository
     use TokenGenerator;
     use DTOHelper;
 
-    protected \ilDBInterface $database;
-
     /**
      * @param ilDBInterface $database
      */
-    public function __construct(ilDBInterface $database)
+    public function __construct(protected \ilDBInterface $database)
     {
-        $this->database = $database;
     }
 
     /**

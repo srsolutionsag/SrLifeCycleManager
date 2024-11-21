@@ -24,44 +24,17 @@ use srag\Plugins\SrLifeCycleManager\Cron\INotifier;
  */
 class ilSrRoutineJobFactory
 {
-    protected INotificationSender $notification_sender;
-
-    protected IRecipientRetriever $recipient_retriever;
-
-    protected ResultBuilder $result_builder;
-
-    protected RepositoryFactory $repository;
-
-    protected EventSubject $event_subject;
-
-    protected AffectedObjectProvider $affected_objects_provider;
-
-    protected \ilCronManager $cron_manager;
-
-    protected \ilLogger $logger;
-
-    protected ?\ilGlobalTemplateInterface $template;
-
     public function __construct(
-        INotificationSender $notification_sender,
-        IRecipientRetriever $recipient_retriever,
-        RepositoryFactory $repositories,
-        AffectedObjectProvider $affected_object_provider,
-        EventSubject $event_subject,
-        ResultBuilder $result_builder,
-        ilCronManager $cron_manager,
-        ilLogger $logger,
-        ilGlobalTemplateInterface $template = null
+        protected INotificationSender $notification_sender,
+        protected IRecipientRetriever $recipient_retriever,
+        protected RepositoryFactory $repository,
+        protected AffectedObjectProvider $affected_objects_provider,
+        protected EventSubject $event_subject,
+        protected ResultBuilder $result_builder,
+        protected \ilCronManager $cron_manager,
+        protected \ilLogger $logger,
+        protected ?\ilGlobalTemplateInterface $template = null
     ) {
-        $this->notification_sender = $notification_sender;
-        $this->recipient_retriever = $recipient_retriever;
-        $this->result_builder = $result_builder;
-        $this->repository = $repositories;
-        $this->event_subject = $event_subject;
-        $this->affected_objects_provider = $affected_object_provider;
-        $this->cron_manager = $cron_manager;
-        $this->logger = $logger;
-        $this->template = $template;
     }
 
     public function getJob(string $job_id): ilCronJob

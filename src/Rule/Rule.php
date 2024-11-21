@@ -16,51 +16,22 @@ namespace srag\Plugins\SrLifeCycleManager\Rule;
  */
 class Rule implements IRule
 {
-    protected ?int $rule_id;
-
-    protected int $routine_id;
-
-    protected string $lhs_type;
-
     /**
-     * @var mixed
-     */
-    protected $lhs_value;
-
-    protected string $operator;
-
-    protected string $rhs_type;
-
-    /**
-     * @var mixed
-     */
-    protected $rhs_value;
-
-    /**
-     * @param string   $lhs_type
-     * @param mixed    $lhs_value
-     * @param string   $operator
-     * @param string   $rhs_type
-     * @param mixed    $rhs_value
-     * @param int      $routine_id
+     * @param string $lhs_type
+     * @param string $operator
+     * @param string $rhs_type
+     * @param int $routine_id
      * @param int|null $rule_id
      */
     public function __construct(
-        string $lhs_type,
-        $lhs_value,
-        string $operator,
-        string $rhs_type,
-        $rhs_value,
-        int $routine_id,
-        int $rule_id = null
+        protected string $lhs_type,
+        protected mixed $lhs_value,
+        protected string $operator,
+        protected string $rhs_type,
+        protected mixed $rhs_value,
+        protected int $routine_id,
+        protected ?int $rule_id = null
     ) {
-        $this->rule_id = $rule_id;
-        $this->routine_id = $routine_id;
-        $this->lhs_type = $lhs_type;
-        $this->lhs_value = $lhs_value;
-        $this->operator = $operator;
-        $this->rhs_type = $rhs_type;
-        $this->rhs_value = $rhs_value;
     }
 
     /**
@@ -187,16 +158,11 @@ class Rule implements IRule
      */
     public function getTypeBySide(string $rule_side): ?string
     {
-        switch ($rule_side) {
-            case self::RULE_SIDE_LEFT:
-                return $this->getLhsType();
-
-            case self::RULE_SIDE_RIGHT:
-                return $this->getRhsType();
-
-            default:
-                return null;
-        }
+        return match ($rule_side) {
+            self::RULE_SIDE_LEFT => $this->getLhsType(),
+            self::RULE_SIDE_RIGHT => $this->getRhsType(),
+            default => null,
+        };
     }
 
     /**
@@ -204,15 +170,10 @@ class Rule implements IRule
      */
     public function getValueBySide(string $rule_side)
     {
-        switch ($rule_side) {
-            case self::RULE_SIDE_LEFT:
-                return $this->getLhsValue();
-
-            case self::RULE_SIDE_RIGHT:
-                return $this->getRhsValue();
-
-            default:
-                return null;
-        }
+        return match ($rule_side) {
+            self::RULE_SIDE_LEFT => $this->getLhsValue(),
+            self::RULE_SIDE_RIGHT => $this->getRhsValue(),
+            default => null,
+        };
     }
 }

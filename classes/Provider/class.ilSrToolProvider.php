@@ -294,7 +294,7 @@ class ilSrToolProvider extends AbstractDynamicToolPluginProvider
         if (null !== $target) {
             // apply regex that matches anything after '_' in order
             // to dodge the type-prefix when a goto-link is provided.
-            preg_match('/(?<=(_)).*/', $target, $matches);
+            preg_match('/(?<=(_)).*/', (string) $target, $matches);
 
             if (!empty($matches[0])) {
                 return (int) $matches[0];
@@ -340,10 +340,9 @@ class ilSrToolProvider extends AbstractDynamicToolPluginProvider
      */
     protected function getToolAvailabilityClosure(): Closure
     {
-        return fn(): bool =>
-            // the availability of the tool depends on the
+        return fn(): bool => // the availability of the tool depends on the
             // active state of the plugin.
-            (bool) $this->plugin->isActive();
+        (bool) $this->plugin->isActive();
     }
 
     /**
@@ -355,7 +354,7 @@ class ilSrToolProvider extends AbstractDynamicToolPluginProvider
         // and at least one of the tool components should be rendered.
         return fn(): bool => null !== $this->request_object && (
             $this->shouldRenderRoutineControls() ||
-            $this->shouldRenderRoutineLists()
+                $this->shouldRenderRoutineLists()
         );
     }
 

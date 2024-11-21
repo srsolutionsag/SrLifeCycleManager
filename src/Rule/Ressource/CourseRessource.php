@@ -17,14 +17,8 @@ namespace srag\Plugins\SrLifeCycleManager\Rule\Ressource;
  */
 class CourseRessource implements IDatabaseRessource, IParticipantRessource, IObjectRessource
 {
-    protected \ilDBInterface $database;
-
-    protected \ilObjCourse $course;
-
-    public function __construct(\ilDBInterface $database, \ilObjCourse $course)
+    public function __construct(protected \ilDBInterface $database, protected \ilObjCourse $course)
     {
-        $this->database = $database;
-        $this->course = $course;
     }
 
     /**

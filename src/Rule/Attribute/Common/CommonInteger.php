@@ -17,11 +17,8 @@ namespace srag\Plugins\SrLifeCycleManager\Rule\Attribute\Common;
  */
 class CommonInteger extends CommonAttribute
 {
-    protected int $value;
-
-    public function __construct(int $value)
+    public function __construct(protected int $value)
     {
-        $this->value = $value;
     }
 
     /**
@@ -39,17 +36,12 @@ class CommonInteger extends CommonAttribute
      * @inheritDoc
      * @return int|string|null
      */
-    public function getComparableValue(string $type)
+    public function getComparableValue(string $type): int|string|null
     {
-        switch ($type) {
-            case self::COMPARABLE_VALUE_TYPE_INT:
-                return $this->value;
-
-            case self::COMPARABLE_VALUE_TYPE_STRING:
-                return (string) $this->value;
-
-            default:
-                return null;
-        }
+        return match ($type) {
+            self::COMPARABLE_VALUE_TYPE_INT => $this->value,
+            self::COMPARABLE_VALUE_TYPE_STRING => (string) $this->value,
+            default => null,
+        };
     }
 }

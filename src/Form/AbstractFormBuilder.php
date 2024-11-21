@@ -30,44 +30,20 @@ abstract class AbstractFormBuilder implements IFormBuilder
     private const MSG_INVALID_EMAIL = 'msg_invalid_email';
     private const MSG_NUMBER_LESS_THAN = 'msg_number_less_than';
 
-    protected ITranslator $translator;
-
     /**
-     * @var FormFactory
-     */
-    protected FormFactory $forms;
-
-    /**
-     * @var FieldFactory
-     */
-    protected FieldFactory $fields;
-
-    /**
-     * @var Refinery
-     */
-    protected Refinery $refinery;
-
-    protected string $form_action;
-
-    /**
-     * @param ITranslator  $translator
-     * @param FormFactory  $forms
+     * @param ITranslator $translator
+     * @param FormFactory $forms
      * @param FieldFactory $fields
      * @param mixed $refinery
-     * @param string       $form_action
+     * @param string $form_action
      */
     public function __construct(
-        ITranslator $translator,
-        FormFactory $forms,
-        FieldFactory $fields,
-        Refinery $refinery,
-        string $form_action
+        protected ITranslator $translator,
+        protected FormFactory $forms,
+        protected FieldFactory $fields,
+        protected Refinery $refinery,
+        protected string $form_action
     ) {
-        $this->translator = $translator;
-        $this->forms = $forms;
-        $this->fields = $fields;
-        $this->refinery = $refinery;
-        $this->form_action = $form_action;
     }
 
     /**
@@ -109,10 +85,10 @@ abstract class AbstractFormBuilder implements IFormBuilder
     }
 
     /**
-     * Behaves similar to @see AbstractFormBuilder::getRefIdValidationConstraint(),
-     * but accepts an array of ref-ids that are validated.
+     * Behaves similar to @return Constraint
+     * @see AbstractFormBuilder::getRefIdValidationConstraint(),
+     *      but accepts an array of ref-ids that are validated.
      *
-     * @return Constraint
      */
     protected function getRefIdArrayValidationConstraint(): Constraint
     {

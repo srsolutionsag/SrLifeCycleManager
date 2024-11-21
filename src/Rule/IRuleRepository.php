@@ -54,7 +54,7 @@ interface IRuleRepository
      * Creates or updates an existing rule in the database and relates
      * it to set routine.
      *
-     * @param IRule    $rule
+     * @param IRule $rule
      * @return IRule
      */
     public function store(IRule $rule): IRule;
@@ -64,7 +64,7 @@ interface IRuleRepository
      * to the set routine (manually because ILIAS doesn't implement
      * constraints yet).
      *
-     * @param IRule    $rule
+     * @param IRule $rule
      * @return bool
      */
     public function delete(IRule $rule): bool;

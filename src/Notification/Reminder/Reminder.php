@@ -20,8 +20,6 @@ use DateInterval;
  */
 class Reminder extends Notification implements IReminder
 {
-    protected int $days_before_deletion;
-
     /**
      * @param int                    $routine_id
      * @param string                 $title
@@ -35,13 +33,12 @@ class Reminder extends Notification implements IReminder
         int $routine_id,
         string $title,
         string $content,
-        int $days_before_deletion,
+        protected int $days_before_deletion,
         ?int $notification_id = null,
         ?int $notified_ref_id = null,
         ?DateTimeImmutable $notified_date = null
     ) {
         parent::__construct($routine_id, $title, $content, $notification_id, $notified_ref_id, $notified_date);
-        $this->days_before_deletion = $days_before_deletion;
     }
 
     /**

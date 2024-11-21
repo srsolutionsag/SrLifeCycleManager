@@ -32,13 +32,11 @@ abstract class NotificationFormBuilder extends AbstractFormBuilder
     protected const INPUT_NOTIFICATION_CONTENT_INFO = 'input_name_notification_content_info';
     protected const INPUT_NOTIFICATION_TITLE_INFO = 'input_name_notification_title_info';
 
-    protected INotification $notification;
-
     /**
      * @param ITranslator   $translator
-     * @param mixed $forms
-     * @param mixed $fields
-     * @param mixed $refinery
+     * @param mixed         $forms
+     * @param mixed         $fields
+     * @param mixed         $refinery
      * @param INotification $notification
      * @param string        $form_action
      */
@@ -47,11 +45,10 @@ abstract class NotificationFormBuilder extends AbstractFormBuilder
         Factory $forms,
         \ILIAS\UI\Component\Input\Field\Factory $fields,
         \ILIAS\Refinery\Factory $refinery,
-        INotification $notification,
+        protected INotification $notification,
         string $form_action
     ) {
         parent::__construct($translator, $forms, $fields, $refinery, $form_action);
-        $this->notification = $notification;
     }
 
     /**
@@ -65,8 +62,7 @@ abstract class NotificationFormBuilder extends AbstractFormBuilder
                 $this->translator->txt(self::INPUT_NOTIFICATION_TITLE_INFO)
             )
             ->withValue($this->notification->getTitle())
-            ->withRequired(true)
-        ;
+            ->withRequired(true);
 
         $inputs[self::INPUT_NOTIFICATION_CONTENT] = $this->fields
             ->textarea(
@@ -75,10 +71,9 @@ abstract class NotificationFormBuilder extends AbstractFormBuilder
             )
             ->withValue(
                 (null !== $this->notification) ?
-                $this->notification->getContent() : ''
+                    $this->notification->getContent() : ''
             )
-            ->withRequired(true)
-        ;
+            ->withRequired(true);
 
         return $this->forms->standard(
             $this->form_action,

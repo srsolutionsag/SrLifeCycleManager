@@ -33,20 +33,15 @@ class SurveyQuestions extends SurveyAttribute
      * @inheritDoc
      * @return bool|int|string|null
      */
-    public function getComparableValue(string $type)
+    public function getComparableValue(string $type): int|bool|string|null
     {
         $questions = $this->survey->getSurveyQuestions();
 
-        switch ($type) {
-            case self::COMPARABLE_VALUE_TYPE_INT:
-                return count($questions);
-            case self::COMPARABLE_VALUE_TYPE_BOOL:
-                return !empty($questions);
-            case self::COMPARABLE_VALUE_TYPE_STRING:
-                return (string) count($questions);
-
-            default:
-                return null;
-        }
+        return match ($type) {
+            self::COMPARABLE_VALUE_TYPE_INT => count($questions),
+            self::COMPARABLE_VALUE_TYPE_BOOL => !empty($questions),
+            self::COMPARABLE_VALUE_TYPE_STRING => (string) count($questions),
+            default => null,
+        };
     }
 }

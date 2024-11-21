@@ -28,13 +28,11 @@ class ReminderFormBuilder extends NotificationFormBuilder
     // NotificationFormBuilder language variables:
     protected const MSG_DAYS_BEFORE_DELETION_ERROR = 'msg_days_before_deletion_error';
 
-    protected IReminderRepository $repository;
-
     /**
      * @param ITranslator         $translator
-     * @param mixed $forms
-     * @param mixed $fields
-     * @param mixed $refinery
+     * @param mixed               $forms
+     * @param mixed               $fields
+     * @param mixed               $refinery
      * @param IReminderRepository $repository
      * @param IReminder           $notification
      * @param string              $form_action
@@ -44,12 +42,11 @@ class ReminderFormBuilder extends NotificationFormBuilder
         Factory $forms,
         \ILIAS\UI\Component\Input\Field\Factory $fields,
         \ILIAS\Refinery\Factory $refinery,
-        IReminderRepository $repository,
+        protected IReminderRepository $repository,
         IReminder $notification,
         string $form_action
     ) {
         parent::__construct($translator, $forms, $fields, $refinery, $notification, $form_action);
-        $this->repository = $repository;
     }
 
     /**
@@ -61,8 +58,7 @@ class ReminderFormBuilder extends NotificationFormBuilder
             ->numeric($this->translator->txt(self::INPUT_REMINDER_DAYS_BEFORE_DELETION))
             ->withRequired(true)
             ->withAdditionalTransformation($this->getDaysBeforeDeletionConstraint())
-            ->withValue(($this->notification->getDaysBeforeDeletion()) ?: null)
-        ;
+            ->withValue(($this->notification->getDaysBeforeDeletion()) ?: null);
 
         return $inputs;
     }

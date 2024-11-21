@@ -19,11 +19,8 @@ use srag\Plugins\SrLifeCycleManager\Rule\Attribute\IAttribute;
  */
 abstract class ObjectAttribute implements IAttribute
 {
-    private \ilObject $object;
-
-    public function __construct(\ilObject $object)
+    public function __construct(private \ilObject $object)
     {
-        $this->object = $object;
     }
 
     public function getObject(): \ilObject

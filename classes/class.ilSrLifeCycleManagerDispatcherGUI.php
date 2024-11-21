@@ -15,23 +15,23 @@ use srag\Plugins\SrLifeCycleManager\Config\IConfig;
 /**
  * Handles all requests of this plugin and dispatches them to the responsible class.
  *
- * @author Thibeau Fuhrer <thibeau@sr.solutions>
+ * @author            Thibeau Fuhrer <thibeau@sr.solutions>
  *
  * @ilCtrl_isCalledBy ilSrLifeCycleManagerDispatcherGUI: ilUIPluginRouterGUI
  * @ilCtrl_isCalledBy ilSrLifeCycleManagerDispatcherGUI: ilSrLifeCycleManagerConfigGUI
  * @ilCtrl_isCalledBy ilSrLifeCycleManagerDispatcherGUI: ilObjComponentSettingsGUI
  *
- * @ilCtrl_Calls ilSrLifeCycleManagerDispatcherGUI: ilSrConfigGUI
- * @ilCtrl_Calls ilSrLifeCycleManagerDispatcherGUI: ilSrRoutineAssignmentGUI
- * @ilCtrl_Calls ilSrLifeCycleManagerDispatcherGUI: ilSrObjectAssignmentGUI
- * @ilCtrl_Calls ilSrLifeCycleManagerDispatcherGUI: ilSrConfirmationGUI
- * @ilCtrl_Calls ilSrLifeCycleManagerDispatcherGUI: ilSrReminderGUI
- * @ilCtrl_Calls ilSrLifeCycleManagerDispatcherGUI: ilSrRoutineGUI
- * @ilCtrl_Calls ilSrLifeCycleManagerDispatcherGUI: ilSrRuleGUI
- * @ilCtrl_Calls ilSrLifeCycleManagerDispatcherGUI: ilSrRoutinePreviewGUI
- * @ilCtrl_Calls ilSrLifeCycleManagerDispatcherGUI: ilSrWhitelistGUI
+ * @ilCtrl_Calls      ilSrLifeCycleManagerDispatcherGUI: ilSrConfigGUI
+ * @ilCtrl_Calls      ilSrLifeCycleManagerDispatcherGUI: ilSrRoutineAssignmentGUI
+ * @ilCtrl_Calls      ilSrLifeCycleManagerDispatcherGUI: ilSrObjectAssignmentGUI
+ * @ilCtrl_Calls      ilSrLifeCycleManagerDispatcherGUI: ilSrConfirmationGUI
+ * @ilCtrl_Calls      ilSrLifeCycleManagerDispatcherGUI: ilSrReminderGUI
+ * @ilCtrl_Calls      ilSrLifeCycleManagerDispatcherGUI: ilSrRoutineGUI
+ * @ilCtrl_Calls      ilSrLifeCycleManagerDispatcherGUI: ilSrRuleGUI
+ * @ilCtrl_Calls      ilSrLifeCycleManagerDispatcherGUI: ilSrRoutinePreviewGUI
+ * @ilCtrl_Calls      ilSrLifeCycleManagerDispatcherGUI: ilSrWhitelistGUI
  *
- * @noinspection AutoloadingIssuesInspection
+ * @noinspection      AutoloadingIssuesInspection
  */
 class ilSrLifeCycleManagerDispatcherGUI
 {
@@ -127,20 +127,13 @@ class ilSrLifeCycleManagerDispatcherGUI
 
         $call_history = $DIC->ctrl()->getCallHistory();
         $base_class = array_shift($call_history);
-        $base_class = strtolower($base_class[ilCtrlInterface::PARAM_CMD_CLASS]);
+        $base_class = strtolower((string) $base_class[ilCtrlInterface::PARAM_CMD_CLASS]);
 
-        switch ($base_class) {
-            // because (somehow) this class cannot be called by ilRepositoryGUI,
-            // all requests from there will be handled via ilUIPluginRouterGUI.
-            case strtolower(ilUIPluginRouterGUI::class):
-                return IRoutine::ORIGIN_TYPE_REPOSITORY;
-
-            case strtolower(ilAdministrationGUI::class):
-                return IRoutine::ORIGIN_TYPE_ADMINISTRATION;
-
-            default:
-                return IRoutine::ORIGIN_TYPE_UNKNOWN;
-        }
+        return match ($base_class) {
+            strtolower(ilUIPluginRouterGUI::class) => IRoutine::ORIGIN_TYPE_REPOSITORY,
+            strtolower(ilAdministrationGUI::class) => IRoutine::ORIGIN_TYPE_ADMINISTRATION,
+            default => IRoutine::ORIGIN_TYPE_UNKNOWN,
+        };
     }
 
     /**

@@ -31,13 +31,11 @@ class RoutineFormBuilder extends AbstractFormBuilder
     public const INPUT_ROUTINE_TYPE = 'input_name_routine_type';
     public const INPUT_TITLE = 'input_name_routine_title';
 
-    protected IRoutine $routine;
-
     /**
      * @param ITranslator   $translator
-     * @param mixed $forms
-     * @param mixed $fields
-     * @param mixed $refinery
+     * @param mixed         $forms
+     * @param mixed         $fields
+     * @param mixed         $refinery
      * @param string        $form_action
      * @param IRoutine|null $routine
      */
@@ -46,11 +44,10 @@ class RoutineFormBuilder extends AbstractFormBuilder
         Factory $forms,
         \ILIAS\UI\Component\Input\Field\Factory $fields,
         \ILIAS\Refinery\Factory $refinery,
-        IRoutine $routine,
+        protected IRoutine $routine,
         string $form_action
     ) {
         parent::__construct($translator, $forms, $fields, $refinery, $form_action);
-        $this->routine = $routine;
     }
 
     /**

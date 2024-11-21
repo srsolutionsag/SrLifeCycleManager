@@ -23,20 +23,17 @@ use Psr\Http\Message\ServerRequestInterface;
  */
 class ConfigFormProcessor extends AbstractFormProcessor
 {
-    protected IConfigRepository $repository;
-
     /**
      * @param IConfigRepository      $repository
      * @param ServerRequestInterface $request
-     * @param mixed $form
+     * @param mixed                  $form
      */
     public function __construct(
-        IConfigRepository $repository,
+        protected IConfigRepository $repository,
         ServerRequestInterface $request,
         Form $form
     ) {
         parent::__construct($request, $form);
-        $this->repository = $repository;
     }
 
     /**

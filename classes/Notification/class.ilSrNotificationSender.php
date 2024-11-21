@@ -34,32 +34,14 @@ use srag\Plugins\SrLifeCycleManager\Repository\IGeneralRepository;
  */
 class ilSrNotificationSender implements INotificationSender
 {
-    protected INotificationRepository $notification_repository;
-
-    protected IRoutineRepository $routine_repository;
-
-    protected IGeneralRepository $general_repository;
-
-    protected \ilSrWhitelistLinkGenerator $whitelist_link_generator;
-
-    protected \ilMailMimeSender $mail_sender;
-
-    protected IConfig $config;
-
     public function __construct(
-        INotificationRepository $notification_repository,
-        IRoutineRepository $routine_repository,
-        IGeneralRepository $general_repository,
-        ilSrWhitelistLinkGenerator $whitelist_link_generator,
-        ilMailMimeSender $mail_sender,
-        IConfig $config
+        protected INotificationRepository $notification_repository,
+        protected IRoutineRepository $routine_repository,
+        protected IGeneralRepository $general_repository,
+        protected \ilSrWhitelistLinkGenerator $whitelist_link_generator,
+        protected \ilMailMimeSender $mail_sender,
+        protected IConfig $config
     ) {
-        $this->notification_repository = $notification_repository;
-        $this->routine_repository = $routine_repository;
-        $this->general_repository = $general_repository;
-        $this->whitelist_link_generator = $whitelist_link_generator;
-        $this->mail_sender = $mail_sender;
-        $this->config = $config;
     }
 
     /**
@@ -99,7 +81,7 @@ class ilSrNotificationSender implements INotificationSender
      * @TODO: this method could be replaced by some more general "blocks"
      *        service (name in progress).
      *
-     * @param ilObject      $object
+     * @param ilObject $object
      * @param INotification $notification
      * @return string
      */

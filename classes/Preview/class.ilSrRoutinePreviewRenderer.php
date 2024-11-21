@@ -34,38 +34,20 @@ class ilSrRoutinePreviewRenderer extends ilSrAbstractRoutinePreviewGenerator
     protected const LABEL_DELETED_OBJECTS = 'label_preview_deleted_objects';
     protected const MSG_LOADING = 'msg_this_may_take_a_while';
 
-    /**
-     * @var AffectedObjectProvider
-     */
-    protected $affected_object_provider;
-
-    protected ITranslator $translator;
-
-    protected Renderer $renderer;
-
-    /**
-     * @var UIFactory
-     */
-    protected UIFactory $ui_factory;
-
-    protected string $ajax_action;
+    protected AffectedObjectProvider $affected_object_provider;
 
     /**
      * @param mixed $ui_factory
      */
     public function __construct(
         AffectedObjectProvider $affected_object_provider,
-        ITranslator $translator,
-        Renderer $renderer,
-        $ui_factory,
-        string $ajax_action
+        protected ITranslator $translator,
+        protected Renderer $renderer,
+        protected UIFactory $ui_factory,
+        protected string $ajax_action
     ) {
         parent::__construct($affected_object_provider);
-        $this->translator = $translator;
         $this->affected_object_provider = $affected_object_provider;
-        $this->renderer = $renderer;
-        $this->ui_factory = $ui_factory;
-        $this->ajax_action = $ajax_action;
     }
 
     public function registerResources(ilGlobalTemplateInterface $template): void
@@ -83,7 +65,7 @@ class ilSrRoutinePreviewRenderer extends ilSrAbstractRoutinePreviewGenerator
 
         try {
             $html = $template->get();
-        } catch (ilTemplateException $e) {
+        } catch (ilTemplateException) {
             $html = '';
         }
 

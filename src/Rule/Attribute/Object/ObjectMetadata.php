@@ -12,7 +12,6 @@ declare(strict_types=1);
 
 namespace srag\Plugins\SrLifeCycleManager\Rule\Attribute\Object;
 
-use ilDBInterface;
 use ilObject;
 
 /**
@@ -25,13 +24,9 @@ class ObjectMetadata extends ObjectAttribute
      */
     protected static $cache = [];
 
-    protected \ilDBInterface $database;
-
-    public function __construct(ilDBInterface $database, ilObject $object)
+    public function __construct(protected \ilDBInterface $database, ilObject $object)
     {
         parent::__construct($object);
-
-        $this->database = $database;
     }
 
     /**
@@ -49,18 +44,13 @@ class ObjectMetadata extends ObjectAttribute
      * @inheritDoc
      * @return mixed[]|string|null
      */
-    public function getComparableValue(string $type)
+    public function getComparableValue(string $type): array|string|null
     {
-        switch ($type) {
-            case self::COMPARABLE_VALUE_TYPE_ARRAY:
-                return $this->getMetadata();
-
-            case self::COMPARABLE_VALUE_TYPE_STRING:
-                return implode(',', $this->getMetadata());
-
-            default:
-                return null;
-        }
+        return match ($type) {
+            self::COMPARABLE_VALUE_TYPE_ARRAY => $this->getMetadata(),
+            self::COMPARABLE_VALUE_TYPE_STRING => implode(',', $this->getMetadata()),
+            default => null,
+        };
     }
 
     /**

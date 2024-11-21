@@ -19,13 +19,10 @@ use ilObjCourse;
  */
 abstract class CourseAttribute implements IAttribute
 {
-    protected \ilObjCourse $course;
-
     /**
      * @param ilObjCourse $course
      */
-    public function __construct(ilObjCourse $course)
+    public function __construct(protected \ilObjCourse $course)
     {
-        $this->course = $course;
     }
 }
