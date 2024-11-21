@@ -1,8 +1,14 @@
 <?php
 
-declare(strict_types=1);
+/*********************************************************************
+ * This Code is licensed under the GPL-3.0 License and is Part of a
+ * ILIAS Plugin developed by sr solutions ag in Switzerland.
+ *
+ * https://sr.solutions
+ *
+ *********************************************************************/
 
-/* Copyright (c) 2022 Thibeau Fuhrer <thibeau@sr.solutions> Extended GPL, see docs/LICENSE */
+declare(strict_types=1);
 
 use srag\Plugins\SrLifeCycleManager\Config\IConfig;
 use ILIAS\DI\RBACServices;
