@@ -28,5 +28,5 @@ interface ISentReminder extends ISentNotification
      * @param DateTimeImmutable|DateTime $when
      * @return bool
      */
-    public function isElapsed($when) : bool;
+    public function isElapsed($when): bool;
 }

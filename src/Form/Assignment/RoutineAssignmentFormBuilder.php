@@ -1,4 +1,5 @@
-<?php /*********************************************************************
+<?php
+/*********************************************************************
  * This Code is licensed under the GPL-3.0 License and is Part of a
  * ILIAS Plugin developed by sr solutions ag in Switzerland.
  *
@@ -49,7 +50,7 @@ class RoutineAssignmentFormBuilder extends AbstractAssignmentFormBuilder
     /**
      * @inheritDoc
      */
-    protected function getRoutineInput() : Input
+    protected function getRoutineInput(): Input
     {
         return $this->fields->multiSelect(
             $this->translator->txt(self::INPUT_ROUTINE),
@@ -60,7 +61,7 @@ class RoutineAssignmentFormBuilder extends AbstractAssignmentFormBuilder
     /**
      * @inheritDoc
      */
-    protected function getObjectInput() : Input
+    protected function getObjectInput(): Input
     {
         return $this->getImmutableObjectInput();
     }

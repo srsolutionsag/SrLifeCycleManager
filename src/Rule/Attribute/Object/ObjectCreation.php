@@ -24,7 +24,7 @@ class ObjectCreation extends ObjectAttribute
     /**
      * @inheritDoc
      */
-    public function getComparableValueTypes() : array
+    public function getComparableValueTypes(): array
     {
         return [
             self::COMPARABLE_VALUE_TYPE_DATE,

@@ -1,4 +1,5 @@
-<?php /*********************************************************************
+<?php
+/*********************************************************************
  * This Code is licensed under the GPL-3.0 License and is Part of a
  * ILIAS Plugin developed by sr solutions ag in Switzerland.
  *
@@ -42,7 +43,7 @@ class ilSrRoutineTable extends ilSrAbstractTable
     /**
      * @inheritDoc
      */
-    protected function getTemplateName() : string
+    protected function getTemplateName(): string
     {
         return 'tpl.routine_table_row.html';
     }
@@ -50,7 +51,7 @@ class ilSrRoutineTable extends ilSrAbstractTable
     /**
      * @inheritDoc
      */
-    protected function addTableColumns() : void
+    protected function addTableColumns(): void
     {
         $this->addColumn($this->translator->txt(self::COL_ROUTINE_TITLE));
         $this->addColumn($this->translator->txt(self::COL_ROUTINE_USER_ID));
@@ -64,7 +65,7 @@ class ilSrRoutineTable extends ilSrAbstractTable
     /**
      * @inheritDoc
      */
-    protected function renderTableRow(ilTemplate $template, array $data) : void
+    protected function renderTableRow(ilTemplate $template, array $data): void
     {
         // translate the status of 'opt_out_possible'.
         $status_opt_out = ($data[IRoutine::F_HAS_OPT_OUT]) ?
@@ -94,7 +95,7 @@ class ilSrRoutineTable extends ilSrAbstractTable
      * @param int $routine_id
      * @return Dropdown
      */
-    protected function getActionDropdown(int $routine_id) : Dropdown
+    protected function getActionDropdown(int $routine_id): Dropdown
     {
         $this->setActionParameters($routine_id);
 
@@ -168,7 +169,7 @@ class ilSrRoutineTable extends ilSrAbstractTable
     /**
      * @param int $routine_id
      */
-    protected function setActionParameters(int $routine_id) : void
+    protected function setActionParameters(int $routine_id): void
     {
         $this->ctrl->setParameterByClass(
             ilSrWhitelistGUI::class,

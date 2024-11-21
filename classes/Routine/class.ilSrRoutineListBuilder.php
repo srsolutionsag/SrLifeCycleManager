@@ -1,4 +1,5 @@
-<?php /*********************************************************************
+<?php
+/*********************************************************************
  * This Code is licensed under the GPL-3.0 License and is Part of a
  * ILIAS Plugin developed by sr solutions ag in Switzerland.
  *
@@ -388,7 +389,7 @@ class ilSrRoutineListBuilder
      * @param IWhitelistEntry $whitelist_entry
      * @return bool
      */
-    protected function isWhitelistEntryCool(IRoutine $routine, IWhitelistEntry $whitelist_entry) : bool
+    protected function isWhitelistEntryCool(IRoutine $routine, IWhitelistEntry $whitelist_entry): bool
     {
         return (
             null !== ($cooldown = $routine->getElongationCooldown()) &&

@@ -24,7 +24,7 @@ interface IReminderRepository extends INotificationRepository
      * @param int $notification_id
      * @return IReminder|null
      */
-    public function get(int $notification_id) : ?IReminder;
+    public function get(int $notification_id): ?IReminder;
 
     /**
      * Fetches all existing reminders from the database that are related
@@ -40,7 +40,7 @@ interface IReminderRepository extends INotificationRepository
      * @param bool     $array_data
      * @return IReminder[]
      */
-    public function getByRoutine(IRoutine $routine, bool $array_data = false) : array;
+    public function getByRoutine(IRoutine $routine, bool $array_data = false): array;
 
     /**
      * Fetches the next reminder that needs to be sent for the given routine.
@@ -50,7 +50,7 @@ interface IReminderRepository extends INotificationRepository
      * @param IReminder|null $previous_reminder
      * @return IReminder|null
      */
-    public function getNextReminder(IRoutine $routine, IReminder $previous_reminder = null) : ?IReminder;
+    public function getNextReminder(IRoutine $routine, IReminder $previous_reminder = null): ?IReminder;
 
     /**
      * Fetches the most recently sent reminder which is related to the given routine
@@ -60,7 +60,7 @@ interface IReminderRepository extends INotificationRepository
      * @param int      $ref_id
      * @return IReminder|null
      */
-    public function getRecentlySent(IRoutine $routine, int $ref_id) : ?IReminder;
+    public function getRecentlySent(IRoutine $routine, int $ref_id): ?IReminder;
 
     /**
      * Fetches an existing reminder with less than the given amount of days before
@@ -72,7 +72,7 @@ interface IReminderRepository extends INotificationRepository
      * @param int      $days_before_deletion
      * @return IReminder[]
      */
-    public function getWithLessDaysBeforeDeletion(IRoutine $routine, int $days_before_deletion) : array;
+    public function getWithLessDaysBeforeDeletion(IRoutine $routine, int $days_before_deletion): array;
 
     /**
      * Fetches an existing reminder for the given amount of days before deletion
@@ -85,7 +85,7 @@ interface IReminderRepository extends INotificationRepository
      * @param int $days_before_deletion
      * @return IReminder|null
      */
-    public function getWithDaysBeforeDeletion(int $routine_id, int $days_before_deletion) : ?IReminder;
+    public function getWithDaysBeforeDeletion(int $routine_id, int $days_before_deletion): ?IReminder;
 
     /**
      * Fetches the first or earliest reminder that needs to be sent for the
@@ -97,7 +97,7 @@ interface IReminderRepository extends INotificationRepository
      * @param IRoutine $routine
      * @return IReminder|null
      */
-    public function getFirstByRoutine(IRoutine $routine) : ?IReminder;
+    public function getFirstByRoutine(IRoutine $routine): ?IReminder;
 
     /**
      * Fetches the last or latest reminder that needs to be sent for the
@@ -109,7 +109,7 @@ interface IReminderRepository extends INotificationRepository
      * @param IRoutine $routine
      * @return IReminder|null
      */
-    public function getLastByRoutine(IRoutine $routine) : ?IReminder;
+    public function getLastByRoutine(IRoutine $routine): ?IReminder;
 
     /**
      * Fetches all reminders from the database that are related to the given
@@ -119,7 +119,7 @@ interface IReminderRepository extends INotificationRepository
      * @param int      $ref_id
      * @return IReminder[]
      */
-    public function getSentByRoutineAndObject(IRoutine $routine, int $ref_id) : array;
+    public function getSentByRoutineAndObject(IRoutine $routine, int $ref_id): array;
 
     /**
      * Creates or updates the given notification in the database.
@@ -127,7 +127,7 @@ interface IReminderRepository extends INotificationRepository
      * @param IReminder $notification
      * @return IReminder
      */
-    public function store(IReminder $notification) : IReminder;
+    public function store(IReminder $notification): IReminder;
 
     /**
      * Deletes the given notification from the database.
@@ -135,7 +135,7 @@ interface IReminderRepository extends INotificationRepository
      * @param IReminder $notification
      * @return bool
      */
-    public function delete(IReminder $notification) : bool;
+    public function delete(IReminder $notification): bool;
 
     /**
      * Initializes and returns an empty reminder DTO.
@@ -143,5 +143,5 @@ interface IReminderRepository extends INotificationRepository
      * @param IRoutine $routine
      * @return IReminder
      */
-    public function empty(IRoutine $routine) : IReminder;
+    public function empty(IRoutine $routine): IReminder;
 }

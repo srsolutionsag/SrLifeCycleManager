@@ -1,4 +1,5 @@
-<?php /*********************************************************************
+<?php
+/*********************************************************************
  * This Code is licensed under the GPL-3.0 License and is Part of a
  * ILIAS Plugin developed by sr solutions ag in Switzerland.
  *
@@ -99,7 +100,7 @@ class Routine implements IRoutine
     /**
      * @inheritDoc
      */
-    public function getRoutineId() : ?int
+    public function getRoutineId(): ?int
     {
         return $this->routine_id;
     }
@@ -107,7 +108,7 @@ class Routine implements IRoutine
     /**
      * @inheritDoc
      */
-    public function setRoutineId(int $routine_id) : IRoutine
+    public function setRoutineId(int $routine_id): IRoutine
     {
         $this->routine_id = $routine_id;
         return $this;
@@ -116,7 +117,7 @@ class Routine implements IRoutine
     /**
      * @inheritDoc
      */
-    public function getOwnerId() : int
+    public function getOwnerId(): int
     {
         return $this->owner_id;
     }
@@ -124,7 +125,7 @@ class Routine implements IRoutine
     /**
      * @inheritDoc
      */
-    public function setOwnerId(int $owner_id) : IRoutine
+    public function setOwnerId(int $owner_id): IRoutine
     {
         $this->owner_id = $owner_id;
         return $this;
@@ -133,7 +134,7 @@ class Routine implements IRoutine
     /**
      * @inheritDoc
      */
-    public function getOrigin() : int
+    public function getOrigin(): int
     {
         return $this->origin;
     }
@@ -141,7 +142,7 @@ class Routine implements IRoutine
     /**
      * @inheritDoc
      */
-    public function setOrigin(int $origin) : IRoutine
+    public function setOrigin(int $origin): IRoutine
     {
         $this->origin = $origin;
         return $this;
@@ -150,7 +151,7 @@ class Routine implements IRoutine
     /**
      * @inheritDoc
      */
-    public function getRoutineType() : string
+    public function getRoutineType(): string
     {
         return $this->routine_type;
     }
@@ -158,7 +159,7 @@ class Routine implements IRoutine
     /**
      * @inheritDoc
      */
-    public function setRoutineType(string $routine_type) : IRoutine
+    public function setRoutineType(string $routine_type): IRoutine
     {
         $this->routine_type = $routine_type;
         return $this;
@@ -167,7 +168,7 @@ class Routine implements IRoutine
     /**
      * @inheritDoc
      */
-    public function getTitle() : string
+    public function getTitle(): string
     {
         return $this->title;
     }
@@ -175,7 +176,7 @@ class Routine implements IRoutine
     /**
      * @inheritDoc
      */
-    public function setTitle(string $title) : IRoutine
+    public function setTitle(string $title): IRoutine
     {
         $this->title = $title;
         return $this;
@@ -184,7 +185,7 @@ class Routine implements IRoutine
     /**
      * @inheritDoc
      */
-    public function hasOptOut() : bool
+    public function hasOptOut(): bool
     {
         return $this->has_opt_out;
     }
@@ -192,7 +193,7 @@ class Routine implements IRoutine
     /**
      * @inheritDoc
      */
-    public function setOptOut(bool $has_opt_out) : IRoutine
+    public function setOptOut(bool $has_opt_out): IRoutine
     {
         $this->has_opt_out = $has_opt_out;
         return $this;
@@ -201,7 +202,7 @@ class Routine implements IRoutine
     /**
      * @inheritDoc
      */
-    public function getElongation() : ?int
+    public function getElongation(): ?int
     {
         return $this->elongation;
     }
@@ -209,7 +210,7 @@ class Routine implements IRoutine
     /**
      * @inheritDoc
      */
-    public function setElongation(?int $amount) : IRoutine
+    public function setElongation(?int $amount): IRoutine
     {
         $this->elongation = $amount;
         return $this;
@@ -235,7 +236,7 @@ class Routine implements IRoutine
     /**
      * @inheritDoc
      */
-    public function getCreationDate() : DateTimeImmutable
+    public function getCreationDate(): DateTimeImmutable
     {
         return $this->creation_date;
     }
@@ -243,7 +244,7 @@ class Routine implements IRoutine
     /**
      * @inheritDoc
      */
-    public function setCreationDate(DateTimeImmutable $creation_date) : IRoutine
+    public function setCreationDate(DateTimeImmutable $creation_date): IRoutine
     {
         $this->creation_date = $creation_date;
         return $this;

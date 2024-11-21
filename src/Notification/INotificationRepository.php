@@ -23,7 +23,7 @@ interface INotificationRepository
      * @param int           $ref_id
      * @return bool
      */
-    public function hasObjectBeenNotified(INotification $notification, int $ref_id) : bool;
+    public function hasObjectBeenNotified(INotification $notification, int $ref_id): bool;
 
     /**
      * Creates a relation between the given notification (regardless of the type)
@@ -33,7 +33,7 @@ interface INotificationRepository
      * @param int           $ref_id
      * @return ISentNotification
      */
-    public function markObjectAsNotified(INotification $notification, int $ref_id) : ISentNotification;
+    public function markObjectAsNotified(INotification $notification, int $ref_id): ISentNotification;
 
     /**
      * Retrieves the sent-information of the given notification for the given object
@@ -43,7 +43,7 @@ interface INotificationRepository
      * @param int           $ref_id
      * @return ISentNotification|null
      */
-    public function getSentInformation(INotification $notification, int $ref_id) : ?ISentNotification;
+    public function getSentInformation(INotification $notification, int $ref_id): ?ISentNotification;
 
     /**
      * Removes the relation between any notification and the given object (ref-id),
@@ -51,5 +51,5 @@ interface INotificationRepository
      *
      * @param int $ref_id
      */
-    public function markObjectAsDeleted(int $ref_id) : void;
+    public function markObjectAsDeleted(int $ref_id): void;
 }

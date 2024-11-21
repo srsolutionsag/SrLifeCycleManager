@@ -1,4 +1,5 @@
-<?php /*********************************************************************
+<?php
+/*********************************************************************
  * This Code is licensed under the GPL-3.0 License and is Part of a
  * ILIAS Plugin developed by sr solutions ag in Switzerland.
  *
@@ -63,7 +64,7 @@ abstract class AbstractAssignmentFormBuilder extends AbstractFormBuilder
     /**
      * @inheritDoc
      */
-    public function getForm() : UIForm
+    public function getForm(): UIForm
     {
         return $this->forms->standard(
             $this->form_action,
@@ -98,7 +99,7 @@ abstract class AbstractAssignmentFormBuilder extends AbstractFormBuilder
     /**
      * @return Input
      */
-    protected function getImmutableRoutineInput() : Input
+    protected function getImmutableRoutineInput(): Input
     {
         return $this->fields->select(
             $this->translator->txt(self::INPUT_ROUTINE),
@@ -117,7 +118,7 @@ abstract class AbstractAssignmentFormBuilder extends AbstractFormBuilder
     /**
      * @return Input
      */
-    protected function getImmutableObjectInput() : Input
+    protected function getImmutableObjectInput(): Input
     {
         return $this->fields->numeric(
             $this->translator->txt(self::INPUT_REF_ID)
@@ -135,7 +136,7 @@ abstract class AbstractAssignmentFormBuilder extends AbstractFormBuilder
      * @param IRoutine[] $routines
      * @return array<int, string>
      */
-    protected function getRoutineOptions(array $routines) : array
+    protected function getRoutineOptions(array $routines): array
     {
         $options = [];
         foreach ($routines as $routine) {
@@ -150,10 +151,10 @@ abstract class AbstractAssignmentFormBuilder extends AbstractFormBuilder
     /**
      * @return Input
      */
-    abstract protected function getRoutineInput() : Input;
+    abstract protected function getRoutineInput(): Input;
 
     /**
      * @return Input
      */
-    abstract protected function getObjectInput() : Input;
+    abstract protected function getObjectInput(): Input;
 }

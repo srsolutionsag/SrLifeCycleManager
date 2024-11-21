@@ -22,7 +22,7 @@ interface IConfigRepository
      *
      * @return IConfig
      */
-    public function get() : IConfig;
+    public function get(): IConfig;
 
     /**
      * Creates or updates the given configurations in the database.
@@ -30,5 +30,5 @@ interface IConfigRepository
      * @param IConfig $config
      * @return IConfig
      */
-    public function store(IConfig $config) : IConfig;
+    public function store(IConfig $config): IConfig;
 }

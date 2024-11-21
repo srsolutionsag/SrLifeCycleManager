@@ -24,11 +24,11 @@ interface IReminder extends ISentReminder
     /**
      * @return int
      */
-    public function getDaysBeforeDeletion() : int;
+    public function getDaysBeforeDeletion(): int;
 
     /**
      * @param int $amount
      * @return IReminder
      */
-    public function setDaysBeforeDeletion(int $amount) : IReminder;
+    public function setDaysBeforeDeletion(int $amount): IReminder;
 }

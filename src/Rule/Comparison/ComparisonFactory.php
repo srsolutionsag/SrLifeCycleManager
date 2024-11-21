@@ -45,7 +45,7 @@ class ComparisonFactory
         $this->attribute_factory = $attribute_factory;
     }
 
-    public function getComparison(ilObject $object, IRule $rule) : IComparison
+    public function getComparison(ilObject $object, IRule $rule): IComparison
     {
         switch ($rule->getOperator()) {
             case IRule::OPERATOR_EQUAL:
@@ -70,7 +70,7 @@ class ComparisonFactory
         }
     }
 
-    public function equal(ilObject $object, IRule $rule) : Equal
+    public function equal(ilObject $object, IRule $rule): Equal
     {
         return new Equal(
             $this->attribute_factory,
@@ -79,7 +79,7 @@ class ComparisonFactory
         );
     }
 
-    public function unequal(ilObject $object, IRule $rule) : Unequal
+    public function unequal(ilObject $object, IRule $rule): Unequal
     {
         return new Unequal(
             $this->attribute_factory,
@@ -88,7 +88,7 @@ class ComparisonFactory
         );
     }
 
-    public function greater(ilObject $object, IRule $rule, bool $strict) : Greater
+    public function greater(ilObject $object, IRule $rule, bool $strict): Greater
     {
         return new Greater(
             $this->attribute_factory,
@@ -98,7 +98,7 @@ class ComparisonFactory
         );
     }
 
-    public function lesser(ilObject $object, IRule $rule, bool $strict) : Lesser
+    public function lesser(ilObject $object, IRule $rule, bool $strict): Lesser
     {
         return new Lesser(
             $this->attribute_factory,
@@ -108,7 +108,7 @@ class ComparisonFactory
         );
     }
 
-    public function inValue(ilObject $object, IRule $rule) : InValue
+    public function inValue(ilObject $object, IRule $rule): InValue
     {
         return new InValue(
             $this->attribute_factory,
@@ -117,7 +117,7 @@ class ComparisonFactory
         );
     }
 
-    public function inArray(ilObject $object, IRule $rule) : InArray
+    public function inArray(ilObject $object, IRule $rule): InArray
     {
         return new InArray(
             $this->attribute_factory,

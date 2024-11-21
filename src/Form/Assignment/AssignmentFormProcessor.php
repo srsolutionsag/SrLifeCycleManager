@@ -1,4 +1,5 @@
-<?php /*********************************************************************
+<?php
+/*********************************************************************
  * This Code is licensed under the GPL-3.0 License and is Part of a
  * ILIAS Plugin developed by sr solutions ag in Switzerland.
  *
@@ -50,7 +51,7 @@ class AssignmentFormProcessor extends AbstractFormProcessor
     /**
      * @inheritDoc
      */
-    protected function isValid(array $post_data) : bool
+    protected function isValid(array $post_data): bool
     {
         // ensure that required fields were submitted.
         return (
@@ -62,7 +63,7 @@ class AssignmentFormProcessor extends AbstractFormProcessor
     /**
      * @inheritDoc
      */
-    protected function processData(array $post_data) : void
+    protected function processData(array $post_data): void
     {
         if (null !== $this->assignment->getRoutineId() &&
             null !== $this->assignment->getRefId()
@@ -101,7 +102,7 @@ class AssignmentFormProcessor extends AbstractFormProcessor
      * @param array $post_data
      * @return void
      */
-    protected function processMultipleRoutines(array $post_data) : void
+    protected function processMultipleRoutines(array $post_data): void
     {
         $this->assignment
             ->setRecursive($post_data[AbstractAssignmentFormBuilder::INPUT_IS_RECURSIVE])
@@ -127,7 +128,7 @@ class AssignmentFormProcessor extends AbstractFormProcessor
      * @param array $post_data
      * @return void
      */
-    protected function processMultipleRefIds(array $post_data) : void
+    protected function processMultipleRefIds(array $post_data): void
     {
         $this->assignment
             ->setRecursive($post_data[AbstractAssignmentFormBuilder::INPUT_IS_RECURSIVE])

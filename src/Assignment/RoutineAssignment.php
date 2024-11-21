@@ -1,4 +1,5 @@
-<?php /*********************************************************************
+<?php
+/*********************************************************************
  * This Code is licensed under the GPL-3.0 License and is Part of a
  * ILIAS Plugin developed by sr solutions ag in Switzerland.
  *
@@ -64,7 +65,7 @@ class RoutineAssignment implements IRoutineAssignment
     /**
      * @inheritdoc
      */
-    public function getRoutineId() : ?int
+    public function getRoutineId(): ?int
     {
         return $this->routine_id;
     }
@@ -72,7 +73,7 @@ class RoutineAssignment implements IRoutineAssignment
     /**
      * @inheritdoc
      */
-    public function setRoutineId(?int $routine_id) : IRoutineAssignment
+    public function setRoutineId(?int $routine_id): IRoutineAssignment
     {
         $this->routine_id = $routine_id;
         return $this;
@@ -81,7 +82,7 @@ class RoutineAssignment implements IRoutineAssignment
     /**
      * @inheritDoc
      */
-    public function getRefId() : ?int
+    public function getRefId(): ?int
     {
         return $this->ref_id;
     }
@@ -89,7 +90,7 @@ class RoutineAssignment implements IRoutineAssignment
     /**
      * @inheritDoc
      */
-    public function setRefId(?int $ref_id) : IRoutineAssignment
+    public function setRefId(?int $ref_id): IRoutineAssignment
     {
         $this->ref_id = $ref_id;
         return $this;
@@ -98,7 +99,7 @@ class RoutineAssignment implements IRoutineAssignment
     /**
      * @inheritDoc
      */
-    public function getUserId() : int
+    public function getUserId(): int
     {
         return $this->user_id;
     }
@@ -106,7 +107,7 @@ class RoutineAssignment implements IRoutineAssignment
     /**
      * @inheritDoc
      */
-    public function setUserId(int $user_id) : IRoutineAssignment
+    public function setUserId(int $user_id): IRoutineAssignment
     {
         $this->user_id = $user_id;
         return $this;
@@ -115,7 +116,7 @@ class RoutineAssignment implements IRoutineAssignment
     /**
      * @inheritDoc
      */
-    public function isActive() : bool
+    public function isActive(): bool
     {
         return $this->is_active;
     }
@@ -123,7 +124,7 @@ class RoutineAssignment implements IRoutineAssignment
     /**
      * @inheritDoc
      */
-    public function setActive(bool $is_active) : IRoutineAssignment
+    public function setActive(bool $is_active): IRoutineAssignment
     {
         $this->is_active = $is_active;
         return $this;
@@ -132,7 +133,7 @@ class RoutineAssignment implements IRoutineAssignment
     /**
      * @inheritDoc
      */
-    public function isRecursive() : bool
+    public function isRecursive(): bool
     {
         return $this->is_recursive;
     }
@@ -140,7 +141,7 @@ class RoutineAssignment implements IRoutineAssignment
     /**
      * @inheritDoc
      */
-    public function setRecursive(bool $is_recursive) : IRoutineAssignment
+    public function setRecursive(bool $is_recursive): IRoutineAssignment
     {
         $this->is_recursive = $is_recursive;
         return $this;

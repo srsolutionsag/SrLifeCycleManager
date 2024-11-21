@@ -1,4 +1,5 @@
-<?php /*********************************************************************
+<?php
+/*********************************************************************
  * This Code is licensed under the GPL-3.0 License and is Part of a
  * ILIAS Plugin developed by sr solutions ag in Switzerland.
  *
@@ -49,7 +50,7 @@ class Reminder extends Notification implements IReminder
     /**
      * @inheritDoc
      */
-    public function getDaysBeforeDeletion() : int
+    public function getDaysBeforeDeletion(): int
     {
         return $this->days_before_deletion;
     }
@@ -57,7 +58,7 @@ class Reminder extends Notification implements IReminder
     /**
      * @inheritDoc
      */
-    public function setDaysBeforeDeletion(int $amount) : IReminder
+    public function setDaysBeforeDeletion(int $amount): IReminder
     {
         $this->days_before_deletion = $amount;
         return $this;
@@ -66,7 +67,7 @@ class Reminder extends Notification implements IReminder
     /**
      * @inheritDoc
      */
-    public function isElapsed($when) : bool
+    public function isElapsed($when): bool
     {
         if (!$this->hasBeenSent()) {
             return false;

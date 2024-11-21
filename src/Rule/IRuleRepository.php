@@ -25,7 +25,7 @@ interface IRuleRepository
      * @param int $rule_id
      * @return IRule|null
      */
-    public function get(int $rule_id) : ?IRule;
+    public function get(int $rule_id): ?IRule;
 
     /**
      * Fetches all existing rules from the database that are related
@@ -38,7 +38,7 @@ interface IRuleRepository
      * @param bool     $array_data
      * @return IRule[]
      */
-    public function getByRoutine(IRoutine $routine, bool $array_data = false) : array;
+    public function getByRoutine(IRoutine $routine, bool $array_data = false): array;
 
     /**
      * Fetches all rules that are related to a routine which affects the given
@@ -48,7 +48,7 @@ interface IRuleRepository
      * @param string $routine_type
      * @return IRule[]
      */
-    public function getByRefIdAndRoutineType(int $ref_id, string $routine_type) : array;
+    public function getByRefIdAndRoutineType(int $ref_id, string $routine_type): array;
 
     /**
      * Creates or updates an existing rule in the database and relates
@@ -57,7 +57,7 @@ interface IRuleRepository
      * @param IRule    $rule
      * @return IRule
      */
-    public function store(IRule $rule) : IRule;
+    public function store(IRule $rule): IRule;
 
     /**
      * Deletes an existing rule from the database, and it's relation
@@ -67,7 +67,7 @@ interface IRuleRepository
      * @param IRule    $rule
      * @return bool
      */
-    public function delete(IRule $rule) : bool;
+    public function delete(IRule $rule): bool;
 
     /**
      * Initializes and returns an empty rule object.
@@ -75,5 +75,5 @@ interface IRuleRepository
      * @param IRoutine $routine
      * @return IRule
      */
-    public function empty(IRoutine $routine) : IRule;
+    public function empty(IRoutine $routine): IRule;
 }

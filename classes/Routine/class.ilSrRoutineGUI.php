@@ -1,4 +1,5 @@
-<?php /*********************************************************************
+<?php
+/*********************************************************************
  * This Code is licensed under the GPL-3.0 License and is Part of a
  * ILIAS Plugin developed by sr solutions ag in Switzerland.
  *
@@ -25,9 +26,9 @@ use srag\Plugins\SrLifeCycleManager\Assignment\RoutineAssignment;
 class ilSrRoutineGUI extends ilSrAbstractGUI
 {
     // ilSrRoutineGUI command/method names:
-    public const CMD_ROUTINE_EDIT    = 'edit';
-    public const CMD_ROUTINE_SAVE    = 'save';
-    public const CMD_ROUTINE_DELETE  = 'delete';
+    public const CMD_ROUTINE_EDIT = 'edit';
+    public const CMD_ROUTINE_SAVE = 'save';
+    public const CMD_ROUTINE_DELETE = 'delete';
 
     // ilSrRoutineGUI language variables:
     protected const MSG_ROUTINE_SUCCESS = 'msg_routine_success';
@@ -63,7 +64,7 @@ class ilSrRoutineGUI extends ilSrAbstractGUI
     /**
      * @inheritDoc
      */
-    protected function setupGlobalTemplate(ilGlobalTemplateInterface $template, ilSrTabManager $tabs) : void
+    protected function setupGlobalTemplate(ilGlobalTemplateInterface $template, ilSrTabManager $tabs): void
     {
         $template->setTitle($this->translator->txt(self::PAGE_TITLE));
         $tabs
@@ -76,7 +77,7 @@ class ilSrRoutineGUI extends ilSrAbstractGUI
     /**
      * @inheritDoc
      */
-    protected function canUserExecute(ilSrAccessHandler $access_handler, string $command) : bool
+    protected function canUserExecute(ilSrAccessHandler $access_handler, string $command): bool
     {
         // only routine-managers can execute commands in this gui.
         return $this->access_handler->canManageRoutines();
@@ -85,7 +86,7 @@ class ilSrRoutineGUI extends ilSrAbstractGUI
     /**
      * Displays a table with all existing routines on the current page.
      */
-    protected function index() : void
+    protected function index(): void
     {
         $table = new ilSrRoutineTable(
             $this->ui_factory,
@@ -115,7 +116,7 @@ class ilSrRoutineGUI extends ilSrAbstractGUI
      * with the according data, therefore this method can be used for
      * create AND update commands.
      */
-    protected function edit() : void
+    protected function edit(): void
     {
         // set back-to object target in repository context.
         if (IRoutine::ORIGIN_TYPE_REPOSITORY === $this->origin && null !== $this->object_ref_id) {
@@ -136,7 +137,7 @@ class ilSrRoutineGUI extends ilSrAbstractGUI
      * If the data is invalid, the processed form including
      * the error messages is shown.
      */
-    protected function save() : void
+    protected function save(): void
     {
         $processor = new RoutineFormProcessor(
             $this->repository->routine(),
@@ -158,7 +159,7 @@ class ilSrRoutineGUI extends ilSrAbstractGUI
      * Deletes the requested routine and redirects the user back to
      * @see ilSrRoutineGUI::index().
      */
-    protected function delete() : void
+    protected function delete(): void
     {
         if (null !== $this->routine->getRoutineId()) {
             $this->sendSuccessMessage(self::MSG_ROUTINE_SUCCESS);

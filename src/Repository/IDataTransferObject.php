@@ -15,5 +15,4 @@ namespace srag\Plugins\SrLifeCycleManager\Repository;
  */
 interface IDataTransferObject
 {
-
 }

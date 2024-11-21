@@ -23,11 +23,11 @@ interface IConfirmation extends ISentNotification
     /**
      * @return string
      */
-    public function getEvent() : string;
+    public function getEvent(): string;
 
     /**
      * @param string $event
      * @return IConfirmation
      */
-    public function setEvent(string $event) : IConfirmation;
+    public function setEvent(string $event): IConfirmation;
 }

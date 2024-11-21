@@ -25,7 +25,7 @@ interface IWhitelistRepository
      * @param int      $ref_id
      * @return IWhitelistEntry|null
      */
-    public function get(IRoutine $routine, int $ref_id) : ?IWhitelistEntry;
+    public function get(IRoutine $routine, int $ref_id): ?IWhitelistEntry;
 
     /**
      * Fetches all existing whitelist entries from the database which are
@@ -38,7 +38,7 @@ interface IWhitelistRepository
      * @param bool     $array_data
      * @return array
      */
-    public function getByRoutine(IRoutine $routine, bool $array_data = false) : array;
+    public function getByRoutine(IRoutine $routine, bool $array_data = false): array;
 
     /**
      * Creates or updates an existing whitelist entry in the database.
@@ -46,7 +46,7 @@ interface IWhitelistRepository
      * @param IWhitelistEntry $entry
      * @return IWhitelistEntry
      */
-    public function store(IWhitelistEntry $entry) : IWhitelistEntry;
+    public function store(IWhitelistEntry $entry): IWhitelistEntry;
 
     /**
      * Deletes all whitelist entries for the given ref-id. This is usually
@@ -55,7 +55,7 @@ interface IWhitelistRepository
      * @param int $ref_id
      * @return bool
      */
-    public function delete(int $ref_id) : bool;
+    public function delete(int $ref_id): bool;
 
     /**
      * Returns an empty instance of a whitelist entry for the given information.
@@ -65,5 +65,5 @@ interface IWhitelistRepository
      * @param int      $user_id
      * @return IWhitelistEntry
      */
-    public function empty(IRoutine $routine, int $ref_id, int $user_id) : IWhitelistEntry;
+    public function empty(IRoutine $routine, int $ref_id, int $user_id): IWhitelistEntry;
 }

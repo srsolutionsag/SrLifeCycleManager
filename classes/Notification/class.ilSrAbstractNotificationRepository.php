@@ -1,4 +1,5 @@
-<?php /*********************************************************************
+<?php
+/*********************************************************************
  * This Code is licensed under the GPL-3.0 License and is Part of a
  * ILIAS Plugin developed by sr solutions ag in Switzerland.
  *
@@ -42,7 +43,7 @@ abstract class ilSrAbstractNotificationRepository implements INotificationReposi
     /**
      * @inheritDoc
      */
-    public function hasObjectBeenNotified(INotification $notification, int $ref_id) : bool
+    public function hasObjectBeenNotified(INotification $notification, int $ref_id): bool
     {
         $query = "
             SELECT COUNT(*) AS count
@@ -74,7 +75,7 @@ abstract class ilSrAbstractNotificationRepository implements INotificationReposi
     /**
      * @inheritDoc
      */
-    public function markObjectAsNotified(INotification $notification, int $ref_id) : ISentNotification
+    public function markObjectAsNotified(INotification $notification, int $ref_id): ISentNotification
     {
         if ($this->hasObjectBeenNotified($notification, $ref_id)) {
             return $this->updateObjectReference($notification, $ref_id);
@@ -100,7 +101,7 @@ abstract class ilSrAbstractNotificationRepository implements INotificationReposi
     /**
      * @inheritDoc
      */
-    public function getSentInformation(INotification $notification, int $ref_id) : ?ISentNotification
+    public function getSentInformation(INotification $notification, int $ref_id): ?ISentNotification
     {
         $query = "
             SELECT date FROM srlcm_notified_objects
@@ -130,7 +131,7 @@ abstract class ilSrAbstractNotificationRepository implements INotificationReposi
      * @param int           $ref_id
      * @return ISentNotification
      */
-    protected function updateObjectReference(INotification $notification, int $ref_id) : ISentNotification
+    protected function updateObjectReference(INotification $notification, int $ref_id): ISentNotification
     {
         $query = "
             UPDATE srlcm_notified_objects
@@ -163,7 +164,7 @@ abstract class ilSrAbstractNotificationRepository implements INotificationReposi
      * @param int           $ref_id
      * @return ISentNotification
      */
-    protected function insertObjectReference(INotification $notification, int $ref_id) : ISentNotification
+    protected function insertObjectReference(INotification $notification, int $ref_id): ISentNotification
     {
         $query = "
             INSERT INTO srlcm_notified_objects (routine_id, notification_id, ref_id, date)
@@ -193,7 +194,7 @@ abstract class ilSrAbstractNotificationRepository implements INotificationReposi
      * @param array<string, string> $query_result
      * @return DateTimeImmutable|null
      */
-    protected function getNotifiedDate(array $query_result) : ?DateTimeImmutable
+    protected function getNotifiedDate(array $query_result): ?DateTimeImmutable
     {
         return $this->getDateByQueryResult($query_result, ISentNotification::F_NOTIFIED_DATE);
     }
@@ -202,7 +203,7 @@ abstract class ilSrAbstractNotificationRepository implements INotificationReposi
      * @param array<string, string> $query_result
      * @return int|null
      */
-    protected function getNotifiedRefId(array $query_result) : ?int
+    protected function getNotifiedRefId(array $query_result): ?int
     {
         return (isset($query_result[ISentNotification::F_NOTIFIED_REF_ID])) ?
             (int) $query_result[ISentNotification::F_NOTIFIED_REF_ID] : null;

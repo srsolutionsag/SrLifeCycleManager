@@ -1,4 +1,5 @@
-<?php /*********************************************************************
+<?php
+/*********************************************************************
  * This Code is licensed under the GPL-3.0 License and is Part of a
  * ILIAS Plugin developed by sr solutions ag in Switzerland.
  *
@@ -18,8 +19,8 @@ abstract class ilSrAbstractNotificationGUI extends ilSrAbstractGUI
     public const PARAM_NOTIFICATION_ID = 'notification_id';
 
     // ilSrNotificationGUI command/method names:
-    public const CMD_NOTIFICATION_EDIT   = 'edit';
-    public const CMD_NOTIFICATION_SAVE   = 'save';
+    public const CMD_NOTIFICATION_EDIT = 'edit';
+    public const CMD_NOTIFICATION_SAVE = 'save';
     public const CMD_NOTIFICATION_DELETE = 'delete';
 
     // ilSrNotificationGUI language variables:
@@ -30,7 +31,7 @@ abstract class ilSrAbstractNotificationGUI extends ilSrAbstractGUI
     /**
      * @inheritDoc
      */
-    protected function canUserExecute(ilSrAccessHandler $access_handler, string $command) : bool
+    protected function canUserExecute(ilSrAccessHandler $access_handler, string $command): bool
     {
         // only routine-managers can execute commands in this gui.
         return $this->access_handler->canManageRoutines();
@@ -39,7 +40,7 @@ abstract class ilSrAbstractNotificationGUI extends ilSrAbstractGUI
     /**
      * @inheritDoc
      */
-    protected function setupGlobalTemplate(ilGlobalTemplateInterface $template, ilSrTabManager $tabs) : void
+    protected function setupGlobalTemplate(ilGlobalTemplateInterface $template, ilSrTabManager $tabs): void
     {
         $template->setTitle($this->translator->txt(self::PAGE_TITLE));
         $tabs
@@ -58,7 +59,7 @@ abstract class ilSrAbstractNotificationGUI extends ilSrAbstractGUI
      * initialized with the according data, therefore this method can
      * be used for create AND update commands.
      */
-    abstract protected function edit() : void;
+    abstract protected function edit(): void;
 
     /**
      * Processes the submitted notification-form data.
@@ -69,11 +70,11 @@ abstract class ilSrAbstractNotificationGUI extends ilSrAbstractGUI
      * If the data is invalid, the processed form including
      * the error messages is shown.
      */
-    abstract protected function save() : void;
+    abstract protected function save(): void;
 
     /**
      * Deletes the requested routine and redirects the user back to
      * @see ilSrAbstractNotificationGUI::index().
      */
-    abstract protected function delete() : void;
+    abstract protected function delete(): void;
 }

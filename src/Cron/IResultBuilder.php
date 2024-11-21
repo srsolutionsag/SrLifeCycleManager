@@ -24,12 +24,12 @@ interface IResultBuilder
      *
      * @return IResultBuilder
      */
-    public function request() : IResultBuilder;
+    public function request(): IResultBuilder;
 
     /**
      * Returns the currently built cron-job result.
      *
      * @return ilCronJobResult
      */
-    public function getResult() : ilCronJobResult;
+    public function getResult(): ilCronJobResult;
 }

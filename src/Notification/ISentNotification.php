@@ -26,28 +26,28 @@ interface ISentNotification extends INotification
      * @return int
      * @throws LogicException if the notification has not been sent yet.
      */
-    public function getNotifiedRefId() : int;
+    public function getNotifiedRefId(): int;
 
     /**
      * @param int $ref_id
      * @return ISentNotification
      */
-    public function setNotifiedRefId(int $ref_id) : ISentNotification;
+    public function setNotifiedRefId(int $ref_id): ISentNotification;
 
     /**
      * @return DateTimeImmutable
      * @throws LogicException if the notification has not been sent yet.
      */
-    public function getNotifiedDate() : DateTimeImmutable;
+    public function getNotifiedDate(): DateTimeImmutable;
 
     /**
      * @param DateTimeImmutable $date
      * @return ISentNotification
      */
-    public function setNotifiedDate(DateTimeImmutable $date) : ISentNotification;
+    public function setNotifiedDate(DateTimeImmutable $date): ISentNotification;
 
     /**
      * @return bool
      */
-    public function hasBeenSent() : bool;
+    public function hasBeenSent(): bool;
 }

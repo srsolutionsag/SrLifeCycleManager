@@ -26,7 +26,7 @@ class ilSrMenuProvider extends AbstractStaticMainMenuPluginProvider
     /**
      * @inheritDoc
      */
-    public function getStaticTopItems() : array
+    public function getStaticTopItems(): array
     {
         return [];
     }
@@ -34,7 +34,7 @@ class ilSrMenuProvider extends AbstractStaticMainMenuPluginProvider
     /**
      * @inheritDoc
      */
-    public function getStaticSubItems() : array
+    public function getStaticSubItems(): array
     {
         return [];
     }

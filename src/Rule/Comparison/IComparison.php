@@ -18,5 +18,5 @@ interface IComparison
     /**
      * @return bool
      */
-    public function isApplicable() : bool;
+    public function isApplicable(): bool;
 }

@@ -1,4 +1,5 @@
-<?php /*********************************************************************
+<?php
+/*********************************************************************
  * This Code is licensed under the GPL-3.0 License and is Part of a
  * ILIAS Plugin developed by sr solutions ag in Switzerland.
  *
@@ -59,7 +60,7 @@ class ReminderFormBuilder extends NotificationFormBuilder
     /**
      * @inheritDoc
      */
-    protected function getNotificationSpecificInputs() : array
+    protected function getNotificationSpecificInputs(): array
     {
         $inputs[self::INPUT_REMINDER_DAYS_BEFORE_DELETION] = $this->fields
             ->numeric($this->translator->txt(self::INPUT_REMINDER_DAYS_BEFORE_DELETION))
@@ -77,10 +78,10 @@ class ReminderFormBuilder extends NotificationFormBuilder
      *
      * @return Constraint
      */
-    protected function getDaysBeforeDeletionConstraint() : Constraint
+    protected function getDaysBeforeDeletionConstraint(): Constraint
     {
         return $this->refinery->custom()->constraint(
-            function ($days_before_deletion) : bool {
+            function ($days_before_deletion): bool {
                 if (!is_numeric($days_before_deletion)) {
                     return false;
                 }

@@ -1,4 +1,5 @@
-<?php /*********************************************************************
+<?php
+/*********************************************************************
  * This Code is licensed under the GPL-3.0 License and is Part of a
  * ILIAS Plugin developed by sr solutions ag in Switzerland.
  *
@@ -25,7 +26,7 @@ class ilSrReminderRepository extends ilSrAbstractNotificationRepository implemen
     /**
      * @inheritDoc
      */
-    public function get(int $notification_id) : ?IReminder
+    public function get(int $notification_id): ?IReminder
     {
         $query = "
             SELECT notification.notification_id, notification.routine_id, notification.title, notification.content, 
@@ -50,7 +51,7 @@ class ilSrReminderRepository extends ilSrAbstractNotificationRepository implemen
     /**
      * @inheritDoc
      */
-    public function getByRoutine(IRoutine $routine, bool $array_data = false) : array
+    public function getByRoutine(IRoutine $routine, bool $array_data = false): array
     {
         $query = "
             SELECT notification.notification_id, notification.routine_id, notification.title, notification.content, 
@@ -69,7 +70,8 @@ class ilSrReminderRepository extends ilSrAbstractNotificationRepository implemen
                     ['integer'],
                     [$routine->getRoutineId() ?? 0]
                 )
-            ), $array_data
+            ),
+            $array_data
         );
     }
 
@@ -141,7 +143,7 @@ class ilSrReminderRepository extends ilSrAbstractNotificationRepository implemen
         int $routine_id,
         int $days_before_deletion,
         bool $array_data = false
-    ) : ?IReminder {
+    ): ?IReminder {
         $query = "
             SELECT notification.notification_id, notification.routine_id, notification.title, notification.content, 
                    reminder.days_before_deletion
@@ -162,14 +164,15 @@ class ilSrReminderRepository extends ilSrAbstractNotificationRepository implemen
                         $days_before_deletion,
                     ]
                 )
-            ), $array_data
+            ),
+            $array_data
         );
     }
 
     /**
      * @inheritDoc
      */
-    public function getSentByRoutineAndObject(IRoutine $routine, int $ref_id) : array
+    public function getSentByRoutineAndObject(IRoutine $routine, int $ref_id): array
     {
         $query = "
             SELECT notification.notification_id, notification.routine_id, notification.title, notification.content, 
@@ -200,7 +203,7 @@ class ilSrReminderRepository extends ilSrAbstractNotificationRepository implemen
     /**
      * @inheritDoc
      */
-    public function getRecentlySent(IRoutine $routine, int $ref_id) : ?IReminder
+    public function getRecentlySent(IRoutine $routine, int $ref_id): ?IReminder
     {
         $query = "
             SELECT notification.notification_id, notification.routine_id, notification.title, notification.content,
@@ -232,7 +235,7 @@ class ilSrReminderRepository extends ilSrAbstractNotificationRepository implemen
     /**
      * @inheritDoc
      */
-    public function store(IReminder $notification) : IReminder
+    public function store(IReminder $notification): IReminder
     {
         if (null !== $notification->getNotificationId()) {
             return $this->updateNotification($notification);
@@ -244,7 +247,7 @@ class ilSrReminderRepository extends ilSrAbstractNotificationRepository implemen
     /**
      * @inheritDoc
      */
-    public function delete(IReminder $notification) : bool
+    public function delete(IReminder $notification): bool
     {
         $query = "
             DELETE notification, reminder, reference
@@ -267,7 +270,7 @@ class ilSrReminderRepository extends ilSrAbstractNotificationRepository implemen
     /**
      * @inheritDoc
      */
-    public function empty(IRoutine $routine) : IReminder
+    public function empty(IRoutine $routine): IReminder
     {
         return new Reminder(
             $routine->getRoutineId() ?? 0,
@@ -281,7 +284,7 @@ class ilSrReminderRepository extends ilSrAbstractNotificationRepository implemen
      * @param IReminder $notification
      * @return IReminder
      */
-    protected function updateNotification(IReminder $notification) : IReminder
+    protected function updateNotification(IReminder $notification): IReminder
     {
         $query = "
                 UPDATE srlcm_reminder AS reminder
@@ -309,7 +312,7 @@ class ilSrReminderRepository extends ilSrAbstractNotificationRepository implemen
      * @param IReminder $notification
      * @return IReminder
      */
-    protected function insertNotification(IReminder $notification) : IReminder
+    protected function insertNotification(IReminder $notification): IReminder
     {
         $notification_query = "
             INSERT INTO srlcm_notification (notification_id, routine_id, title, content)
@@ -355,7 +358,7 @@ class ilSrReminderRepository extends ilSrAbstractNotificationRepository implemen
      * @param int      $direction (SORT_ASC|SORT_DESC)
      * @return IReminder|null
      */
-    protected function getByDirection(IRoutine $routine, int $direction) : ?IReminder
+    protected function getByDirection(IRoutine $routine, int $direction): ?IReminder
     {
         $sort = (SORT_ASC === $direction) ? 'ASC' : 'DESC';
 

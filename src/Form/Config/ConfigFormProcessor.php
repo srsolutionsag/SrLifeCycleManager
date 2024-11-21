@@ -1,4 +1,5 @@
-<?php /*********************************************************************
+<?php
+/*********************************************************************
  * This Code is licensed under the GPL-3.0 License and is Part of a
  * ILIAS Plugin developed by sr solutions ag in Switzerland.
  *
@@ -44,7 +45,7 @@ class ConfigFormProcessor extends AbstractFormProcessor
     /**
      * @inheritDoc
      */
-    protected function isValid(array $post_data) : bool
+    protected function isValid(array $post_data): bool
     {
         // the submitted form_data is always valid, as it's
         // possible all inputs were unchecked or removed.
@@ -54,7 +55,7 @@ class ConfigFormProcessor extends AbstractFormProcessor
     /**
      * @inheritDoc
      */
-    protected function processData(array $post_data) : void
+    protected function processData(array $post_data): void
     {
         $is_mail_forwarding_forced = $post_data[IConfig::CNF_FORCE_MAIL_FORWARDING];
         $is_tool_enabled = (null !== $post_data[IConfig::CNF_TOOL_IS_ENABLED]);

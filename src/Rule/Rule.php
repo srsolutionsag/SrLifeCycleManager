@@ -1,4 +1,5 @@
-<?php /*********************************************************************
+<?php
+/*********************************************************************
  * This Code is licensed under the GPL-3.0 License and is Part of a
  * ILIAS Plugin developed by sr solutions ag in Switzerland.
  *
@@ -80,7 +81,7 @@ class Rule implements IRule
     /**
      * @inheritDoc
      */
-    public function getRuleId() : ?int
+    public function getRuleId(): ?int
     {
         return $this->rule_id;
     }
@@ -88,7 +89,7 @@ class Rule implements IRule
     /**
      * @inheritDoc
      */
-    public function setRuleId(?int $rule_id) : IRule
+    public function setRuleId(?int $rule_id): IRule
     {
         $this->rule_id = $rule_id;
         return $this;
@@ -97,7 +98,7 @@ class Rule implements IRule
     /**
      * @inheritDoc
      */
-    public function getRoutineId() : int
+    public function getRoutineId(): int
     {
         return $this->routine_id;
     }
@@ -105,7 +106,7 @@ class Rule implements IRule
     /**
      * @inheritDoc
      */
-    public function setRoutineId(int $routine_id) : IRule
+    public function setRoutineId(int $routine_id): IRule
     {
         $this->routine_id = $routine_id;
         return $this;
@@ -114,7 +115,7 @@ class Rule implements IRule
     /**
      * @return string
      */
-    public function getLhsType() : string
+    public function getLhsType(): string
     {
         return $this->lhs_type;
     }
@@ -122,7 +123,7 @@ class Rule implements IRule
     /**
      * @inheritDoc
      */
-    public function setLhsType(string $type) : IRule
+    public function setLhsType(string $type): IRule
     {
         $this->lhs_type = $type;
         return $this;
@@ -139,7 +140,7 @@ class Rule implements IRule
     /**
      * @inheritDoc
      */
-    public function setLhsValue($value) : IRule
+    public function setLhsValue($value): IRule
     {
         $this->lhs_value = $value;
         return $this;
@@ -148,7 +149,7 @@ class Rule implements IRule
     /**
      * @inheritDoc
      */
-    public function getOperator() : string
+    public function getOperator(): string
     {
         return $this->operator;
     }
@@ -156,7 +157,7 @@ class Rule implements IRule
     /**
      * @inheritDoc
      */
-    public function setOperator(string $operator) : IRule
+    public function setOperator(string $operator): IRule
     {
         $this->operator = $operator;
         return $this;
@@ -165,7 +166,7 @@ class Rule implements IRule
     /**
      * @inheritDoc
      */
-    public function getRhsType() : string
+    public function getRhsType(): string
     {
         return $this->rhs_type;
     }
@@ -173,7 +174,7 @@ class Rule implements IRule
     /**
      * @inheritDoc
      */
-    public function setRhsType(string $type) : IRule
+    public function setRhsType(string $type): IRule
     {
         $this->rhs_type = $type;
         return $this;
@@ -190,7 +191,7 @@ class Rule implements IRule
     /**
      * @inheritDoc
      */
-    public function setRhsValue($value) : IRule
+    public function setRhsValue($value): IRule
     {
         $this->rhs_value = $value;
         return $this;
@@ -199,7 +200,7 @@ class Rule implements IRule
     /**
      * @inheritDoc
      */
-    public function getTypeBySide(string $rule_side) : ?string
+    public function getTypeBySide(string $rule_side): ?string
     {
         switch ($rule_side) {
             case self::RULE_SIDE_LEFT:

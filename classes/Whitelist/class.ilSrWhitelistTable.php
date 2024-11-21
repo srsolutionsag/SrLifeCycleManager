@@ -1,4 +1,5 @@
-<?php /*********************************************************************
+<?php
+/*********************************************************************
  * This Code is licensed under the GPL-3.0 License and is Part of a
  * ILIAS Plugin developed by sr solutions ag in Switzerland.
  *
@@ -32,7 +33,7 @@ class ilSrWhitelistTable extends ilSrAbstractTable
     /**
      * @inheritDoc
      */
-    protected function getTemplateName() : string
+    protected function getTemplateName(): string
     {
         return 'tpl.whitelist_table_row.html';
     }
@@ -40,7 +41,7 @@ class ilSrWhitelistTable extends ilSrAbstractTable
     /**
      * @inheritDoc
      */
-    protected function addTableColumns() : void
+    protected function addTableColumns(): void
     {
         $this->addColumn($this->translator->txt(self::COL_REF_ID));
         $this->addColumn($this->translator->txt(self::COL_USER_NAME));
@@ -53,7 +54,7 @@ class ilSrWhitelistTable extends ilSrAbstractTable
     /**
      * @inheritDoc
      */
-    protected function renderTableRow(ilTemplate $template, array $data) : void
+    protected function renderTableRow(ilTemplate $template, array $data): void
     {
         // translate the status of 'opt_out_possible'.
         $status_opt_out = ($data[IWhitelistEntry::F_IS_OPT_OUT]) ?
@@ -79,7 +80,7 @@ class ilSrWhitelistTable extends ilSrAbstractTable
      * @param int $ref_id
      * @return Dropdown
      */
-    protected function getActionDropdown(int $ref_id) : Dropdown
+    protected function getActionDropdown(int $ref_id): Dropdown
     {
         return $this->ui_factory->dropdown()->standard([
             $this->ui_factory->button()->shy(

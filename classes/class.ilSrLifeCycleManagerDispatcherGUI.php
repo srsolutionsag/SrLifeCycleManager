@@ -1,4 +1,5 @@
-<?php /*********************************************************************
+<?php
+/*********************************************************************
  * This Code is licensed under the GPL-3.0 License and is Part of a
  * ILIAS Plugin developed by sr solutions ag in Switzerland.
  *
@@ -69,16 +70,16 @@ class ilSrLifeCycleManagerDispatcherGUI
      *
      * @throws LogicException if the command class could not be found
      */
-    public function executeCommand() : void
+    public function executeCommand(): void
     {
         switch ($this->ctrl->getNextClass()) {
             case strtolower(ilSrConfigGUI::class):
                 $this->safelyForward(ilSrConfigGUI::class);
                 break;
-            case strtolower(ilSrRoutineAssignmentGUI::class);
+            case strtolower(ilSrRoutineAssignmentGUI::class):
                 $this->safelyForward(ilSrRoutineAssignmentGUI::class);
                 break;
-            case strtolower(ilSrObjectAssignmentGUI::class);
+            case strtolower(ilSrObjectAssignmentGUI::class):
                 $this->safelyForward(ilSrObjectAssignmentGUI::class);
                 break;
             case strtolower(ilSrConfirmationGUI::class):
@@ -124,13 +125,13 @@ class ilSrLifeCycleManagerDispatcherGUI
      *
      * @return int
      */
-    public static function getOriginType() : int
+    public static function getOriginType(): int
     {
         global $DIC;
 
         $call_history = $DIC->ctrl()->getCallHistory();
-        $base_class   = array_shift($call_history);
-        $base_class   = strtolower($base_class[ilCtrlInterface::PARAM_CMD_CLASS]);
+        $base_class = array_shift($call_history);
+        $base_class = strtolower($base_class[ilCtrlInterface::PARAM_CMD_CLASS]);
 
         switch ($base_class) {
             // because (somehow) this class cannot be called by ilRepositoryGUI,
@@ -156,7 +157,7 @@ class ilSrLifeCycleManagerDispatcherGUI
      * @param string $cmd
      * @return string
      */
-    public static function getLinkTarget(string $class, string $cmd) : string
+    public static function getLinkTarget(string $class, string $cmd): string
     {
         global $DIC;
 
@@ -176,7 +177,7 @@ class ilSrLifeCycleManagerDispatcherGUI
      *
      * @param string $class_name
      */
-    protected function safelyForward(string $class_name) : void
+    protected function safelyForward(string $class_name): void
     {
         try {
             $this->ctrl->forwardCommand(new $class_name());
@@ -196,7 +197,7 @@ class ilSrLifeCycleManagerDispatcherGUI
      * @param Throwable $exception
      * @return string
      */
-    protected function getExceptionString(Throwable $exception) : string
+    protected function getExceptionString(Throwable $exception): string
     {
         $message = "{$exception->getMessage()} : ";
         $message .= "<br /><br />";

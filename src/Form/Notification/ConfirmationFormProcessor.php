@@ -1,4 +1,5 @@
-<?php /*********************************************************************
+<?php
+/*********************************************************************
  * This Code is licensed under the GPL-3.0 License and is Part of a
  * ILIAS Plugin developed by sr solutions ag in Switzerland.
  *
@@ -51,7 +52,7 @@ class ConfirmationFormProcessor extends AbstractFormProcessor
     /**
      * @inheritDoc
      */
-    protected function isValid(array $post_data) : bool
+    protected function isValid(array $post_data): bool
     {
         // ensure that the required values are not empty.
         return (
@@ -64,7 +65,7 @@ class ConfirmationFormProcessor extends AbstractFormProcessor
     /**
      * @inheritDoc
      */
-    protected function processData(array $post_data) : void
+    protected function processData(array $post_data): void
     {
         $this->notification
             ->setTitle($post_data[ConfirmationFormBuilder::INPUT_NOTIFICATION_TITLE])

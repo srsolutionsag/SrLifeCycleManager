@@ -1,4 +1,5 @@
-<?php /*********************************************************************
+<?php
+/*********************************************************************
  * This Code is licensed under the GPL-3.0 License and is Part of a
  * ILIAS Plugin developed by sr solutions ag in Switzerland.
  *
@@ -20,7 +21,7 @@ class Greater extends AbstractSizeComparison
     /**
      * @inheritdoc
      */
-    protected function compare($lhs_value, $rhs_value) : bool
+    protected function compare($lhs_value, $rhs_value): bool
     {
         if ($this->strict) {
             return ($lhs_value > $rhs_value);

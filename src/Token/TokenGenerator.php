@@ -1,4 +1,5 @@
-<?php /*********************************************************************
+<?php
+/*********************************************************************
  * This Code is licensed under the GPL-3.0 License and is Part of a
  * ILIAS Plugin developed by sr solutions ag in Switzerland.
  *
@@ -22,7 +23,7 @@ trait TokenGenerator
      *
      * @return string
      */
-    protected function generateToken() : string
+    protected function generateToken(): string
     {
         // random_bytes() is cryptographically secure but
         // depends on the system it's running on. If the

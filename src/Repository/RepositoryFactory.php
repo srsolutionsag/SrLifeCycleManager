@@ -1,4 +1,5 @@
-<?php /*********************************************************************
+<?php
+/*********************************************************************
  * This Code is licensed under the GPL-3.0 License and is Part of a
  * ILIAS Plugin developed by sr solutions ag in Switzerland.
  *
@@ -105,7 +106,7 @@ class RepositoryFactory
     /**
      * @return IGeneralRepository
      */
-    public function general() : IGeneralRepository
+    public function general(): IGeneralRepository
     {
         return $this->general_repository;
     }
@@ -113,7 +114,7 @@ class RepositoryFactory
     /**
      * @return IConfigRepository
      */
-    public function config() : IConfigRepository
+    public function config(): IConfigRepository
     {
         return $this->config_repository;
     }
@@ -121,7 +122,7 @@ class RepositoryFactory
     /**
      * @return IRoutineAssignmentRepository
      */
-    public function assignment() : IRoutineAssignmentRepository
+    public function assignment(): IRoutineAssignmentRepository
     {
         return $this->assignment_repository;
     }
@@ -129,7 +130,7 @@ class RepositoryFactory
     /**
      * @return IRoutineRepository
      */
-    public function routine() : IRoutineRepository
+    public function routine(): IRoutineRepository
     {
         return $this->routine_repository;
     }
@@ -137,7 +138,7 @@ class RepositoryFactory
     /**
      * @return IRuleRepository
      */
-    public function rule() : IRuleRepository
+    public function rule(): IRuleRepository
     {
         return $this->rule_repository;
     }
@@ -145,7 +146,7 @@ class RepositoryFactory
     /**
      * @return IConfirmationRepository
      */
-    public function confirmation() : IConfirmationRepository
+    public function confirmation(): IConfirmationRepository
     {
         return $this->confirmation_repository;
     }
@@ -153,7 +154,7 @@ class RepositoryFactory
     /**
      * @return IReminderRepository
      */
-    public function reminder() : IReminderRepository
+    public function reminder(): IReminderRepository
     {
         return $this->reminder_repository;
     }
@@ -161,12 +162,12 @@ class RepositoryFactory
     /**
      * @return IWhitelistRepository
      */
-    public function whitelist() : IWhitelistRepository
+    public function whitelist(): IWhitelistRepository
     {
         return $this->whitelist_repository;
     }
 
-    public function token() : ITokenRepository
+    public function token(): ITokenRepository
     {
         return $this->token_repository;
     }

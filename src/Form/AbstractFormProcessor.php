@@ -1,4 +1,5 @@
-<?php /*********************************************************************
+<?php
+/*********************************************************************
  * This Code is licensed under the GPL-3.0 License and is Part of a
  * ILIAS Plugin developed by sr solutions ag in Switzerland.
  *
@@ -35,7 +36,7 @@ abstract class AbstractFormProcessor implements IFormProcessor
     /**
      * @inheritDoc
      */
-    public function processForm() : bool
+    public function processForm(): bool
     {
         $data = $this->form->getData();
         if (null !== $data && $this->isValid($data)) {
@@ -49,7 +50,7 @@ abstract class AbstractFormProcessor implements IFormProcessor
     /**
      * @inheritDoc
      */
-    public function getProcessedForm() : UIForm
+    public function getProcessedForm(): UIForm
     {
         return $this->form;
     }
@@ -60,7 +61,7 @@ abstract class AbstractFormProcessor implements IFormProcessor
      * @param array $post_data
      * @return bool
      */
-    abstract protected function isValid(array $post_data) : bool;
+    abstract protected function isValid(array $post_data): bool;
 
     /**
      * This method MUST process the provided POST-data.
@@ -70,5 +71,5 @@ abstract class AbstractFormProcessor implements IFormProcessor
      *
      * @param array $post_data
      */
-    abstract protected function processData(array $post_data) : void;
+    abstract protected function processData(array $post_data): void;
 }

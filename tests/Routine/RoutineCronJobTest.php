@@ -346,7 +346,7 @@ class RoutineCronJobTest extends TestCase
         // update the reminder variables to emulate that reminder_1 has been sent on the correct date.
         $reminder_1->method('getNotifiedDate')->willReturn($date_when_reminder_1_should_be_sent);
         $reminder_1->method('isElapsed')->willReturnCallback(
-        // emulates the same logic as to the original method.
+            // emulates the same logic as to the original method.
             static function ($when) use ($reminder_1, $date_when_reminder_1_should_be_sent) {
                 $elapsed_date = $date_when_reminder_1_should_be_sent->add(
                     new DateInterval("P{$reminder_1->getDaysBeforeDeletion()}D")
@@ -576,7 +576,7 @@ class RoutineCronJobTest extends TestCase
         $this->event_subject->method('notify')->willReturnCallback(
             function ($event, $data) use ($object) {
                 $this->assertEquals(IRoutineEvent::EVENT_DELETE, $event);
-//                $this->assertInstanceOf(AffectedObject::class, $data);
+                //                $this->assertInstanceOf(AffectedObject::class, $data);
                 $this->assertEquals($this->routine->getRoutineId(), $data->getRoutine()->getRoutineId());
                 $this->assertEquals($object->getRefId(), $data->getObject()->getRefId());
             }

@@ -1,4 +1,5 @@
-<?php /*********************************************************************
+<?php
+/*********************************************************************
  * This Code is licensed under the GPL-3.0 License and is Part of a
  * ILIAS Plugin developed by sr solutions ag in Switzerland.
  *
@@ -71,7 +72,7 @@ class ilSrRoutineAssignmentGUI extends ilSrAbstractAssignmentGUI
     /**
      * @inheritDoc
      */
-    public function getAssignmentRefIdParameter() : string
+    public function getAssignmentRefIdParameter(): string
     {
         return self::PARAM_OBJECT_REF_ID;
     }
@@ -79,7 +80,7 @@ class ilSrRoutineAssignmentGUI extends ilSrAbstractAssignmentGUI
     /**
      * @inheritDoc
      */
-    protected function index() : void
+    protected function index(): void
     {
         $table = new ilSrRoutineAssignmentTable(
             $this->ui_factory,
@@ -106,7 +107,7 @@ class ilSrRoutineAssignmentGUI extends ilSrAbstractAssignmentGUI
      *
      * @inheritDoc
      */
-    protected function edit() : void
+    protected function edit(): void
     {
         if (!empty($this->unassigned_routines) ||
             (null !== $this->assignment->getRefId() && null !== $this->assignment->getRoutineId())
@@ -123,7 +124,7 @@ class ilSrRoutineAssignmentGUI extends ilSrAbstractAssignmentGUI
      * @see ilSrAbstractAssignmentGUI::PARAM_OBJECT_REF_ID
      * @throws LogicException
      */
-    protected function panicOnMissingAssignmentRefId() : void
+    protected function panicOnMissingAssignmentRefId(): void
     {
         if (null === $this->assignment_ref_id) {
             throw new LogicException(self::class . " must be provided with an object (ref-id).");
@@ -133,7 +134,7 @@ class ilSrRoutineAssignmentGUI extends ilSrAbstractAssignmentGUI
     /**
      * @inheritDoc
      */
-    protected function getForm() : Form
+    protected function getForm(): Form
     {
         return $this->form_builder->getForm();
     }

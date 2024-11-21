@@ -20,10 +20,10 @@ interface IFormProcessor
     /**
      * @return bool
      */
-    public function processForm() : bool;
+    public function processForm(): bool;
 
     /**
      * @return UIForm
      */
-    public function getProcessedForm() : UIForm;
+    public function getProcessedForm(): UIForm;
 }

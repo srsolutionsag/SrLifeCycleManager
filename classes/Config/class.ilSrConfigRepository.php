@@ -1,4 +1,5 @@
-<?php /*********************************************************************
+<?php
+/*********************************************************************
  * This Code is licensed under the GPL-3.0 License and is Part of a
  * ILIAS Plugin developed by sr solutions ag in Switzerland.
  *
@@ -47,7 +48,7 @@ class ilSrConfigRepository implements IConfigRepository
     /**
      * @inheritDoc
      */
-    public function get() : IConfig
+    public function get(): IConfig
     {
         $query = "SELECT identifier, configuration FROM srlcm_configuration;";
         $results = $this->database->fetchAll(
@@ -111,7 +112,7 @@ class ilSrConfigRepository implements IConfigRepository
     /**
      * @inheritDoc
      */
-    public function store(IConfig $config) : IConfig
+    public function store(IConfig $config): IConfig
     {
         $this->updateConfig(IConfig::CNF_ROLE_MANAGE_ROUTINES, $this->arrayToString($config->getManageRoutineRoles()));
         $this->updateConfig(IConfig::CNF_ROLE_MANAGE_ASSIGNMENTS, $this->arrayToString($config->getManageAssignmentRoles()));
@@ -131,7 +132,7 @@ class ilSrConfigRepository implements IConfigRepository
      * @param string $value
      * @return void
      */
-    protected function updateConfig(string $identifier, string $value) : void
+    protected function updateConfig(string $identifier, string $value): void
     {
         $query = "UPDATE srlcm_configuration SET configuration = %s WHERE identifier = %s;";
 
@@ -150,7 +151,7 @@ class ilSrConfigRepository implements IConfigRepository
      * @param string $array
      * @return array
      */
-    protected function stringToArray(string $array) : array
+    protected function stringToArray(string $array): array
     {
         if (!empty($array)) {
             return explode(self::ARRAY_STRING_SEPARATOR, $array);
@@ -164,7 +165,7 @@ class ilSrConfigRepository implements IConfigRepository
      * @param array $array
      * @return string
      */
-    protected function arrayToString(array $array) : string
+    protected function arrayToString(array $array): string
     {
         return implode(self::ARRAY_STRING_SEPARATOR, $array);
     }

@@ -1,4 +1,5 @@
-<?php /*********************************************************************
+<?php
+/*********************************************************************
  * This Code is licensed under the GPL-3.0 License and is Part of a
  * ILIAS Plugin developed by sr solutions ag in Switzerland.
  *
@@ -83,7 +84,7 @@ class ilSrToolbarManager
      *
      * The toolbar is only added if the current user can manage assignments.
      */
-    public function addRoutineAssignmentToolbar() : void
+    public function addRoutineAssignmentToolbar(): void
     {
         if (!$this->access_handler->canManageAssignments()) {
             return;
@@ -105,7 +106,7 @@ class ilSrToolbarManager
      *
      * The toolbar is only added if the current user can manage assignments.
      */
-    public function addObjectAssignmentToolbar() : void
+    public function addObjectAssignmentToolbar(): void
     {
         if (!$this->access_handler->canManageAssignments()) {
             return;
@@ -127,7 +128,7 @@ class ilSrToolbarManager
      *
      * The toolbar is only added if the current user can manage routines.
      */
-    public function addRoutineToolbar() : void
+    public function addRoutineToolbar(): void
     {
         if (!$this->access_handler->canManageRoutines()) {
             return;
@@ -149,7 +150,7 @@ class ilSrToolbarManager
      *
      * The toolbar is only added if the current user can manage routines.
      */
-    public function addRuleToolbar() : void
+    public function addRuleToolbar(): void
     {
         if (!$this->access_handler->canManageRoutines()) {
             return;
@@ -171,7 +172,7 @@ class ilSrToolbarManager
      *
      * The toolbar is only added if the current user can manage routines.
      */
-    public function addConfirmationToolbar() : void
+    public function addConfirmationToolbar(): void
     {
         if (!$this->access_handler->canManageRoutines()) {
             return;
@@ -193,7 +194,7 @@ class ilSrToolbarManager
      *
      * The toolbar is only added if the current user can manage routines.
      */
-    public function addReminderToolbar() : void
+    public function addReminderToolbar(): void
     {
         if (!$this->access_handler->canManageRoutines()) {
             return;
@@ -216,7 +217,7 @@ class ilSrToolbarManager
      * @param string $language_variable
      * @param string $action
      */
-    protected function addPrimaryButton(string $language_variable, string $action) : void
+    protected function addPrimaryButton(string $language_variable, string $action): void
     {
         $button = ilLinkButton::getInstance();
         $button->setPrimary(true);
@@ -229,7 +230,7 @@ class ilSrToolbarManager
     /**
      * Renders the current toolbar on the current page.
      */
-    protected function render() : void
+    protected function render(): void
     {
         $this->global_template->setContent($this->toolbar->getHTML());
     }

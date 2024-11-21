@@ -1,4 +1,5 @@
-<?php /*********************************************************************
+<?php
+/*********************************************************************
  * This Code is licensed under the GPL-3.0 License and is Part of a
  * ILIAS Plugin developed by sr solutions ag in Switzerland.
  *
@@ -25,7 +26,7 @@ use srag\Plugins\SrLifeCycleManager\Routine\IRoutine;
 class ilSrTabManager
 {
     // ilSrTabManager tab name and ids:
-    public const TAB_CONFIG   = 'tab_config_index';
+    public const TAB_CONFIG = 'tab_config_index';
     public const TAB_ROUTINES = 'tab_routine_index';
     public const TAB_PREVIEW = 'tab_preview_index';
 
@@ -86,7 +87,7 @@ class ilSrTabManager
      * @param bool $is_active
      * @return self
      */
-    public function addConfigurationTab(bool $is_active = false) : self
+    public function addConfigurationTab(bool $is_active = false): self
     {
         // add plugin-configuration tab only for administrator
         if (!$this->access_handler->isAdministrator()) {
@@ -117,7 +118,7 @@ class ilSrTabManager
      * @param bool $is_active
      * @return self
      */
-    public function addRoutineTab(bool $is_active = false) : self
+    public function addRoutineTab(bool $is_active = false): self
     {
         // add routine-tab only for routine managers.
         if (!$this->access_handler->canManageRoutines()) {
@@ -139,7 +140,7 @@ class ilSrTabManager
 
         return $this;
     }
-    
+
     /**
      * Adds a tab pointing to @see ilSrRoutinePreviewGUI::CMD_INDEX.
      *
@@ -148,13 +149,13 @@ class ilSrTabManager
      * @param bool $is_active
      * @return self
      */
-    public function addPreviewTab(bool $is_active = false) : self
+    public function addPreviewTab(bool $is_active = false): self
     {
         // add preview-tab only for routine managers.
         if (!$this->access_handler->canManageRoutines()) {
             return $this;
         }
-        
+
         $this->tabs->addTab(
             self::TAB_PREVIEW,
             $this->translator->txt(self::TAB_PREVIEW),
@@ -163,11 +164,11 @@ class ilSrTabManager
                 ilSrRoutinePreviewGUI::CMD_INDEX
             )
         );
-        
+
         if ($is_active) {
             $this->setActiveTab(self::TAB_PREVIEW);
         }
-        
+
         return $this;
     }
 
@@ -176,7 +177,7 @@ class ilSrTabManager
      *
      * @return self
      */
-    public function addBackToRoutines() : self
+    public function addBackToRoutines(): self
     {
         $this->addBackToTarget(
             $this->ctrl->getLinkTargetByClass(
@@ -195,7 +196,7 @@ class ilSrTabManager
      * @param string $class
      * @return self
      */
-    public function addBackToIndex(string $class) : self
+    public function addBackToIndex(string $class): self
     {
         $this->addBackToTarget(
             $this->ctrl->getLinkTargetByClass(
@@ -213,7 +214,7 @@ class ilSrTabManager
      * @param int $ref_id
      * @return self
      */
-    public function addBackToObject(int $ref_id) : self
+    public function addBackToObject(int $ref_id): self
     {
         $this->addBackToTarget(ilLink::_getLink($ref_id));
         return $this;
@@ -225,7 +226,7 @@ class ilSrTabManager
      * @param string $target
      * @return self
      */
-    public function addBackToTarget(string $target) : self
+    public function addBackToTarget(string $target): self
     {
         $this->tabs->setBackTarget(
             $this->translator->txt(self::MSG_BACK_TO),
@@ -241,7 +242,7 @@ class ilSrTabManager
      * @param string $tab_id
      * @return self
      */
-    public function setActiveTab(string $tab_id) : self
+    public function setActiveTab(string $tab_id): self
     {
         $this->tabs->activateTab($tab_id);
         return $this;
@@ -252,7 +253,7 @@ class ilSrTabManager
      *
      * @return $this
      */
-    public function deactivateTabs() : self
+    public function deactivateTabs(): self
     {
         $this->setActiveTab('§');
         return $this;
@@ -263,7 +264,7 @@ class ilSrTabManager
      *
      * @return bool
      */
-    protected function inAdministration() : bool
+    protected function inAdministration(): bool
     {
         return (IRoutine::ORIGIN_TYPE_ADMINISTRATION === $this->origin);
     }
@@ -273,7 +274,7 @@ class ilSrTabManager
      *
      * @return bool
      */
-    protected function inRepository() : bool
+    protected function inRepository(): bool
     {
         return (IRoutine::ORIGIN_TYPE_REPOSITORY === $this->origin);
     }

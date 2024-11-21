@@ -63,7 +63,7 @@ class ilSrRoutinePreviewBackgroundDownloadInteraction extends AbstractUserIntera
         $download_name_value_object = $input[1] ?? null; // Name of the zip file
         $download_path_value_object = $input[0] ?? null; // Relative path to the zip file
 
-        if(!$download_name_value_object instanceof \ILIAS\BackgroundTasks\Value || !$download_path_value_object instanceof \ILIAS\BackgroundTasks\Value) {
+        if (!$download_name_value_object instanceof \ILIAS\BackgroundTasks\Value || !$download_path_value_object instanceof \ILIAS\BackgroundTasks\Value) {
             return $download_path_value_object;
         }
 

@@ -1,4 +1,5 @@
-<?php /*********************************************************************
+<?php
+/*********************************************************************
  * This Code is licensed under the GPL-3.0 License and is Part of a
  * ILIAS Plugin developed by sr solutions ag in Switzerland.
  *
@@ -96,7 +97,7 @@ class Config implements IConfig
     /**
      * @inheritDoc
      */
-    public function getManageRoutineRoles() : array
+    public function getManageRoutineRoles(): array
     {
         return $this->manage_routine_roles;
     }
@@ -104,7 +105,7 @@ class Config implements IConfig
     /**
      * @inheritDoc
      */
-    public function setManageRoutineRoles(array $roles) : IConfig
+    public function setManageRoutineRoles(array $roles): IConfig
     {
         $this->manage_routine_roles = $roles;
         return $this;
@@ -113,7 +114,7 @@ class Config implements IConfig
     /**
      * @inheritDoc
      */
-    public function getManageAssignmentRoles() : array
+    public function getManageAssignmentRoles(): array
     {
         return $this->manage_assignment_roles;
     }
@@ -121,7 +122,7 @@ class Config implements IConfig
     /**
      * @inheritDoc
      */
-    public function setManageAssignmentRoles(array $roles) : IConfig
+    public function setManageAssignmentRoles(array $roles): IConfig
     {
         $this->manage_assignment_roles = $roles;
         return $this;
@@ -130,7 +131,7 @@ class Config implements IConfig
     /**
      * @inheritDoc
      */
-    public function isToolEnabled() : bool
+    public function isToolEnabled(): bool
     {
         return $this->tool_is_enabled;
     }
@@ -138,7 +139,7 @@ class Config implements IConfig
     /**
      * @inheritDoc
      */
-    public function setToolEnabled(bool $is_enabled) : IConfig
+    public function setToolEnabled(bool $is_enabled): IConfig
     {
         $this->tool_is_enabled = $is_enabled;
         return $this;
@@ -147,7 +148,7 @@ class Config implements IConfig
     /**
      * @inheritDoc
      */
-    public function shouldToolShowRoutines() : bool
+    public function shouldToolShowRoutines(): bool
     {
         return $this->tool_show_routines;
     }
@@ -155,7 +156,7 @@ class Config implements IConfig
     /**
      * @inheritDoc
      */
-    public function setShouldToolShowRoutines(bool $should_show) : IConfig
+    public function setShouldToolShowRoutines(bool $should_show): IConfig
     {
         $this->tool_show_routines = $should_show;
         return $this;
@@ -164,7 +165,7 @@ class Config implements IConfig
     /**
      * @inheritDoc
      */
-    public function shouldToolShowControls() : bool
+    public function shouldToolShowControls(): bool
     {
         return $this->tool_show_controls;
     }
@@ -172,7 +173,7 @@ class Config implements IConfig
     /**
      * @inheritDoc
      */
-    public function setShouldToolShowControls(bool $should_show) : IConfig
+    public function setShouldToolShowControls(bool $should_show): IConfig
     {
         $this->tool_show_controls = $should_show;
         return $this;
@@ -181,7 +182,7 @@ class Config implements IConfig
     /**
      * @inheritDoc
      */
-    public function getNotificationSenderAddress() : ?string
+    public function getNotificationSenderAddress(): ?string
     {
         return $this->custom_email;
     }
@@ -189,7 +190,7 @@ class Config implements IConfig
     /**
      * @inheritDoc
      */
-    public function setNotificationSenderAddress(string $email) : IConfig
+    public function setNotificationSenderAddress(string $email): IConfig
     {
         $this->custom_email = $email;
         return $this;
@@ -215,7 +216,7 @@ class Config implements IConfig
     /**
      * @inheritDoc
      */
-    public function getMailingBlacklist() : array
+    public function getMailingBlacklist(): array
     {
         return $this->mailing_blacklist;
     }
@@ -223,7 +224,7 @@ class Config implements IConfig
     /**
      * @inheritDoc
      */
-    public function setMailingBlacklist(array $user_ids) : IConfig
+    public function setMailingBlacklist(array $user_ids): IConfig
     {
         $this->mailing_blacklist = $user_ids;
         return $this;
@@ -232,7 +233,7 @@ class Config implements IConfig
     /**
      * @inheritDoc
      */
-    public function isDebugModeEnabled() : bool
+    public function isDebugModeEnabled(): bool
     {
         return $this->is_debug_mode_enabled;
     }
@@ -240,7 +241,7 @@ class Config implements IConfig
     /**
      * @inheritDoc
      */
-    public function setDebugModeEnabled(bool $is_enabled) : IConfig
+    public function setDebugModeEnabled(bool $is_enabled): IConfig
     {
         $this->is_debug_mode_enabled = $is_enabled;
         return $this;

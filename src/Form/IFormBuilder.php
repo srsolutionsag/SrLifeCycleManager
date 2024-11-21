@@ -20,5 +20,5 @@ interface IFormBuilder
     /**
      * @return UIForm
      */
-    public function getForm() : UIForm;
+    public function getForm(): UIForm;
 }

@@ -1,4 +1,5 @@
-<?php /*********************************************************************
+<?php
+/*********************************************************************
  * This Code is licensed under the GPL-3.0 License and is Part of a
  * ILIAS Plugin developed by sr solutions ag in Switzerland.
  *
@@ -51,7 +52,7 @@ class RoutineFormProcessor extends AbstractFormProcessor
     /**
      * @inheritDoc
      */
-    protected function isValid(array $post_data) : bool
+    protected function isValid(array $post_data): bool
     {
         // ensure that required fields were submitted (might be redundant).
         return (
@@ -63,7 +64,7 @@ class RoutineFormProcessor extends AbstractFormProcessor
     /**
      * @inheritDoc
      */
-    protected function processData(array $post_data) : void
+    protected function processData(array $post_data): void
     {
         $this->routine
             ->setTitle($post_data[RoutineFormBuilder::INPUT_TITLE])

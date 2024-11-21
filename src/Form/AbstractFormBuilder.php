@@ -1,4 +1,5 @@
-<?php /*********************************************************************
+<?php
+/*********************************************************************
  * This Code is licensed under the GPL-3.0 License and is Part of a
  * ILIAS Plugin developed by sr solutions ag in Switzerland.
  *
@@ -85,7 +86,7 @@ abstract class AbstractFormBuilder implements IFormBuilder
     protected function getAboveMinimumIntegerValidationConstraint(int $minimum): Constraint
     {
         return $this->refinery->custom()->constraint(
-            static function ($number) use ($minimum) : bool {
+            static function ($number) use ($minimum): bool {
                 if (!is_numeric($number)) {
                     return false;
                 }
@@ -105,10 +106,10 @@ abstract class AbstractFormBuilder implements IFormBuilder
      *
      * @return Constraint
      */
-    protected function getRefIdValidationConstraint() : Constraint
+    protected function getRefIdValidationConstraint(): Constraint
     {
         return $this->refinery->custom()->constraint(
-            static function(int $ref_id) : bool {
+            static function (int $ref_id): bool {
                 return (ilObject2::_exists($ref_id, true));
             },
             $this->translator->txt(self::MSG_INVALID_REF_ID)
@@ -121,10 +122,10 @@ abstract class AbstractFormBuilder implements IFormBuilder
      *
      * @return Constraint
      */
-    protected function getRefIdArrayValidationConstraint() : Constraint
+    protected function getRefIdArrayValidationConstraint(): Constraint
     {
         return $this->refinery->custom()->constraint(
-            static function (array $ref_ids) : bool {
+            static function (array $ref_ids): bool {
                 foreach ($ref_ids as $ref_id) {
                     if (!ilObject2::_exists((int) $ref_id, true)) {
                         return false;
@@ -143,10 +144,10 @@ abstract class AbstractFormBuilder implements IFormBuilder
      *
      * @return Constraint
      */
-    protected function getEmailValidationConstraint() : Constraint
+    protected function getEmailValidationConstraint(): Constraint
     {
         return $this->refinery->custom()->constraint(
-            static function (string $email) : bool {
+            static function (string $email): bool {
                 if (!empty($email)) {
                     return is_string(filter_var($email, FILTER_VALIDATE_EMAIL));
                 }
@@ -173,7 +174,7 @@ abstract class AbstractFormBuilder implements IFormBuilder
      * @param string $ajax_action
      * @return Closure
      */
-    protected function getTagInputAutoCompleteBinder(string $ajax_action) : Closure
+    protected function getTagInputAutoCompleteBinder(string $ajax_action): Closure
     {
         if (version_compare(ILIAS_VERSION_NUMERIC, '7.0', '<')) {
             return static function ($id) {

@@ -1,4 +1,5 @@
-<?php /*********************************************************************
+<?php
+/*********************************************************************
  * This Code is licensed under the GPL-3.0 License and is Part of a
  * ILIAS Plugin developed by sr solutions ag in Switzerland.
  *
@@ -73,99 +74,99 @@ interface IConfig
     /**
      * @return int[]
      */
-    public function getManageRoutineRoles() : array;
+    public function getManageRoutineRoles(): array;
 
     /**
      * @param int[] $roles
      * @return IConfig
      */
-    public function setManageRoutineRoles(array $roles) : IConfig;
+    public function setManageRoutineRoles(array $roles): IConfig;
 
     /**
      * @return int[]
      */
-    public function getManageAssignmentRoles() : array;
+    public function getManageAssignmentRoles(): array;
 
     /**
      * @param int[] $roles
      * @return IConfig
      */
-    public function setManageAssignmentRoles(array $roles) : IConfig;
+    public function setManageAssignmentRoles(array $roles): IConfig;
 
     /**
      * @return bool
      */
-    public function isToolEnabled() : bool;
+    public function isToolEnabled(): bool;
 
     /**
      * @param bool $is_enabled
      * @return IConfig
      */
-    public function setToolEnabled(bool $is_enabled) : IConfig;
+    public function setToolEnabled(bool $is_enabled): IConfig;
 
     /**
      * @return bool
      */
-    public function shouldToolShowRoutines() : bool;
+    public function shouldToolShowRoutines(): bool;
 
     /**
      * @param bool $should_show
      * @return IConfig
      */
-    public function setShouldToolShowRoutines(bool $should_show) : IConfig;
+    public function setShouldToolShowRoutines(bool $should_show): IConfig;
 
     /**
      * @return bool
      */
-    public function shouldToolShowControls() : bool;
+    public function shouldToolShowControls(): bool;
 
     /**
      * @param bool $should_show
      * @return IConfig
      */
-    public function setShouldToolShowControls(bool $should_show) : IConfig;
+    public function setShouldToolShowControls(bool $should_show): IConfig;
 
     /**
      * @return string|null
      */
-    public function getNotificationSenderAddress() : ?string;
+    public function getNotificationSenderAddress(): ?string;
 
     /**
      * @param string $email
      * @return IConfig
      */
-    public function setNotificationSenderAddress(string $email) : IConfig;
+    public function setNotificationSenderAddress(string $email): IConfig;
 
     /**
      * @return bool
      */
-    public function isMailForwardingForced() : bool;
+    public function isMailForwardingForced(): bool;
 
     /**
      * @param bool $is_forced
      * @return IConfig
      */
-    public function setMailForwardingForced(bool $is_forced) : IConfig;
+    public function setMailForwardingForced(bool $is_forced): IConfig;
 
     /**
      * @return int[]
      */
-    public function getMailingBlacklist() : array;
+    public function getMailingBlacklist(): array;
 
     /**
      * @param int[] $user_ids
      * @return IConfig
      */
-    public function setMailingBlacklist(array $user_ids) : IConfig;
+    public function setMailingBlacklist(array $user_ids): IConfig;
 
     /**
      * @return bool
      */
-    public function isDebugModeEnabled() : bool;
+    public function isDebugModeEnabled(): bool;
 
     /**
      * @var bool $is_enabled
      * @return IConfig
      */
-    public function setDebugModeEnabled(bool $is_enabled) : IConfig;
+    public function setDebugModeEnabled(bool $is_enabled): IConfig;
 }

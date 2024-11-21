@@ -1,4 +1,5 @@
-<?php /*********************************************************************
+<?php
+/*********************************************************************
  * This Code is licensed under the GPL-3.0 License and is Part of a
  * ILIAS Plugin developed by sr solutions ag in Switzerland.
  *
@@ -22,7 +23,7 @@ class CourseEnd extends CourseAttribute
     /**
      * @inheritDoc
      */
-    public function getComparableValueTypes() : array
+    public function getComparableValueTypes(): array
     {
         return [
             self::COMPARABLE_VALUE_TYPE_DATE,

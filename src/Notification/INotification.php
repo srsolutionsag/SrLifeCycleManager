@@ -24,44 +24,44 @@ interface INotification
     /**
      * @return int|null
      */
-    public function getNotificationId() : ?int;
+    public function getNotificationId(): ?int;
 
     /**
      * @param int $notification_id
      * @return INotification
      */
-    public function setNotificationId(int $notification_id) : INotification;
+    public function setNotificationId(int $notification_id): INotification;
 
     /**
      * @return int
      */
-    public function getRoutineId() : int;
+    public function getRoutineId(): int;
 
     /**
      * @param int $routine_id
      * @return INotification
      */
-    public function setRoutineId(int $routine_id) : INotification;
+    public function setRoutineId(int $routine_id): INotification;
 
     /**
      * @return string
      */
-    public function getTitle() : string;
+    public function getTitle(): string;
 
     /**
      * @param string $title
      * @return INotification
      */
-    public function setTitle(string $title) : INotification;
+    public function setTitle(string $title): INotification;
 
     /**
      * @return string
      */
-    public function getContent() : string;
+    public function getContent(): string;
 
     /**
      * @param string $content
      * @return INotification
      */
-    public function setContent(string $content) : INotification;
+    public function setContent(string $content): INotification;
 }

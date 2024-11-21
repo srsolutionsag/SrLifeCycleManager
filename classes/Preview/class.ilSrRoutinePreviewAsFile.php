@@ -37,7 +37,7 @@ class ilSrRoutinePreviewAsFile extends ilSrAbstractRoutinePreviewGenerator
                 " - Routine: %s\n",
                 $item->getRoutine()->getTitle()
             );
-            
+
             $content .= "\n";
 
             $items[] = $content;

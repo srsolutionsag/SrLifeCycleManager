@@ -19,5 +19,5 @@ interface ITranslator
      * @param string $lang_var
      * @return string
      */
-    public function txt(string $lang_var) : string;
+    public function txt(string $lang_var): string;
 }

@@ -25,7 +25,7 @@ interface IRoutineRepository
      * @param int $routine_id
      * @return IRoutine|null
      */
-    public function get(int $routine_id) : ?IRoutine;
+    public function get(int $routine_id): ?IRoutine;
 
     /**
      * Fetches all existing routines from the database.
@@ -36,7 +36,7 @@ interface IRoutineRepository
      * @param bool $array_data
      * @return IRoutine[]
      */
-    public function getAll(bool $array_data = false) : array;
+    public function getAll(bool $array_data = false): array;
 
     /**
      * Fetches all existing routines from the database that affect the
@@ -49,7 +49,7 @@ interface IRoutineRepository
      * @param bool $array_data
      * @return IRoutine[]
      */
-    public function getAllByRefId(int $ref_id, bool $array_data = false) : array;
+    public function getAllByRefId(int $ref_id, bool $array_data = false): array;
 
     /**
      * Returns all existing routines from the database that are affecting
@@ -61,7 +61,7 @@ interface IRoutineRepository
      * @param string $type
      * @return IRoutine[]
      */
-    public function getAllForComparison(int $ref_id, string $type) : array;
+    public function getAllForComparison(int $ref_id, string $type): array;
 
     /**
      * Fetches all existing routines from the database that ARE NOT already
@@ -77,7 +77,7 @@ interface IRoutineRepository
      * @param bool $array_data
      * @return IRoutine[]
      */
-    public function getAllUnassigned(int $ref_id, bool $array_data = false) : array;
+    public function getAllUnassigned(int $ref_id, bool $array_data = false): array;
 
     /**
      * Calculates and returns the deletion date of the given routine and object
@@ -90,7 +90,7 @@ interface IRoutineRepository
      * @param int      $ref_id
      * @return DateTimeImmutable
      */
-    public function getDeletionDate(IRoutine $routine, int $ref_id) : DateTimeImmutable;
+    public function getDeletionDate(IRoutine $routine, int $ref_id): DateTimeImmutable;
 
     /**
      * Creates or updates the given routine in the database.
@@ -98,7 +98,7 @@ interface IRoutineRepository
      * @param IRoutine $routine
      * @return IRoutine
      */
-    public function store(IRoutine $routine) : IRoutine;
+    public function store(IRoutine $routine): IRoutine;
 
     /**
      * Deletes the given routine from the database and all related entries.
@@ -106,7 +106,7 @@ interface IRoutineRepository
      * @param IRoutine $routine
      * @return bool
      */
-    public function delete(IRoutine $routine) : bool;
+    public function delete(IRoutine $routine): bool;
 
     /**
      * Initializes and returns an empty routine object.
@@ -115,5 +115,5 @@ interface IRoutineRepository
      * @param int $origin_type
      * @return IRoutine
      */
-    public function empty(int $owner_id, int $origin_type) : IRoutine;
+    public function empty(int $owner_id, int $origin_type): IRoutine;
 }

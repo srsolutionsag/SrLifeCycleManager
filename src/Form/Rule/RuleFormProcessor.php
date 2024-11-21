@@ -1,4 +1,5 @@
-<?php /*********************************************************************
+<?php
+/*********************************************************************
  * This Code is licensed under the GPL-3.0 License and is Part of a
  * ILIAS Plugin developed by sr solutions ag in Switzerland.
  *
@@ -54,7 +55,7 @@ class RuleFormProcessor extends AbstractFormProcessor
      * @todo: make this more readable and move this to a constraint
      * @inheritDoc
      */
-    public function isValid(array $post_data) : bool
+    public function isValid(array $post_data): bool
     {
         $lhs_value = $this->getValueTypeBySide(RuleFormBuilder::KEY_LHS_VALUE, $post_data);
         // ensure that LHS value is only empty if the type is CommonNull.
@@ -80,13 +81,13 @@ class RuleFormProcessor extends AbstractFormProcessor
     /**
      * @inheritDoc
      */
-    public function processData(array $post_data) : void
+    public function processData(array $post_data): void
     {
         $lhs_value = $this->getValueBySide(RuleFormBuilder::KEY_LHS_VALUE, $post_data);
         $rhs_value = $this->getValueBySide(RuleFormBuilder::KEY_RHS_VALUE, $post_data);
-        $lhs_type  = $this->getValueTypeBySide(RuleFormBuilder::KEY_LHS_VALUE, $post_data);
-        $rhs_type  = $this->getValueTypeBySide(RuleFormBuilder::KEY_RHS_VALUE, $post_data);
-        $operator  = $post_data[RuleFormBuilder::KEY_OPERATOR];
+        $lhs_type = $this->getValueTypeBySide(RuleFormBuilder::KEY_LHS_VALUE, $post_data);
+        $rhs_type = $this->getValueTypeBySide(RuleFormBuilder::KEY_RHS_VALUE, $post_data);
+        $operator = $post_data[RuleFormBuilder::KEY_OPERATOR];
 
         $rule = $this->rule;
         $rule
@@ -107,7 +108,7 @@ class RuleFormProcessor extends AbstractFormProcessor
      * @param array  $post_data
      * @return string
      */
-    protected function getValueTypeBySide(string $side, array $post_data) : string
+    protected function getValueTypeBySide(string $side, array $post_data): string
     {
         // because common value types must be differentiated to a
         // further degree, the switchable group data of them contains
@@ -137,7 +138,7 @@ class RuleFormProcessor extends AbstractFormProcessor
      * @param array  $post_data
      * @return bool
      */
-    protected function isSideCommonAttribute(string $side, array $post_data) : bool
+    protected function isSideCommonAttribute(string $side, array $post_data): bool
     {
         return (CommonAttribute::class === $post_data[$side][RuleFormBuilder::INDEX_GROUP_TYPE]);
     }

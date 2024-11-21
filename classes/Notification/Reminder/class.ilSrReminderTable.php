@@ -1,4 +1,5 @@
-<?php /*********************************************************************
+<?php
+/*********************************************************************
  * This Code is licensed under the GPL-3.0 License and is Part of a
  * ILIAS Plugin developed by sr solutions ag in Switzerland.
  *
@@ -22,7 +23,7 @@ class ilSrReminderTable extends ilSrAbstractNotificationTable
     /**
      * @inheritDoc
      */
-    protected function getTemplateName() : string
+    protected function getTemplateName(): string
     {
         return 'tpl.reminder_table_row.html';
     }
@@ -30,7 +31,7 @@ class ilSrReminderTable extends ilSrAbstractNotificationTable
     /**
      * @inheritDoc
      */
-    protected function addNotificationSpecificColumns() : void
+    protected function addNotificationSpecificColumns(): void
     {
         $this->addColumn($this->translator->txt(self::COL_REMINDER_DAYS_BEFORE_DELETION));
     }
@@ -38,7 +39,7 @@ class ilSrReminderTable extends ilSrAbstractNotificationTable
     /**
      * @inheritDoc
      */
-    protected function renderNotificationSpecificColumns(ilTemplate $template, array $data) : void
+    protected function renderNotificationSpecificColumns(ilTemplate $template, array $data): void
     {
         $template->setVariable(
             self::COL_REMINDER_DAYS_BEFORE_DELETION,

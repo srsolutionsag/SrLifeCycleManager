@@ -1,4 +1,5 @@
-<?php /*********************************************************************
+<?php
+/*********************************************************************
  * This Code is licensed under the GPL-3.0 License and is Part of a
  * ILIAS Plugin developed by sr solutions ag in Switzerland.
  *
@@ -66,7 +67,7 @@ class ilSrReminderGUI extends ilSrAbstractNotificationGUI
      *
      * @return IReminder|null
      */
-    protected function getRequestedNotification() : ?IReminder
+    protected function getRequestedNotification(): ?IReminder
     {
         $notification_id = $this->getRequestParameter(self::PARAM_NOTIFICATION_ID);
         if (null !== $notification_id) {
@@ -81,7 +82,7 @@ class ilSrReminderGUI extends ilSrAbstractNotificationGUI
      *
      * @inheritDoc
      */
-    protected function index() : void
+    protected function index(): void
     {
         $table = new ilSrReminderTable(
             $this->ui_factory,
@@ -103,7 +104,7 @@ class ilSrReminderGUI extends ilSrAbstractNotificationGUI
     /**
      * @inheritDoc
      */
-    protected function edit() : void
+    protected function edit(): void
     {
         $this->render($this->form_builder->getForm());
     }
@@ -111,7 +112,7 @@ class ilSrReminderGUI extends ilSrAbstractNotificationGUI
     /**
      * @inheritDoc
      */
-    protected function save() : void
+    protected function save(): void
     {
         $processor = new ReminderFormProcessor(
             $this->repository->reminder(),
@@ -131,7 +132,7 @@ class ilSrReminderGUI extends ilSrAbstractNotificationGUI
     /**
      * @inheritDoc
      */
-    protected function delete() : void
+    protected function delete(): void
     {
         if (null !== $this->notification) {
             $this->sendSuccessMessage(self::MSG_NOTIFICATION_SUCCESS);

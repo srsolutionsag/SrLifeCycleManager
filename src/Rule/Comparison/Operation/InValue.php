@@ -1,4 +1,5 @@
-<?php /*********************************************************************
+<?php
+/*********************************************************************
  * This Code is licensed under the GPL-3.0 License and is Part of a
  * ILIAS Plugin developed by sr solutions ag in Switzerland.
  *
@@ -21,7 +22,7 @@ class InValue extends AbstractComparison
     /**
      * @inheritDoc
      */
-    public function isApplicable() : bool
+    public function isApplicable(): bool
     {
         $lhs_types = $this->lhs_attribute->getComparableValueTypes();
         $rhs_types = $this->rhs_attribute->getComparableValueTypes();

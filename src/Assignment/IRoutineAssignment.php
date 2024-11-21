@@ -25,55 +25,55 @@ interface IRoutineAssignment
     /**
      * @return int|null
      */
-    public function getRoutineId() : ?int;
+    public function getRoutineId(): ?int;
 
     /**
      * @param int|null $routine_id
      * @return IRoutineAssignment
      */
-    public function setRoutineId(?int $routine_id) : IRoutineAssignment;
+    public function setRoutineId(?int $routine_id): IRoutineAssignment;
 
     /**
      * @return int|null
      */
-    public function getRefId() : ?int;
+    public function getRefId(): ?int;
 
     /**
      * @param int|null $ref_id
      * @return IRoutineAssignment
      */
-    public function setRefId(?int $ref_id) : IRoutineAssignment;
+    public function setRefId(?int $ref_id): IRoutineAssignment;
 
     /**
      * @return int
      */
-    public function getUserId() : int;
+    public function getUserId(): int;
 
     /**
      * @param int $user_id
      * @return IRoutineAssignment
      */
-    public function setUserId(int $user_id) : IRoutineAssignment;
+    public function setUserId(int $user_id): IRoutineAssignment;
 
     /**
      * @return bool
      */
-    public function isActive() : bool;
+    public function isActive(): bool;
 
     /**
      * @param bool $is_active
      * @return IRoutineAssignment
      */
-    public function setActive(bool $is_active) : IRoutineAssignment;
+    public function setActive(bool $is_active): IRoutineAssignment;
 
     /**
      * @return bool
      */
-    public function isRecursive() : bool;
+    public function isRecursive(): bool;
 
     /**
      * @param bool $is_recursive
      * @return IRoutineAssignment
      */
-    public function setRecursive(bool $is_recursive) : IRoutineAssignment;
+    public function setRecursive(bool $is_recursive): IRoutineAssignment;
 }

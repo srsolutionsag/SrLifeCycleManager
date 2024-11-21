@@ -1,4 +1,5 @@
-<?php /*********************************************************************
+<?php
+/*********************************************************************
  * This Code is licensed under the GPL-3.0 License and is Part of a
  * ILIAS Plugin developed by sr solutions ag in Switzerland.
  *
@@ -81,7 +82,7 @@ abstract class ilSrAbstractAssignmentGUI extends ilSrAbstractGUI
      *
      * @return int|null
      */
-    public function getAssignmentRefId() : ?int
+    public function getAssignmentRefId(): ?int
     {
         return $this->assignment_ref_id;
     }
@@ -89,7 +90,7 @@ abstract class ilSrAbstractAssignmentGUI extends ilSrAbstractGUI
     /**
      * @inheritDoc
      */
-    protected function setupGlobalTemplate(ilGlobalTemplateInterface $template, ilSrTabManager $tabs) : void
+    protected function setupGlobalTemplate(ilGlobalTemplateInterface $template, ilSrTabManager $tabs): void
     {
         $template->setTitle($this->translator->txt(self::PAGE_TITLE));
 
@@ -109,7 +110,7 @@ abstract class ilSrAbstractAssignmentGUI extends ilSrAbstractGUI
     /**
      * @inheritDoc
      */
-    protected function canUserExecute(ilSrAccessHandler $access_handler, string $command) : bool
+    protected function canUserExecute(ilSrAccessHandler $access_handler, string $command): bool
     {
         // all actions are available for routine- or assignment-managers.
         return (
@@ -122,7 +123,7 @@ abstract class ilSrAbstractAssignmentGUI extends ilSrAbstractGUI
      * Displays an assignment form on the current page, which is delivered
      * by the derived class.
      */
-    protected function edit() : void
+    protected function edit(): void
     {
         $this->render($this->getForm());
     }
@@ -136,7 +137,7 @@ abstract class ilSrAbstractAssignmentGUI extends ilSrAbstractGUI
      * If the data is invalid, the processed form including
      * the error messages is shown.
      */
-    protected function save() : void
+    protected function save(): void
     {
         $processor = new AssignmentFormProcessor(
             $this->repository->assignment(),
@@ -160,7 +161,7 @@ abstract class ilSrAbstractAssignmentGUI extends ilSrAbstractGUI
      * Note that this method must only be called if the assignment-ref-id is equal
      * to the current ref-id OR the user is within administration context.
      */
-    protected function delete() : void
+    protected function delete(): void
     {
         if (null === $this->assignment->getRoutineId() || null === $this->assignment->getRefId()) {
             throw new LogicException("Cannot delete assignment without routine- and ref-id.");
@@ -198,7 +199,7 @@ abstract class ilSrAbstractAssignmentGUI extends ilSrAbstractGUI
      *
      * @return IRoutineAssignment|null
      */
-    protected function getRequestedAssignment() : ?IRoutineAssignment
+    protected function getRequestedAssignment(): ?IRoutineAssignment
     {
         $assigned_ref_id = $this->getRequestedAssignmentRefId();
         $routine_id = $this->routine->getRoutineId();
@@ -215,7 +216,7 @@ abstract class ilSrAbstractAssignmentGUI extends ilSrAbstractGUI
      *
      * @return int|null
      */
-    protected function getRequestedAssignmentRefId() : ?int
+    protected function getRequestedAssignmentRefId(): ?int
     {
         $assignment_ref_id = $this->getRequestParameter($this->getAssignmentRefIdParameter());
         if (null !== $assignment_ref_id) {
@@ -234,7 +235,7 @@ abstract class ilSrAbstractAssignmentGUI extends ilSrAbstractGUI
      *
      * @return string
      */
-    abstract public function getAssignmentRefIdParameter() : string;
+    abstract public function getAssignmentRefIdParameter(): string;
 
     /**
      * This method MUST return the form instance of the derived class, which
@@ -242,5 +243,5 @@ abstract class ilSrAbstractAssignmentGUI extends ilSrAbstractGUI
      *
      * @return Form
      */
-    abstract protected function getForm() : Form;
+    abstract protected function getForm(): Form;
 }

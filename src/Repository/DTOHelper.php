@@ -1,4 +1,5 @@
-<?php /*********************************************************************
+<?php
+/*********************************************************************
  * This Code is licensed under the GPL-3.0 License and is Part of a
  * ILIAS Plugin developed by sr solutions ag in Switzerland.
  *
@@ -55,13 +56,13 @@ trait DTOHelper
      * @param bool  $array_data
      * @return array[]
      */
-    protected function returnAllQueryResults(array $query_results, bool $array_data = false) : array
+    protected function returnAllQueryResults(array $query_results, bool $array_data = false): array
     {
         if (empty($query_results) || $array_data) {
             return $query_results;
         }
-        
-        return array_map(function(array $r){
+
+        return array_map(function (array $r) {
             return $this->transformToDTO($r);
         }, $query_results);
     }

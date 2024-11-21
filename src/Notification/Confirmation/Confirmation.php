@@ -1,4 +1,5 @@
-<?php /*********************************************************************
+<?php
+/*********************************************************************
  * This Code is licensed under the GPL-3.0 License and is Part of a
  * ILIAS Plugin developed by sr solutions ag in Switzerland.
  *
@@ -48,7 +49,7 @@ class Confirmation extends Notification implements IConfirmation
     /**
      * @inheritDoc
      */
-    public function getEvent() : string
+    public function getEvent(): string
     {
         return $this->event;
     }
@@ -56,7 +57,7 @@ class Confirmation extends Notification implements IConfirmation
     /**
      * @inheritDoc
      */
-    public function setEvent(string $event) : IConfirmation
+    public function setEvent(string $event): IConfirmation
     {
         $this->event = $event;
         return $this;

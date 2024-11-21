@@ -1,4 +1,5 @@
-<?php /*********************************************************************
+<?php
+/*********************************************************************
  * This Code is licensed under the GPL-3.0 License and is Part of a
  * ILIAS Plugin developed by sr solutions ag in Switzerland.
  *
@@ -75,7 +76,7 @@ abstract class Notification implements ISentNotification
     /**
      * @inheritDoc
      */
-    public function getNotificationId() : ?int
+    public function getNotificationId(): ?int
     {
         return $this->notification_id;
     }
@@ -83,7 +84,7 @@ abstract class Notification implements ISentNotification
     /**
      * @inheritDoc
      */
-    public function setNotificationId(int $notification_id) : INotification
+    public function setNotificationId(int $notification_id): INotification
     {
         $this->notification_id = $notification_id;
         return $this;
@@ -92,7 +93,7 @@ abstract class Notification implements ISentNotification
     /**
      * @inheritDoc
      */
-    public function getRoutineId() : int
+    public function getRoutineId(): int
     {
         return $this->routine_id;
     }
@@ -100,7 +101,7 @@ abstract class Notification implements ISentNotification
     /**
      * @inheritDoc
      */
-    public function setRoutineId(int $routine_id) : INotification
+    public function setRoutineId(int $routine_id): INotification
     {
         $this->routine_id = $routine_id;
         return $this;
@@ -109,7 +110,7 @@ abstract class Notification implements ISentNotification
     /**
      * @inheritDoc
      */
-    public function getNotifiedRefId() : int
+    public function getNotifiedRefId(): int
     {
         $this->abortIfNotSent();
 
@@ -119,7 +120,7 @@ abstract class Notification implements ISentNotification
     /**
      * @inheritDoc
      */
-    public function setNotifiedRefId(int $ref_id) : ISentNotification
+    public function setNotifiedRefId(int $ref_id): ISentNotification
     {
         $this->notified_ref_id = $ref_id;
         return $this;
@@ -128,7 +129,7 @@ abstract class Notification implements ISentNotification
     /**
      * @inheritDoc
      */
-    public function getNotifiedDate() : DateTimeImmutable
+    public function getNotifiedDate(): DateTimeImmutable
     {
         $this->abortIfNotSent();
 
@@ -138,7 +139,7 @@ abstract class Notification implements ISentNotification
     /**
      * @inheritDoc
      */
-    public function setNotifiedDate(DateTimeImmutable $date) : ISentNotification
+    public function setNotifiedDate(DateTimeImmutable $date): ISentNotification
     {
         $this->notified_date = $date;
         return $this;
@@ -155,7 +156,7 @@ abstract class Notification implements ISentNotification
     /**
      * @inheritDoc
      */
-    public function getTitle() : string
+    public function getTitle(): string
     {
         return $this->title;
     }
@@ -163,7 +164,7 @@ abstract class Notification implements ISentNotification
     /**
      * @inheritDoc
      */
-    public function setTitle(string $title) : INotification
+    public function setTitle(string $title): INotification
     {
         $this->title = $title;
         return $this;
@@ -172,7 +173,7 @@ abstract class Notification implements ISentNotification
     /**
      * @inheritDoc
      */
-    public function getContent() : string
+    public function getContent(): string
     {
         return $this->content;
     }
@@ -180,7 +181,7 @@ abstract class Notification implements ISentNotification
     /**
      * @inheritDoc
      */
-    public function setContent(string $content) : INotification
+    public function setContent(string $content): INotification
     {
         $this->content = $content;
         return $this;
@@ -190,7 +191,7 @@ abstract class Notification implements ISentNotification
      * Helper function that throws an exception if the notification
      * has not been sent yet.
      */
-    protected function abortIfNotSent() : void
+    protected function abortIfNotSent(): void
     {
         if (!$this->hasBeenSent()) {
             throw new LogicException("Notification ({$this->getNotificationId()}) has not been sent to {$this->getNotifiedRefId()} yet");

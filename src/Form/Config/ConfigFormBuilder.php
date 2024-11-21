@@ -1,4 +1,5 @@
-<?php /*********************************************************************
+<?php
+/*********************************************************************
  * This Code is licensed under the GPL-3.0 License and is Part of a
  * ILIAS Plugin developed by sr solutions ag in Switzerland.
  *
@@ -67,18 +68,20 @@ class ConfigFormBuilder extends AbstractFormBuilder
     /**
      * @inheritDoc
      */
-    public function getForm() : UIForm
+    public function getForm(): UIForm
     {
         $inputs[IConfig::CNF_ROLE_MANAGE_ROUTINES] = $this->fields
             ->multiSelect($this->translator->txt(IConfig::CNF_ROLE_MANAGE_ROUTINES), $this->global_roles)
-            ->withValue((!empty($this->config->getManageRoutineRoles())) ?
+            ->withValue(
+                (!empty($this->config->getManageRoutineRoles())) ?
                 $this->config->getManageRoutineRoles() : null
             )
         ;
 
         $inputs[IConfig::CNF_ROLE_MANAGE_ASSIGNMENTS] = $this->fields
             ->multiSelect($this->translator->txt(IConfig::CNF_ROLE_MANAGE_ASSIGNMENTS), $this->global_roles)
-            ->withValue((!empty($this->config->getManageAssignmentRoles())) ?
+            ->withValue(
+                (!empty($this->config->getManageAssignmentRoles())) ?
                 $this->config->getManageAssignmentRoles() : null
             )
         ;

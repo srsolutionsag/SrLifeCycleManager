@@ -18,12 +18,12 @@ interface IAttribute
     /**
      * Comparable value types.
      */
-    public const COMPARABLE_VALUE_TYPE_ARRAY    = 'array';
-    public const COMPARABLE_VALUE_TYPE_STRING   = 'string';
-    public const COMPARABLE_VALUE_TYPE_BOOL     = 'boolean';
-    public const COMPARABLE_VALUE_TYPE_INT      = 'integer';
-    public const COMPARABLE_VALUE_TYPE_NULL     = 'NULL';
-    public const COMPARABLE_VALUE_TYPE_DATE     = 'DateTime';
+    public const COMPARABLE_VALUE_TYPE_ARRAY = 'array';
+    public const COMPARABLE_VALUE_TYPE_STRING = 'string';
+    public const COMPARABLE_VALUE_TYPE_BOOL = 'boolean';
+    public const COMPARABLE_VALUE_TYPE_INT = 'integer';
+    public const COMPARABLE_VALUE_TYPE_NULL = 'NULL';
+    public const COMPARABLE_VALUE_TYPE_DATE = 'DateTime';
 
     /**
      * @var string [] available value types.
@@ -45,7 +45,7 @@ interface IAttribute
      *
      * @return string[]
      */
-    public function getComparableValueTypes() : array;
+    public function getComparableValueTypes(): array;
 
     /**
      * Returns the current attribute value cast to the given type.

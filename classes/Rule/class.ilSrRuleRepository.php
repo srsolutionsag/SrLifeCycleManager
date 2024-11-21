@@ -1,4 +1,5 @@
-<?php /*********************************************************************
+<?php
+/*********************************************************************
  * This Code is licensed under the GPL-3.0 License and is Part of a
  * ILIAS Plugin developed by sr solutions ag in Switzerland.
  *
@@ -50,7 +51,7 @@ class ilSrRuleRepository implements IRuleRepository
     /**
      * @inheritDoc
      */
-    public function get(int $rule_id) : ?IRule
+    public function get(int $rule_id): ?IRule
     {
         $query = "
             SELECT rule.rule_id, rule.lhs_type, rule.lhs_value, rule.rhs_type, rule.rhs_value, rule.operator, rel.routine_id 
@@ -74,7 +75,7 @@ class ilSrRuleRepository implements IRuleRepository
     /**
      * @inheritDoc
      */
-    public function getByRoutine(IRoutine $routine, bool $array_data = false) : array
+    public function getByRoutine(IRoutine $routine, bool $array_data = false): array
     {
         $query = "
             SELECT rule.rule_id, rule.lhs_type, rule.lhs_value, rule.rhs_type, rule.rhs_value, rule.operator, rel.routine_id 
@@ -93,14 +94,15 @@ class ilSrRuleRepository implements IRuleRepository
                         $routine->getRoutineId() ?? 0,
                     ]
                 )
-            ), $array_data
+            ),
+            $array_data
         );
     }
 
     /**
      * @inheritDoc
      */
-    public function getByRefIdAndRoutineType(int $ref_id, string $routine_type) : array
+    public function getByRefIdAndRoutineType(int $ref_id, string $routine_type): array
     {
         $query = "
             SELECT rule.rule_id, rule.lhs_type, rule.lhs_value, rule.rhs_type, rule.rhs_value, rule.operator, relation.routine_id 
@@ -135,7 +137,7 @@ class ilSrRuleRepository implements IRuleRepository
     /**
      * @inheritDoc
      */
-    public function store(IRule $rule) : IRule
+    public function store(IRule $rule): IRule
     {
         if (null === $rule->getRuleId()) {
             return $this->insertRule($rule);
@@ -147,7 +149,7 @@ class ilSrRuleRepository implements IRuleRepository
     /**
      * @inheritDoc
      */
-    public function delete(IRule $rule) : bool
+    public function delete(IRule $rule): bool
     {
         if (null === $rule->getRuleId()) {
             return true;
@@ -173,7 +175,7 @@ class ilSrRuleRepository implements IRuleRepository
     /**
      * @inheritDoc
      */
-    public function empty(IRoutine $routine) : IRule
+    public function empty(IRoutine $routine): IRule
     {
         if (null === $routine->getRoutineId()) {
             throw new LogicException("Cannot relate rule to routine that has not been stored yet.");
@@ -193,7 +195,7 @@ class ilSrRuleRepository implements IRuleRepository
      * @param IRule $rule
      * @return IRule
      */
-    protected function updateRule(IRule $rule) : IRule
+    protected function updateRule(IRule $rule): IRule
     {
         $query = "
             UPDATE srlcm_rule SET
@@ -226,7 +228,7 @@ class ilSrRuleRepository implements IRuleRepository
      * @param IRule $rule
      * @return IRule
      */
-    protected function insertRule(IRule $rule) : IRule
+    protected function insertRule(IRule $rule): IRule
     {
         $query = "
             INSERT INTO srlcm_rule (rule_id, lhs_type, lhs_value, rhs_type, rhs_value, operator)
@@ -266,7 +268,7 @@ class ilSrRuleRepository implements IRuleRepository
      * @param array $query_result
      * @return IRule
      */
-    protected function transformToDTO(array $query_result) : IRule
+    protected function transformToDTO(array $query_result): IRule
     {
         return new Rule(
             $query_result[IRule::F_LHS_TYPE],
