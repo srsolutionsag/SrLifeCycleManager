@@ -44,10 +44,7 @@ abstract class ilSrAbstractAssignmentGUI extends ilSrAbstractGUI
 
     protected ?int $assignment_ref_id;
 
-    /**
-     * @var IRoutineAssignment
-     */
-    protected $assignment;
+    protected IRoutineAssignment $assignment;
 
     /**
      * Tries to retrieve an existing assignment for the requested object-

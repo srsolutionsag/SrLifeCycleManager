@@ -29,11 +29,6 @@ class ilSrRuleRepository implements IRuleRepository
     use DTOHelper;
 
     /**
-     * @var ilTree
-     */
-    protected $tree;
-
-    /**
      * @param ilDBInterface $database
      * @param ilTree        $tree
      */

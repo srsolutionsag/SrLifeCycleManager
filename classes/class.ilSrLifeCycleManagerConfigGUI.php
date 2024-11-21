@@ -31,7 +31,7 @@ class ilSrLifeCycleManagerConfigGUI extends ilPluginConfigGUI
      * @param string $cmd
      * @throws ilCtrlException
      */
-    public function performCommand($cmd): void
+    public function performCommand(string $cmd): void
     {
         global $DIC;
 

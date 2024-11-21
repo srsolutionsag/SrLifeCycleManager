@@ -47,27 +47,18 @@ class ilSrRoutineListBuilder
     /**
      * @var array<int, IWhitelistEntry|null>
      */
-    protected static $whitelist_entries = [];
+    protected static array $whitelist_entries = [];
 
-    /**
-     * @var bool
-     */
-    protected $are_routines_affected = false;
+    protected bool $are_routines_affected = false;
 
     /**
      * @var IRoutine[]
      */
-    protected $routines = [];
+    protected array $routines = [];
 
-    /**
-     * @var ilObject|null
-     */
-    protected $object;
+    protected ?ilObject $object = null;
 
-    /**
-     * @var string
-     */
-    protected $title;
+    protected string $title = '';
 
     /**
      * @param Factory                      $ui_factory

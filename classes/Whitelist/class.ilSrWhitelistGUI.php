@@ -45,10 +45,7 @@ class ilSrWhitelistGUI extends ilSrAbstractGUI
     protected const MSG_ROUTINE_UNDID_OPT_OUT = 'msg_routine_undid_opt_out';
     protected const PAGE_TITLE = 'page_title_whitelist';
 
-    /**
-     * @var EventSubject
-     */
-    protected $event_subject;
+    protected EventSubject $event_subject;
 
     /**
      * @inheritdoc

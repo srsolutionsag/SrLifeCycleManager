@@ -19,10 +19,7 @@ use ilTree;
  */
 trait ObjectHelper
 {
-    /**
-     * @var ilTree
-     */
-    protected $tree;
+    protected ilTree $tree;
 
     /**
      * @inheritdoc

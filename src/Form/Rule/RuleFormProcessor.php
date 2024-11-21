@@ -32,7 +32,7 @@ class RuleFormProcessor extends AbstractFormProcessor
     public function __construct(
         protected IRuleRepository $repository,
         ServerRequestInterface $request,
-        $form,
+        mixed $form,
         protected IRule $rule
     ) {
         parent::__construct($request, $form);

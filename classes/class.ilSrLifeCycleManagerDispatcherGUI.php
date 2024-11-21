@@ -35,17 +35,11 @@ use srag\Plugins\SrLifeCycleManager\Config\IConfig;
  */
 class ilSrLifeCycleManagerDispatcherGUI
 {
-    /**
-     * @var ilGlobalTemplateInterface
-     */
-    protected $global_template;
+    protected ilGlobalTemplateInterface $global_template;
 
     protected IConfig $config;
 
-    /**
-     * @var ilCtrl
-     */
-    protected $ctrl;
+    protected ilCtrlInterface $ctrl;
 
     /**
      * Initializes the global template and ilCtrl.

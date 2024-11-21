@@ -61,20 +61,11 @@ abstract class ilSrAbstractGUI
     // Plugin dependencies:
     protected IRoutine $routine;
 
-    /**
-     * @var RepositoryFactory
-     */
-    protected $repository;
+    protected RepositoryFactory $repository;
 
-    /**
-     * @var ITranslator
-     */
-    protected $translator;
+    protected ITranslator $translator;
 
-    /**
-     * @var ilSrAccessHandler
-     */
-    protected $access_handler;
+    protected ilSrAccessHandler $access_handler;
 
     protected \ilSrToolbarManager $toolbar_manager;
 
@@ -86,48 +77,25 @@ abstract class ilSrAbstractGUI
 
     // ILIAS dependencies:
 
-    /**
-     * @var ServerRequestInterface
-     */
-    protected $request;
+    protected ServerRequestInterface $request;
 
-    /**
-     * @var ilDBInterface
-     */
-    protected $database;
+    protected ilDBInterface $database;
 
-    /**
-     * @var Factory
-     */
-    protected $ui_factory;
+    protected Factory $ui_factory;
 
-    /**
-     * @var Renderer
-     */
-    protected $renderer;
+    protected Renderer $renderer;
 
-    /**
-     * @var Refinery
-     */
-    protected $refinery;
+    protected Refinery $refinery;
 
-    /**
-     * @var ilCtrl
-     */
-    protected $ctrl;
+    protected ilCtrlInterface $ctrl;
 
-    /**
-     * @var ilObjUser
-     */
-    protected $user;
+    protected ilObjUser $user;
 
     /**
      * This instance variable is private to enforce the usage of UI components
      * through @see ilSrAbstractGUI::render().
-     *
-     * @var ilGlobalTemplateInterface
      */
-    private $global_template;
+    private ilGlobalTemplateInterface $global_template;
 
     /**
      * Initializes common dependencies which are used in every derived GUI class.

@@ -14,7 +14,7 @@ use srag\Plugins\SrLifeCycleManager\Form\Assignment\ObjectAssignmentFormBuilder;
 use srag\Plugins\SrLifeCycleManager\Form\IFormBuilder;
 use ILIAS\UI\Component\Input\Container\Form\Form;
 use ILIAS\Filesystem\Stream\Streams;
-use ILIAS\HTTP\GlobalHttpState;
+use ILIAS\HTTP\Services;
 
 /**
  * This class is responsible for assigning multiple or one object to
@@ -42,10 +42,7 @@ class ilSrObjectAssignmentGUI extends ilSrAbstractAssignmentGUI
      */
     protected ObjectAssignmentFormBuilder $form_builder;
 
-    /**
-     * @var GlobalHttpState
-     */
-    protected $http;
+    protected Services $http;
 
     /**
      * Throws an exception if the request doesn't provide routine-id.

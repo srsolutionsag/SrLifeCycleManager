@@ -35,7 +35,7 @@ class ilSrRoutineAssignmentGUI extends ilSrAbstractAssignmentGUI
     /**
      * @var IRoutine[]
      */
-    protected $unassigned_routines;
+    protected array $unassigned_routines = [];
 
     /**
      * @var IFormBuilder

@@ -30,10 +30,7 @@ class ilSrConfirmationGUI extends ilSrAbstractNotificationGUI
      */
     protected ConfirmationFormBuilder $form_builder;
 
-    /**
-     * @var IConfirmation
-     */
-    protected $notification;
+    protected IConfirmation $notification;
 
     /**
      * Initializes the confirmation form-builder and fetches the requested

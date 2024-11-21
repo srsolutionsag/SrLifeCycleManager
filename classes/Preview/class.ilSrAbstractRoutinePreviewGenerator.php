@@ -29,7 +29,7 @@ abstract class ilSrAbstractRoutinePreviewGenerator
     /**
      * @return Generator|AffectedObject[]
      */
-    protected function getDeletableItems()
+    protected function getDeletableItems(): Generator
     {
         return $this->affected_object_provider->getAffectedObjects();
     }

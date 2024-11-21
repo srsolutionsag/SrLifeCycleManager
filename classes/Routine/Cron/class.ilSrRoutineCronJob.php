@@ -59,7 +59,7 @@ class ilSrRoutineCronJob extends ilSrAbstractCronJob
     /**
      * @var int[]
      */
-    protected $deleted_ref_ids = [];
+    protected array $deleted_ref_ids = [];
 
     public function __construct(
         protected INotificationSender $notification_sender,

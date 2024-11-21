@@ -38,10 +38,7 @@ class ilSrLifeCycleManagerPlugin extends ilCronHookPlugin implements ITranslator
      */
     public const PLUGIN_ID = 'srlcm';
 
-    /**
-     * @var self|null
-     */
-    protected static $instance;
+    protected static ?ilSrLifeCycleManagerPlugin $instance = null;
 
     protected \ilSrLifeCycleManagerContainer $container;
 

@@ -28,10 +28,7 @@ class ilSrReminderGUI extends ilSrAbstractNotificationGUI
      */
     protected ReminderFormBuilder $form_builder;
 
-    /**
-     * @var IReminder
-     */
-    protected $notification;
+    protected IReminder $notification;
 
     /**
      * Initializes the notification form-builder and fetches the requested

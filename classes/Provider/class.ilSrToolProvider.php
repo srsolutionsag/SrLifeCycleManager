@@ -39,40 +39,19 @@ class ilSrToolProvider extends AbstractDynamicToolPluginProvider
     protected const LABEL_ASSIGNED_ROUTINES = 'label_assigned_routines';
     protected const CNF_TOOL_CONTROLS = 'cnf_tool_controls';
 
-    /**
-     * @var ilObject|null
-     */
-    protected $request_object;
+    protected ?ilObject $request_object = null;
 
-    /**
-     * @var ilSrAssignmentRepository
-     */
-    protected $assignment_repository;
+    protected ilSrAssignmentRepository $assignment_repository;
 
-    /**
-     * @var IWhitelistRepository
-     */
-    protected $whitelist_repository;
+    protected IWhitelistRepository $whitelist_repository;
 
-    /**
-     * @var IRoutineRepository
-     */
-    protected $routine_repository;
+    protected IRoutineRepository $routine_repository;
 
-    /**
-     * @var AffectingRoutineProvider
-     */
-    protected $routine_provider;
+    protected AffectingRoutineProvider $routine_provider;
 
-    /**
-     * @var ilSrAccessHandler
-     */
-    protected $access_handler;
+    protected ilSrAccessHandler $access_handler;
 
-    /**
-     * @var IConfig
-     */
-    protected $config;
+    protected IConfig $config;
 
     /**
      * @inheritDoc

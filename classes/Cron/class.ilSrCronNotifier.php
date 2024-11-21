@@ -25,10 +25,7 @@ class ilSrCronNotifier implements INotifier
 
     protected int $interval;
 
-    /**
-     * @var int
-     */
-    protected $counter = 0;
+    protected int $counter = 0;
 
     /**
      * @throws LogicException if $interval is not a positive integer

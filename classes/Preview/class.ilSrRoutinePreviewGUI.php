@@ -26,10 +26,8 @@ class ilSrRoutinePreviewGUI extends ilSrAbstractGUI
 
     // ilSrRoutinePreviewGUI language variables:
     protected const PAGE_TITLE = 'page_title_routine_preview';
-    /**
-     * @var BackgroundTaskServices
-     */
-    protected $background_tasks;
+
+    protected BackgroundTaskServices $background_tasks;
 
     protected \ilSrRoutinePreviewRenderer $preview_renderer;
 

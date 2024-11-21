@@ -25,15 +25,9 @@ use ILIAS\Filesystem\Filesystems;
  */
 class ilSrRoutinePreviewBackgroundTask extends AbstractJob
 {
-    /**
-     * @var AffectedObjectProvider
-     */
-    protected $affected_object_provider;
+    protected AffectedObjectProvider $affected_object_provider;
 
-    /**
-     * @var Filesystems
-     */
-    protected $file_system;
+    protected Filesystems $file_system;
 
     public function __construct()
     {

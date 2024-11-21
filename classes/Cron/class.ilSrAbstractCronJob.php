@@ -20,10 +20,7 @@ use srag\Plugins\SrLifeCycleManager\Cron\INotifier;
  */
 abstract class ilSrAbstractCronJob extends ilCronJob
 {
-    /**
-     * @var string[]
-     */
-    protected $summary = [];
+    protected array $summary = [];
 
     public function __construct(
         protected ResultBuilder $result_builder,

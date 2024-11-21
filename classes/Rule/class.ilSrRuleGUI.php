@@ -39,17 +39,11 @@ class ilSrRuleGUI extends ilSrAbstractGUI
     protected const MSG_RULE_ERROR = 'msg_rule_error';
     protected const PAGE_TITLE = 'page_title_rules';
 
-    /**
-     * @var AttributeFactory
-     */
-    protected $attribute_factory;
+    protected AttributeFactory $attribute_factory;
 
     protected RuleFormDirector $form_director;
 
-    /**
-     * @var IRule
-     */
-    protected $rule;
+    protected IRule $rule;
 
     /**
      * Initializes the form-builder director and fetches required

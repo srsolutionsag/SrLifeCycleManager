@@ -9,13 +9,11 @@
  *********************************************************************/
 
 declare(strict_types=1);
-
-use srag\Plugins\SrLifeCycleManager\Form\IFormBuilder;
 use srag\Plugins\SrLifeCycleManager\Form\Config\ConfigFormBuilder;
 use srag\Plugins\SrLifeCycleManager\Form\Config\ConfigFormProcessor;
-use ILIAS\HTTP\GlobalHttpState;
 use ILIAS\Filesystem\Stream\Streams;
 use srag\Plugins\SrLifeCycleManager\Routine\IRoutine;
+use ILIAS\HTTP\Services;
 
 /**
  * This GUI is responsible for all actions in regard to plugin configuration.
@@ -35,15 +33,9 @@ class ilSrConfigGUI extends ilSrAbstractGUI
     protected const MSG_CONFIGURATION_ERROR = 'msg_configuration_error';
     protected const PAGE_TITLE = 'page_title_config';
 
-    /**
-     * @var IFormBuilder
-     */
     protected ConfigFormBuilder $form_builder;
 
-    /**
-     * @var GlobalHttpState
-     */
-    protected $http;
+    protected Services $http;
 
     /**
      * Initializes the configuration form-builder.

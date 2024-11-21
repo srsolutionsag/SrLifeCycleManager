@@ -36,60 +36,27 @@ use ILIAS\DI\Container;
  */
 class ilSrLifeCycleManagerContainer
 {
-    /**
-     * @var RepositoryFactory
-     */
-    protected $repository_factory;
+    protected ?RepositoryFactory $repository_factory = null;
 
-    /**
-     * @var AffectedObjectProvider
-     */
-    protected $affected_object_provider;
+    protected ?AffectedObjectProvider $affected_object_provider = null;
 
-    /**
-     * @var AffectingRoutineProvider
-     */
-    protected $affecting_routine_provider;
+    protected ?AffectingRoutineProvider $affecting_routine_provider = null;
 
-    /**
-     * @var AttributeFactory
-     */
-    protected $attribute_factory;
+    protected ?AttributeFactory $attribute_factory = null;
 
-    /**
-     * @var INotificationSender
-     */
-    protected $notification_sender;
+    protected ?INotificationSender $notification_sender = null;
 
-    /**
-     * @var ConfirmationEventObserver
-     */
-    protected $confirmation_event_observer;
+    protected ?ConfirmationEventObserver $confirmation_event_observer = null;
 
-    /**
-     * @var ilSrRoutineJobFactory
-     */
-    protected $routine_job_factory;
+    protected ?ilSrRoutineJobFactory $routine_job_factory = null;
 
-    /**
-     * @var IRecipientRetriever
-     */
-    protected $recipient_retriever;
+    protected ?IRecipientRetriever $recipient_retriever = null;
 
-    /**
-     * @var ApplicabilityChecker
-     */
-    protected $applicapbililty_checker;
+    protected ?ApplicabilityChecker $applicapbililty_checker = null;
 
-    /**
-     * @var ilSrAccessHandler
-     */
-    protected $access_handler;
+    protected ?ilSrAccessHandler $access_handler = null;
 
-    /**
-     * @var EventSubject
-     */
-    protected $event_subject;
+    protected ?EventSubject $event_subject = null;
 
     public function __construct(protected \ilSrLifeCycleManagerPlugin $plugin, protected Container $dic)
     {
