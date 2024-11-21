@@ -100,9 +100,9 @@ abstract class ilSrAbstractCronJob extends ilCronJob
     /**
      * @inheritDoc
      */
-    public function getDefaultScheduleType(): int
+    public function getDefaultScheduleType(): \ILIAS\Cron\Schedule\CronJobScheduleType
     {
-        return self::SCHEDULE_TYPE_DAILY;
+        return \ILIAS\Cron\Schedule\CronJobScheduleType::SCHEDULE_TYPE_DAILY;
     }
 
     /**
@@ -110,7 +110,7 @@ abstract class ilSrAbstractCronJob extends ilCronJob
      */
     public function getDefaultScheduleValue(): int
     {
-        return self::SCHEDULE_TYPE_DAILY;
+        return 1;
     }
 
     /**
