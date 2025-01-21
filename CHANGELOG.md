@@ -1,5 +1,9 @@
 # SrLifeCycleManager Changelog
 
+## 3.0.0
+
+- Added ILIAS 9 compatibility.
+
 ## 2.1.1
 
 - Fixed an issue where the plugin could not be installed/updated via setup (CLI) due to an undefined service.
