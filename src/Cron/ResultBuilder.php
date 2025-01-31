@@ -137,6 +137,6 @@ class ResultBuilder implements IResultBuilder
 
     protected function cropMessage(string $message, int $length = self::MAX_MESSAGE_LENGTH): string
     {
-        return substr($message, 0, ($length - 3)) . '...';
+        return mb_substr($message, 0, ($length - 3)) . '...';
     }
 }
