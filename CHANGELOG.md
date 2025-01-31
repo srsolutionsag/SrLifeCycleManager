@@ -1,5 +1,9 @@
 # SrLifeCycleManager Changelog
 
+## 3.0.1
+
+- Fixed an issue where UTF8 strings have not been cropped properly.
+
 ## 3.0.0
 
 - Added ILIAS 9 compatibility.
