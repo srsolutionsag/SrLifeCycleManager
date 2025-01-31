@@ -1,5 +1,9 @@
 # SrLifeCycleManager Changelog
 
+## 2.1.2
+
+- Fixed an issue where UTF8 strings have not been cropped properly.
+
 ## 2.1.1
 
 - Fixed an issue where the plugin could not be installed/updated via setup (CLI) due to an undefined service.
