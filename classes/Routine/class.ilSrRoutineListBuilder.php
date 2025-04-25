@@ -137,7 +137,7 @@ class ilSrRoutineListBuilder
         $this->are_routines_affected = false;
         $this->routines = [];
         $this->object = null;
-        $this->title = null;
+        $this->title = '';
 
         return $this;
     }
