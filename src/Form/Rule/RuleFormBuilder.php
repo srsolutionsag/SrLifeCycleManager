@@ -25,7 +25,7 @@ use srag\Plugins\SrLifeCycleManager\Rule\IRule;
 use srag\Plugins\SrLifeCycleManager\ITranslator;
 use ILIAS\UI\Component\Input\Field\SwitchableGroup;
 use ILIAS\UI\Component\Input\Field\Group;
-use ILIAS\UI\Component\Input\Field\Input;
+use ILIAS\UI\Component\Input\Input;
 
 /**
  * @author Thibeau Fuhrer <thibeau@sr.solutions>

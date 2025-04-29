@@ -15,7 +15,7 @@ namespace srag\Plugins\SrLifeCycleManager\Form\Notification;
 use ILIAS\UI\Component\Input\Container\Form\Factory;
 use ILIAS\UI\Component\Input\Container\Form\Form;
 use srag\Plugins\SrLifeCycleManager\Form\AbstractFormBuilder;
-use ILIAS\UI\Component\Input\Field\Input;
+use ILIAS\UI\Component\Input\Input;
 use srag\Plugins\SrLifeCycleManager\Notification\INotification;
 use srag\Plugins\SrLifeCycleManager\ITranslator;
 
