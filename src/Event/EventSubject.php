@@ -78,6 +78,9 @@ class EventSubject
 
     protected function initObserverGroup(string $group): void
     {
+        if (!isset($this->observer_groups[self::ALL_EVENTS])) {
+            $this->observer_groups[self::ALL_EVENTS] = [];
+        }
         if (!isset($this->observer_groups[$group])) {
             $this->observer_groups[$group] = [];
         }
