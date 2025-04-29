@@ -1,5 +1,11 @@
 # SrLifeCycleManager Changelog
 
+## 3.0.2
+
+- Fixed an issue where the routine cron job crashed due to an undefined array key (`'all'`).
+- Fixed an issue where an old input-interface from the UI framework was imported.
+- Fixed an issue where a routine tool property was initialised incorrectly.
+
 ## 3.0.1
 
 - Fixed an issue where UTF8 strings have not been cropped properly.
