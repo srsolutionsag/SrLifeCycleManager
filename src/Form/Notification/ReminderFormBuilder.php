@@ -71,27 +71,34 @@ class ReminderFormBuilder extends NotificationFormBuilder
      */
     protected function getDaysBeforeDeletionConstraint(): Constraint
     {
-        return $this->refinery->custom()->constraint(
-            function ($days_before_deletion): bool {
-                if (!is_numeric($days_before_deletion)) {
-                    return false;
-                }
+        return $this->refinery->logical()->sequential([
+            $this->refinery->to()->int(),
+            $this->refinery->int()->isGreaterThanOrEqual(1),
+            $this->refinery->custom()->constraint(
+                function ($days_before_deletion): bool {
+                    if (!is_numeric($days_before_deletion)) {
+                        return false;
+                    }
+                    if (0 >= $days_before_deletion) {
+                        return false;
+                    }
 
-                $existing_notification = $this->repository->getWithDaysBeforeDeletion(
-                    $this->notification->getRoutineId(),
-                    (int) $days_before_deletion
-                );
+                    $existing_notification = $this->repository->getWithDaysBeforeDeletion(
+                        $this->notification->getRoutineId(),
+                        (int) $days_before_deletion
+                    );
 
-                // the constraint only fails if the existing notification for the
-                // amount of days before submission is NOT the current one.
-                // Otherwise, the notification could never be updated.
-                if (null !== $existing_notification) {
-                    return ($this->notification->getNotificationId() === $existing_notification->getNotificationId());
-                }
+                    // the constraint only fails if the existing notification for the
+                    // amount of days before submission is NOT the current one.
+                    // Otherwise, the notification could never be updated.
+                    if (null !== $existing_notification) {
+                        return ($this->notification->getNotificationId() === $existing_notification->getNotificationId());
+                    }
 
-                return true;
-            },
-            $this->translator->txt(self::MSG_DAYS_BEFORE_DELETION_ERROR)
-        );
+                    return true;
+                },
+                $this->translator->txt(self::MSG_DAYS_BEFORE_DELETION_ERROR)
+            ),
+        ]);
     }
 }
