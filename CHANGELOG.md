@@ -1,5 +1,9 @@
 # SrLifeCycleManager Changelog
 
+## 3.0.3
+
+- Fixed an issue where invalid 'days before deletion' values in reminder-notification form was accepted.
+
 ## 3.0.2
 
 - Fixed an issue where the routine cron job crashed due to an undefined array key (`'all'`).
